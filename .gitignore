@@ -1,0 +1,101 @@
+
+# Created by https://www.gitignore.io/api/java,eclipse,netbeans
+
+### Eclipse ###
+
+.metadata
+Hive/bin/
+Hive/tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+Hive/local.properties
+Hive/.settings/
+Hive/.loadpath
+Hive/.recommenders
+
+# External tool builders
+Hive/.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# PyDev specific (Python IDE for Eclipse)
+*.pydevproject
+
+# CDT-specific (C/C++ Development Tooling)
+Hive/.cproject
+
+# Java annotation processor (APT)
+Hive/.factorypath
+
+# PDT-specific (PHP Development Tools)
+Hive/.buildpath
+
+# sbteclipse plugin
+.target
+
+# Tern plugin
+Hive/.tern-project
+
+# TeXlipse plugin
+Hive/.texlipse
+
+# STS (Spring Tool Suite)
+Hive/.springBeans
+
+# Code Recommenders
+Hive/.recommenders/
+
+# Scala IDE specific (Scala & Java development for Eclipse)
+Hive/.cache-main
+Hive/.scala_dependencies
+Hive/.worksheet
+
+### Eclipse Patch ###
+# Eclipse Core		
+Hive/.project
+
+# JDT-specific (Eclipse Java Development Tools)		
+Hive/.classpath
+
+# Annotation Processing
+Hive/.apt_generated
+
+### Java ###
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+Hive/.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+Hive/hs_err_pid*
+
+### NetBeans ###
+Hive/nbproject/private/
+Hive/build/
+Hive/nbbuild/
+Hive/dist/
+Hive/nbdist/
+Hive/.nb-gradle/
+Hive/nbactions.xml
+
+
+# End of https://www.gitignore.io/api/java,eclipse,netbeans
+
