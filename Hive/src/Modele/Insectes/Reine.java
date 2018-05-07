@@ -1,10 +1,18 @@
 package Modele.Insectes;
 
-public class Reine extends Insectes {
+import Modele.Plateau;
 
+public class Reine extends Insecte {
+
+        @Override
 	public void Deplacement() {
 		// TODO - implement Reine.Deplacement
 		throw new UnsupportedOperationException();
 	}
+
+    @Override
+    public void deplacementPossible(Plateau plateau) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }

@@ -1,11 +1,11 @@
 package Modele;
 
-import Modele.Insectes.Insectes;
+import Modele.Insectes.Insecte;
 import java.util.*;
 
 public abstract class Joueur {
 
-	Collection<Insectes> Pions;
+	Collection<Insecte> Pions;
 	Plateau plateau;
 
 	public abstract boolean coup();
