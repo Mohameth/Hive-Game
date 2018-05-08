@@ -72,6 +72,31 @@ public class Point3DH {
         return resultat;
     }
     
+    public Point3DH voisinHaut() { //Voisins en sens horaire en partant du haut (face plate)
+        return new Point3DH(this.x, this.y+1, this.z-1);
+    }
+
+    public Point3DH voisinDroiteHaut() { //Voisins en sens horaire en partant du haut (face plate)
+        return new Point3DH(this.x+1, this.y, this.z-1);
+    }
+
+    public Point3DH voisinDroiteBas() { //Voisins en sens horaire en partant du haut (face plate)
+        return new Point3DH(this.x+1, this.y-1, this.z);
+    }
+
+    public Point3DH voisinBas() { //Voisins en sens horaire en partant du haut (face plate)
+        return new Point3DH(this.x, this.y-1, this.z+1);
+    }
+
+    public Point3DH voisinGaucheBas() { //Voisins en sens horaire en partant du haut (face plate)
+        return new Point3DH(this.x-1, this.y, this.z+1);
+    }
+
+    public Point3DH voisinGaucheHaut() { //Voisins en sens horaire en partant du haut (face plate)
+        return new Point3DH(this.x-1, this.y+1, this.z);
+    }
+    
+    
     @Override
     public String toString() {
         return "Point3DH{" + "x=" + x + ", y=" + y + ", z=" + z + '}';
