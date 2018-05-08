@@ -5,15 +5,14 @@ import Modele.Insectes.Insecte;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
-import javafx.geometry.Point3D;
 
 public class Plateau {
 
-	private Map<Point3D,Case> cases;
+	private Map<Point3DH,Case> cases;
 
 	public Plateau() {
-            cases = new HashMap<Point3D, Case>();
-            Point3D origine = new Point3D(0,0,0);
+            cases = new HashMap<Point3DH, Case>();
+            Point3DH origine = new Point3DH(0,0,0);
             cases.put(origine, new Case(origine));
 	}
         

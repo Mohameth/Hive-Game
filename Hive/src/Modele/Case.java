@@ -2,21 +2,20 @@ package Modele;
 
 import Modele.Insectes.Insecte;
 import java.awt.Point;
-import javafx.geometry.Point3D;
 
 public class Case {
 
     private Insecte insecte;
     private Insecte insecteParDessus;
-    private Point3D coordonnees;
+    private Point3DH coordonnees;
 
-    public Case(Point3D p, Insecte insecte) {
+    public Case(Point3DH p, Insecte insecte) {
         this.insecte = insecte;
         this.insecteParDessus = null;
         this.coordonnees = p;
     }
     
-    public Case(Point3D p) {
+    public Case(Point3DH p) {
         this.coordonnees = p;
         this.insecte = null;
         this.insecteParDessus = null;

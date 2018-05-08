@@ -5,6 +5,8 @@
  */
 package Modele;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import javafx.geometry.Point3D;
 
 /**
@@ -59,6 +61,17 @@ public class Point3DH {
         this.z = z+dz;
     }
 
+    public Collection<Point3DH> coordonneesVoisins() {
+        ArrayList<Point3DH> resultat = new ArrayList<>();
+        resultat.add(new Point3DH(this.x, this.y+1, this.z-1));
+        resultat.add(new Point3DH(this.x+1, this.y, this.z-1));
+        resultat.add(new Point3DH(this.x+1, this.y-1, this.z));
+        resultat.add(new Point3DH(this.x, this.y-1, this.z+1));
+        resultat.add(new Point3DH(this.x-1, this.y, this.z+1));
+        resultat.add(new Point3DH(this.x-1, this.y+1, this.z));
+        return resultat;
+    }
+    
     @Override
     public String toString() {
         return "Point3DH{" + "x=" + x + ", y=" + y + ", z=" + z + '}';
