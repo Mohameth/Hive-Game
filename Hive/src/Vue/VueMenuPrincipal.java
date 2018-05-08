@@ -1,23 +1,23 @@
 package Vue;
 
-import Controleur.Controleur;
-import javafx.application.Application;
+import javafx.geometry.HPos;
+import javafx.geometry.VPos;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Control;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+public class VueMenuPrincipal extends Vue {
+    private static int NB_LIGNE = 5;
+    private static int NB_COL = 5;
 
-public class Vue extends Application {
-    protected double width = 1280.0;
-    protected double heigth = 720.0;
-    protected static Controleur controleur;
+    VueMenuPrincipal(Stage primaryStage){
 
-    @Override
-    public void start(Stage primaryStage) throws Exception{
-        primaryStage.setTitle("Hive");
-        SceneMain(primaryStage);
-    }
-
-<<<<<<< HEAD
-    private void SceneMain(Stage primaryStage){
         Group root = new Group();
         Scene scene = new Scene(root, width, heigth);
 
@@ -36,7 +36,7 @@ public class Vue extends Application {
         });
 
         Button jvj = new Button();
-        jvj.setText("2 Joueurs");
+        jvj.setText("2 Joueur");
         jvj.setMaxWidth(200.0);
 
         Button tuto = new Button();
@@ -81,22 +81,5 @@ public class Vue extends Application {
         root.getChildren().addAll(g);
         primaryStage.setScene(scene);
         primaryStage.show();
-=======
-    protected void SceneMain(Stage primaryStage){
-        new VueMenuPrincipal(primaryStage);
->>>>>>> 88e9073aac86335f4be7a887c3bda6751ed19938
-    }
-
-    protected void SceneSoloParam(Stage primaryStage) {
-        new VueSolo(primaryStage);
-    }
-
-    protected void SceneTerrain(Stage primaryStage){
-        new VueTerrain(primaryStage);
-    }
-
-    public static void initFenetre(String[] args, Controleur c) {
-        controleur = c;
-        launch(args);
     }
 }
