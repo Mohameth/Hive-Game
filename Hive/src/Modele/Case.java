@@ -60,6 +60,8 @@ public class Case {
         
         if (insecte != this.insecte && insecte != this.insecteParDessus)
             throw new Exception("Cet insecte n'est pas sur cette case");
+        
+        return false;
     }
     
     
