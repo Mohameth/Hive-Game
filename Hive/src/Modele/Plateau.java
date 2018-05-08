@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 
 public class Plateau {
@@ -52,6 +53,32 @@ public class Plateau {
             return voisins;
         }
         
+        public boolean rucheBrisee() { //Tester aussi avec un compteur de changements
+            int i = 0; Case c = (Case) this.cases.values().toArray()[i];
+            while(c.estVide()) {
+                i++;
+                c = (Case) this.cases.values().toArray()[i];
+            }
+            
+            
+            ArrayList<Case> visites = new ArrayList<>();
+            LinkedList<Case> file = new LinkedList<>();
+            visites.add(c);
+            file.add(c);
+            while (!file.isEmpty()) {
+                Case courante = file.pollFirst();
+                ArrayList<Case> voisins = (ArrayList<Case>) getCasesVoisines(courante, false);
+                for (Case caseC : voisins) {
+                    if (!visites.contains(c))
+                        visites.add(caseC);
+                        file.addLast(caseC);
+                }
+            }
+            if (visites.size() == this.cases.size())
+                return false;
+            
+            return true;
+        }
         /*public boolean gateBetween(Case c1, Case c2) {
             for (Case v1 : this.getCasesVoisines(c1, false)) {
                 if (!v1.equals(c2)) {
