@@ -6,8 +6,8 @@ import Modele.Plateau;
 
 public abstract class Insecte {
 
-	Joueur joueur;
-	Case emplacement;
+	private Joueur joueur;
+	private Case emplacement;
         
         public abstract void deplacementPossible(Plateau plateau);
         

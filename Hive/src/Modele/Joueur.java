@@ -13,7 +13,6 @@ public abstract class Joueur {
         
 
 	public Joueur(Plateau p) {
-		// TODO - implement Joueur.Joueur
 		this.plateau = p;
                 this.pions = new ArrayList<>(); //On rentrera tous les pions ici
         }

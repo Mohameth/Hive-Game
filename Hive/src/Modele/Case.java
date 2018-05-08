@@ -6,9 +6,9 @@ import javafx.geometry.Point3D;
 
 public class Case {
 
-    Insecte insecte;
-    Insecte insecteParDessus;
-    Point3D coordonnees;
+    private Insecte insecte;
+    private Insecte insecteParDessus;
+    private Point3D coordonnees;
 
     public Case(Point3D p, Insecte insecte) {
         this.insecte = insecte;
@@ -72,17 +72,10 @@ public class Case {
         return this.insecteParDessus;
     }
 
-    public void setInsecte(Insecte insecte) {
-        this.insecte = insecte;
-    }
-
     public Insecte getInsecteParDessus() {
         return insecteParDessus;
     }
 
-    public void setInsecteParDessus(Insecte insecteParDessus) {
-        this.insecteParDessus = insecteParDessus;
-    }
         
         
 }
