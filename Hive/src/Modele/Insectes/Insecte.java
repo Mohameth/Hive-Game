@@ -4,13 +4,14 @@ import Modele.Joueur;
 import Modele.Case;
 import Modele.Plateau;
 import Modele.Point3DH;
+import java.util.Collection;
 
 public abstract class Insecte {
 
     private Joueur joueur;
     private Case emplacement;
 
-    public abstract void deplacementPossible(Plateau plateau);
+    public abstract Collection<Case> deplacementPossible(Plateau plateau);
 
     public abstract void Deplacement(Plateau plat, Point3DH cible);
 

@@ -49,7 +49,7 @@ public class Vue extends Application {
         });
 
         Button jvj = new Button();
-        jvj.setText("2 Joueur");
+        jvj.setText("2 Joueurs");
         jvj.setMaxWidth(200.0);
 
         Button tuto = new Button();

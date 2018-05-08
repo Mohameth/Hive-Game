@@ -21,6 +21,7 @@ public class Plateau {
         
         
         public Case getCase(Point3DH point) {
+            if (cases.get(point) == null) cases.put(point, new Case(point));
             return cases.get(point);
         }
         
@@ -52,13 +53,21 @@ public class Plateau {
             return voisins;
         }
         
-        /*public boolean gateBetween(Case c1, Case c2) {
-            for (Case v1 : this.getCasesVoisines(c1, false)) {
-                if (!v1.equals(c2)) {
-                    if (this.getCasesVoisines(c2, false).contains(v1)) 
-                        
-                    
+        //TODO: Debug
+        public boolean gateBetween(Case c1, Case c2) {
+            int nombreCasesAdjacentesNonVide = 0;
+            Collection<Case> voisinsC1 = getCasesVoisines(c1, false); voisinsC1.remove(c2);
+            Collection<Case> voisinsC2 = getCasesVoisines(c2, false); voisinsC2.remove(c1);
+            
+            int x = 0;
+            for (Case v1 : voisinsC1) {
+                if (voisinsC2.contains(v1)) {
+                    if (!v1.estVide()) {
+                        nombreCasesAdjacentesNonVide++;
+                    }
                 }
             }
-        }*/
+            
+            return nombreCasesAdjacentesNonVide == 2;
+        }
 }
