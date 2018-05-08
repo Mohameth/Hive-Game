@@ -44,7 +44,7 @@ public class PlateauTest {
      */
     @Test
     public void testGetCase() {
-        System.out.println("getCase");
+       System.out.println("getCase");
         Point3D point = new Point3D(0,0,0);
         Plateau instance = new Plateau();
         Case expResult = instance.getCase(point);
