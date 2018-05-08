@@ -4,6 +4,7 @@ import Modele.Insectes.Insecte;
 import Modele.Insectes.Scarabee;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class Case {
 
@@ -61,6 +62,9 @@ public class Case {
     }
     
 
-        
-        
+    public Point3DH getCoordonnees() {
+        return coordonnees;
+    }
+    
+    
 }

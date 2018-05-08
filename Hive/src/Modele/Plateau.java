@@ -3,7 +3,10 @@ package Modele;
 
 import Modele.Insectes.Insecte;
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public class Plateau {
@@ -37,4 +40,25 @@ public class Plateau {
                 System.err.println("Erreur delete");
             }
         }
+         
+        public Collection<Case> getCasesVoisines(Case c, boolean libreSeulement) {
+            ArrayList<Case> voisins = new ArrayList<>();
+            for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
+                Case voisin = cases.get(pointCourant);
+                if (voisin == null)         voisins.add(new Case(pointCourant)); //Case vide
+                else if (!libreSeulement)   voisins.add(voisin);
+            }
+
+            return voisins;
+        }
+        
+        /*public boolean gateBetween(Case c1, Case c2) {
+            for (Case v1 : this.getCasesVoisines(c1, false)) {
+                if (!v1.equals(c2)) {
+                    if (this.getCasesVoisines(c2, false).contains(v1)) 
+                        
+                    
+                }
+            }
+        }*/
 }
