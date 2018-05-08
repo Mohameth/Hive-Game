@@ -6,16 +6,16 @@ import Modele.Plateau;
 
 public abstract class Insecte {
 
-	Joueur Joueur;
-	Case Case;
+	Joueur joueur;
+	Case emplacement;
         
         public abstract void deplacementPossible(Plateau plateau);
         
 	public abstract void Deplacement();
 
-	public Insecte() {
-		// TODO - implement Insectes.Insectes
-		throw new UnsupportedOperationException();
+	public Insecte(Joueur j) {
+            this.joueur = j;
+            this.emplacement = null;
 	}
 
 }

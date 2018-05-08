@@ -1,8 +1,13 @@
 package Modele.Insectes;
 
+import Modele.Joueur;
 import Modele.Plateau;
 
 public class Reine extends Insecte {
+
+    public Reine(Joueur j) {
+        super(j);
+    }
 
         @Override
 	public void Deplacement() {

@@ -5,27 +5,28 @@ import Modele.Insectes.Insecte;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javafx.geometry.Point3D;
 
 public class Plateau {
 
-	private Map<Point,Case> cases;
+	private Map<Point3D,Case> cases;
 
 	public Plateau() {
-            cases = new HashMap<Point, Case>();
+            cases = new HashMap<Point3D, Case>();
+            Point3D origine = new Point3D(0,0,0);
+            cases.put(origine, new Case(origine));
 	}
         
         
-        public Case getCase(Point point) {
+        public Case getCase(Point3D point) {
             return cases.get(point);
         }
         
-        public boolean caseEstVide(Point point) {
+        public boolean caseEstVide(Point3D point) {
             return cases.get(point).estVide();
         }
         
-        public void ajoutInsecte(Insecte insecte, Point position) {
+        public void ajoutInsecte(Insecte insecte, Point3D position) {
             try {
                 this.getCase(position).addInsecte(insecte);
             } catch (Exception ex) {
@@ -33,7 +34,7 @@ public class Plateau {
             }
         }
         
-         public void deleteInsecte(Insecte insecte, Point position) {
+         public void deleteInsecte(Insecte insecte, Point3D position) {
             try {
                 this.getCase(position).deleteInsecte();
             } catch (Exception ex) {

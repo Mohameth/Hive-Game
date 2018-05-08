@@ -1,8 +1,13 @@
 package Modele.Insectes;
 
+import Modele.Joueur;
 import Modele.Plateau;
 
 public class Sauterelle extends Insecte {
+
+    public Sauterelle(Joueur j) {
+        super(j);
+    }
 
 	public void Deplacement() {
 		// TODO - implement Sauterelle.Deplacement

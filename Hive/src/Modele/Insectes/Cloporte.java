@@ -1,8 +1,13 @@
 package Modele.Insectes;
 
+import Modele.Joueur;
 import Modele.Plateau;
 
 public class Cloporte extends Insecte {
+
+    public Cloporte(Joueur j) {
+        super(j);
+    }
 
 	public void Deplacement() {
 		// TODO - implement Cloporte.Deplacement
