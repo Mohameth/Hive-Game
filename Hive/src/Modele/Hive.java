@@ -35,8 +35,19 @@ public class Hive {
         }
         
         public boolean appartient(Point3D caseCible) {
-            plateau.getCase(caseCible).getInsecte();
-            return true;
+            if (plateau.getCase(caseCible).getInsecte().getJoueur().equals(joueurCourant))
+                return true;
+            
+            return false;
+        }
+        
+        public void selectionInsecte(Point3D caseCible) {
+            plateau.getCase(caseCible).getInsecte().deplacementPossible(plateau);
+        }
+        
+        public void deplacementInsecte(Point3D origine, Point3D cible) {
+            if (!plateau.getCase(origine).estVide())
+                plateau.getCase(origine).getInsecte().Deplacement(plateau, cible);
         }
         
 }

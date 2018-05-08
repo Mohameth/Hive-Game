@@ -2,6 +2,7 @@ package Modele.Insectes;
 
 import Modele.Joueur;
 import Modele.Plateau;
+import Modele.Point3DH;
 
 public class Scarabee extends Insecte {
 
@@ -9,13 +10,14 @@ public class Scarabee extends Insecte {
         super(j);
     }
 
-	public void Deplacement() {
-		// TODO - implement Scarabee.Deplacement
-		throw new UnsupportedOperationException();
-	}
 
     @Override
     public void deplacementPossible(Plateau plateau) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void Deplacement(Plateau plat, Point3DH cible) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

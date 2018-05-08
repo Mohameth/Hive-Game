@@ -3,21 +3,21 @@ package Modele.Insectes;
 import Modele.Joueur;
 import Modele.Case;
 import Modele.Plateau;
+import Modele.Point3DH;
 
 public abstract class Insecte {
 
-	private Joueur joueur;
-	private Case emplacement;
-        
-        public abstract void deplacementPossible(Plateau plateau);
-        
-	public abstract void Deplacement();
+    private Joueur joueur;
+    private Case emplacement;
 
-	public Insecte(Joueur j) {
-            this.joueur = j;
-            this.emplacement = null;
-	}
+    public abstract void deplacementPossible(Plateau plateau);
 
+    public abstract void Deplacement(Plateau plat, Point3DH cible);
+
+    public Insecte(Joueur j) {
+        this.joueur = j;
+        this.emplacement = null;
+    }
     public Joueur getJoueur() {
         return joueur;
     }

@@ -22,9 +22,6 @@ public class Plateau {
             return cases.get(point);
         }
         
-        public boolean caseEstVide(Point3D point) {
-            return cases.get(point).estVide();
-        }
         
         public void ajoutInsecte(Insecte insecte, Point3D position) {
             try {

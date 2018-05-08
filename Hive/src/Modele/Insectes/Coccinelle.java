@@ -2,6 +2,7 @@ package Modele.Insectes;
 
 import Modele.Joueur;
 import Modele.Plateau;
+import Modele.Point3DH;
 
 public class Coccinelle extends Insecte {
 
@@ -9,14 +10,15 @@ public class Coccinelle extends Insecte {
         super(j);
     }
 
-	public void Deplacement() {
-		// TODO - implement Coccinelle.Deplacement
-		throw new UnsupportedOperationException();
-	}
 
     @Override
     public void deplacementPossible(Plateau plateau) {
         //if (plateau.)
+    }
+
+    @Override
+    public void Deplacement(Plateau plat, Point3DH cible) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

@@ -12,12 +12,8 @@ import Vue.Vue;
  *
  * @author firmyn
  */
-<<<<<<< HEAD:Hive/src/hive/HiveMain.java
 public class HiveMain {
 
-=======
-public class Hive {
->>>>>>> 60b5b947e518af3a4caa832e1f5f729d218cdd9f:Hive/src/hive/Hive.java
     /**
      * @param args the command line arguments
      */
