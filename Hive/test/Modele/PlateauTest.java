@@ -6,7 +6,6 @@
 package Modele;
 
 import Modele.Insectes.Insecte;
-import javafx.geometry.Point3D;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -45,7 +44,7 @@ public class PlateauTest {
     @Test
     public void testGetCase() {
        System.out.println("getCase");
-        Point3D point = new Point3D(0,0,0);
+        Point3DH point = new Point3DH(0,0,0);
         Plateau instance = new Plateau();
         Case expResult = instance.getCase(point);
         Case result = instance.getCase(point);

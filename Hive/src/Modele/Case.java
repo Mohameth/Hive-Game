@@ -27,7 +27,7 @@ public class Case {
 
     public void addInsecte(Insecte insecte) throws Exception {
         if (!this.estVide() && !(insecte instanceof Scarabee)) throw new Exception("Ajout impossible sur case non vide");
-
+        if (this.insectes.size() == 5) throw new Exception("Ajout impossible -> 5 insectes maximum");
         this.insectes.add(insecte);
     }
 
@@ -57,6 +57,7 @@ public class Case {
     }
     
     public Insecte getInsecteOnTop() {
+        if (this.insectes.isEmpty()) return null;
         return this.insectes.get(this.insectes.size()-1);
     }
     
