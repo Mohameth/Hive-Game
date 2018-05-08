@@ -18,12 +18,12 @@ public class Plateau {
 	}
         
         
-        public Case getCase(Point3D point) {
+        public Case getCase(Point3DH point) {
             return cases.get(point);
         }
         
         
-        public void ajoutInsecte(Insecte insecte, Point3D position) {
+        public void ajoutInsecte(Insecte insecte, Point3DH position) {
             try {
                 this.getCase(position).addInsecte(insecte);
             } catch (Exception ex) {
@@ -31,7 +31,7 @@ public class Plateau {
             }
         }
         
-         public void deleteInsecte(Insecte insecte, Point3D position) {
+         public void deleteInsecte(Insecte insecte, Point3DH position) {
             try {
                 this.getCase(position).deleteInsecte();
             } catch (Exception ex) {
