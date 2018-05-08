@@ -61,7 +61,7 @@ public class Point3DH {
         this.z = z+dz;
     }
 
-    public Collection<Point3DH> coordonneesVoisins() {
+    public Collection<Point3DH> coordonneesVoisins() { //Voisins en sens horaire en partant du haut (face plate)
         ArrayList<Point3DH> resultat = new ArrayList<>();
         resultat.add(new Point3DH(this.x, this.y+1, this.z-1));
         resultat.add(new Point3DH(this.x+1, this.y, this.z-1));

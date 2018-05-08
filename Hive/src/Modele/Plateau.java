@@ -32,7 +32,7 @@ public class Plateau {
         
          public void deleteInsecte(Insecte insecte, Point3DH position) {
             try {
-                this.getCase(position).deleteInsecte();
+                this.getCase(position).removeInsecte();
             } catch (Exception ex) {
                 System.err.println("Erreur delete");
             }

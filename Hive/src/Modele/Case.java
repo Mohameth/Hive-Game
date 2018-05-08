@@ -1,79 +1,65 @@
 package Modele;
 
 import Modele.Insectes.Insecte;
+import Modele.Insectes.Scarabee;
 import java.awt.Point;
+import java.util.ArrayList;
 
 public class Case {
 
-    private Insecte insecte;
-    private Insecte insecteParDessus;
+    private ArrayList<Insecte> insectes;
     private Point3DH coordonnees;
 
     public Case(Point3DH p, Insecte insecte) {
-        this.insecte = insecte;
-        this.insecteParDessus = null;
+        this.insectes = new ArrayList<>();
+        this.insectes.add(insecte);
         this.coordonnees = p;
     }
     
     public Case(Point3DH p) {
         this.coordonnees = p;
-        this.insecte = null;
-        this.insecteParDessus = null;
+        this.insectes = new ArrayList<>();
     }
 
     public boolean estVide() {
-        return insecte == null;
+        return this.insectes.isEmpty();
     }
 
     public void addInsecte(Insecte insecte) throws Exception {
-        if (!this.estVide()) throw new Exception("Ajout impossible sur case non vide");
+        if (!this.estVide() && !(insecte instanceof Scarabee)) throw new Exception("Ajout impossible sur case non vide");
 
-        this.insecte = insecte;
+        this.insectes.add(insecte);
     }
 
-    public void addInsecteOnTop(Insecte insecte) throws Exception {
-        if (this.estVide() || insecteParDessus != null) throw new Exception("Ajout par dessus impossible");
-
-        this.insecteParDessus = insecte;
-    }
     
-    public void deleteInsecte() {
-        this.insecte = null;
-    }
-    
-    public void deleteInsecteOnTop() {
-        this.insecteParDessus = null;
+    public void removeInsecte() throws Exception{
+        if (this.estVide()) throw new Exception("Retrait impossible sur case vide");
+        
+        Insecte i = this.insectes.get(this.insectes.size()-1);
+        this.insectes.remove(i);
     }
     
     public boolean insecteBloque(Insecte insecte) throws Exception {
         if (this.estVide()) throw new Exception("Case vide");
         
-        if (insecte == this.insecte && this.insecteParDessus != null)
-            return true;
         
-        if (this.insecte ==  insecte && this.insecteParDessus == null)
-            return true;
-        
-        if (this.insecteParDessus == insecte)
-            return true;
-        
-        if (insecte != this.insecte && insecte != this.insecteParDessus)
+        if (!this.insectes.contains(insecte))
             throw new Exception("Cet insecte n'est pas sur cette case");
+        
+        if(this.insectes.contains(insecte) && !this.insectes.get(this.insectes.size()-1).equals(insecte))
+            return true;
         
         return false;
     }
-    
-    
-    /* GETTER & SETTER */
-    public Insecte getInsecte() {
-        if (this.insecteParDessus == null)
-            return this.insecte;
-        return this.insecteParDessus;
-    }
 
-    public Insecte getInsecteParDessus() {
-        return insecteParDessus;
+    public ArrayList<Insecte> getInsectes() {
+        return insectes;
     }
+    
+    public Insecte getInsecteOnTop() {
+        return this.insectes.get(this.insectes.size()-1);
+    }
+    
 
         
         
