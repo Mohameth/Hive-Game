@@ -5,9 +5,8 @@ import javafx.geometry.Point3D;
 public class JoueurIA extends Joueur {
 
 
-    public JoueurIA() {
-            // TODO - implement JoueurIA.JoueurIA
-            throw new UnsupportedOperationException();
+    public JoueurIA(Plateau p) {
+            super(p);
     }
 
     @Override

@@ -9,7 +9,7 @@ package hive;
  *
  * @author firmyn
  */
-public class Hive {
+public class HiveMain {
 
     /**
      * @param args the command line arguments

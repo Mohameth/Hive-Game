@@ -18,4 +18,22 @@ public abstract class Insecte {
             this.emplacement = null;
 	}
 
+    public Joueur getJoueur() {
+        return joueur;
+    }
+
+    public void setJoueur(Joueur joueur) {
+        this.joueur = joueur;
+    }
+
+    public Case getEmplacement() {
+        return emplacement;
+    }
+
+    public void setEmplacement(Case emplacement) {
+        this.emplacement = emplacement;
+    }
+        
+        
+
 }

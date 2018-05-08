@@ -6,9 +6,8 @@ import javafx.geometry.Point3D;
 public class JoueurHumain extends Joueur {
 
 
-    public JoueurHumain() {
-            // TODO - implement JoueurHumain.JoueurHumain
-            throw new UnsupportedOperationException();
+    public JoueurHumain(Plateau p) {
+            super(p);
     }
 
     @Override

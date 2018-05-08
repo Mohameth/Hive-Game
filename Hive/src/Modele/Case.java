@@ -67,7 +67,9 @@ public class Case {
     
     /* GETTER & SETTER */
     public Insecte getInsecte() {
-        return insecte;
+        if (this.insecteParDessus == null)
+            return this.insecte;
+        return this.insecteParDessus;
     }
 
     public void setInsecte(Insecte insecte) {
