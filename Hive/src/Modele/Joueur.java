@@ -14,7 +14,7 @@ public abstract class Joueur {
 
 	public Joueur() {
 		// TODO - implement Joueur.Joueur
-		throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException();
 	}
 
 }
