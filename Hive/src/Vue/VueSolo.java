@@ -51,6 +51,7 @@ public class VueSolo extends Vue {
         vb2.getChildren().addAll(tc,rWhite,rBlack);
 
         Button bBack = new Button("back");
+        bBack.setAlignment(Pos.CENTER);
 
         bBack.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             SceneMain(primaryStage);
@@ -77,8 +78,10 @@ public class VueSolo extends Vue {
         BorderPane b = new BorderPane();
         b.setTop(vb);
 
-        Scene s = new Scene(b,width,heigth);
+        Scene s = new Scene(b,primaryStage.getWidth(),primaryStage.getHeight());
         s.getStylesheets().add("Vue/button.css");
+        b.prefHeightProperty().bind(s.heightProperty());
+        b.prefWidthProperty().bind(s.widthProperty());
         primaryStage.setScene(s);
         primaryStage.show();
     }

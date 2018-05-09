@@ -19,13 +19,14 @@ public class VueMenuPrincipal extends Vue {
     VueMenuPrincipal(Stage primaryStage){
 
         Group root = new Group();
-        Scene scene = new Scene(root, width, heigth);
+        Scene scene = new Scene(root, primaryStage.getWidth(),primaryStage.getHeight());
+        scene.getStylesheets().add("Vue/button.css");
 
         Text t = new Text("Hive");
-        t.setFont(Font.font(100));
+        t.setFont(Font.font(100.0));
+
         BorderPane bp = new BorderPane();
         bp.setCenter(t);
-        scene.getStylesheets().add("Vue/button.css");
 
         Button solo = new Button();
         solo.setText("Solo");
@@ -47,6 +48,10 @@ public class VueMenuPrincipal extends Vue {
         setting.setText("Paramètres");
         setting.setMaxWidth(200.0);
 
+        setting.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            SceneSettings(primaryStage);
+        });
+
         Button quit = new Button();
         quit.setText("Quitter");
         quit.setMaxWidth(200.0);
@@ -63,8 +68,6 @@ public class VueMenuPrincipal extends Vue {
         vb.getChildren().addAll(setting,quit);
 
         GridPane g = new GridPane();
-        g.setMinWidth(width);
-        g.setMinHeight(heigth);
         //ImageView fond = new ImageView(new Image("sample/hive.jpeg"));
         for (int column = 0; column < NB_COL; column++) {
             g.getColumnConstraints().add(new ColumnConstraints(5, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, HPos.CENTER, true));
@@ -74,6 +77,8 @@ public class VueMenuPrincipal extends Vue {
             g.getRowConstraints().add(new RowConstraints(5, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, VPos.CENTER, true));
         }
 
+        g.prefHeightProperty().bind(scene.heightProperty());
+        g.prefWidthProperty().bind(scene.widthProperty());
         //g.add(fond,0,0,5,5);
         g.add(bp,0,0,5,1);
         g.add(vb,4,2,1,5);
