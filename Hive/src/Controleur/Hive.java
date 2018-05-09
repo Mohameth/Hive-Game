@@ -1,5 +1,11 @@
-package Modele;
+package Controleur;
 
+import Modele.Joueur;
+import Modele.JoueurHumain;
+import Modele.JoueurIA;
+import Modele.Plateau;
+import Modele.Point3DH;
+import Vue.Vue;
 import javafx.geometry.Point3D;
 
 public class Hive {
@@ -9,8 +15,9 @@ public class Hive {
         Joueur joueur2;
         Joueur joueurCourant;
 
-	public Hive() {
+	public Hive(String[] args) {
 		this.plateau = new Plateau();
+                Vue.initFenetre(args, this);
 	}
         
         public void setJoueurs(int cas){
