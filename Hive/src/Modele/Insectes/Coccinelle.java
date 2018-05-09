@@ -1,8 +1,10 @@
 package Modele.Insectes;
 
+import Modele.Case;
 import Modele.Joueur;
 import Modele.Plateau;
 import Modele.Point3DH;
+import java.util.Collection;
 
 public class Coccinelle extends Insecte {
 
@@ -12,8 +14,9 @@ public class Coccinelle extends Insecte {
 
 
     @Override
-    public void deplacementPossible(Plateau plateau) {
+    public Collection<Case> deplacementPossible(Plateau plateau) {
         //if (plateau.)
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

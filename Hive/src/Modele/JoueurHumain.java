@@ -1,6 +1,8 @@
 
 package Modele;
 
+import Modele.Insectes.Insecte;
+
 
 public class JoueurHumain extends Joueur {
 
@@ -10,8 +12,12 @@ public class JoueurHumain extends Joueur {
     }
 
     @Override
-    public boolean coup(Point3DH p) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean coup(Insecte insecte, Point3DH cible) {
+        if (this.pions.contains(insecte) && insecte.deplacementPossible(plateau).contains(this.plateau.getCase(cible))) {
+            insecte.Deplacement(plateau, cible);
+            return true;
+        }
+        return false;
     }
 
 }

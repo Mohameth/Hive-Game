@@ -1,8 +1,10 @@
 package Modele.Insectes;
 
+import Modele.Case;
 import Modele.Joueur;
 import Modele.Plateau;
 import Modele.Point3DH;
+import java.util.Collection;
 
 public class Moustique extends Insecte {
 
@@ -13,7 +15,7 @@ public class Moustique extends Insecte {
 
     
     @Override
-    public void deplacementPossible(Plateau plateau) {
+    public Collection<Case> deplacementPossible(Plateau plateau) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

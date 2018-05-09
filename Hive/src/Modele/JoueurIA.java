@@ -1,5 +1,7 @@
 package Modele;
 
+import Modele.Insectes.Insecte;
+
 
 public class JoueurIA extends Joueur {
 
@@ -9,7 +11,7 @@ public class JoueurIA extends Joueur {
     }
 
     @Override
-    public boolean coup(Point3DH p) {
+    public boolean coup(Insecte insecte, Point3DH cible) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

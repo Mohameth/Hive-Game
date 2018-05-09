@@ -5,6 +5,7 @@ import Modele.Insectes.Scarabee;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 public class Case {
 
@@ -47,7 +48,7 @@ public class Case {
         if (!this.insectes.contains(insecte))
             throw new Exception("Cet insecte n'est pas sur cette case");
         
-        if(this.insectes.contains(insecte) && !this.insectes.get(this.insectes.size()-1).equals(insecte))
+        if(this.insectes.contains(insecte) && !this.getInsecteOnTop().equals(insecte))
             return true;
         
         return false;
@@ -66,6 +67,31 @@ public class Case {
     public Point3DH getCoordonnees() {
         return coordonnees;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        
+        return ((Case) obj).getCoordonnees().equals(this.getCoordonnees());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 71 * hash + Objects.hashCode(this.insectes);
+        hash = 71 * hash + Objects.hashCode(this.coordonnees);
+        return hash;
+    }
+    
+    
     
     
 }

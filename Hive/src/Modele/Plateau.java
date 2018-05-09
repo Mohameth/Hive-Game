@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 
 public class Plateau {
 
@@ -22,6 +23,7 @@ public class Plateau {
         
         
         public Case getCase(Point3DH point) {
+            if (cases.get(point) == null) cases.put(point, new Case(point));
             return cases.get(point);
         }
         
@@ -46,19 +48,47 @@ public class Plateau {
             ArrayList<Case> voisins = new ArrayList<>();
             for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
                 Case voisin = cases.get(pointCourant);
-                if (voisin == null)         voisins.add(new Case(pointCourant)); //Case vide
+                if (voisin == null)         voisins.add(new Case(pointCourant)); //Case vide (Pas sûr que ce soit utile cohérent)
                 else if (!libreSeulement)   voisins.add(voisin);
             }
 
             return voisins;
         }
         
-        public boolean rucheBrisee() { //Tester aussi avec un compteur de changements
-            int i = 0; Case c = (Case) this.cases.values().toArray()[i];
-            while(c.estVide()) {
-                i++;
-                c = (Case) this.cases.values().toArray()[i];
+        public Collection<Case> getCasesVoisinesOccupees(Case c) {
+            ArrayList<Case> voisins = new ArrayList<>();
+            for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
+                Case voisin = cases.get(pointCourant);
+                if (!voisin.estVide())   voisins.add(voisin);
             }
+
+            return voisins;
+        }
+        
+        public boolean gateBetween(Case c1, Case c2) {
+            int nombreCasesAdjacentesNonVide = 0;
+            Collection<Case> voisinsC1 = getCasesVoisines(c1, false); voisinsC1.remove(c2);
+            Collection<Case> voisinsC2 = getCasesVoisines(c2, false); voisinsC2.remove(c1);
+            
+            int x = 0;
+            for (Case v1 : voisinsC1) {
+                if (voisinsC2.contains(v1)) {
+                    if (!v1.estVide()) {
+                        nombreCasesAdjacentesNonVide++;
+                    }
+                }
+            }
+            
+            return nombreCasesAdjacentesNonVide == 2;
+        }
+                
+        public boolean rucheBrisee() { //Tester aussi avec un compteur de changements
+            Object[] listeCases; Case c; int i = 0; 
+            listeCases = this.cases.values().toArray();
+            do {
+                c = (Case)listeCases[i];
+                i++;
+            } while (c.estVide());
             
             
             ArrayList<Case> visites = new ArrayList<>();
@@ -67,7 +97,7 @@ public class Plateau {
             file.add(c);
             while (!file.isEmpty()) {
                 Case courante = file.pollFirst();
-                ArrayList<Case> voisins = (ArrayList<Case>) getCasesVoisines(courante, false);
+                ArrayList<Case> voisins = (ArrayList<Case>) getCasesVoisinesOccupees(courante);
                 for (Case caseC : voisins) {
                     if (!visites.contains(c))
                         visites.add(caseC);
@@ -79,13 +109,16 @@ public class Plateau {
             
             return true;
         }
-        /*public boolean gateBetween(Case c1, Case c2) {
-            for (Case v1 : this.getCasesVoisines(c1, false)) {
-                if (!v1.equals(c2)) {
-                    if (this.getCasesVoisines(c2, false).contains(v1)) 
-                        
-                    
-                }
-            }
-        }*/
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 37 * hash + Objects.hashCode(this.cases);
+        return hash;
+    }
+
+        
+        
+        
+        
 }
