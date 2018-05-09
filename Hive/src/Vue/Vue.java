@@ -13,6 +13,8 @@ public class Vue extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         primaryStage.setTitle("Hive");
+        primaryStage.setMinHeight(heigth);
+        primaryStage.setMinWidth(width);
         SceneMain(primaryStage);
     }
 
@@ -27,6 +29,8 @@ public class Vue extends Application {
     protected void SceneTerrain(Stage primaryStage){
         new VueTerrain(primaryStage);
     }
+
+    protected void SceneSettings(Stage primaryStage){ new VueSettings(primaryStage);}
 
     public static void initFenetre(String[] args, Hive c) {
         controleur = c;

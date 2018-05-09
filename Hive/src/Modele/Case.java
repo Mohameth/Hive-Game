@@ -5,6 +5,7 @@ import Modele.Insectes.Scarabee;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 public class Case {
 
@@ -81,6 +82,16 @@ public class Case {
         
         return ((Case) obj).getCoordonnees().equals(this.getCoordonnees());
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 71 * hash + Objects.hashCode(this.insectes);
+        hash = 71 * hash + Objects.hashCode(this.coordonnees);
+        return hash;
+    }
+    
+    
     
     
 }

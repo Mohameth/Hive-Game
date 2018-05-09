@@ -1,5 +1,6 @@
 package Controleur;
 
+import Modele.Insectes.Insecte;
 import Modele.Joueur;
 import Modele.JoueurHumain;
 import Modele.JoueurIA;
@@ -60,7 +61,7 @@ public class Hive {
             
         }
         
-        public void placementInsecte() {
+        public void placementInsecte(Insecte insecte) {
             
         }
         

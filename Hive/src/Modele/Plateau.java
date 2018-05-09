@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 
 public class Plateau {
 
@@ -108,6 +109,16 @@ public class Plateau {
             
             return true;
         }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 37 * hash + Objects.hashCode(this.cases);
+        return hash;
+    }
+
+        
+        
         
         
 }
