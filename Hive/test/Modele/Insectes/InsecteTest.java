@@ -50,8 +50,7 @@ public class InsecteTest {
 
     
     /**
-     * TODO : Put into other test file Test of deplacementPossible method, of
-     * class Reine.
+     *  Test des déplacements de la reine
      */
     @Test
     public void testDeplacementReine() {
@@ -68,6 +67,7 @@ public class InsecteTest {
         ArrayList<Case> result = new ArrayList<>();
         result.addAll(r.deplacementPossible(instance));
 
+        System.out.println("test avec tout les voisin libre :");
         ArrayList<Point3DH> expected = new ArrayList<>();
         expected.add(new Point3DH(0, +1, -1));
         expected.add(new Point3DH(+1, 0, -1));
@@ -77,7 +77,9 @@ public class InsecteTest {
         expected.add(new Point3DH(-1, +1, 0));
 
         arrayCorresponds(result, expected);
-
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("test avec 2 case occupé et 1 case inaccessible :");
         //TEST GATE
         ArrayList<Point3DH> expectedWithGate = new ArrayList<>();
         //expectedWithGate.add(new Point3DH(0, +1, -1)); //--> Case occupe
@@ -94,13 +96,15 @@ public class InsecteTest {
             caseOccupe1.addInsecte(new Fourmi(j1));
             caseOccupe2.addInsecte(new Fourmi(j1));
         } catch (Exception ex) {
-            fail();
+            fail("exception anormal");
         }
 
         result = new ArrayList<>();
         result.addAll(r.deplacementPossible(instance));
 
         arrayCorresponds(result, expectedWithGate);
+        
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
     }
 
