@@ -15,7 +15,7 @@ public class Reine extends Insecte {
 
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
-        return getVoisinsAccessible(plateau);
+        return plateau.getCasesVoisinesSansGates(this.getEmplacement(), true);
     }
 
     /*@Override
