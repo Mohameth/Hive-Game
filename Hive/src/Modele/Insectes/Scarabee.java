@@ -11,22 +11,10 @@ public class Scarabee extends Insecte {
     public Scarabee(Joueur j) {
         super(j);
     }
-
-    @Override
-    protected Collection<Case> getVoisinsAccessible(Plateau plateau) {
-        Collection<Case> dep = plateau.getCasesVoisines(getEmplacement(), false);
-        for (Case c : plateau.getCasesVoisines(getEmplacement(), false)) {
-            if (plateau.gateBetween(getEmplacement(), c)) {
-                dep.remove(c);
-            } 
-        }
-
-        return dep;
-    }
     
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
-        return getVoisinsAccessible(plateau);
+        return plateau.getCasesVoisinesSansGates(this.getEmplacement(), false);
     }
 
     /*@Override
