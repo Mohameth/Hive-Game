@@ -3,14 +3,15 @@ package Vue;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -21,19 +22,22 @@ import javafx.stage.Stage;
 import java.util.Optional;
 
 public class VueTerrain extends Vue {
-    Group root;
+    private Group root;
+    private Stage primaryStage;
 
     VueTerrain(Stage primaryStage){
+        this.primaryStage = primaryStage;
         root = new Group();
         BorderPane b = new BorderPane();
         b.setTop(getHudHaut());
         b.setBottom(getHudBas());
         b.setRight(getHudDroite());
         b.setLeft(getHudGauche());
-        b.setMinSize(width,heigth);
 
         root.getChildren().add(b);
-        Scene s = new Scene(root,width,heigth);
+        Scene s = new Scene(root,primaryStage.getWidth(),primaryStage.getHeight());
+        b.prefWidthProperty().bind(s.widthProperty());
+        b.prefHeightProperty().bind(s.heightProperty());
         primaryStage.setScene(s);
         primaryStage.show();
     }
@@ -216,25 +220,57 @@ public class VueTerrain extends Vue {
         t.setFont(Font.font(60));
         t.setStyle("-fx-fill: white;\n");
         Button bResume = new Button("Resume");
+        bResume.setMaxWidth(200);
         Button bRules = new Button("Rules");
+        bRules.setMaxWidth(200);
         Button bRestart = new Button("Restart");
+        bRestart.setMaxWidth(200);
         Button bSettings = new Button("Settings");
+        bSettings.setMaxWidth(200);
         Button bMain = new Button("Back main menu");
+        bMain.setMaxWidth(200);
         Button bQuit = new Button("Quit");
+        bQuit.setMaxWidth(200);
 
         VBox menu = new VBox();
         menu.getChildren().addAll(t,bResume,bRules,bRestart,bSettings,bMain,bQuit);
-
-        BorderPane b = new BorderPane();
-        b.setCenter(menu);
-        b.setMinSize(width,heigth);
-        b.getStylesheets().add("Vue/button.css");
-        BorderPane.setAlignment(menu,Pos.CENTER);
+        menu.setMinSize(width,heigth);
+        menu.setAlignment(Pos.CENTER);
+        menu.setSpacing(10);
+        menu.getStylesheets().add("Vue/button.css");
 
         bResume.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            root.getChildren().removeAll(b,r);
+            root.getChildren().removeAll(menu,r);
         });
 
-        root.getChildren().addAll(r,b);
+        bMain.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation Dialog");
+            alert.setHeaderText("Do you want back to main menu ?");
+            ButtonType buttonTypeYes = new ButtonType("Yes");
+            ButtonType buttonTypeNo = new ButtonType("No");
+            alert.getButtonTypes().setAll(buttonTypeYes,buttonTypeNo);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == buttonTypeYes){
+                new VueMenuPrincipal(this.primaryStage);
+            }
+        });
+
+        bQuit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation Dialog");
+            alert.setHeaderText("Do you want quit the game ?");
+            ButtonType buttonTypeYes = new ButtonType("Yes");
+            ButtonType buttonTypeNo = new ButtonType("No");
+            alert.getButtonTypes().setAll(buttonTypeYes,buttonTypeNo);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == buttonTypeYes){
+                System.exit(0);
+            }
+        });
+
+        root.getChildren().addAll(r,menu);
     }
 }
