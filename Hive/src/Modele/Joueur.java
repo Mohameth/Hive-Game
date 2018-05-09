@@ -15,5 +15,7 @@ public abstract class Joueur {
 		this.plateau = p;
                 this.pions = new ArrayList<>(); //On rentrera tous les pions ici
         }
+        
+        
 
 }

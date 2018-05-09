@@ -5,6 +5,7 @@ import Modele.Case;
 import Modele.Plateau;
 import Modele.Point3DH;
 import java.util.Collection;
+import java.util.Objects;
 
 public abstract class Insecte {
 
@@ -19,6 +20,7 @@ public abstract class Insecte {
         this.joueur = j;
         this.emplacement = null;
     }
+    
     public Joueur getJoueur() {
         return joueur;
     }
@@ -45,6 +47,13 @@ public abstract class Insecte {
         }
 
         return dep;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 97 * hash + Objects.hashCode(this.emplacement);
+        return hash;
     }
 
 }
