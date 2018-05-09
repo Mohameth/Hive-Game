@@ -79,6 +79,7 @@ public class PlateauTest {
         System.out.println("Test getCasesVoisines ======================>\n");
         Point3DH orig = new Point3DH(0,0,0);
         Plateau instance = new Plateau();
+        Reine reine = new Reine(new JoueurHumain(instance));
         
         System.out.println("test avec l'origine, libre ou non :");
         ArrayList<Case> expected = new ArrayList<>();
@@ -90,6 +91,37 @@ public class PlateauTest {
         expected.add(new Case(orig.voisinHaut()));
         
         ArrayList<Case> res = (ArrayList<Case>) instance.getCasesVoisines(new Case(orig), false);
+        
+        arrayCorresponds(res,expected);
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("test avec l'origine, libre seulement (tout est libre, case du haut crée) :");
+        expected = new ArrayList<>();
+        expected.add(new Case(orig.voisinBas()));
+        expected.add(new Case(orig.voisinDroiteBas()));
+        expected.add(new Case(orig.voisinDroiteHaut()));
+        expected.add(new Case(orig.voisinGaucheBas()));
+        expected.add(new Case(orig.voisinGaucheHaut()));
+        expected.add(new Case(orig.voisinHaut()));
+        
+        instance.getCase(orig.voisinHaut());
+        
+        res = (ArrayList<Case>) instance.getCasesVoisines(new Case(orig), true);
+        
+        arrayCorresponds(res,expected);
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("test avec l'origine, libre seulement (haut et bas occupé) :");
+        expected = new ArrayList<>();
+        expected.add(new Case(orig.voisinDroiteBas()));
+        expected.add(new Case(orig.voisinDroiteHaut()));
+        expected.add(new Case(orig.voisinGaucheBas()));
+        expected.add(new Case(orig.voisinGaucheHaut()));
+        
+        instance.ajoutInsecte(reine, orig.voisinHaut());
+        instance.ajoutInsecte(reine, orig.voisinBas());
+        
+        res = (ArrayList<Case>) instance.getCasesVoisines(new Case(orig), true);
         
         arrayCorresponds(res,expected);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
@@ -107,4 +139,66 @@ public class PlateauTest {
         assertTrue(Expected.isEmpty());
     }
 
+    
+     /**
+     * Test of getCasesVoisinesOccupees method, of class Plateau.
+     */
+    @Test
+    public void testGetCasesVoisinesOccupees() {
+        System.out.println("=============================================");
+        System.out.println("Test getCasesVoisinesOccupees ==============>\n");
+        
+        Point3DH orig = new Point3DH(0,0,0);
+        Plateau instance = new Plateau();
+        Reine reine = new Reine(new JoueurHumain(instance));
+        
+        System.out.println("test avec l'origine, haut et bas occupé :");
+        ArrayList<Case> expected = new ArrayList<>();
+        expected.add(new Case(orig.voisinBas()));
+        expected.add(new Case(orig.voisinHaut()));
+        
+        instance.ajoutInsecte(reine, orig.voisinBas());
+        instance.ajoutInsecte(reine, orig.voisinHaut());
+        
+        ArrayList<Case> res = (ArrayList<Case>) instance.getCasesVoisinesOccupees(new Case(orig));
+        
+        arrayCorresponds(res,expected);
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("test avec l'origine, tout est occupé :");
+        expected = new ArrayList<>();
+        expected.add(new Case(orig.voisinBas()));
+        expected.add(new Case(orig.voisinDroiteBas()));
+        expected.add(new Case(orig.voisinDroiteHaut()));
+        expected.add(new Case(orig.voisinGaucheBas()));
+        expected.add(new Case(orig.voisinGaucheHaut()));
+        expected.add(new Case(orig.voisinHaut()));
+        
+        instance.ajoutInsecte(reine, orig.voisinDroiteBas());
+        instance.ajoutInsecte(reine, orig.voisinDroiteHaut());
+        instance.ajoutInsecte(reine, orig.voisinGaucheBas());
+        instance.ajoutInsecte(reine, orig.voisinGaucheHaut());
+        
+        res = (ArrayList<Case>) instance.getCasesVoisinesOccupees(new Case(orig));
+        
+        arrayCorresponds(res,expected);
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("test avec l'origine, tout est libre :");
+        expected = new ArrayList<>();
+        
+        instance.deleteInsecte(reine, orig.voisinHaut());
+        instance.deleteInsecte(reine, orig.voisinGaucheHaut());
+        instance.deleteInsecte(reine, orig.voisinGaucheBas());
+        instance.deleteInsecte(reine, orig.voisinDroiteHaut());
+        instance.deleteInsecte(reine, orig.voisinDroiteBas());
+        instance.deleteInsecte(reine, orig.voisinBas());
+        
+        res = (ArrayList<Case>) instance.getCasesVoisinesOccupees(new Case(orig));
+        
+        arrayCorresponds(res,expected);
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("");
+    }
 }

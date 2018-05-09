@@ -58,7 +58,7 @@ public class Plateau {
         public Collection<Case> getCasesVoisinesOccupees(Case c) {
             ArrayList<Case> voisins = new ArrayList<>();
             for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
-                Case voisin = cases.get(pointCourant);
+                Case voisin = this.getCase(pointCourant);
                 if (!voisin.estVide())   voisins.add(voisin);
             }
 
@@ -70,7 +70,6 @@ public class Plateau {
             Collection<Case> voisinsC1 = getCasesVoisines(c1, false); voisinsC1.remove(c2);
             Collection<Case> voisinsC2 = getCasesVoisines(c2, false); voisinsC2.remove(c1);
             
-            int x = 0;
             for (Case v1 : voisinsC1) {
                 if (voisinsC2.contains(v1)) {
                     if (!v1.estVide()) {
