@@ -5,7 +5,7 @@
  */
 package hive;
 
-import Controleur.Controleur;
+import Controleur.Hive;
 import Vue.Vue;
 
 /**
@@ -18,7 +18,7 @@ public class HiveMain {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Controleur hive = new Controleur(args);
+        Hive hive = new Hive(args);
     }
     
 }

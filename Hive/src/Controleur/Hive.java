@@ -1,5 +1,11 @@
-package Modele;
+package Controleur;
 
+import Modele.Joueur;
+import Modele.JoueurHumain;
+import Modele.JoueurIA;
+import Modele.Plateau;
+import Modele.Point3DH;
+import Vue.Vue;
 import javafx.geometry.Point3D;
 
 public class Hive {
@@ -9,8 +15,9 @@ public class Hive {
         Joueur joueur2;
         Joueur joueurCourant;
 
-	public Hive() {
+	public Hive(String[] args) {
 		this.plateau = new Plateau();
+                Vue.initFenetre(args, this);
 	}
         
         public void setJoueurs(int cas){
@@ -46,8 +53,21 @@ public class Hive {
         }
         
         public void deplacementInsecte(Point3DH origine, Point3DH cible) {
-            if (!plateau.getCase(origine).estVide())
-                plateau.getCase(origine).getInsecteOnTop().Deplacement(plateau, cible);
+            if (!plateau.getCase(origine).estVide() && appartient(origine)) {
+                joueurCourant.coup(plateau.getCase(origine).getInsecteOnTop(),cible);
+                this.joueurSuivant();
+            }
+            
         }
         
+        public void placementInsecte() {
+            
+        }
+        
+        private void joueurSuivant() {
+            if (joueurCourant.equals(this.joueur1))
+                this.joueurCourant = this.joueur2;
+            else if (joueurCourant.equals(this.joueur2))
+                this.joueurCourant = this.joueur1;
+        }
 }
