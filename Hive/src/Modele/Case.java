@@ -47,7 +47,7 @@ public class Case {
         if (!this.insectes.contains(insecte))
             throw new Exception("Cet insecte n'est pas sur cette case");
         
-        if(this.insectes.contains(insecte) && !this.insectes.get(this.insectes.size()-1).equals(insecte))
+        if(this.insectes.contains(insecte) && !this.getInsecteOnTop().equals(insecte))
             return true;
         
         return false;
