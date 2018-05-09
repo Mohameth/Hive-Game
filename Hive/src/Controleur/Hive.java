@@ -15,10 +15,12 @@ public class Hive {
 	Joueur joueur1;
         Joueur joueur2;
         Joueur joueurCourant;
+        int nbtours;
 
 	public Hive(String[] args) {
 		this.plateau = new Plateau();
                 Vue.initFenetre(args, this);
+                this.nbtours = 0;
 	}
         
         public void setJoueurs(int cas){

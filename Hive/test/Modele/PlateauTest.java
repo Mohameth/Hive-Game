@@ -265,12 +265,12 @@ public class PlateauTest {
         assertFalse(instance.rucheBrisee());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
-        System.out.println("test sur une ruche avec deux insectes colé :");
+        System.out.println("test sur une ruche avec deux insectes collés :");
         instance.ajoutInsecte(reine, orig.voisinBas());
         assertFalse(instance.rucheBrisee());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
-        System.out.println("test sur une ruche avec deux insectes non colé :");
+        System.out.println("test sur une ruche avec deux insectes non collés :");
         instance.deleteInsecte(reine, orig.voisinBas());
         instance.ajoutInsecte(reine, orig.voisinBas().voisinBas());
         assertTrue(instance.rucheBrisee());

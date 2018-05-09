@@ -13,11 +13,13 @@ import java.util.Objects;
 public class Plateau {
 
     private Map<Point3DH, Case> cases;
+    private int nbPionsEnJeu;
 
     public Plateau() {
         cases = new HashMap<Point3DH, Case>();
         Point3DH origine = new Point3DH(0, 0, 0);
         cases.put(origine, new Case(origine));
+        this.nbPionsEnJeu = 0; //Peut-être à remplacer par une méthode
     }
 
     public Case getCase(Point3DH point) {
@@ -30,11 +32,21 @@ public class Plateau {
     public void ajoutInsecte(Insecte insecte, Point3DH position) {
         try {
             this.getCase(position).addInsecte(insecte);
+            this.nbPionsEnJeu++;
         } catch (Exception ex) {
             System.err.println("Erreur ajout");
         }
     }
 
+    public boolean rucheVide() {
+        Object[] cases = this.cases.values().toArray();
+        for (int i = 0; i < this.cases.size(); i++) {
+            Case c = (Case) cases[i];
+            if (!c.estVide()) return false;
+        }
+        return true;
+    }
+    
     public void deleteInsecte(Insecte insecte, Point3DH position) {
         try {
             this.getCase(position).removeInsecte();
@@ -86,6 +98,8 @@ public class Plateau {
     }
 
     public boolean rucheBrisee() { //Tester aussi avec un compteur de changements
+        if (this.rucheVide()) return false;
+        
         Object[] listeCases;
         Case c;
         int i = 0;
@@ -103,13 +117,14 @@ public class Plateau {
             Case courante = file.pollFirst();
             ArrayList<Case> voisins = (ArrayList<Case>) getCasesVoisinesOccupees(courante);
             for (Case caseC : voisins) {
-                if (!visites.contains(c)) {
+                if (!visites.contains(caseC)) {
                     visites.add(caseC);
+                    file.addLast(caseC);
                 }
-                file.addLast(caseC);
+                
             }
         }
-        if (visites.size() == this.cases.size()) {
+        if (visites.size() == this.nbPionsEnJeu) {
             return false;
         }
 
