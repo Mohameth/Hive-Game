@@ -47,7 +47,7 @@ public class Plateau {
         public Collection<Case> getCasesVoisines(Case c, boolean libreSeulement) {
             ArrayList<Case> voisins = new ArrayList<>();
             for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
-                Case voisin = cases.get(pointCourant);
+                Case voisin = getCase(pointCourant);
                 if (voisin.estVide() || !libreSeulement) voisins.add(voisin); //Case vide
             }
 
