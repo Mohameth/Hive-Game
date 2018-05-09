@@ -12,4 +12,6 @@ public interface Observateur {
 
     public void updateMove(Piece p, double deltaX, double deltaY, boolean isBoardMove);
 
+    public void updateMousePressPiece(Piece p);
+
 }

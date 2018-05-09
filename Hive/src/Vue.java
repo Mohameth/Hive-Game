@@ -3,6 +3,7 @@ import javafx.scene.control.Button;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -19,10 +20,13 @@ public class Vue extends Application implements Observateur {
 
     ArrayList<Piece> pieceList;
     Map<Piece, ArrayList<PieceHitbox>> hitboxList;  //pour une piece j'ai les points hitbox coté
+    ArrayList<Circle> hintCircles;
+    Piece currentSelected;
 
     private double sceneWidth, sceneHeight; //taille de la scene
     private double totZoom;  //zoom actuel du plateau
     private double totMoveBoardX, totMoveBoardY;  //position du plateau
+    private Group g;
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -45,10 +49,6 @@ public class Vue extends Application implements Observateur {
             pieceHitbox = new PieceHitbox(p, i);  //10 10 la postion de l'image voisine
             pieceHitbox.setCenterOfHitbox(totZoom);
             pieceHitbox.setCenterOfImageHitbox(totZoom);
-//            Circle c = new Circle(pieceHitbox.getPosX(), pieceHitbox.getPosY(), 5);
-//            c.setTranslateX(sceneWidth / 2);
-//            c.setTranslateY(sceneHeight / 2);
-//            g.getChildren().add(c);
 
             if (this.pieceList.size() == 1) { //mettre les coordonnées a 0 0 pour la première piece
                 int result[] = getHitboxCoord(i, p.getX(), p.getY(), p.getZ());
@@ -56,6 +56,7 @@ public class Vue extends Application implements Observateur {
             } else {
                 pieceHitbox.setXYZ(47, 47, 47); //undefine pour les autres depend du snapping
             }
+            makeHitoxScrollZoom(pieceHitbox.getHitbox());
             a.add(pieceHitbox);
         }
 
@@ -65,12 +66,15 @@ public class Vue extends Application implements Observateur {
             Circle c = piece.getHitbox();
             c.setTranslateX(sceneWidth / 2);
             c.setTranslateY(sceneHeight / 2);
-            makeHitoxScrollZoom(c);
-            g.getChildren().add(c);
+
+            //g.getChildren().add(c);
         }
     }
 
     private int[] getHitboxCoord(int pos, int coordX, int coordY, int coordZ) { //en fonction de la position du coin et de la position de la piece sur la grille
+        // System.out.println("AA= " + pos);
+        // System.out.println("X= " + coordX + " Y = " + coordY + " Z = " + coordZ);
+
         int x = 0;
         int y = 0;
         int z = 0;
@@ -106,6 +110,8 @@ public class Vue extends Application implements Observateur {
                 z = coordZ;
                 break;
         }
+
+        //System.out.println(" New X= " + x + " New Y = " + y + " New Z = " + z);
         return new int[]{x, y, z};
     }
 
@@ -131,26 +137,22 @@ public class Vue extends Application implements Observateur {
 
         g.getChildren().addAll(l1, l2);
 
-        addImage("hive1.png", g, -800, 0);
-        addImage("hive1.png", g, -600, 0);
-        addImage("hive1.png", g, -400, 0);
-        addImage("hive1.png", g, -200, 0);
-        addImage("hive1.png", g, -0, 0);
-        addImage("hive2.png", g, 200, 0);
-        addImage("hive2.png", g, 400, 0);
-        addImage("hive3.png", g, 600, 0);
-        addImage("hive3.png", g, 800, 0);
+        addImage("piontr_white_araignée.png", g, 0, 0);
+//        addImage("hive1.png", g, -600, 0);
+//        addImage("hive1.png", g, -400, 0);
+//        addImage("hive1.png", g, -200, 0);
+//        addImage("hive1.png", g, -0, 0);
+//        addImage("hive2.png", g, 200, 0);
+        addImage("piontr_white_fourmis.png", g, 400, 0);
+//        addImage("hive3.png", g, 600, 0);
+//        addImage("hive3.png", g, 800, 0);
 
-        addImage("hive1.png", g, -800, 200);
-        addImage("hive1.png", g, -600, 200);
-        addImage("hive1.png", g, -400, 200);
-        addImage("hive1.png", g, -200, 200);
-        addImage("hive1.png", g, -0, 200);
-        addImage("hive2.png", g, 200, 200);
-        addImage("hive2.png", g, 400, 200);
-        addImage("hive3.png", g, 600, 200);
-        addImage("hive3.png", g, 800, 200);
-
+//        addImage("hive1.png", g, -800, 200);
+//        addImage("hive1.png", g, -600, 200);
+//        addImage("hive1.png", g, -400, 200);
+        addImage("piontr_white_renne.png", g, -200, 200);
+        addImage("piontr_white_sauterelles.png", g, 200, 200);
+        addImage("piontr_white_scarabée.png", g, 800, 200);
         //Ajout des events de la souris
         setImgListMouseEvent();
 
@@ -164,15 +166,17 @@ public class Vue extends Application implements Observateur {
 
     @Override
     public void start(Stage primaryStage) {
-        Group group = new Group();
+        this.g = new Group();
         this.pieceList = new ArrayList<>();
+        this.hintCircles = new ArrayList<>();
         this.hitboxList = new HashMap<>();
+        this.currentSelected = null;
 
         //creation du plateau
         Rectangle rect = new Rectangle(0, 0);
-        rect.setFill(Color.ORANGE);
+        rect.setFill(Color.LIGHTGREY);
         rect.setStroke(Color.BLACK);
-        group.getChildren().add(rect);  //ajout dans le group
+        g.getChildren().add(rect);  //ajout dans le group
 
         //si on clique sur le rectangle deplacer les images
         makeBoardDraggable(rect);
@@ -183,14 +187,28 @@ public class Vue extends Application implements Observateur {
         this.sceneHeight = 720;
         this.totZoom = 1;
 
-        Scene scene = new Scene(group, sceneWidth, sceneHeight);
+        Scene scene = new Scene(g, sceneWidth, sceneHeight);
 
         rect.widthProperty().bind(scene.widthProperty());
         rect.heightProperty().bind(scene.heightProperty());
 
         primaryStage.setScene(scene);
         primaryStage.show();
-        dessineTemplate(group);
+        dessineTemplate(g);
+        /*
+        AnimationTimer anim = new AnimationTimer() {
+            public void handle(long temps) {
+                animHints(temps);
+            }
+        };
+        anim.start();
+         */
+    }
+
+    private void unselectPiece() {
+        if (this.currentSelected != null) {
+            this.currentSelected.unSelect();
+        }
     }
 
     private void makeBoardDraggable(Rectangle rect) {
@@ -201,6 +219,9 @@ public class Vue extends Application implements Observateur {
                 final MouseEvent mouseEvent) -> {
             lastMouseLocation.x = mouseEvent.getSceneX();
             lastMouseLocation.y = mouseEvent.getSceneY();
+            removeHint();
+            unselectPiece();
+
         });
 
         // --- Shift node calculated from mouse cursor movement
@@ -243,6 +264,7 @@ public class Vue extends Application implements Observateur {
         rect.setOnScroll((ScrollEvent event) -> {
             double deltaY = event.getDeltaY();
             ZoomFactor(deltaY);
+            removeHint();
         }
         );
     }
@@ -251,6 +273,7 @@ public class Vue extends Application implements Observateur {
         c.setOnScroll((ScrollEvent event) -> {
             double deltaY = event.getDeltaY();
             ZoomFactor(deltaY);
+            removeHint();
         }
         );
     }
@@ -279,9 +302,12 @@ public class Vue extends Application implements Observateur {
         //DEplacer les cercles hitbox
         for (PieceHitbox pieceh : this.hitboxList.get(p)) {
             pieceh.updateCoordMove(deltaX, deltaY);
+            pieceh.removeSnap();
         }
         if (!isBoardMove) {
             checkCollision(p);
+        } else {
+            removeHint();
         }
     }
 
@@ -289,18 +315,18 @@ public class Vue extends Application implements Observateur {
         //si la piece n'est pas celle la et que le cercle et libre alors l'analyser (si colision placer l'image de la piece correctement + update X et Y)
         //ajouter une boucle pour les autres points...
 
-        for (PieceHitbox pieceh : this.hitboxList.get(p)) {
-            Circle c = pieceh.getHitbox(); //pour chaqu'un des cercles de la piece qu'on vient de bouger verfier si collision
-
-            for (Piece autrePiece : this.hitboxList.keySet()) {
-                if (!autrePiece.equals(p)) { //si c'est pas la meme piece
-                    //alors on explore les cercles (hitbox) LIBRE de cette piece et on test la collision
-                    for (PieceHitbox hitbox : this.hitboxList.get(autrePiece)) {
-                        if (hitbox.isLibre()) { //si elle est libre
-                            //il y a t'il collision ?
-                            if (collisionHitbox(c, hitbox.getHitbox())) {
+        for (Piece autrePiece : this.hitboxList.keySet()) {
+            if (!autrePiece.equals(p)) { //si c'est pas la meme piece
+                //alors on explore les cercles (hitbox) LIBRE de cette piece et on test la collision
+                for (PieceHitbox hitbox : this.hitboxList.get(autrePiece)) {
+                    if (hitbox.isLibre()) { //si elle est libre
+                        //il y a t'il collision avec un des coins de la pièce qu'on bouge?
+                        for (PieceHitbox pieceh : this.hitboxList.get(p)) { //pour chaqu'un des cercles de la piece qu'on vient de bouger verfier si collision
+                            if (collisionHitbox(pieceh.getHitbox(), hitbox.getHitbox())) {
+                                removeHint();
                                 //System.out.println("Collision !! avec x:" + hitbox.X + " y:" + hitbox.Y);
-                                p.snap(hitbox);
+                                //System.out.println(" New X= " + hitbox.getX() + " New Y = " + hitbox.getY() + " New Z = " + hitbox.getZ());
+                                p.snap(pieceh, hitbox);
                                 updateHitBoxPos(p);
                             }
                         }
@@ -311,9 +337,11 @@ public class Vue extends Application implements Observateur {
     }
 
     public void updateHitBoxPos(Piece p) {
-        for (int i = 0; i < 6; i++) {
+        int i = 0;
+        for (PieceHitbox pieceh : this.hitboxList.get(p)) {
             int result[] = getHitboxCoord(i, p.getX(), p.getY(), p.getZ());
-            p.setXYZ(result[0], result[1], result[2]);
+            pieceh.setXYZ(result[0], result[1], result[2]);
+            i++;
         }
     }
 
@@ -335,13 +363,79 @@ public class Vue extends Application implements Observateur {
         r2 *= r2;
         double r3 = (c1.getRadius() + c2.getRadius());
         r3 *= r3;
-        // System.out.println("R1 " + r1);
-        // System.out.println("R2 " + r2);
 
         return (r1 + r2 <= r3);
 
     }
 
+    public void removeHint() {
+        g.getChildren().removeAll(this.hintCircles);
+        this.hintCircles.clear();
+    }
+
+    public void updateMousePressPiece(Piece p) {
+
+        unselectPiece();
+        this.currentSelected = p;
+
+        displayLibre(p);
+    }
+
+    public void displayLibre(Piece p) {
+        removeHint();
+        if (this.hintCircles.isEmpty()) {
+            for (Piece autrePiece : this.hitboxList.keySet()) {
+                if (!autrePiece.equals(p)) { //si c'est pas la meme piece
+                    //alors on explore les cercles (hitbox) LIBRE de cette piece et on test la collision
+
+                    for (PieceHitbox hitbox : this.hitboxList.get(autrePiece)) {
+
+                        if (hitbox.isLibre()) { //si elle est libre
+                            Circle c = new Circle(hitbox.getPosX(), hitbox.getPosY(), 75 * totZoom, Color.rgb(0, 255, 0, 0.5));
+                            hintCircles.add(c);
+                            c.setTranslateX(sceneWidth / 2);
+                            c.setTranslateY(sceneHeight / 2);
+                            c.setCursor(Cursor.HAND);
+                            c.addEventFilter(MouseEvent.MOUSE_PRESSED, (
+                                    final MouseEvent mouseEvent) -> {
+                                this.currentSelected.moveToXY(c.getCenterX(), c.getCenterY());
+                                unselectPiece();
+
+                            });
+
+                            c.addEventFilter(MouseEvent.MOUSE_ENTERED, (
+                                    final MouseEvent mouseEvent) -> {
+                                c.setStroke(Color.RED);
+                                c.setStrokeWidth(2);
+                            });
+
+                            c.addEventFilter(MouseEvent.MOUSE_EXITED, (
+                                    final MouseEvent mouseEvent) -> {
+                                c.setStroke(null);
+                            });
+
+                            this.g.getChildren().add(c);
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /*
+    public void animHints(long temps) {
+        double facteur = (double) temps / 1000000000D;
+        facteur = Math.abs(Math.cos(facteur)) * 1.1 + 1;
+        //removeHint();
+        //System.out.println(facteur);
+        for (Circle c : this.hintCircles) {
+            Circle newCircle = c;
+            g.getChildren().remove(c);
+            newCircle.setRadius(20 * totZoom * facteur);
+            g.getChildren().add(newCircle);
+        }
+    }*/
     private static final class MouseLocation {
 
         public double x, y;

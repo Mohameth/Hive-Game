@@ -18,6 +18,8 @@ public class PieceHitbox {
     private double posX, posY;  //posX = position du voisin pour l'image
     private int X, Y, Z; //X et Y coordonnée que prendra la piece
     private int numCoin;
+    private PieceHitbox PieceHitboxSnapped;
+    private boolean libre;
 
     public double getPosX() {
         return posX;
@@ -27,12 +29,11 @@ public class PieceHitbox {
         return posY;
     }
 
-    private boolean libre;
-
     public PieceHitbox(Piece newp, int numCoin) {
         this.p = newp;
         this.posX = 0;
         this.posY = 0;
+        PieceHitboxSnapped = null;
 
         this.libre = true;
         this.X = 47;
@@ -45,6 +46,26 @@ public class PieceHitbox {
         this.X = x;
         this.Y = y;
         this.Z = z;
+    }
+
+    public void setVoisin(PieceHitbox phv) {
+        this.PieceHitboxSnapped = phv;
+    }
+
+    public void setSnap(PieceHitbox phVoisin) {
+        setLibre(false);
+        this.setVoisin(phVoisin);
+        phVoisin.setLibre(false);
+        phVoisin.setVoisin(this);
+    }
+
+    public void removeSnap() {
+        if (this.PieceHitboxSnapped != null) {
+            this.PieceHitboxSnapped.setVoisin(null);
+            this.PieceHitboxSnapped.setLibre(true);
+        }
+        this.setVoisin(null);
+        setLibre(true);
     }
 
     public boolean isLibre() {
@@ -75,9 +96,10 @@ public class PieceHitbox {
     }
 
     public void setCenterOfHitbox(double totZoom) {
-        double scale = 55;
+        //double imgWidth = this.p.getImgv().getFitWidth() / 4;
+        double scale = this.p.getImgv().getFitWidth() / 4;
         double result[] = getCenterOfHitbox(totZoom, scale);
-        this.hitbox = new Circle(result[0], result[1], 25, Color.rgb(0, 0, 0, 0.5));
+        this.hitbox = new Circle(result[0], result[1], scale, Color.rgb(0, 0, 0, 0.5));
     }
 
     public double[] getCenterOfHitbox(double totZoom, double scale) {
@@ -91,12 +113,12 @@ public class PieceHitbox {
 
             case 1:
                 x = x + 0.75 * scale * totZoom;
-                y = y + 0.43 * scale * totZoom;
+                y = y - 0.43 * scale * totZoom;
                 break;
 
             case 2:
                 x = x + 0.75 * scale * totZoom;
-                y = y - 0.43 * scale * totZoom;
+                y = y + 0.43 * scale * totZoom;
                 break;
 
             case 3:
@@ -129,7 +151,7 @@ public class PieceHitbox {
     }
 
     public void setCenterOfImageHitbox(double totZoom) {
-        double scale = 160;
+        double scale = this.p.getImgv().getFitWidth() * totZoom + 25;
         double result[] = getCenterOfHitbox(totZoom, scale);
         this.posX = result[0];
         this.posY = result[1];

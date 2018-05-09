@@ -14,4 +14,6 @@ public interface Observable {
     public void addObserver(Observateur newobserver);
 
     public void notifyListenersMove(double deltaX, double deltaY, boolean isBoardMove);
+
+    public void notifyListenersMousePressed(Piece p);
 }

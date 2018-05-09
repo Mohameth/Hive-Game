@@ -1,7 +1,10 @@
 
+import java.awt.event.MouseListener;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import javafx.scene.Group;
+import javafx.scene.effect.BlurType;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -82,15 +85,23 @@ public class Piece implements Observable {
             lastMouseLocationDist.x = mouseEvent.getX();
             lastMouseLocationDist.y = mouseEvent.getY();
             ts.time = System.nanoTime();
-            System.out.println("X:" + X + " Y:" + Y + " Z:" + Z);
-        });
+            notifyListenersMousePressed(this);
+            setSelected();
 
+            System.out.println("Coordonnée: " + getX() + ", " + getY() + ", " + getZ());
+        }
+        );
+
+//        this.imgv.addEventFilter(MouseEvent.MOUSE_RELEASED, (
+//                final MouseEvent mouseEvent) -> {
+//            this.getImgv().setEffect(null);
+//        }
+//        );
         // --- Shift node calculated from mouse cursor movement
         this.imgv.addEventFilter(MouseEvent.MOUSE_DRAGGED, (
                 final MouseEvent mouseEvent) -> {
             double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x;
             double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y;
-
             double distance = (long) Math.hypot(mouseEvent.getX() - lastMouseLocationDist.x, mouseEvent.getY() - lastMouseLocationDist.y);
             long lEndTime = System.nanoTime();
             double elsapstime = (lEndTime - ts.time) / 1000000;
@@ -104,9 +115,7 @@ public class Piece implements Observable {
 
                 if (isSnapped && v > maxVitesse) {
                     isSnapped = false;
-
-                    moveToXY(mouseEvent.getSceneX() - (sceneWidth / 2), mouseEvent.getSceneY() - (sceneHeight / 2)); //XY(deltaX, deltaY);
-                    //moveToXY(mouseEvent.getX(), mouseEvent.getY()); //pouvoir placer l'image sous la souris avec un setXY et mettre a jour le notify par rapport à la piece
+                    moveToXY(mouseEvent.getSceneX() - (sceneWidth / 2), mouseEvent.getSceneY() - (sceneHeight / 2));
                 } else {
                     moveXY(deltaX, deltaY);
                 }
@@ -114,6 +123,22 @@ public class Piece implements Observable {
             lastMouseLocation.x = mouseEvent.getSceneX();
             lastMouseLocation.y = mouseEvent.getSceneY();
         });
+    }
+
+    public void setSelected() {
+        //DropShadow effect
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(10.0);
+        dropShadow.setOffsetX(0.0);
+        dropShadow.setOffsetY(0.0);
+        dropShadow.setSpread(0.95);
+        dropShadow.setColor(Color.GREENYELLOW);
+
+        this.getImgv().setEffect(dropShadow);
+    }
+
+    public void unSelect() {
+        this.getImgv().setEffect(null);
     }
 
     public void moveXY(double deltaX, double deltaY) {
@@ -129,12 +154,14 @@ public class Piece implements Observable {
 
     }
 
-    public void snap(PieceHitbox ph) {
+    public void snap(PieceHitbox myph, PieceHitbox ph) {
+        // this.getImgv().setEffect(null);
         moveToXY(ph.getPosX(), ph.getPosY());
         isSnapped = true;
         this.X = ph.getX();
-        this.Y = ph.getX();
-        this.Z = ph.getX();
+        this.Y = ph.getY();
+        this.Z = ph.getZ();
+        myph.setSnap(ph);
     }
 
     public void moveToXY(double x, double y) {
@@ -166,6 +193,11 @@ public class Piece implements Observable {
     @Override
     public void notifyListenersMove(double deltaX, double deltaY, boolean isBoardMove) {
         this.obs.updateMove(this, deltaX, deltaY, isBoardMove);
+    }
+
+    @Override
+    public void notifyListenersMousePressed(Piece p) {
+        this.obs.updateMousePressPiece(p);
     }
 
     private static final class MouseLocation {
