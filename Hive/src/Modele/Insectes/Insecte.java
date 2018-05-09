@@ -35,6 +35,16 @@ public abstract class Insecte {
         this.emplacement = emplacement;
     }
         
-        
+    
+    protected Collection<Case> getVoisinsAccessible(Plateau plateau) {
+        Collection<Case> dep = plateau.getCasesVoisines(getEmplacement(), true);
+        for (Case c : plateau.getCasesVoisines(getEmplacement(), true)) {
+            if (plateau.gateBetween(getEmplacement(), c)) {
+                dep.remove(c);
+            } 
+        }
+
+        return dep;
+    }
 
 }

@@ -70,7 +70,7 @@ public class Plateau {
             
             return nombreCasesAdjacentesNonVide == 2;
         }
-        
+                
         public boolean rucheBrisee() { //Tester aussi avec un compteur de changements
             int i = 0; Case c = (Case) this.cases.values().toArray()[i];
             while(c.estVide()) {
