@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
@@ -77,6 +78,18 @@ public class Plateau {
         }
 
         return voisins;
+    }
+    
+    public Collection<Case> getCasesVoisinesSansGates(Case c, boolean exclureCaseLibre) {
+        Collection<Case> dep = this.getCasesVoisines(c, exclureCaseLibre);
+        Iterator<Case> it = dep.iterator();
+        while (it.hasNext()) {
+            if (this.gateBetween(c, it.next())) {
+                it.remove();
+            }
+        }
+
+        return dep;
     }
 
     public boolean gateBetween(Case c1, Case c2) {

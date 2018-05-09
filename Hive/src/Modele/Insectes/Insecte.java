@@ -57,18 +57,6 @@ public abstract class Insecte {
             System.err.println("ERREUR SET EMPLACEMENT : " + e);
         } 
     }
-        
-    
-    protected Collection<Case> getVoisinsAccessible(Plateau plateau) {
-        Collection<Case> dep = plateau.getCasesVoisines(getEmplacement(), true);
-        for (Case c : plateau.getCasesVoisines(getEmplacement(), true)) {
-            if (plateau.gateBetween(getEmplacement(), c)) {
-                dep.remove(c);
-            }
-        }
-
-        return dep;
-    }
 
     @Override
     public int hashCode() {
