@@ -19,9 +19,9 @@ public class Moustique extends Insecte {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public void Deplacement(Plateau plat, Point3DH cible) {
+    /*@Override
+    public void deplacement(Plateau plat, Point3DH cible) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    }*/
 
 }
