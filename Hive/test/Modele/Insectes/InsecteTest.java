@@ -109,7 +109,7 @@ public class InsecteTest {
 
     }
 
-    private void arrayCorresponds(ArrayList<Case> result, ArrayList<Point3DH> pointsExpected) {
+    private void arrayCorresponds(Collection<Case> result, ArrayList<Point3DH> pointsExpected) {
         ArrayList<Point3DH> copie = new ArrayList<>(pointsExpected);
         assertTrue(pointsExpected.size() == result.size());
         for (Case c : result) {
@@ -175,5 +175,52 @@ public class InsecteTest {
         result.addAll(s.deplacementPossible(instance));
         
         arrayCorresponds(result, expected);
+    }
+    
+    @Test
+    public void testDeplacementFourmi() {
+        System.out.println("=============================================");
+        System.out.println("Test deplacementFourmi ======================>\n");
+        
+        Plateau instance = new Plateau();
+        Joueur j1 = new JoueurHumain(instance);
+
+        Case caseFourmi = instance.getCase(new Point3DH(0, 0, 0));
+        Fourmi f = new Fourmi(j1);
+        f.setEmplacement(caseFourmi);
+        
+        ArrayList<Point3DH> expected = new ArrayList<>();
+        expected.add(new Point3DH(0, +1, -1));
+        expected.add(new Point3DH(+1, 0, -1));
+        expected.add(new Point3DH(+1, -1, 0));
+        expected.add(new Point3DH(0, -1, +1));
+        expected.add(new Point3DH(-1, 0, +1));
+        expected.add(new Point3DH(-1, +1, 0));
+        
+        arrayCorresponds(f.deplacementPossible(instance), expected);
+        
+        Case caseOccupe1 = instance.getCase(new Point3DH(0, 1, -1));
+        Case caseOccupe2 = instance.getCase(new Point3DH(1, -1, 0));
+
+        try {
+            caseOccupe1.addInsecte(new Scarabee(j1));
+            caseOccupe2.addInsecte(new Scarabee(j1));
+        } catch (Exception ex) {
+            fail("L'ajout d'insecte a échoué");
+        }
+        
+        expected.remove(new Point3DH(0, 1, -1)); // Case occupée
+        expected.remove(new Point3DH(1, 0, -1)); // RUCHE BRISE
+        expected.remove(new Point3DH(1, -1, 0)); // Case occupée
+        
+        expected.add(new Point3DH(-1, 2, -1));
+        expected.add(new Point3DH(0, 2, -2));
+        expected.add(new Point3DH(1, 1, -2));
+        expected.add(new Point3DH(1, 0, -1));
+        expected.add(new Point3DH(2, -1, -1));
+        expected.add(new Point3DH(2, -2, 0));
+        expected.add(new Point3DH(1, -2, 1));
+        
+        arrayCorresponds(f.deplacementPossible(instance), expected);
     }
 }
