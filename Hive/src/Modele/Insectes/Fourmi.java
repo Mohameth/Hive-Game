@@ -36,6 +36,8 @@ public class Fourmi extends Insecte {
                 }
             }
         }
+        
+        return result;
     }
 
     /*@Override
