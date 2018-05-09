@@ -76,7 +76,7 @@ public class InsecteTest {
         expected.add(new Point3DH(0, -1, +1));
         expected.add(new Point3DH(-1, 0, +1));
         expected.add(new Point3DH(-1, +1, 0));
-
+        
         arrayCorresponds(result, expected);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
