@@ -49,7 +49,7 @@ public class Plateau {
             for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
                 Case voisin = cases.get(pointCourant);
                 if (voisin == null)         voisins.add(new Case(pointCourant)); //Case vide (Pas sûr que ce soit utile cohérent)
-                else if (!libreSeulement)   voisins.add(voisin);
+                else if (!libreSeulement && !voisin.estVide())   voisins.add(voisin);
             }
 
             return voisins;
