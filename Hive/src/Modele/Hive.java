@@ -46,8 +46,21 @@ public class Hive {
         }
         
         public void deplacementInsecte(Point3DH origine, Point3DH cible) {
-            if (!plateau.getCase(origine).estVide())
-                plateau.getCase(origine).getInsecteOnTop().Deplacement(plateau, cible);
+            if (!plateau.getCase(origine).estVide() && appartient(origine)) {
+                joueurCourant.coup(plateau.getCase(origine).getInsecteOnTop(),cible);
+                this.joueurSuivant();
+            }
+            
         }
         
+        public void placementInsecte() {
+            
+        }
+        
+        private void joueurSuivant() {
+            if (joueurCourant.equals(this.joueur1))
+                this.joueurCourant = this.joueur2;
+            else if (joueurCourant.equals(this.joueur2))
+                this.joueurCourant = this.joueur1;
+        }
 }

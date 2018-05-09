@@ -47,8 +47,18 @@ public class Plateau {
             ArrayList<Case> voisins = new ArrayList<>();
             for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
                 Case voisin = cases.get(pointCourant);
-                if (voisin == null)         voisins.add(new Case(pointCourant)); //Case vide
+                if (voisin == null)         voisins.add(new Case(pointCourant)); //Case vide (Pas sûr que ce soit utile cohérent)
                 else if (!libreSeulement)   voisins.add(voisin);
+            }
+
+            return voisins;
+        }
+        
+        public Collection<Case> getCasesVoisinesOccupees(Case c) {
+            ArrayList<Case> voisins = new ArrayList<>();
+            for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
+                Case voisin = cases.get(pointCourant);
+                if (!voisin.estVide())   voisins.add(voisin);
             }
 
             return voisins;
@@ -72,11 +82,12 @@ public class Plateau {
         }
                 
         public boolean rucheBrisee() { //Tester aussi avec un compteur de changements
-            int i = 0; Case c = (Case) this.cases.values().toArray()[i];
-            while(c.estVide()) {
+            Object[] listeCases; Case c; int i = 0; 
+            listeCases = this.cases.values().toArray();
+            do {
+                c = (Case)listeCases[i];
                 i++;
-                c = (Case) this.cases.values().toArray()[i];
-            }
+            } while (c.estVide());
             
             
             ArrayList<Case> visites = new ArrayList<>();
@@ -85,7 +96,7 @@ public class Plateau {
             file.add(c);
             while (!file.isEmpty()) {
                 Case courante = file.pollFirst();
-                ArrayList<Case> voisins = (ArrayList<Case>) getCasesVoisines(courante, false);
+                ArrayList<Case> voisins = (ArrayList<Case>) getCasesVoisinesOccupees(courante);
                 for (Case caseC : voisins) {
                     if (!visites.contains(c))
                         visites.add(caseC);
@@ -97,4 +108,6 @@ public class Plateau {
             
             return true;
         }
+        
+        
 }
