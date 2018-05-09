@@ -3,7 +3,6 @@ import javafx.scene.control.Button;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -137,31 +136,32 @@ public class Vue extends Application implements Observateur {
 
         g.getChildren().addAll(l1, l2);
 
-        addImage("piontr_white_araignée.png", g, 0, 0);
-//        addImage("hive1.png", g, -600, 0);
-//        addImage("hive1.png", g, -400, 0);
-//        addImage("hive1.png", g, -200, 0);
-//        addImage("hive1.png", g, -0, 0);
-//        addImage("hive2.png", g, 200, 0);
-        addImage("piontr_white_fourmis.png", g, 400, 0);
-//        addImage("hive3.png", g, 600, 0);
-//        addImage("hive3.png", g, 800, 0);
+        String[] namePiece = new String[]{"araignee", "fourmis", "ladybug", "moustique", "pillbug", "renne", "sauterelles", "scarabée"};
+        String[] colorPiece = new String[]{"black", "white"};
 
-//        addImage("hive1.png", g, -800, 200);
-//        addImage("hive1.png", g, -600, 200);
-//        addImage("hive1.png", g, -400, 200);
-        addImage("piontr_white_renne.png", g, -200, 200);
-        addImage("piontr_white_sauterelles.png", g, 200, 200);
-        addImage("piontr_white_scarabée.png", g, 800, 200);
+        int x = -1800, y = -1800;
+        for (String color : colorPiece) {
+            for (String name : namePiece) {
+                addImage("piontr_" + color + "_" + name + ".png", g, x, y);
+                x += 470;  //image width + 9
+            }
+            x = -1800;
+            y += 4000;
+        }
+
         //Ajout des events de la souris
         setImgListMouseEvent();
 
         Button b = new Button("Reset view");
-        b.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            resetView();
-        });
 
-        g.getChildren().add(b);
+        b.addEventHandler(MouseEvent.MOUSE_CLICKED,
+                (MouseEvent e) -> {
+                    resetView();
+                }
+        );
+
+        g.getChildren()
+                .add(b);
     }
 
     @Override
