@@ -201,4 +201,79 @@ public class PlateauTest {
         
         System.out.println("");
     }
+    
+    /**
+     * Test of gateBetween method, of class Plateau.
+     */
+    @Test
+    public void testGateBetween() {
+        System.out.println("=============================================");
+        System.out.println("Test gateBetween ===========================>\n");
+        
+        Point3DH orig = new Point3DH(0,0,0);
+        Plateau instance = new Plateau();
+        Reine reine = new Reine(new JoueurHumain(instance));
+        
+        instance.ajoutInsecte(reine, orig);
+        instance.ajoutInsecte(reine, orig.voisinDroiteBas());
+        instance.ajoutInsecte(reine, orig.voisinGaucheBas());
+        instance.ajoutInsecte(reine, orig.voisinBas().voisinBas());
+        
+        System.out.println("Test dans une configuration (ocupper: origine -> bas droite -> bas gauche -> bas bas) :\n");
+        
+        System.out.println("test deplacement origine vers le bas (impossible) : ");
+        assertTrue(instance.gateBetween(new Case(orig), new Case(orig.voisinBas())));
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("test deplacement origine.basdroite vers haut droit (possible) :");
+        assertFalse(instance.gateBetween(new Case(orig.voisinDroiteBas()), new Case(orig.voisinDroiteBas().voisinDroiteHaut())));
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        instance.deleteInsecte(reine, orig);
+        instance.ajoutInsecte(reine, orig.voisinBas());
+        System.out.println("nouvelle configuration (ocupper: bas -> bas droite -> bas gauche -> bas bas) :\n");
+        
+        System.out.println("test deplacement bas vers bas.bas droite (impossible) :");
+        assertTrue(instance.gateBetween(new Case(orig.voisinBas()), new Case(orig.voisinBas().voisinDroiteBas())));
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("test deplacement bas vers bas.bas gauche (impossible) :");
+        assertTrue(instance.gateBetween(new Case(orig.voisinBas()), new Case(orig.voisinBas().voisinGaucheBas())));
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+     
+        System.out.println("");
+    }
+    
+    /**
+     * Test of rucheBrisee method, of class Plateau.
+     */
+    @Test
+    public void testRucheBrisee() {
+        System.out.println("=============================================");
+        System.out.println("Test rucheBrisee ===========================>\n");
+        
+        Point3DH orig = new Point3DH(0,0,0);
+        Plateau instance = new Plateau();
+        Reine reine = new Reine(new JoueurHumain(instance));
+        
+        System.out.println("test sur une ruche vide :");
+        assertFalse(instance.rucheBrisee());
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("test sur une ruche avec un insecte :");
+        instance.ajoutInsecte(reine, orig);
+        assertFalse(instance.rucheBrisee());
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("test sur une ruche avec deux insectes colé :");
+        instance.ajoutInsecte(reine, orig.voisinBas());
+        assertFalse(instance.rucheBrisee());
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("test sur une ruche avec deux insectes non colé :");
+        instance.deleteInsecte(reine, orig.voisinBas());
+        instance.ajoutInsecte(reine, orig.voisinBas().voisinBas());
+        assertTrue(instance.rucheBrisee());
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+    }
 }
