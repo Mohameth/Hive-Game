@@ -67,8 +67,6 @@ public class Hive {
         }
         
         public boolean placementInsecte(Insecte insecte) {
-            if (!(insecte instanceof Reine) && nbtours == 4 && !joueurCourant.reinePosee())
-                return false;
             
             return true;
         }
