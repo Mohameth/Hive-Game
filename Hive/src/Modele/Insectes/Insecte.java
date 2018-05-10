@@ -16,17 +16,10 @@ public abstract class Insecte {
 
     public void deplacement(Plateau plat, Point3DH cible) {
         try {
-            this.getEmplacement().removeInsecte();
-            plat.getCase(cible).addInsecte(this);
-        } catch(Exception e) {
-            System.err.println("ERREUR DEPLACEMENT :" + e);
-        }
-    }
-    
-    public void deplacement(Plateau plat, Case cible) {
-        try {
-            this.getEmplacement().removeInsecte();
-            cible.addInsecte(this);
+            //this.getEmplacement().removeInsecte();
+            //plat.getCase(cible).addInsecte(this);
+            plat.deleteInsecte(this, this.getEmplacement().getCoordonnees());
+            plat.ajoutInsecte(this, cible);
         } catch(Exception e) {
             System.err.println("ERREUR DEPLACEMENT :" + e);
         }
