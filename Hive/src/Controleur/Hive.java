@@ -138,6 +138,8 @@ public class Hive {
             } catch (Exception ex) {
                 Logger.getLogger(Hive.class.getName()).log(Level.SEVERE, null, ex);
             }
+            joueurSuivant();
+                
 
         }
         
