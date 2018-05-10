@@ -9,6 +9,7 @@ import Modele.Plateau;
 import Modele.Point3DH;
 import Vue.Vue;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javafx.geometry.Point3D;
 
 public class Hive {
@@ -72,7 +73,7 @@ public class Hive {
             return true;
         }
         
-        public ArrayList<Insecte> pionsPosables() {
+        private ArrayList<Insecte> pionsPosables() {
             ArrayList<Insecte> mainJoueur = this.joueurCourant.pionsEnMain(); 
             
             if (this.nbtours == 4) {
@@ -93,6 +94,29 @@ public class Hive {
             return mainJoueur;
         }
         
+        public HashMap<Insecte, Boolean> mainJoueurCourant() {
+            ArrayList<Insecte> posables = this.pionsPosables();
+            ArrayList<Insecte> main = this.joueurCourant.pionsEnMain();
+            HashMap<Insecte, Boolean> res = new HashMap<>();
+
+            if (posables.equals(main)) {
+                for (Insecte ins : main) {
+                    res.put(ins, Boolean.TRUE);
+                }
+            } else {
+                for (Insecte ins : main) {
+                    if (posables.contains(ins)) {
+                        res.put(ins, Boolean.TRUE);
+                    } else {
+                        res.put(ins, Boolean.FALSE);
+                    }
+                }
+            }
+                
+            
+            return res;
+        }
+        
         private void joueurSuivant() {
             if (joueurCourant.equals(this.joueur1))
                 this.joueurCourant = this.joueur2;
@@ -100,7 +124,4 @@ public class Hive {
                 this.joueurCourant = this.joueur1;
         }
         
-        public ArrayList<Insecte> mainJoueurCourant() {
-            return this.joueurCourant.pionsEnMain();
-        }
 }
