@@ -1,15 +1,18 @@
 package Controleur;
 
-import Modele.Insectes.Insecte;
-import Modele.Insectes.Reine;
+import Modele.Case;
+import Modele.Insectes.*;
 import Modele.Joueur;
 import Modele.JoueurHumain;
 import Modele.JoueurIA;
 import Modele.Plateau;
 import Modele.Point3DH;
+import Modele.TypeInsecte;
 import Vue.Vue;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.geometry.Point3D;
 
 public class Hive {
@@ -66,9 +69,76 @@ public class Hive {
             return true;
         }
         
-        public boolean placementInsecte(Insecte insecte) {
-            
-            return true;
+        public ArrayList<Case> placementsPossibles() {
+            return this.plateau.casesVidePlacement(this.joueurCourant);
+        }
+        
+        public void placementInsecte(TypeInsecte insecte, Point3DH cible) {
+            int i = 0; Insecte ins = null;
+            switch (insecte) {
+                case ARAIGNEE:
+                    do {
+                        ins = this.joueurCourant.pionsEnMain().get(i);
+                        i++;
+                    }
+                    while ((ins instanceof Araignee));
+                    break;
+                case CLOPORTE:
+                    do {
+                        ins = this.joueurCourant.pionsEnMain().get(i);
+                        i++;
+                    }
+                    while ((ins instanceof Cloporte));
+                    break;
+                case COCCINELLE:
+                    do {
+                        ins = this.joueurCourant.pionsEnMain().get(i);
+                        i++;
+                    }
+                    while ((ins instanceof Coccinelle));
+                    break;
+                case FOURMI:
+                    do {
+                        ins = this.joueurCourant.pionsEnMain().get(i);
+                        i++;
+                    }
+                    while ((ins instanceof Fourmi));
+                    break;
+                case MOUSTIQUE:
+                    do {
+                        ins = this.joueurCourant.pionsEnMain().get(i);
+                        i++;
+                    }
+                    while ((ins instanceof Moustique));
+                    break;
+                case REINE:
+                    do {
+                        ins = this.joueurCourant.pionsEnMain().get(i);
+                        i++;
+                    }
+                    while ((ins instanceof Reine));
+                    break;
+                case SAUTERELLE:
+                    do {
+                        ins = this.joueurCourant.pionsEnMain().get(i);
+                        i++;
+                    }
+                    while ((ins instanceof Sauterelle));
+                    break;
+                case SCARABEE:
+                    do {
+                        ins = this.joueurCourant.pionsEnMain().get(i);
+                        i++;
+                    }
+                    while ((ins instanceof Scarabee));
+                    break;
+            }
+            try {
+                this.plateau.getCase(cible).addInsecte(ins);
+            } catch (Exception ex) {
+                Logger.getLogger(Hive.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
         }
         
         private ArrayList<Insecte> pionsPosables() {

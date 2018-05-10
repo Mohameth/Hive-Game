@@ -39,5 +39,10 @@ public abstract class Joueur {
         return res;
     }   
 
+    public ArrayList<Insecte> getPions() {
+        return pions;
+    }
+
+
 }
 
