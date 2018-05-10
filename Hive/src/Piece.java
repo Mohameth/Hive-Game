@@ -1,17 +1,12 @@
 
-import java.awt.event.MouseListener;
-import java.sql.Timestamp;
-import java.util.ArrayList;
 import javafx.scene.Group;
-import javafx.scene.effect.BlurType;
+
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
+
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -89,14 +84,15 @@ public class Piece implements Observable {
             setSelected();
 
             System.out.println("Coordonnée: " + getX() + ", " + getY() + ", " + getZ());
+            System.out.println("isnapped: " + this.isSnapped);
         }
         );
 
-//        this.imgv.addEventFilter(MouseEvent.MOUSE_RELEASED, (
-//                final MouseEvent mouseEvent) -> {
-//            this.getImgv().setEffect(null);
-//        }
-//        );
+        this.imgv.addEventFilter(MouseEvent.MOUSE_RELEASED, (
+                final MouseEvent mouseEvent) -> {
+            //isSnapped = true;
+        }
+        );
         // --- Shift node calculated from mouse cursor movement
         this.imgv.addEventFilter(MouseEvent.MOUSE_DRAGGED, (
                 final MouseEvent mouseEvent) -> {
@@ -105,21 +101,36 @@ public class Piece implements Observable {
             double distance = (long) Math.hypot(mouseEvent.getX() - lastMouseLocationDist.x, mouseEvent.getY() - lastMouseLocationDist.y);
             long lEndTime = System.nanoTime();
             double elsapstime = (lEndTime - ts.time) / 1000000;
-
+            //getImgv().setCursor(Cursor.NONE);
             double v = (distance / elsapstime);
 
             double maxVitesse = 0.6;
             //System.out.println("Speeed: " + v);
             //todo gerer le hover
-            if (!isSnapped || v > maxVitesse) {
+//            if (!isSnapped || v > maxVitesse) {
+//
+//                if (isSnapped && v > maxVitesse) {
+//                    isSnapped = false;
+//                    moveToXY(mouseEvent.getSceneX() - (sceneWidth / 2), mouseEvent.getSceneY() - (sceneHeight / 2));
+//                } else {
+//                    //moveToXY(mouseEvent.getSceneX() - (sceneWidth / 2), mouseEvent.getSceneY() - (sceneHeight / 2));
+//                    moveXY(deltaX, deltaY);
+//                }
+//            }
 
-                if (isSnapped && v > maxVitesse) {
-                    isSnapped = false;
-                    moveToXY(mouseEvent.getSceneX() - (sceneWidth / 2), mouseEvent.getSceneY() - (sceneHeight / 2));
-                } else {
-                    moveXY(deltaX, deltaY);
-                }
+            //System.out.println("Vitesse: " + v);
+            if (isSnapped) {
+                //moveToXY(mouseEvent.getSceneX() - (sceneWidth / 2), mouseEvent.getSceneY() - (sceneHeight / 2));
+                moveXY(deltaX, deltaY);
+                isSnapped = false;
             }
+
+            if (v > maxVitesse) {
+                moveToXY(mouseEvent.getSceneX() - (sceneWidth / 2), mouseEvent.getSceneY() - (sceneHeight / 2));
+            } else {
+                moveXY(deltaX, deltaY);
+            }
+
             lastMouseLocation.x = mouseEvent.getSceneX();
             lastMouseLocation.y = mouseEvent.getSceneY();
         });
@@ -132,7 +143,7 @@ public class Piece implements Observable {
         dropShadow.setOffsetX(0.0);
         dropShadow.setOffsetY(0.0);
         dropShadow.setSpread(0.95);
-        dropShadow.setColor(Color.GREENYELLOW);
+        dropShadow.setColor(Color.PURPLE);
 
         this.getImgv().setEffect(dropShadow);
     }
@@ -209,5 +220,4 @@ public class Piece implements Observable {
 
         public long time;
     }
-
 }

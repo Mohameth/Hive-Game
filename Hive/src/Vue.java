@@ -166,6 +166,7 @@ public class Vue extends Application implements Observateur {
 
     @Override
     public void start(Stage primaryStage) {
+
         this.g = new Group();
         this.pieceList = new ArrayList<>();
         this.hintCircles = new ArrayList<>();
@@ -188,7 +189,6 @@ public class Vue extends Application implements Observateur {
         this.totZoom = 1;
 
         Scene scene = new Scene(g, sceneWidth, sceneHeight);
-
         rect.widthProperty().bind(scene.widthProperty());
         rect.heightProperty().bind(scene.heightProperty());
 
@@ -423,19 +423,6 @@ public class Vue extends Application implements Observateur {
         }
     }
 
-    /*
-    public void animHints(long temps) {
-        double facteur = (double) temps / 1000000000D;
-        facteur = Math.abs(Math.cos(facteur)) * 1.1 + 1;
-        //removeHint();
-        //System.out.println(facteur);
-        for (Circle c : this.hintCircles) {
-            Circle newCircle = c;
-            g.getChildren().remove(c);
-            newCircle.setRadius(20 * totZoom * facteur);
-            g.getChildren().add(newCircle);
-        }
-    }*/
     private static final class MouseLocation {
 
         public double x, y;
