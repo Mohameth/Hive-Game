@@ -19,15 +19,16 @@ public class Fourmi extends Insecte {
     public Collection<Case> deplacementPossible(Plateau plateau) {
         Collection<Case> result = new LinkedList<>();
         LinkedList<Case> toCheck = new LinkedList<>();
-        HashSet<Case> alreadyChecked = new HashSet<>();
+        LinkedList<Case> alreadyChecked = new LinkedList<>();
         
         toCheck.add(this.getEmplacement());
         while (!toCheck.isEmpty()) {
             Case courante = toCheck.removeLast();
+            alreadyChecked.add(courante);
             
             for (Case c : plateau.getCasesVoisinesSansGates(courante, false)) {
                 if (c.estVide()) {
-                    result.add(c);
+                    if (!result.contains(c)) result.add(c);
                 }
                 else {
                     if (!alreadyChecked.contains(c)) {
