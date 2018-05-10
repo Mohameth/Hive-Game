@@ -68,6 +68,39 @@ public class Plateau {
         return voisins;
     }
 
+    public ArrayList<Case> occupees() {
+        ArrayList<Case> res = new ArrayList<>();
+        Iterator<Case> it = this.cases.values().iterator();
+        while(it.hasNext()) {
+            Case c = it.next();
+            if (!c.estVide()) {
+                res.add(c);
+            }
+        }
+        return res;
+    }
+    
+    public ArrayList<Case> casesVidePlacement(Joueur j) {
+        ArrayList<Case> res = new ArrayList<>();
+        Iterator<Case> it = this.cases.values().iterator();
+        boolean joueurAdverse = false;
+        while(it.hasNext()) {
+            Case c = it.next();
+            ArrayList<Case> voisins = (ArrayList<Case>) this.getCasesVoisinesOccupees(c);
+            if (c.estVide() && !voisins.isEmpty()) {
+                joueurAdverse = false;
+                Iterator<Case> itv = voisins.iterator();
+                while (!joueurAdverse && it.hasNext()) {
+                    if (!itv.next().getInsecteOnTop().getJoueur().equals(j))
+                        joueurAdverse = true;
+                }
+                if (!joueurAdverse)
+                    res.add(c);
+            }
+        }
+        return res;
+    }
+    
     public Collection<Case> getCasesVoisinesOccupees(Case c) {
         ArrayList<Case> voisins = new ArrayList<>();
         for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
