@@ -120,7 +120,7 @@ public class Plateau {
         do {
             c = (Case) listeCases[i];
             i++;
-        } while (c.estVide());
+        } while (i < listeCases.length && (c.estVide()));
 
         ArrayList<Case> visites = new ArrayList<>();
         LinkedList<Case> file = new LinkedList<>();
