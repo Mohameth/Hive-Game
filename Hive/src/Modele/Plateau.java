@@ -35,7 +35,7 @@ public class Plateau {
             this.getCase(position).addInsecte(insecte);
             this.nbPionsEnJeu++;
         } catch (Exception ex) {
-            System.err.println("Erreur ajout");
+            System.err.println("Erreur ajout : " + ex);
         }
     }
 
@@ -52,7 +52,7 @@ public class Plateau {
         try {
             this.getCase(position).removeInsecte();
         } catch (Exception ex) {
-            System.err.println("Erreur delete");
+            System.err.println("Erreur delete : " + ex);
         }
     }
 
@@ -84,7 +84,8 @@ public class Plateau {
         Collection<Case> dep = this.getCasesVoisines(c, exclureCaseLibre);
         Iterator<Case> it = dep.iterator();
         while (it.hasNext()) {
-            if (this.gateBetween(c, it.next())) {
+            Case voisin = it.next();
+            if (this.gateBetween(c, voisin) || rucheBrisee(c, voisin)) {
                 it.remove();
             }
         }
@@ -110,38 +111,38 @@ public class Plateau {
         return nombreCasesAdjacentesNonVide == 2;
     }
 
-    public boolean rucheBrisee() { //Tester aussi avec un compteur de changements
+    public boolean rucheBrisee(Case ghost, Case moveDest) { //Tester aussi avec un compteur de changements
         if (this.rucheVide()) return false;
         
         Object[] listeCases;
-        Case c;
+        //Case c;
         int i = 0;
         listeCases = this.cases.values().toArray();
-        do {
-            c = (Case) listeCases[i];
-            i++;
-        } while (i < listeCases.length && (c.estVide()));
+        if (ghost == null && moveDest == null) {
+            do {
+                moveDest = (Case) listeCases[i];
+                i++;
+            } while (i < listeCases.length && (moveDest.estVide()));
+        }
+        
 
         ArrayList<Case> visites = new ArrayList<>();
         LinkedList<Case> file = new LinkedList<>();
-        visites.add(c);
-        file.add(c);
+        visites.add(moveDest);
+        file.add(moveDest);
         while (!file.isEmpty()) {
             Case courante = file.pollFirst();
             ArrayList<Case> voisins = (ArrayList<Case>) getCasesVoisinesOccupees(courante);
             for (Case caseC : voisins) {
-                if (!visites.contains(caseC)) {
+                if (!visites.contains(caseC) && !caseC.equals(ghost)) {
                     visites.add(caseC);
                     file.addLast(caseC);
                 }
                 
             }
         }
-        if (visites.size() == this.nbPionsEnJeu) {
-            return false;
-        }
-
-        return true;
+        
+        return visites.size() != this.nbPionsEnJeu;
     }
 
     @Override

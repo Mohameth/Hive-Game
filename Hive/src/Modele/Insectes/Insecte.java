@@ -44,11 +44,6 @@ public abstract class Insecte {
 
     public void setEmplacement(Case emplacement) {
         this.emplacement = emplacement;
-        try {
-        if (this.emplacement.getInsecteOnTop() != this) emplacement.addInsecte(this);
-        } catch (Exception e) {
-            System.err.println("ERREUR SET EMPLACEMENT : " + e);
-        } 
     }
 
     @Override

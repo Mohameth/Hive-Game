@@ -62,6 +62,7 @@ public class InsecteTest {
 
         Case caseReine = instance.getCase(point);
         Reine r = new Reine(j1);
+        instance.ajoutInsecte(r, point);
         r.setEmplacement(caseReine);
 
         ArrayList<Case> result = new ArrayList<>();
@@ -85,16 +86,18 @@ public class InsecteTest {
         //expectedWithGate.add(new Point3DH(0, +1, -1)); //--> Case occupe
         //expectedWithGate.add(new Point3DH(+1, 0, -1)); //--> Inaccessible (gate)
         //expectedWithGate.add(new Point3DH(+1, -1, 0)); //--> Case occupe
-        expectedWithGate.add(new Point3DH(0, -1, +1));
-        expectedWithGate.add(new Point3DH(-1, 0, +1));
-        expectedWithGate.add(new Point3DH(-1, +1, 0));
+        //expectedWithGate.add(new Point3DH(0, -1, +1));
+        //expectedWithGate.add(new Point3DH(-1, 0, +1));
+        //expectedWithGate.add(new Point3DH(-1, +1, 0));
 
         Case caseOccupe1 = instance.getCase(new Point3DH(0, 1, -1));
         Case caseOccupe2 = instance.getCase(new Point3DH(1, -1, 0));
 
         try {
-            caseOccupe1.addInsecte(new Fourmi(j1));
-            caseOccupe2.addInsecte(new Fourmi(j1));
+            Fourmi f1 = new Fourmi(j1); f1 .setEmplacement(caseOccupe1);
+            Fourmi f2 = new Fourmi(j1); f2 .setEmplacement(caseOccupe2);
+            instance.ajoutInsecte(f1, caseOccupe1.getCoordonnees());
+            instance.ajoutInsecte(f2, caseOccupe2.getCoordonnees());
         } catch (Exception ex) {
             fail("L'ajout d'insecte a échoué");
         }
@@ -108,16 +111,7 @@ public class InsecteTest {
 
     }
 
-    private void arrayCorresponds(Collection<Case> result, ArrayList<Point3DH> pointsExpected) {
-        ArrayList<Point3DH> copie = new ArrayList<>(pointsExpected);
-        assertTrue(pointsExpected.size() == result.size());
-        for (Case c : result) {
-            assertTrue(pointsExpected.contains(c.getCoordonnees()));
-            copie.remove(c.getCoordonnees());
-        }
-
-        assertTrue(copie.isEmpty());
-    }
+    
 
     @Test
     public void testDeplacementScarabee() {
@@ -157,16 +151,16 @@ public class InsecteTest {
         result = new ArrayList<>();
         result.addAll(s.deplacementPossible(instance));
 
-        arrayCorresponds(result, expected);
+        arrayCorresponds(result, new ArrayList<>());
         s.deplacement(instance, Occupe2);
 
         ArrayList<Point3DH> newExpectation = new ArrayList<>();
-        newExpectation.add(new Point3DH(0, 0, 0));
-        newExpectation.add(new Point3DH(1, 0, -1));
-        newExpectation.add(new Point3DH(2, -1, -1));
-        newExpectation.add(new Point3DH(2, -2, 0));
-        newExpectation.add(new Point3DH(1, -2, 1));
-        newExpectation.add(new Point3DH(0, -1, 1));
+//        newExpectation.add(new Point3DH(0, 0, 0));
+//        newExpectation.add(new Point3DH(1, 0, -1));
+//        newExpectation.add(new Point3DH(2, -1, -1));
+//        newExpectation.add(new Point3DH(2, -2, 0));
+//        newExpectation.add(new Point3DH(1, -2, 1));
+//        newExpectation.add(new Point3DH(0, -1, 1));
 
         result = new ArrayList<>();
         result.addAll(s.deplacementPossible(instance));
@@ -187,6 +181,7 @@ public class InsecteTest {
 
         Case caseFourmi = instance.getCase(new Point3DH(0, 0, 0));
         Fourmi f = new Fourmi(j1);
+        instance.ajoutInsecte(f, new Point3DH(0, 0, 0));
         f.setEmplacement(caseFourmi);
         
         System.out.println("test avec la fourmis seulement :");
@@ -206,28 +201,34 @@ public class InsecteTest {
         Case caseOccupe2 = instance.getCase(new Point3DH(1, -1, 0));
 
         try {
-            caseOccupe1.addInsecte(new Scarabee(j1));
-            caseOccupe2.addInsecte(new Scarabee(j1));
+            Scarabee s1 = new Scarabee(j1); s1.setEmplacement(caseOccupe1);
+            Scarabee s2 = new Scarabee(j1); s2.setEmplacement(caseOccupe2);
+            instance.ajoutInsecte(s1, caseOccupe1.getCoordonnees());
+            instance.ajoutInsecte(s2, caseOccupe2.getCoordonnees());
         } catch (Exception ex) {
             fail("L'ajout d'insecte a échoué");
         }
 
         System.out.println("test deplacement avec 2 cases et 1 déplacement impossible occupées :");
-        expected.remove(new Point3DH(0, 1, -1)); // Case occupée
-        expected.remove(new Point3DH(1, 0, -1)); // RUCHE BRISE
-        expected.remove(new Point3DH(1, -1, 0)); // Case occupée
+//        expected.remove(new Point3DH(0, 1, -1)); // Case occupée
+//        expected.remove(new Point3DH(1, 0, -1)); // RUCHE BRISE
+//        expected.remove(new Point3DH(1, -1, 0)); // Case occupée
 
-        expected.add(new Point3DH(-1, 2, -1));
-        expected.add(new Point3DH(0, 2, -2));
-        expected.add(new Point3DH(1, 1, -2));
-        expected.add(new Point3DH(1, 0, -1));
-        expected.add(new Point3DH(2, -1, -1));
-        expected.add(new Point3DH(2, -2, 0));
-        expected.add(new Point3DH(1, -2, 1));
-
-        arrayCorresponds(f.deplacementPossible(instance), expected);
+        
+        arrayCorresponds(f.deplacementPossible(instance), new ArrayList<>());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
         System.out.println("");
+    }
+    
+    private void arrayCorresponds(Collection<Case> result, ArrayList<Point3DH> pointsExpected) {
+        ArrayList<Point3DH> copie = new ArrayList<>(pointsExpected);
+        assertTrue(pointsExpected.size() == result.size());
+        for (Case c : result) {
+            assertTrue(pointsExpected.contains(c.getCoordonnees()));
+            copie.remove(c.getCoordonnees());
+        }
+
+        assertTrue(copie.isEmpty());
     }
 }
