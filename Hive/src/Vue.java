@@ -7,9 +7,11 @@ import javafx.application.Application;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -18,7 +20,6 @@ import javafx.stage.Stage;
 public class Vue extends Application implements Observateur {
 
     ArrayList<Piece> pieceList;
-    Map<Piece, ArrayList<PieceHitbox>> hitboxList;  //pour une piece j'ai les points hitbox coté
     ArrayList<Circle> hintCircles;
     Piece currentSelected;
 
@@ -38,92 +39,13 @@ public class Vue extends Application implements Observateur {
         }
     }
 
-    private void initCornerHitbox(Piece p, Group g) {
-        ArrayList<PieceHitbox> a = new ArrayList<>();
-
-        double x, y;
-        for (int i = 0; i < 6; i++) {
-            PieceHitbox pieceHitbox;
-
-            pieceHitbox = new PieceHitbox(p, i);  //10 10 la postion de l'image voisine
-            pieceHitbox.setCenterOfHitbox(totZoom);
-            pieceHitbox.setCenterOfImageHitbox(totZoom);
-
-            if (this.pieceList.size() == 1) { //mettre les coordonnées a 0 0 pour la première piece
-                int result[] = getHitboxCoord(i, p.getX(), p.getY(), p.getZ());
-                pieceHitbox.setXYZ(result[0], result[1], result[2]);
-            } else {
-                pieceHitbox.setXYZ(47, 47, 47); //undefine pour les autres depend du snapping
-            }
-            makeHitoxScrollZoom(pieceHitbox.getHitbox());
-            a.add(pieceHitbox);
-        }
-
-        this.hitboxList.put(p, a);
-
-        for (PieceHitbox piece : this.hitboxList.get(p)) {
-            Circle c = piece.getHitbox();
-            c.setTranslateX(sceneWidth / 2);
-            c.setTranslateY(sceneHeight / 2);
-
-            //g.getChildren().add(c);
-        }
-    }
-
-    private int[] getHitboxCoord(int pos, int coordX, int coordY, int coordZ) { //en fonction de la position du coin et de la position de la piece sur la grille
-        // System.out.println("AA= " + pos);
-        // System.out.println("X= " + coordX + " Y = " + coordY + " Z = " + coordZ);
-
-        int x = 0;
-        int y = 0;
-        int z = 0;
-        switch (pos) {
-            case 0:
-                x = coordX;
-                y = coordY + 1;
-                z = coordZ - 1;
-                break;
-            case 1:
-                x = coordX + 1;
-                y = coordY;
-                z = coordZ - 1;
-                break;
-            case 2:
-                x = coordX + 1;
-                y = coordY - 1;
-                z = coordZ;
-                break;
-            case 3:
-                x = coordX;
-                y = coordY - 1;
-                z = coordZ + 1;
-                break;
-            case 4:
-                x = coordX - 1;
-                y = coordY;
-                z = coordZ + 1;
-                break;
-            case 5:
-                x = coordX - 1;
-                y = coordY + 1;
-                z = coordZ;
-                break;
-        }
-
-        //System.out.println(" New X= " + x + " New Y = " + y + " New Z = " + z);
-        return new int[]{x, y, z};
-    }
-
     private void addImage(String imgName, Group g, double x, double y) {
-        Piece p = new Piece(imgName, g, sceneWidth, sceneHeight);
+        Piece p = new Piece(imgName, g, sceneWidth, sceneHeight, totZoom);
         if (this.pieceList.size() == 0) { //la premiere piece jouer possède les coordonnées 0 0
             p.setXYZ(0, 0, 0);
-        } else {
-            p.setXYZ(47, 47, 47);
         }
         p.addObserver(this);
         pieceList.add(p);
-        initCornerHitbox(p, g);
         p.moveToXY(x, y);
         g.getChildren().add(p.getImgv());
     }
@@ -139,14 +61,14 @@ public class Vue extends Application implements Observateur {
         String[] namePiece = new String[]{"araignee", "fourmis", "ladybug", "moustique", "pillbug", "renne", "sauterelles", "scarabée"};
         String[] colorPiece = new String[]{"black", "white"};
 
-        int x = -1800, y = -1800;
+        int x = -1800, y = -500;
         for (String color : colorPiece) {
             for (String name : namePiece) {
                 addImage("piontr_" + color + "_" + name + ".png", g, x, y);
                 x += 470;  //image width + 9
             }
             x = -1800;
-            y += 4000;
+            y += 2000;
         }
 
         //Ajout des events de la souris
@@ -170,12 +92,13 @@ public class Vue extends Application implements Observateur {
         this.g = new Group();
         this.pieceList = new ArrayList<>();
         this.hintCircles = new ArrayList<>();
-        this.hitboxList = new HashMap<>();
         this.currentSelected = null;
 
         //creation du plateau
         Rectangle rect = new Rectangle(0, 0);
-        rect.setFill(Color.LIGHTGREY);
+
+        Image img = new Image("background.jpg");
+        rect.setFill(new ImagePattern(img));
         rect.setStroke(Color.BLACK);
         g.getChildren().add(rect);  //ajout dans le group
 
@@ -195,6 +118,7 @@ public class Vue extends Application implements Observateur {
         primaryStage.setScene(scene);
         primaryStage.show();
         dessineTemplate(g);
+
         /*
         AnimationTimer anim = new AnimationTimer() {
             public void handle(long temps) {
@@ -300,7 +224,7 @@ public class Vue extends Application implements Observateur {
     @Override
     public void updateMove(Piece p, double deltaX, double deltaY, boolean isBoardMove) { //on deplace un seul pion
         //DEplacer les cercles hitbox
-        for (PieceHitbox pieceh : this.hitboxList.get(p)) {
+        for (PieceHitbox pieceh : p.getPieceHitboxList()) {
             pieceh.updateCoordMove(deltaX, deltaY);
             pieceh.removeSnap();
         }
@@ -315,55 +239,46 @@ public class Vue extends Application implements Observateur {
         //si la piece n'est pas celle la et que le cercle et libre alors l'analyser (si colision placer l'image de la piece correctement + update X et Y)
         //ajouter une boucle pour les autres points...
 
-        for (Piece autrePiece : this.hitboxList.keySet()) {
+        for (Piece autrePiece : pieceList) {
             if (!autrePiece.equals(p)) { //si c'est pas la meme piece
                 //alors on explore les cercles (hitbox) LIBRE de cette piece et on test la collision
-                for (PieceHitbox hitbox : this.hitboxList.get(autrePiece)) {
+                for (PieceHitbox hitbox : autrePiece.getPieceHitboxList()) {
                     if (hitbox.isLibre()) { //si elle est libre
                         //il y a t'il collision avec un des coins de la pièce qu'on bouge?
-                        for (PieceHitbox pieceh : this.hitboxList.get(p)) { //pour chaqu'un des cercles de la piece qu'on vient de bouger verfier si collision
-                            if (collisionHitbox(pieceh.getHitbox(), hitbox.getHitbox())) {
-                                removeHint();
-                                //System.out.println("Collision !! avec x:" + hitbox.X + " y:" + hitbox.Y);
-                                //System.out.println(" New X= " + hitbox.getX() + " New Y = " + hitbox.getY() + " New Z = " + hitbox.getZ());
-                                p.snap(pieceh, hitbox);
-                                updateHitBoxPos(p);
-                            }
+                        if (collisionHitbox(p, hitbox)) {
+                            removeHint();
+                            p.snap(hitbox);
+                            p.updateHitBoxPos();
                         }
+
                     }
                 }
             }
         }
-    }
 
-    public void updateHitBoxPos(Piece p) {
-        int i = 0;
-        for (PieceHitbox pieceh : this.hitboxList.get(p)) {
-            int result[] = getHitboxCoord(i, p.getX(), p.getY(), p.getZ());
-            pieceh.setXYZ(result[0], result[1], result[2]);
-            i++;
-        }
     }
 
     public void updateZoom(Piece p, double zoomFactor) {
-        for (PieceHitbox pieceh : this.hitboxList.get(p)) {
+        for (PieceHitbox pieceh : p.getPieceHitboxList()) {
             pieceh.updateCoordZoom(zoomFactor);
             //pieceh.setCenterOfHitbox(totZoom);
         }
     }
 
-    private boolean collisionHitbox(Circle c1, Circle c2) {
+    private boolean collisionHitbox(Piece p, PieceHitbox ph) {
+        double imgWidthRadius = (p.getImgv().getFitWidth() / 3) * totZoom;
+        double imgx = p.getImgv().getX();
+        double imgy = p.getImgv().getY();
 
         //C1 with center (x1,y1) and radius r1;
         //C2 with center (x2,y2) and radius r2.
         //(x2-x1)^2 + (y1-y2)^2 <= (r1+r2)^2
-        double r1 = (c2.getCenterX() - c1.getCenterX());
+        double r1 = (ph.getPosX() - imgx);
         r1 *= r1;
-        double r2 = (c1.getCenterY() - c2.getCenterY());
+        double r2 = (imgy - ph.getPosY());
         r2 *= r2;
-        double r3 = (c1.getRadius() + c2.getRadius());
+        double r3 = (imgWidthRadius + (75 * totZoom));  //1 radius du point d'encrage
         r3 *= r3;
-
         return (r1 + r2 <= r3);
 
     }
@@ -384,11 +299,11 @@ public class Vue extends Application implements Observateur {
     public void displayLibre(Piece p) {
         removeHint();
         if (this.hintCircles.isEmpty()) {
-            for (Piece autrePiece : this.hitboxList.keySet()) {
+            for (Piece autrePiece : this.pieceList) {
                 if (!autrePiece.equals(p)) { //si c'est pas la meme piece
                     //alors on explore les cercles (hitbox) LIBRE de cette piece et on test la collision
 
-                    for (PieceHitbox hitbox : this.hitboxList.get(autrePiece)) {
+                    for (PieceHitbox hitbox : autrePiece.getPieceHitboxList()) {
 
                         if (hitbox.isLibre()) { //si elle est libre
                             Circle c = new Circle(hitbox.getPosX(), hitbox.getPosY(), 75 * totZoom, Color.rgb(0, 255, 0, 0.5));
