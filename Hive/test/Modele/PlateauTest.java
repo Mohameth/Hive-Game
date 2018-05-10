@@ -279,18 +279,18 @@ public class PlateauTest {
         instance = new Plateau();
         instance.ajoutInsecte(reine, orig);
         instance.ajoutInsecte(reine, orig.voisinBas());
-        instance.ajoutInsecte(reine,orig.voisinBas().voisinBas());
+        instance.ajoutInsecte(reine, orig.voisinBas().voisinBas());
         assertFalse(instance.rucheBrisee());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
-        
+
         System.out.println("test sur une ruche casé avec trois insectes :");
         instance = new Plateau();
         instance.ajoutInsecte(reine, orig);
         instance.ajoutInsecte(reine, orig.voisinBas().voisinDroiteBas());
-        instance.ajoutInsecte(reine,orig.voisinBas().voisinBas().voisinGaucheBas());
+        instance.ajoutInsecte(reine, orig.voisinBas().voisinBas().voisinGaucheBas());
         assertTrue(instance.rucheBrisee());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
-        
+
         System.out.println("test sur une ruche avec 7 insectes (1 à l'origine et les 6 coins remplit) :");
         instance = new Plateau();
         instance.ajoutInsecte(reine, orig);
@@ -302,7 +302,7 @@ public class PlateauTest {
         instance.ajoutInsecte(reine, orig.voisinHaut());
         assertFalse(instance.rucheBrisee());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
-        
+
         System.out.println("test sur une ruche casé avec 7 insectes :");
         instance = new Plateau();
         instance.ajoutInsecte(reine, orig);
@@ -315,7 +315,7 @@ public class PlateauTest {
         assertTrue(instance.rucheBrisee());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
     }
-    
+
     /**
      * Test of rucheVide method, of class Plateau.
      */
@@ -323,7 +323,7 @@ public class PlateauTest {
     public void testRucheVide() {
         System.out.println("=============================================");
         System.out.println("Test rucheVide =============================>\n");
-        
+
         Point3DH orig = new Point3DH(0, 0, 0);
         Plateau instance = new Plateau();
         Reine reine = new Reine(new JoueurHumain(instance));
@@ -331,32 +331,32 @@ public class PlateauTest {
         System.out.println("test sur une ruche venant d'être créé :");
         assertTrue(instance.rucheVide());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
-        
+
         System.out.println("test avec un insecte a l'origine :");
         instance.ajoutInsecte(reine, orig);
         assertFalse(instance.rucheVide());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
-        
+
         System.out.println("test avec un insecte éloigné de l'origine :");
         instance = new Plateau();
-        instance.ajoutInsecte(reine, new Point3DH(50,89,44));
+        instance.ajoutInsecte(reine, new Point3DH(50, 89, 44));
         assertFalse(instance.rucheVide());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
-        
+
         System.out.println("test aprés avoir supprimé l'insecte :");
-        instance.deleteInsecte(reine, new Point3DH(50,89,44));
+        instance.deleteInsecte(reine, new Point3DH(50, 89, 44));
         assertTrue(instance.rucheVide());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
-        
+
         System.out.println("test avec plusieur insectes éloigné de l'origine :");
         instance = new Plateau();
-        instance.ajoutInsecte(reine, new Point3DH(50,89,44));
-        instance.ajoutInsecte(reine, new Point3DH(96,59,24));
-        instance.ajoutInsecte(reine, new Point3DH(2,49,84));
-        instance.ajoutInsecte(reine, new Point3DH(3,19,84));
-        instance.ajoutInsecte(reine, new Point3DH(9,9,4));
+        instance.ajoutInsecte(reine, new Point3DH(50, 89, 44));
+        instance.ajoutInsecte(reine, new Point3DH(96, 59, 24));
+        instance.ajoutInsecte(reine, new Point3DH(2, 49, 84));
+        instance.ajoutInsecte(reine, new Point3DH(3, 19, 84));
+        instance.ajoutInsecte(reine, new Point3DH(9, 9, 4));
         assertFalse(instance.rucheVide());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
     }
-    
+
 }
