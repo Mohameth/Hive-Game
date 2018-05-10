@@ -6,7 +6,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 
 
 /*
@@ -33,7 +32,7 @@ public class Piece implements Observable {
         this.X = x;
         this.Y = y;
         this.Z = z;
-        initCornerHitbox();
+        updateHitBoxPos();
     }
 
     public int getX() {
@@ -68,7 +67,9 @@ public class Piece implements Observable {
 
         imgv.setTranslateX(sceneWidth / 2);
         imgv.setTranslateY(sceneHeight / 2);
+        initCornerHitbox();
         setXYZ(47, 47, 47);
+
     }
 
     public ImageView getImgv() {
@@ -93,6 +94,7 @@ public class Piece implements Observable {
             this.getImgv().toFront(); //afficher par dessus les autres
 
             System.out.println("Coordonnée: " + getX() + ", " + getY() + ", " + getZ());
+            printVoisin();
         }
         );
 
@@ -127,6 +129,14 @@ public class Piece implements Observable {
         });
     }
 
+    public void printVoisin() {
+        int i = 0;
+        for (PieceHitbox ph : pieceHitboxList) {
+            System.out.println("POS: " + i + "\t X: " + ph.getX() + " Y: " + ph.getY() + " Z: " + ph.getZ() + " Libre: " + ph.isLibre());
+            i++;
+        }
+    }
+
     public void setSelected() {
         //DropShadow effect
         DropShadow dropShadow = new DropShadow();
@@ -159,9 +169,9 @@ public class Piece implements Observable {
     public void snap(PieceHitbox ph) {
         moveToXY(ph.getPosX(), ph.getPosY());
         isSnapped = true;
-        this.X = ph.getX();
-        this.Y = ph.getY();
-        this.Z = ph.getZ();
+        setXYZ(ph.getX(), ph.getY(), ph.getZ());
+        //ph.setSnap(this);
+
     }
 
     public void moveToXY(double x, double y) {
@@ -213,20 +223,19 @@ public class Piece implements Observable {
         return pieceHitboxList;
     }
 
-    private void initCornerHitbox() {
-
+    public void initCornerHitbox() {
+        pieceHitboxList.clear();
         for (int i = 0; i < 6; i++) {
             PieceHitbox pieceHitbox;
 
             pieceHitbox = new PieceHitbox(this, i);  //10 10 la postion de l'image voisine
-            pieceHitbox.setCenterOfHitbox(totzoom);
+            //pieceHitbox.setCenterOfHitbox(totzoom);
             pieceHitbox.setCenterOfImageHitbox(totzoom);
 
-            if (X != 47 && Y != 47 && Z != 47) { //on est le premier
-                int result[] = getHitboxCoord(i, getX(), getY(), getZ());
-                pieceHitbox.setXYZ(result[0], result[1], result[2]);
-            }
-
+//            if (X != 47 && Y != 47 && Z != 47) { //on est le premier
+//                int result[] = getHitboxCoord(i, getX(), getY(), getZ());
+//                pieceHitbox.setXYZ(result[0], result[1], result[2]);
+//            }
             //makeHitoxScrollZoom(pieceHitbox.getHitbox());
             pieceHitboxList.add(pieceHitbox);
         }

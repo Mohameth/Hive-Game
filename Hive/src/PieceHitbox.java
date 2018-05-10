@@ -1,7 +1,3 @@
-
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -14,7 +10,6 @@ import javafx.scene.shape.Circle;
 public class PieceHitbox {
 
     private Piece p;
-    private Circle hitbox;
     private double posX, posY;  //posX = position du voisin pour l'image
     private int X, Y, Z; //X et Y coordonnée que prendra la piece
     private int numCoin;
@@ -29,12 +24,23 @@ public class PieceHitbox {
         return posY;
     }
 
+    public int getX() {
+        return X;
+    }
+
+    public int getY() {
+        return Y;
+    }
+
+    public int getZ() {
+        return Z;
+    }
+
     public PieceHitbox(Piece newp, int numCoin) {
         this.p = newp;
         this.posX = 0;
         this.posY = 0;
         PieceHitboxSnapped = null;
-
         this.libre = true;
         this.X = 47;
         this.Y = 47;
@@ -52,11 +58,19 @@ public class PieceHitbox {
         this.PieceHitboxSnapped = phv;
     }
 
-    public void setSnap(PieceHitbox phVoisin) {
+    public void setSnap(Piece pVoisin) {
         setLibre(false);
-        this.setVoisin(phVoisin);
-        phVoisin.setLibre(false);
-        phVoisin.setVoisin(this);
+        searchHitboxSame(pVoisin);
+    }
+
+    private void searchHitboxSame(Piece p) {
+        for (PieceHitbox ph : p.getPieceHitboxList()) {
+            if (ph.getX() == X && ph.getY() == Y && ph.getZ() == Z) {
+                this.setVoisin(ph);
+                ph.setLibre(false);
+                ph.setVoisin(this);
+            }
+        }
     }
 
     public void removeSnap() {
@@ -76,30 +90,14 @@ public class PieceHitbox {
         this.libre = libre;
     }
 
-    public Circle getHitbox() {
-        return hitbox;
-    }
-
     public void updateCoordZoom(double zoomFactor) {
-        hitbox.setCenterX(hitbox.getCenterX() * zoomFactor);
-        hitbox.setCenterY(hitbox.getCenterY() * zoomFactor);
-        hitbox.setRadius(hitbox.getRadius() * zoomFactor);
         posX *= zoomFactor;
         posY *= zoomFactor;
     }
 
     public void updateCoordMove(double deltaX, double deltaY) {
-        hitbox.setCenterX(hitbox.getCenterX() + deltaX);
-        hitbox.setCenterY(hitbox.getCenterY() + deltaY);
         posX += deltaX;
         posY += deltaY;
-    }
-
-    public void setCenterOfHitbox(double totZoom) {
-        //double imgWidth = this.p.getImgv().getFitWidth() / 4;
-        double scale = this.p.getImgv().getFitWidth() / 4;
-        double result[] = getCenterOfHitbox(totZoom, scale);
-        this.hitbox = new Circle(result[0], result[1], scale, Color.rgb(0, 0, 0, 0.5));
     }
 
     public double[] getCenterOfHitbox(double totZoom, double scale) {
@@ -136,18 +134,6 @@ public class PieceHitbox {
 
         }
         return new double[]{x, y};
-    }
-
-    public int getX() {
-        return X;
-    }
-
-    public int getY() {
-        return Y;
-    }
-
-    public int getZ() {
-        return Z;
     }
 
     public void setCenterOfImageHitbox(double totZoom) {

@@ -7,7 +7,9 @@ import javafx.application.Application;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
@@ -20,7 +22,7 @@ import javafx.stage.Stage;
 public class Vue extends Application implements Observateur {
 
     ArrayList<Piece> pieceList;
-    ArrayList<Circle> hintCircles;
+    ArrayList<ImageView> hintZones;
     Piece currentSelected;
 
     private double sceneWidth, sceneHeight; //taille de la scene
@@ -52,25 +54,27 @@ public class Vue extends Application implements Observateur {
 
     private void dessineTemplate(Group g) {
         //création des images
-
         Line l1 = new Line(0, 0, sceneWidth, sceneHeight);
         Line l2 = new Line(0, sceneHeight, sceneWidth, 0);
-
         g.getChildren().addAll(l1, l2);
-
         String[] namePiece = new String[]{"araignee", "fourmis", "ladybug", "moustique", "pillbug", "renne", "sauterelles", "scarabée"};
         String[] colorPiece = new String[]{"black", "white"};
 
-        int x = -1800, y = -500;
+        addImage("piontr_black_pillbug.png", g, 0, 0);
+
+        int x = -1800, y = -1800;
         for (String color : colorPiece) {
             for (String name : namePiece) {
                 addImage("piontr_" + color + "_" + name + ".png", g, x, y);
                 x += 470;  //image width + 9
             }
             x = -1800;
-            y += 2000;
+            y += 4000;
         }
 
+//        addImage("piontr_black_ladybug.png", g, -800, 0);
+//        addImage("piontr_black_pillbug.png", g, 0, 0);
+//        addImage("piontr_black_scarabée.png", g, 800, 0);
         //Ajout des events de la souris
         setImgListMouseEvent();
 
@@ -81,7 +85,6 @@ public class Vue extends Application implements Observateur {
                     resetView();
                 }
         );
-
         g.getChildren()
                 .add(b);
     }
@@ -91,7 +94,7 @@ public class Vue extends Application implements Observateur {
 
         this.g = new Group();
         this.pieceList = new ArrayList<>();
-        this.hintCircles = new ArrayList<>();
+        this.hintZones = new ArrayList<>();
         this.currentSelected = null;
 
         //creation du plateau
@@ -133,6 +136,7 @@ public class Vue extends Application implements Observateur {
         if (this.currentSelected != null) {
             this.currentSelected.unSelect();
         }
+        removeHint();
     }
 
     private void makeBoardDraggable(Rectangle rect) {
@@ -156,10 +160,8 @@ public class Vue extends Application implements Observateur {
             for (Piece p : pieceList) {
                 p.moveXYBoard(deltaX, deltaY);
             }
-
             this.totMoveBoardX += deltaX;
             this.totMoveBoardY += deltaY;
-
             lastMouseLocation.x = mouseEvent.getSceneX();
             lastMouseLocation.y = mouseEvent.getSceneY();
         });
@@ -169,7 +171,6 @@ public class Vue extends Application implements Observateur {
         for (Piece p : pieceList) {
             p.moveXYBoard(-this.totMoveBoardX, -this.totMoveBoardY);
         }
-
         while (this.totZoom < 0.95 || this.totZoom > 1.05) {
             if (totZoom < 1) {
                 ZoomFactor(this.totZoom);
@@ -177,24 +178,13 @@ public class Vue extends Application implements Observateur {
                 ZoomFactor(-this.totZoom);
             }
         }
-
         this.totMoveBoardX = 0;
         this.totMoveBoardY = 0;
         this.totZoom = 1;
     }
 
     private void makeBoardScrollZoom(Rectangle rect) {
-
         rect.setOnScroll((ScrollEvent event) -> {
-            double deltaY = event.getDeltaY();
-            ZoomFactor(deltaY);
-            removeHint();
-        }
-        );
-    }
-
-    private void makeHitoxScrollZoom(Circle c) {
-        c.setOnScroll((ScrollEvent event) -> {
             double deltaY = event.getDeltaY();
             ZoomFactor(deltaY);
             removeHint();
@@ -204,21 +194,16 @@ public class Vue extends Application implements Observateur {
 
     private void ZoomFactor(double delta) {
         double zoomFactor = 1.05;
-
         if (delta < 0) {
             zoomFactor = 2.0 - zoomFactor;
         }
-
         for (Piece p : pieceList) {
             p.zoomFactor(zoomFactor);
             updateZoom(p, zoomFactor);
         }
-
         this.totZoom *= zoomFactor;
-
         this.totMoveBoardX *= zoomFactor;
         this.totMoveBoardY *= zoomFactor;
-
     }
 
     @Override
@@ -261,7 +246,6 @@ public class Vue extends Application implements Observateur {
     public void updateZoom(Piece p, double zoomFactor) {
         for (PieceHitbox pieceh : p.getPieceHitboxList()) {
             pieceh.updateCoordZoom(zoomFactor);
-            //pieceh.setCenterOfHitbox(totZoom);
         }
     }
 
@@ -284,8 +268,8 @@ public class Vue extends Application implements Observateur {
     }
 
     public void removeHint() {
-        g.getChildren().removeAll(this.hintCircles);
-        this.hintCircles.clear();
+        g.getChildren().removeAll(this.hintZones);
+        this.hintZones.clear();
     }
 
     public void updateMousePressPiece(Piece p) {
@@ -297,8 +281,9 @@ public class Vue extends Application implements Observateur {
     }
 
     public void displayLibre(Piece p) {
-        removeHint();
-        if (this.hintCircles.isEmpty()) {
+        // removeHint();
+        Image img = new Image("hint.png");
+        if (this.hintZones.isEmpty()) {
             for (Piece autrePiece : this.pieceList) {
                 if (!autrePiece.equals(p)) { //si c'est pas la meme piece
                     //alors on explore les cercles (hitbox) LIBRE de cette piece et on test la collision
@@ -306,36 +291,61 @@ public class Vue extends Application implements Observateur {
                     for (PieceHitbox hitbox : autrePiece.getPieceHitboxList()) {
 
                         if (hitbox.isLibre()) { //si elle est libre
-                            Circle c = new Circle(hitbox.getPosX(), hitbox.getPosY(), 75 * totZoom, Color.rgb(0, 255, 0, 0.5));
-                            hintCircles.add(c);
-                            c.setTranslateX(sceneWidth / 2);
-                            c.setTranslateY(sceneHeight / 2);
-                            c.setCursor(Cursor.HAND);
-                            c.addEventFilter(MouseEvent.MOUSE_PRESSED, (
+
+                            ImageView iv = new ImageView();
+                            iv.setImage(img);
+                            iv.setCursor(Cursor.HAND);
+                            iv.setLayoutX(-(img.getWidth() / 2));
+                            iv.setLayoutY(-(img.getHeight() / 2));
+                            iv.setTranslateX(sceneWidth / 2);
+                            iv.setTranslateY(sceneHeight / 2);
+
+                            double x = hitbox.getPosX();
+                            double y = hitbox.getPosY();
+
+                            iv.setX(x);
+                            iv.setY(y);
+
+                            iv.setScaleX(iv.getScaleX() * totZoom);
+                            iv.setScaleY(iv.getScaleY() * totZoom);
+
+                            hintZones.add(iv);
+
+                            iv.addEventFilter(MouseEvent.MOUSE_PRESSED, (
                                     final MouseEvent mouseEvent) -> {
-                                this.currentSelected.moveToXY(c.getCenterX(), c.getCenterY());
+                                //this.currentSelected.moveToXY(x, y);
+                                p.snap(hitbox);
                                 unselectPiece();
 
                             });
 
-                            c.addEventFilter(MouseEvent.MOUSE_ENTERED, (
+                            iv.addEventFilter(MouseEvent.MOUSE_ENTERED, (
                                     final MouseEvent mouseEvent) -> {
-                                c.setStroke(Color.RED);
-                                c.setStrokeWidth(2);
+                                setSelected(iv);
                             });
 
-                            c.addEventFilter(MouseEvent.MOUSE_EXITED, (
+                            iv.addEventFilter(MouseEvent.MOUSE_EXITED, (
                                     final MouseEvent mouseEvent) -> {
-                                c.setStroke(null);
+                                iv.setEffect(null);
                             });
-
-                            this.g.getChildren().add(c);
-
                         }
                     }
                 }
             }
+            this.g.getChildren().addAll(hintZones);
         }
+    }
+
+    public void setSelected(ImageView iv) {
+        //DropShadow effect
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(0.0);
+        dropShadow.setOffsetX(0.0);
+        dropShadow.setOffsetY(0.0);
+        dropShadow.setSpread(0.90);
+        dropShadow.setColor(Color.rgb(0, 255, 0, 0.5));
+
+        iv.setEffect(dropShadow);
     }
 
     private static final class MouseLocation {
