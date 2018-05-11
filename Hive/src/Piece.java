@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -23,8 +24,9 @@ public class Piece implements Observable {
     private ImageView imgv;
     double sceneWidth, sceneHeight;
     int X, Y, Z; //la pièce possède les coordonnées suivantes sur le plateau (coordonnée plateau pas du canvas javafx)
-    boolean isSnapped;
     private ArrayList<PieceHitbox> pieceHitboxList;
+    private boolean snap, snapConfirm;
+    private double prevImgX, prevImgY;
 
     double totzoom;
 
@@ -32,6 +34,7 @@ public class Piece implements Observable {
         this.X = x;
         this.Y = y;
         this.Z = z;
+
         updateHitBoxPos();
     }
 
@@ -47,7 +50,7 @@ public class Piece implements Observable {
         return Z;
     }
 
-    public Piece(String imgName, Group g, double sceneWidth, double sceneHeight, double totzoom) {
+    public Piece(String imgName, int sceneWidth, int sceneHeight, double totzoom) {
         Image img = new Image("pieces/" + imgName);
         this.imgv = new ImageView();
         this.pieceHitboxList = new ArrayList<>();
@@ -59,17 +62,24 @@ public class Piece implements Observable {
         imgv.setLayoutY(-(img.getHeight() / 2));
         imgv.setX(0);
         imgv.setY(0);
-        isSnapped = false;
+
+        //Ajout des events de la souris
+        imgv.setCursor(Cursor.HAND);
+        makeDraggable();
+
         this.totzoom = totzoom;
 
-        this.sceneWidth = sceneWidth;
-        this.sceneHeight = sceneHeight;
-
-        imgv.setTranslateX(sceneWidth / 2);
-        imgv.setTranslateY(sceneHeight / 2);
+        setTranslation(sceneWidth, sceneHeight);
         initCornerHitbox();
         setXYZ(47, 47, 47);
 
+    }
+
+    public void setTranslation(int sw, int sh) {
+        this.sceneWidth = sw;
+        this.sceneHeight = sh;
+        this.imgv.setTranslateX(sceneWidth / 2);
+        this.imgv.setTranslateY(sceneHeight / 2);
     }
 
     public ImageView getImgv() {
@@ -78,29 +88,31 @@ public class Piece implements Observable {
 
     public void makeDraggable() {
         MouseLocation lastMouseLocation = new MouseLocation();
-        MouseLocation lastMouseLocationDist = new MouseLocation();
-        TimeSave ts = new TimeSave();
 
         // --- remember initial coordinates of mouse cursor and node
         this.imgv.addEventFilter(MouseEvent.MOUSE_PRESSED, (
                 final MouseEvent mouseEvent) -> {
             lastMouseLocation.x = mouseEvent.getSceneX();
             lastMouseLocation.y = mouseEvent.getSceneY();
-            lastMouseLocationDist.x = mouseEvent.getX();
-            lastMouseLocationDist.y = mouseEvent.getY();
-            ts.time = System.nanoTime();
+
             notifyListenersMousePressed(this);
             setSelected();
             this.getImgv().toFront(); //afficher par dessus les autres
-
-            System.out.println("Coordonnée: " + getX() + ", " + getY() + ", " + getZ());
-            printVoisin();
+            snapConfirm = false;
+            affiche();
+            //printVoisin();
         }
         );
 
         this.imgv.addEventFilter(MouseEvent.MOUSE_RELEASED, (
                 final MouseEvent mouseEvent) -> {
-            //isSnapped = true;
+            if (!snap) { //retour position origine
+                moveToXY(this.prevImgX, this.prevImgY);
+            } else {
+                snapConfirm = true;
+                updatePrevPos();
+            }
+            snap = true;
         }
         );
         // --- Shift node calculated from mouse cursor movement
@@ -108,25 +120,18 @@ public class Piece implements Observable {
                 final MouseEvent mouseEvent) -> {
             double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x;
             double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y;
-            double distance = (long) Math.hypot(mouseEvent.getX() - lastMouseLocationDist.x, mouseEvent.getY() - lastMouseLocationDist.y);
-            long lEndTime = System.nanoTime();
-            double elsapstime = (lEndTime - ts.time) / 1000000;
-            double v = (distance / elsapstime);
 
-            double maxVitesse = 0.6;
-
-            isSnapped = false;
-
+            snap = false;
             moveToXY(mouseEvent.getSceneX() - (sceneWidth / 2), mouseEvent.getSceneY() - (sceneHeight / 2));
-            if (v > maxVitesse) {
-                moveToXY(mouseEvent.getSceneX() - (sceneWidth / 2), mouseEvent.getSceneY() - (sceneHeight / 2));
-            } else {
-                moveXY(deltaX, deltaY);
-            }
+            moveXY(deltaX, deltaY); //si enleve plus de snap
 
             lastMouseLocation.x = mouseEvent.getSceneX();
             lastMouseLocation.y = mouseEvent.getSceneY();
         });
+    }
+
+    public void affiche() {
+        System.out.println("PIECE : X: " + X + " Y:" + Y + " Z:" + Z + " Snap: " + snap);
     }
 
     public void printVoisin() {
@@ -145,7 +150,6 @@ public class Piece implements Observable {
         dropShadow.setOffsetY(0.0);
         dropShadow.setSpread(0.90);
         dropShadow.setColor(Color.RED);
-
         this.getImgv().setEffect(dropShadow);
     }
 
@@ -154,24 +158,33 @@ public class Piece implements Observable {
     }
 
     public void moveXY(double deltaX, double deltaY) {
-        this.imgv.setX(this.imgv.getX() + deltaX);
-        this.imgv.setY(this.imgv.getY() + deltaY);
+        Applymove(deltaX, deltaY);
         this.notifyListenersMove(deltaX, deltaY, false);
     }
 
     public void moveXYBoard(double deltaX, double deltaY) {
-        this.imgv.setX(this.imgv.getX() + deltaX);
-        this.imgv.setY(this.imgv.getY() + deltaY);
+        Applymove(deltaX, deltaY);
         this.notifyListenersMove(deltaX, deltaY, true);
 
     }
 
-    public void snap(PieceHitbox ph) {
-        moveToXY(ph.getPosX(), ph.getPosY());
-        isSnapped = true;
-        setXYZ(ph.getX(), ph.getY(), ph.getZ());
-        //ph.setSnap(this);
+    private void Applymove(double dx, double dy) {
+        this.imgv.setX(this.imgv.getX() + dx);
+        this.imgv.setY(this.imgv.getY() + dy);
+        if (snap && snapConfirm) {
+            updatePrevPos();
+        }
+    }
 
+    private void updatePrevPos() {
+        prevImgX = imgv.getX();
+        prevImgY = imgv.getY();
+    }
+
+    public void snap(PieceHitbox ph) {
+        this.snap = true;
+        moveToXY(ph.getPosX(), ph.getPosY());
+        setXYZ(ph.getX(), ph.getY(), ph.getZ());
     }
 
     public void moveToXY(double x, double y) {
@@ -191,7 +204,12 @@ public class Piece implements Observable {
         imgY = this.imgv.getY() * zoomFactor;
         this.imgv.setX(imgX);
         this.imgv.setY(imgY);
-        this.totzoom *= Math.abs(zoomFactor); //a verfiier
+
+        //update pos previous
+        this.prevImgX = imgX;
+        this.prevImgY = imgY;
+
+        this.totzoom *= Math.abs(zoomFactor);
     }
 
     @Override
@@ -214,11 +232,6 @@ public class Piece implements Observable {
         public double x, y;
     }
 
-    private static final class TimeSave {
-
-        public long time;
-    }
-
     public ArrayList<PieceHitbox> getPieceHitboxList() {
         return pieceHitboxList;
     }
@@ -227,24 +240,13 @@ public class Piece implements Observable {
         pieceHitboxList.clear();
         for (int i = 0; i < 6; i++) {
             PieceHitbox pieceHitbox;
-
             pieceHitbox = new PieceHitbox(this, i);  //10 10 la postion de l'image voisine
-            //pieceHitbox.setCenterOfHitbox(totzoom);
             pieceHitbox.setCenterOfImageHitbox(totzoom);
-
-//            if (X != 47 && Y != 47 && Z != 47) { //on est le premier
-//                int result[] = getHitboxCoord(i, getX(), getY(), getZ());
-//                pieceHitbox.setXYZ(result[0], result[1], result[2]);
-//            }
-            //makeHitoxScrollZoom(pieceHitbox.getHitbox());
             pieceHitboxList.add(pieceHitbox);
         }
     }
 
     private int[] getHitboxCoord(int pos, int coordX, int coordY, int coordZ) { //en fonction de la position du coin et de la position de la piece sur la grille
-        // System.out.println("AA= " + pos);
-        // System.out.println("X= " + coordX + " Y = " + coordY + " Z = " + coordZ);
-
         int x = 0;
         int y = 0;
         int z = 0;
@@ -280,8 +282,6 @@ public class Piece implements Observable {
                 z = coordZ;
                 break;
         }
-
-        //System.out.println(" New X= " + x + " New Y = " + y + " New Z = " + z);
         return new int[]{x, y, z};
     }
 

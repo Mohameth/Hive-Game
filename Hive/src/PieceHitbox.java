@@ -13,8 +13,19 @@ public class PieceHitbox {
     private double posX, posY;  //posX = position du voisin pour l'image
     private int X, Y, Z; //X et Y coordonnée que prendra la piece
     private int numCoin;
-    private PieceHitbox PieceHitboxSnapped;
     private boolean libre;
+
+    public PieceHitbox(Piece newp, int numCoin) {
+        this.p = newp;
+        this.posX = 0;
+        this.posY = 0;
+
+        this.libre = true;
+        this.X = 47;
+        this.Y = 47;
+        this.Z = 47;
+        this.numCoin = numCoin;
+    }
 
     public double getPosX() {
         return posX;
@@ -36,50 +47,14 @@ public class PieceHitbox {
         return Z;
     }
 
-    public PieceHitbox(Piece newp, int numCoin) {
-        this.p = newp;
-        this.posX = 0;
-        this.posY = 0;
-        PieceHitboxSnapped = null;
-        this.libre = true;
-        this.X = 47;
-        this.Y = 47;
-        this.Z = 47;
-        this.numCoin = numCoin;
-    }
-
     public void setXYZ(int x, int y, int z) {
         this.X = x;
         this.Y = y;
         this.Z = z;
     }
 
-    public void setVoisin(PieceHitbox phv) {
-        this.PieceHitboxSnapped = phv;
-    }
-
-    public void setSnap(Piece pVoisin) {
-        setLibre(false);
-        searchHitboxSame(pVoisin);
-    }
-
-    private void searchHitboxSame(Piece p) {
-        for (PieceHitbox ph : p.getPieceHitboxList()) {
-            if (ph.getX() == X && ph.getY() == Y && ph.getZ() == Z) {
-                this.setVoisin(ph);
-                ph.setLibre(false);
-                ph.setVoisin(this);
-            }
-        }
-    }
-
-    public void removeSnap() {
-        if (this.PieceHitboxSnapped != null) {
-            this.PieceHitboxSnapped.setVoisin(null);
-            this.PieceHitboxSnapped.setLibre(true);
-        }
-        this.setVoisin(null);
-        setLibre(true);
+    public void affiche() {
+        System.out.println("HITBOX X: " + X + " Y:" + Y + " Z:" + Z + " \tPOS: " + numCoin);
     }
 
     public boolean isLibre() {
@@ -142,5 +117,4 @@ public class PieceHitbox {
         this.posX = result[0];
         this.posY = result[1];
     }
-
 }

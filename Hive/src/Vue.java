@@ -1,9 +1,9 @@
 
 import javafx.scene.control.Button;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -12,9 +12,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -24,8 +24,7 @@ public class Vue extends Application implements Observateur {
     ArrayList<Piece> pieceList;
     ArrayList<ImageView> hintZones;
     Piece currentSelected;
-
-    private double sceneWidth, sceneHeight; //taille de la scene
+    private int sceneWidth, sceneHeight; //taille de la scene
     private double totZoom;  //zoom actuel du plateau
     private double totMoveBoardX, totMoveBoardY;  //position du plateau
     private Group g;
@@ -34,29 +33,22 @@ public class Vue extends Application implements Observateur {
         Application.launch(args);
     }
 
-    private void setImgListMouseEvent() {
-        for (Piece p : this.pieceList) {
-            p.getImgv().setCursor(Cursor.HAND);
-            p.makeDraggable();
-        }
-    }
-
+    //Ajoute le pion sur le plateau G au coordonnée x y.
     private void addImage(String imgName, Group g, double x, double y) {
-        Piece p = new Piece(imgName, g, sceneWidth, sceneHeight, totZoom);
-        if (this.pieceList.size() == 0) { //la premiere piece jouer possède les coordonnées 0 0
+        Piece p = new Piece(imgName, sceneWidth, sceneHeight, totZoom);
+        if (this.pieceList.size() == 0) { //Si c'est la première piece alors on luis donne les coordonnées x0 y0
             p.setXYZ(0, 0, 0);
         }
         p.addObserver(this);
-        pieceList.add(p);
+        pieceList.add(p); //ajoute le pion dans la liste des pieces du plateau
         p.moveToXY(x, y);
-        g.getChildren().add(p.getImgv());
+        g.getChildren().add(p.getImgv()); //ajoute l'image sur le plateau
     }
 
+    //Initialisation de la vue
     private void dessineTemplate(Group g) {
         //création des images
-        Line l1 = new Line(0, 0, sceneWidth, sceneHeight);
-        Line l2 = new Line(0, sceneHeight, sceneWidth, 0);
-        g.getChildren().addAll(l1, l2);
+
         String[] namePiece = new String[]{"araignee", "fourmis", "ladybug", "moustique", "pillbug", "renne", "sauterelles", "scarabée"};
         String[] colorPiece = new String[]{"black", "white"};
 
@@ -75,34 +67,75 @@ public class Vue extends Application implements Observateur {
 //        addImage("piontr_black_ladybug.png", g, -800, 0);
 //        addImage("piontr_black_pillbug.png", g, 0, 0);
 //        addImage("piontr_black_scarabée.png", g, 800, 0);
-        //Ajout des events de la souris
-        setImgListMouseEvent();
+        double moveRangeXY = 40;
+        double ZoomRangePM = 3; //equivaut a 3 zoom
+        Button bReset = new Button("Reset view");
+        Button bViewLeft = new Button("<- left");
+        Button bViewRight = new Button("Right ->");
+        Button bViewUP = new Button("UP ^");
+        Button bViewDown = new Button("Down v");
+        Button bViewZoomIn = new Button("Zoom +");
+        Button bViewZoomOut = new Button("Zoom -");
 
-        Button b = new Button("Reset view");
+        HBox hbox = new HBox();
+        hbox.getChildren().addAll(bReset, bViewLeft, bViewRight, bViewUP, bViewDown, bViewZoomIn, bViewZoomOut);
 
-        b.addEventHandler(MouseEvent.MOUSE_CLICKED,
+        bReset.addEventHandler(MouseEvent.MOUSE_CLICKED,
                 (MouseEvent e) -> {
                     resetView();
                 }
         );
-        g.getChildren()
-                .add(b);
+
+        bViewLeft.addEventHandler(MouseEvent.MOUSE_PRESSED,
+                (MouseEvent e) -> {
+                    applyBoardMove(moveRangeXY, 0);
+                }
+        );
+        bViewRight.addEventHandler(MouseEvent.MOUSE_PRESSED,
+                (MouseEvent e) -> {
+                    applyBoardMove(-moveRangeXY, 0);
+                }
+        );
+        bViewUP.addEventHandler(MouseEvent.MOUSE_PRESSED,
+                (MouseEvent e) -> {
+                    applyBoardMove(0, moveRangeXY);
+                }
+        );
+        bViewDown.addEventHandler(MouseEvent.MOUSE_PRESSED,
+                (MouseEvent e) -> {
+                    applyBoardMove(0, -moveRangeXY);
+                }
+        );
+        bViewZoomIn.addEventHandler(MouseEvent.MOUSE_PRESSED,
+                (MouseEvent e) -> {
+                    for (int i = 0; i < ZoomRangePM; i++) {
+                        ZoomFactor(20);
+                    }
+                }
+        );
+        bViewZoomOut.addEventHandler(MouseEvent.MOUSE_PRESSED,
+                (MouseEvent e) -> {
+                    for (int i = 0; i < ZoomRangePM; i++) {
+                        ZoomFactor(-20);
+                    }
+                }
+        );
+
+        g.getChildren().add(hbox);
     }
 
     @Override
     public void start(Stage primaryStage) {
-
         this.g = new Group();
         this.pieceList = new ArrayList<>();
         this.hintZones = new ArrayList<>();
-        this.currentSelected = null;
+        this.currentSelected = null; //aucune piece selectionnée
 
         //creation du plateau
         Rectangle rect = new Rectangle(0, 0);
 
         Image img = new Image("background.jpg");
         rect.setFill(new ImagePattern(img));
-        rect.setStroke(Color.BLACK);
         g.getChildren().add(rect);  //ajout dans le group
 
         //si on clique sur le rectangle deplacer les images
@@ -110,6 +143,7 @@ public class Vue extends Application implements Observateur {
         makeBoardScrollZoom(rect);
         rect.setCursor(Cursor.MOVE); //Change cursor to crosshair
 
+        //taille de base
         this.sceneWidth = 1280;
         this.sceneHeight = 720;
         this.totZoom = 1;
@@ -117,6 +151,20 @@ public class Vue extends Application implements Observateur {
         Scene scene = new Scene(g, sceneWidth, sceneHeight);
         rect.widthProperty().bind(scene.widthProperty());
         rect.heightProperty().bind(scene.heightProperty());
+
+        //Window resize event
+        scene.widthProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
+                updateWindowWidth(newSceneWidth);
+            }
+        });
+        scene.heightProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneHeight, Number newSceneHeight) {
+                updateWindowHeight(newSceneHeight);
+            }
+        });
 
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -130,6 +178,25 @@ public class Vue extends Application implements Observateur {
         };
         anim.start();
          */
+    }
+
+    private void updateWindowWidth(Number w) {
+        this.sceneWidth = w.intValue();
+        updateTranslationPiece();
+    }
+
+    private void updateWindowHeight(Number h) {
+        this.sceneHeight = h.intValue();
+        System.out.println(h.intValue());
+        updateTranslationPiece();
+    }
+
+    private void updateTranslationPiece() {
+        for (Piece p : pieceList) {
+            p.setTranslation(sceneWidth, sceneHeight);
+        }
+        removeHint();
+
     }
 
     private void unselectPiece() {
@@ -157,14 +224,24 @@ public class Vue extends Application implements Observateur {
                 final MouseEvent mouseEvent) -> {
             double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x;
             double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y;
-            for (Piece p : pieceList) {
-                p.moveXYBoard(deltaX, deltaY);
-            }
-            this.totMoveBoardX += deltaX;
-            this.totMoveBoardY += deltaY;
+//            for (Piece p : pieceList) {
+//                System.out.println("Delta: " + deltaX + " deltay: " + deltaY);
+//                p.moveXYBoard(deltaX, deltaY);
+//            }
+
+            applyBoardMove(deltaX, deltaY);
+
             lastMouseLocation.x = mouseEvent.getSceneX();
             lastMouseLocation.y = mouseEvent.getSceneY();
         });
+    }
+
+    private void applyBoardMove(double dx, double dy) {
+        for (Piece p : pieceList) {
+            p.moveXYBoard(dx, dy);
+        }
+        this.totMoveBoardX += dx;
+        this.totMoveBoardY += dy;
     }
 
     private void resetView() {
@@ -211,7 +288,6 @@ public class Vue extends Application implements Observateur {
         //DEplacer les cercles hitbox
         for (PieceHitbox pieceh : p.getPieceHitboxList()) {
             pieceh.updateCoordMove(deltaX, deltaY);
-            pieceh.removeSnap();
         }
         if (!isBoardMove) {
             checkCollision(p);
@@ -231,11 +307,9 @@ public class Vue extends Application implements Observateur {
                     if (hitbox.isLibre()) { //si elle est libre
                         //il y a t'il collision avec un des coins de la pièce qu'on bouge?
                         if (collisionHitbox(p, hitbox)) {
-                            removeHint();
                             p.snap(hitbox);
-                            p.updateHitBoxPos();
+                            removeHint();
                         }
-
                     }
                 }
             }
@@ -276,7 +350,6 @@ public class Vue extends Application implements Observateur {
 
         unselectPiece();
         this.currentSelected = p;
-
         displayLibre(p);
     }
 
@@ -313,7 +386,6 @@ public class Vue extends Application implements Observateur {
 
                             iv.addEventFilter(MouseEvent.MOUSE_PRESSED, (
                                     final MouseEvent mouseEvent) -> {
-                                //this.currentSelected.moveToXY(x, y);
                                 p.snap(hitbox);
                                 unselectPiece();
 
