@@ -11,6 +11,12 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Plateau décrit l'Etat du plateau de jeu et les actions disponible pour le modifier.
+ * @author GRP3
+ * 
+ */
+
 public class Plateau {
 
     private Map<Point3DH, Case> cases;
