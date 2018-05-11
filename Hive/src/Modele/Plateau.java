@@ -17,10 +17,11 @@ import java.util.Objects;
  * 
  */
 
-public class Plateau {
+public class Plateau implements Observable{
 
     private Map<Point3DH, Case> cases;
     private int nbPionsEnJeu;
+    private Observateur observateur;
 
     public Plateau() {
         cases = new HashMap<Point3DH, Case>();
@@ -223,6 +224,16 @@ public class Plateau {
         int hash = 7;
         hash = 37 * hash + Objects.hashCode(this.cases);
         return hash;
+    }
+
+    @Override
+    public void addObserver(Observateur newobserver) {
+        this.observateur = newobserver;
+    }
+
+    @Override
+    public void notifyListeners() {
+        this.observateur.coupJoue(this);
     }
 
 }
