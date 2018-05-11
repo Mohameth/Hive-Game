@@ -5,12 +5,8 @@
  */
 package Modele;
 
-import Modele.Insectes.Fourmi;
-import Modele.Insectes.Insecte;
-import Modele.Insectes.Reine;
+import Modele.Insectes.*;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -139,6 +135,63 @@ public class PlateauTest {
         assertTrue(Expected.isEmpty());
     }
 
+    
+    /**
+     * Test of occuppes method, of class Plateau.
+     */
+    @Test
+    public void testOccupees() {
+        System.out.println("=============================================");
+        System.out.println("Test occupees ==============================>\n");
+        
+        Point3DH orig = new Point3DH(0, 0, 0);
+        Plateau instance = new Plateau();
+        Reine reine = new Reine(new JoueurHumain(instance));
+
+        System.out.println("test avec aucune case occupees :");
+        ArrayList<Case> expected = new ArrayList<>();
+
+        ArrayList<Case> res = (ArrayList<Case>) instance.occupees();
+
+        arrayCorresponds(res, expected);
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("test avec une case occupees :");
+        
+        expected = new ArrayList<>();
+        expected.add(new Case(orig));
+
+        instance.ajoutInsecte(reine, orig);
+        
+        res = (ArrayList<Case>) instance.occupees();
+
+        arrayCorresponds(res, expected);
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("test avec 6 cases occupees :");
+        
+        expected = new ArrayList<>();
+        expected.add(new Case(orig));
+        expected.add(new Case(new Point3DH(0,5,1)));
+        expected.add(new Case(new Point3DH(0,9,1)));
+        expected.add(new Case(new Point3DH(0,14,1)));
+        expected.add(new Case(new Point3DH(0,2,1)));
+        expected.add(new Case(new Point3DH(0,7,1)));
+
+        instance.ajoutInsecte(reine, new Point3DH(0,5,1));
+        instance.ajoutInsecte(reine, new Point3DH(0,9,1));
+        instance.ajoutInsecte(reine, new Point3DH(0,14,1));
+        instance.ajoutInsecte(reine, new Point3DH(0,2,1));
+        instance.ajoutInsecte(reine, new Point3DH(0,7,1));
+        
+        res = (ArrayList<Case>) instance.occupees();
+
+        arrayCorresponds(res, expected);
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("");
+    }
+    
     /**
      * Test of getCasesVoisinesOccupees method, of class Plateau.
      */
