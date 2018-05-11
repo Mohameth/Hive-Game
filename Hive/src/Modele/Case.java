@@ -92,7 +92,41 @@ public class Case {
         return hash;
     }
     
+    public boolean estVoisinHaut(Case c) {
+    	return (this.getCoordonnees().getX()==c.getCoordonnees().getX()) 
+    			&& (this.getCoordonnees().getY()+1==c.getCoordonnees().getY()) 
+    			&& (this.getCoordonnees().getZ()-1==c.getCoordonnees().getZ());
+    }
     
+    public boolean estVoisinDroiteHaut(Case c) {
+    	return (this.getCoordonnees().getX()+1==c.getCoordonnees().getX()) 
+    			&& (this.getCoordonnees().getY()==c.getCoordonnees().getY()) 
+    			&& (this.getCoordonnees().getZ()-1==c.getCoordonnees().getZ());
+    }
+    
+    public boolean estVoisinDroiteBas(Case c) {
+    	return (this.getCoordonnees().getX()+1==c.getCoordonnees().getX()) 
+    			&& (this.getCoordonnees().getY()-1==c.getCoordonnees().getY()) 
+    			&& (this.getCoordonnees().getZ()==c.getCoordonnees().getZ());
+    }
+    
+    public boolean estVoisinBas(Case c) {
+    	return (this.getCoordonnees().getX()==c.getCoordonnees().getX()) 
+    			&& (this.getCoordonnees().getY()-1==c.getCoordonnees().getY()) 
+    			&& (this.getCoordonnees().getZ()+1==c.getCoordonnees().getZ());
+    }
+    
+    public boolean estVoisinGaucheBas(Case c) {
+    	return (this.getCoordonnees().getX()-1==c.getCoordonnees().getX()) 
+    			&& (this.getCoordonnees().getY()==c.getCoordonnees().getY()) 
+    			&& (this.getCoordonnees().getZ()+1==c.getCoordonnees().getZ());
+    }
+    
+    public boolean estVoisinGaucheHaut(Case c) {
+    	return (this.getCoordonnees().getX()-1==c.getCoordonnees().getX()) 
+    			&& (this.getCoordonnees().getY()+1==c.getCoordonnees().getY()) 
+    			&& (this.getCoordonnees().getZ()==c.getCoordonnees().getZ());
+    }
     
     
 }

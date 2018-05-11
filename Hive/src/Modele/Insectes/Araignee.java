@@ -16,8 +16,8 @@ public class Araignee extends Insecte {
     }
 
 
-    @Override
-    public Collection<Case> deplacementPossible(Plateau plateau) {
+    //@Override
+    /*public Collection<Case> deplacementPossible(Plateau plateau) {
     	
         if(plateau.rucheBrisee2(this.getEmplacement())) {
         	return new ArrayList<>();
@@ -103,11 +103,11 @@ public class Araignee extends Insecte {
         casePossibles.add(casePossibles2.get(0));
         
         return casePossibles;
-    }
+    }*/
 
     
     //@Override
-    public Collection<Case> deplacementPossible2(Plateau plateau) {
+    public Collection<Case> deplacementPossible(Plateau plateau) {
         if (plateau.rucheBrisee2(this.getEmplacement()))
             return null;
         ArrayList<Case> res = new ArrayList<>();
