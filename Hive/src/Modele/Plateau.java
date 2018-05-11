@@ -1,6 +1,6 @@
 package Modele;
 
-import Insectes.Insecte;
+import Modele.Insectes.Insecte;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +17,7 @@ import java.util.Objects;
  * 
  */
 
-public class Plateau {
+public class Plateau implements Observable {
 
     /**
      * ensemble des cases du plateau, évolue de façon dynamique
@@ -26,6 +26,8 @@ public class Plateau {
      */
     private Map<Point3DH, Case> cases;
     private int nbPionsEnJeu;
+    private Observateur observateur;
+    
     
     /**
      * construit un plateau avec une seul case en 0,0,0
@@ -284,6 +286,16 @@ public class Plateau {
         int hash = 7;
         hash = 37 * hash + Objects.hashCode(this.cases);
         return hash;
+    }
+
+    @Override
+    public void addObserver(Observateur newobserver) {
+        this.observateur = newobserver;
+    }
+
+    @Override
+    public void notifyListeners() {
+        this.observateur.coupJoue(this);
     }
 
 }

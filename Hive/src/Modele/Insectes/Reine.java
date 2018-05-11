@@ -1,4 +1,4 @@
-package Insectes;
+package Modele.Insectes;
 
 import Modele.Case;
 import Modele.Joueur;

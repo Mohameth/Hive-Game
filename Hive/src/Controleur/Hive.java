@@ -1,7 +1,7 @@
 package Controleur;
 
-import Modele.Case;
 import Modele.Insectes.*;
+import Modele.Case;
 import Modele.Joueur;
 import Modele.JoueurHumain;
 import Modele.JoueurIA;
