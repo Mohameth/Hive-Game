@@ -29,7 +29,8 @@ public class Araignee extends Insecte {
         
         for(int i=0;i<3;i++) {
         	if(i==0) {
-        		casePossibles1=(ArrayList<Case>) plateau.getCasesVoisines(this.getEmplacement(),true);
+        		case1=this.getEmplacement();
+        		casePossibles1=(ArrayList<Case>) plateau.getCasesVoisines(case1,true);
         		for(int j=0;j<casePossibles1.size();j++) {
         			
         			if(!caseInter.contains(casePossibles1.get(j))) {
@@ -91,8 +92,8 @@ public class Araignee extends Insecte {
         			case2=casePossibles2.get(0);
         		}
         	}
-        	casePossibles1=new ArrayList<>();
-    		casePossibles2=new ArrayList<>();     	 
+        	casePossibles1.clear();
+    		casePossibles2.clear();     	 
         }
         ArrayList<Case> casePossibles=new ArrayList<>();
         if(!casePossibles1.isEmpty())

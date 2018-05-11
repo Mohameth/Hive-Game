@@ -1,9 +1,11 @@
-package Modele.Insectes;
+package Insectes;
 
 import Modele.Case;
 import Modele.Joueur;
 import Modele.Plateau;
 import Modele.Point3DH;
+
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class Reine extends Insecte {
@@ -15,7 +17,24 @@ public class Reine extends Insecte {
 
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
-        return plateau.getCasesVoisinesSansGates(this.getEmplacement(), true);
+    	if(plateau.rucheBrisee2(this.getEmplacement())) {
+        	return new ArrayList<>();
+        }
+    	ArrayList<Case> casePossibles=(ArrayList<Case>) plateau.getCasesVoisines(this.getEmplacement(),true);
+		
+    	for(int j=0;j<casePossibles.size();j++) {
+			
+			if(!plateau.glissementPossibles(this.getEmplacement(),casePossibles.get(j))) {
+				casePossibles.remove(j);
+			}
+		}
+    	ArrayList<Case> casePossibles2=new ArrayList<>();
+    	
+		for(int i=0;i<casePossibles.size();i++) {
+			casePossibles2.add(casePossibles.get(i));
+		}
+		
+		return casePossibles2;
     }
 
     /*@Override
