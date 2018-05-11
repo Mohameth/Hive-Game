@@ -56,11 +56,11 @@ public class Plateau {
         }
     }
 
-    public Collection<Case> getCasesVoisines(Case c, boolean libreSeulement) {
+    public Collection<Case> getCasesVoisines(Case c, boolean exclureCaseOccupee) {
         ArrayList<Case> voisins = new ArrayList<>();
         for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
             Case voisin = getCase(pointCourant);
-            if (voisin.estVide() || !libreSeulement) {
+            if (voisin.estVide() || !exclureCaseOccupee) {
                 voisins.add(voisin); //Case vide
             }
         }
@@ -113,14 +113,14 @@ public class Plateau {
         return voisins;
     }
     
-    public Collection<Case> getCasesVoisinesSansGates(Case c, boolean exclureCaseLibre) {
-        Collection<Case> dep = this.getCasesVoisines(c, exclureCaseLibre);
+    public Collection<Case> getCasesVoisinesAccessibles(Case c, boolean exclureCaseOccupee) {
+        Collection<Case> dep = this.getCasesVoisines(c, exclureCaseOccupee);
         Iterator<Case> it = dep.iterator();
         while (it.hasNext()) {
             Case voisin = it.next();
-            if (this.gateBetween(c, voisin) || rucheBrisee(c, voisin)) {
+            if (this.gateBetween(voisin, c)) {//|| rucheBrisee(c, voisin)) {
                 it.remove();
-            }
+            } 
         }
 
         return dep;
@@ -171,7 +171,7 @@ public class Plateau {
                     visites.add(caseC);
                     file.addLast(caseC);
                 }
-                
+
             }
         }
         

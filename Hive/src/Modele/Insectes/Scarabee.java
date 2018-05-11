@@ -14,7 +14,7 @@ public class Scarabee extends Insecte {
     
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
-        return plateau.getCasesVoisinesSansGates(this.getEmplacement(), false);
+        return plateau.getCasesVoisinesAccessibles(this.getEmplacement(), false);
     }
 
     /*@Override

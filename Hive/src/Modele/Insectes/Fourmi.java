@@ -6,6 +6,7 @@ import Modele.Plateau;
 import Modele.Point3DH;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Fourmi extends Insecte {
@@ -13,11 +14,28 @@ public class Fourmi extends Insecte {
     public Fourmi(Joueur j) {
         super(j);
     }
-
+    
+    private boolean estConnecte(Plateau p, Collection<Case> resultat, Case c) {
+        for (Case r : resultat) {
+            for (Case resVoisin : p.getCasesVoisines(r, true)) {
+                if (p.getCasesVoisines(c, true).contains(resVoisin)) return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    private boolean hasGate(Plateau p, Case c) {
+        for (Case d : p.getCasesVoisines(c, true)) {
+            if (!p.gateBetween(c, d)) return false;
+        }
+        
+        return true;
+    }
     
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
-        Collection<Case> result = new LinkedList<>();
+        LinkedList<Case> result = new LinkedList<>();
         LinkedList<Case> toCheck = new LinkedList<>();
         LinkedList<Case> alreadyChecked = new LinkedList<>();
         
@@ -26,9 +44,11 @@ public class Fourmi extends Insecte {
             Case courante = toCheck.removeLast();
             alreadyChecked.add(courante);
             
-            for (Case c : plateau.getCasesVoisinesSansGates(courante, false)) {
+            for (Case c : plateau.getCasesVoisines(courante, false)) {
                 if (c.estVide()) {
-                    if (!result.contains(c)) result.add(c);
+                    if (!result.contains(c)) {
+                        if (!hasGate(plateau, c)) result.add(c);
+                    }
                 }
                 else {
                     if (!alreadyChecked.contains(c)) {
