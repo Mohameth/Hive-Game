@@ -178,6 +178,40 @@ public class Plateau {
         return visites.size() != this.nbPionsEnJeu;
     }
 
+    public boolean rucheBrisee2(Case ghost) { //Tester aussi avec un compteur de changements
+        if (this.rucheVide()) return false;
+        
+        Object[] listeCases;
+        Case c;
+        int i = 0;
+        listeCases = this.cases.values().toArray();
+        do {
+            c = (Case) listeCases[i];
+            i++;
+        } while (i < listeCases.length && (c.estVide()));
+        
+        
+
+        ArrayList<Case> visites = new ArrayList<>();
+        LinkedList<Case> file = new LinkedList<>();
+        visites.add(c);
+        file.add(c);
+        while (!file.isEmpty()) {
+            Case courante = file.pollFirst();
+            ArrayList<Case> voisins = (ArrayList<Case>) getCasesVoisinesOccupees(courante);
+            for (Case caseC : voisins) {
+                if (!visites.contains(caseC) && !caseC.equals(ghost)) {
+                    visites.add(caseC);
+                    file.addLast(caseC);
+                }
+                
+            }
+        }
+        
+        return visites.size() != this.nbPionsEnJeu-1;
+    }
+
+    
     @Override
     public int hashCode() {
         int hash = 7;
