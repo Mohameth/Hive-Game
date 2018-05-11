@@ -19,10 +19,19 @@ import java.util.Objects;
 
 public class Plateau implements Observable{
 
+    /**
+     * ensemble des cases du plateau, évolue de façon dynamique
+     * @see Case
+     * @see Point3DH
+     */
     private Map<Point3DH, Case> cases;
     private int nbPionsEnJeu;
     private Observateur observateur;
 
+    
+    /**
+     * construit un plateau avec une seul case en 0,0,0
+     */
     public Plateau() {
         cases = new HashMap<Point3DH, Case>();
         Point3DH origine = new Point3DH(0, 0, 0);
@@ -30,6 +39,11 @@ public class Plateau implements Observable{
         this.nbPionsEnJeu = 0; //Peut-être à remplacer par une méthode
     }
 
+    /**
+     * renvoi la case demander, elle est crée si elle n'existe pas
+     * @param point point du plateau
+     * @return la case qui se trouve au coordonées du point
+     */
     public Case getCase(Point3DH point) {
         if (cases.get(point) == null) {
             cases.put(point, new Case(point));
@@ -37,6 +51,11 @@ public class Plateau implements Observable{
         return cases.get(point);
     }
 
+    /**
+     * ajoute un insecte à la position donné
+     * @param insecte insecte à ajouter
+     * @param position coordonées de la case où ajouter l'insecte
+     */
     public void ajoutInsecte(Insecte insecte, Point3DH position) {
         try {
             this.getCase(position).addInsecte(insecte);
@@ -46,6 +65,10 @@ public class Plateau implements Observable{
         }
     }
 
+    /**
+     * indique si la ruche est vide
+     * @return true si la ruche est vide false sinon
+     */
     public boolean rucheVide() {
         Object[] cases = this.cases.values().toArray();
         for (int i = 0; i < this.cases.size(); i++) {
@@ -55,6 +78,11 @@ public class Plateau implements Observable{
         return true;
     }
     
+    /**
+     * supprime un insecte
+     * @param insecte insecte à supprimer
+     * @param position coordonées de la case où suprimer l'insecte
+     */
     public void deleteInsecte(Insecte insecte, Point3DH position) {
         try {
             this.getCase(position).removeInsecte();
@@ -63,6 +91,12 @@ public class Plateau implements Observable{
         }
     }
 
+    /**
+     * Donne toute les cases voisine
+     * @param c case d'origine
+     * @param libreSeulement si true donne uniquement les cases vide si false donne toute les cases
+     * @return une Collection generique contenant les cases voisine de c
+     */
     public Collection<Case> getCasesVoisines(Case c, boolean libreSeulement) {
         ArrayList<Case> voisins = new ArrayList<>();
         for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
@@ -75,6 +109,10 @@ public class Plateau implements Observable{
         return voisins;
     }
 
+    /**
+     * Donne toute les cases occupées du plateau
+     * @return un ArrayList des cases occupées
+     */
     public ArrayList<Case> occupees() {
         ArrayList<Case> res = new ArrayList<>();
         Iterator<Case> it = this.cases.values().iterator();
@@ -86,6 +124,7 @@ public class Plateau implements Observable{
         }
         return res;
     }
+    
     
     public ArrayList<Case> casesVidePlacement(Joueur j) {
         ArrayList<Case> res = new ArrayList<>();
@@ -108,6 +147,11 @@ public class Plateau implements Observable{
         return res;
     }
     
+    /**
+     * Donne toute les cases occupées voisine de c
+     * @param c case d'origine
+     * @return une Collection generique contenant les cases occupées voisine de c
+     */
     public Collection<Case> getCasesVoisinesOccupees(Case c) {
         ArrayList<Case> voisins = new ArrayList<>();
         for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
