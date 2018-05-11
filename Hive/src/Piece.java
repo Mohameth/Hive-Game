@@ -109,9 +109,10 @@ public class Piece implements Observable {
             if (!snap) { //retour position origine
                 moveToXY(this.prevImgX, this.prevImgY);
             } else {
-                snapConfirm = true;
+
                 updatePrevPos();
             }
+            snapConfirm = true;
             snap = true;
         }
         );
