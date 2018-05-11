@@ -283,6 +283,14 @@ public class PlateauTest {
         instance.ajoutInsecte(reine, orig.voisinBas().voisinBas());
         assertFalse(instance.rucheBrisee(null, null));
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("test sur une ruche avec trois insectes en ligne ghost et casedest :");
+        instance = new Plateau();
+        instance.ajoutInsecte(reine, orig);
+        instance.ajoutInsecte(reine, orig.voisinBas());
+        instance.ajoutInsecte(reine, orig.voisinBas().voisinBas());
+        assertTrue(instance.rucheBrisee(new Case(orig.voisinBas()), new Case(orig.voisinBas().voisinBas().voisinBas())));
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
         System.out.println("test sur une ruche casé avec trois insectes :");
         instance = new Plateau();
