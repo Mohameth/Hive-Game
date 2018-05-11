@@ -4,6 +4,7 @@ import Modele.Case;
 import Modele.Joueur;
 import Modele.Plateau;
 import Modele.Point3DH;
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class Scarabee extends Insecte {
@@ -14,6 +15,10 @@ public class Scarabee extends Insecte {
     
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
+        if(plateau.rucheBrisee2(this.getEmplacement())) {
+        	return new ArrayList<>();
+        }
+        
         return plateau.getCasesVoisinesAccessibles(this.getEmplacement(), false);
     }
 

@@ -11,11 +11,27 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 
-public class Plateau {
+/**
+ * Plateau décrit l'Etat du plateau de jeu et les actions disponible pour le modifier.
+ * @author GRP3
+ * 
+ */
 
+public class Plateau implements Observable {
+
+    /**
+     * ensemble des cases du plateau, évolue de façon dynamique
+     * @see Case
+     * @see Point3DH
+     */
     private Map<Point3DH, Case> cases;
     private int nbPionsEnJeu;
-
+    private Observateur observateur;
+    
+    
+    /**
+     * construit un plateau avec une seul case en 0,0,0
+     */
     public Plateau() {
         cases = new HashMap<Point3DH, Case>();
         Point3DH origine = new Point3DH(0, 0, 0);
@@ -23,6 +39,11 @@ public class Plateau {
         this.nbPionsEnJeu = 0; //Peut-être à remplacer par une méthode
     }
 
+    /**
+     * renvoi la case demander, elle est crée si elle n'existe pas
+     * @param point point du plateau
+     * @return la case qui se trouve au coordonées du point
+     */
     public Case getCase(Point3DH point) {
         if (cases.get(point) == null) {
             cases.put(point, new Case(point));
@@ -30,6 +51,11 @@ public class Plateau {
         return cases.get(point);
     }
 
+    /**
+     * ajoute un insecte à la position donné
+     * @param insecte insecte à ajouter
+     * @param position coordonées de la case où ajouter l'insecte
+     */
     public void ajoutInsecte(Insecte insecte, Point3DH position) {
         try {
             this.getCase(position).addInsecte(insecte);
@@ -39,6 +65,10 @@ public class Plateau {
         }
     }
 
+    /**
+     * indique si la ruche est vide
+     * @return true si la ruche est vide false sinon
+     */
     public boolean rucheVide() {
         Object[] cases = this.cases.values().toArray();
         for (int i = 0; i < this.cases.size(); i++) {
@@ -48,6 +78,11 @@ public class Plateau {
         return true;
     }
     
+    /**
+     * supprime un insecte
+     * @param insecte insecte à supprimer
+     * @param position coordonées de la case où suprimer l'insecte
+     */
     public void deleteInsecte(Insecte insecte, Point3DH position) {
         try {
             this.getCase(position).removeInsecte();
@@ -56,6 +91,13 @@ public class Plateau {
         }
     }
 
+
+    /**
+     * Donne toute les cases voisine
+     * @param c case d'origine
+     * @param exclureCaseOccupee si true donne uniquement les cases vide si false donne toute les cases
+     * @return une Collection generique contenant les cases voisine de c
+     */
     public Collection<Case> getCasesVoisines(Case c, boolean exclureCaseOccupee) {
         ArrayList<Case> voisins = new ArrayList<>();
         for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
@@ -68,6 +110,10 @@ public class Plateau {
         return voisins;
     }
 
+    /**
+     * Donne toute les cases occupées du plateau
+     * @return un ArrayList des cases occupées
+     */
     public ArrayList<Case> occupees() {
         ArrayList<Case> res = new ArrayList<>();
         Iterator<Case> it = this.cases.values().iterator();
@@ -79,6 +125,7 @@ public class Plateau {
         }
         return res;
     }
+    
     
     public ArrayList<Case> casesVidePlacement(Joueur j) {
         ArrayList<Case> res = new ArrayList<>();
@@ -101,6 +148,11 @@ public class Plateau {
         return res;
     }
     
+    /**
+     * Donne toute les cases occupées voisine de c
+     * @param c case d'origine
+     * @return une Collection generique contenant les cases occupées voisine de c
+     */
     public Collection<Case> getCasesVoisinesOccupees(Case c) {
         ArrayList<Case> voisins = new ArrayList<>();
         for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
@@ -124,6 +176,24 @@ public class Plateau {
         }
 
         return dep;
+    }
+    
+    public boolean glissementPossibles(Case c1, Case c2) {
+        int nombreCasesAdjacentesNonVide = 0;
+        Collection<Case> voisinsC1 = getCasesVoisines(c1, false);
+        voisinsC1.remove(c2);
+        Collection<Case> voisinsC2 = getCasesVoisines(c2, false);
+        voisinsC2.remove(c1);
+
+        for (Case v1 : voisinsC1) {
+            if (voisinsC2.contains(v1)) {
+                if (!v1.estVide()) {
+                    nombreCasesAdjacentesNonVide++;
+                }
+            }
+        }
+
+        return nombreCasesAdjacentesNonVide == 1;
     }
 
     public boolean gateBetween(Case c1, Case c2) {
@@ -178,11 +248,55 @@ public class Plateau {
         return visites.size() != this.nbPionsEnJeu;
     }
 
+    public boolean rucheBrisee2(Case ghost) { //Tester aussi avec un compteur de changements
+        if (this.rucheVide()) return false;
+        
+        Object[] listeCases;
+        Case c;
+        int i = 0;
+        listeCases = this.cases.values().toArray();
+        do {
+            c = (Case) listeCases[i];
+            i++;
+        } while (i < listeCases.length && (c.estVide()));
+        
+        
+
+        ArrayList<Case> visites = new ArrayList<>();
+        LinkedList<Case> file = new LinkedList<>();
+        visites.add(c);
+        file.add(c);
+        while (!file.isEmpty()) {
+            Case courante = file.pollFirst();
+            ArrayList<Case> voisins = (ArrayList<Case>) getCasesVoisinesOccupees(courante);
+            for (Case caseC : voisins) {
+                if (!visites.contains(caseC) && !caseC.equals(ghost)) {
+                    visites.add(caseC);
+                    file.addLast(caseC);
+                }
+                
+            }
+        }
+        
+        return visites.size() != this.nbPionsEnJeu-1;
+    }
+
+    
     @Override
     public int hashCode() {
         int hash = 7;
         hash = 37 * hash + Objects.hashCode(this.cases);
         return hash;
+    }
+
+    @Override
+    public void addObserver(Observateur newobserver) {
+        this.observateur = newobserver;
+    }
+
+    @Override
+    public void notifyListeners() {
+        this.observateur.coupJoue(this);
     }
 
 }

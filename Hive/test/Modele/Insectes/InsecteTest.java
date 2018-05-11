@@ -68,7 +68,7 @@ public class InsecteTest {
         ArrayList<Case> result = new ArrayList<>();
         result.addAll(r.deplacementPossible(instance));
 
-        System.out.println("test avec tout les voisin libre :");
+        System.out.println("test avec tous les voisins libres :");
         ArrayList<Point3DH> expected = new ArrayList<>();
         expected.add(new Point3DH(0, +1, -1));
         expected.add(new Point3DH(+1, 0, -1));
@@ -80,7 +80,7 @@ public class InsecteTest {
         arrayCorresponds(result, expected);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
-        System.out.println("test avec 2 case occupé et 1 case inaccessible :");
+        System.out.println("test avec 2 cases occupées et 1 case inaccessible :");
         //TEST GATE
         ArrayList<Point3DH> expectedWithGate = new ArrayList<>();
         //expectedWithGate.add(new Point3DH(0, +1, -1)); //--> Case occupe
@@ -228,10 +228,10 @@ public class InsecteTest {
         plateau.ajoutInsecte(insecte, c.getCoordonnees());
     }
     
-    @Test public void testDeplacementFourmi2() {
+    @Test public void testDeplacementGrosseRuche() {
         //Ruche p.17; Sauterelle en 0, 0, 0 et fourmi blanche au dessus
         System.out.println("=============================================");
-        System.out.println("Test deplacementFourmi 2 ======================>\n");
+        System.out.println("Test deplacementGrooseRuche ======================>\n");
 
         Plateau instance = new Plateau();
         Joueur j1 = new JoueurHumain(instance);
@@ -289,9 +289,6 @@ public class InsecteTest {
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
         ArrayList<Point3DH> expectedReineBlanche = new ArrayList<>();
-        expectedReineBlanche.add(new Point3DH(-2, 2, 0));
-        expectedReineBlanche.add(new Point3DH(-3, 2, 1));
-        expectedReineBlanche.add(new Point3DH(-3, 1, 2));
         
         System.out.println("test deplacement Reine blanche sur grosse ruche :");
         arrayCorresponds(reineBlanche.deplacementPossible(instance), expectedReineBlanche);
@@ -310,7 +307,7 @@ public class InsecteTest {
         expectedScarabeeNoire.add(new Point3DH(1, -1, 0));
         expectedScarabeeNoire.add(new Point3DH(1, -2, 1));
         
-        System.out.println("test deplacement Reine noire sur grosse ruche :");
+        System.out.println("test deplacement Scarabee noire sur grosse ruche :");
         arrayCorresponds(scarabeeNoire.deplacementPossible(instance), expectedScarabeeNoire);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
@@ -339,8 +336,6 @@ public class InsecteTest {
             //copie2.remove(c);
             int x = copie.size();
             copie.remove(c.getCoordonnees());
-            int y = copie.size();
-            if (x == y) copie2.add(c);
         }
 
         assertTrue(copie.isEmpty());

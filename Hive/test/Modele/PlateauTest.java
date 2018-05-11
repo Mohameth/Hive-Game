@@ -5,12 +5,8 @@
  */
 package Modele;
 
-import Modele.Insectes.Fourmi;
-import Modele.Insectes.Insecte;
-import Modele.Insectes.Reine;
+import Modele.Insectes.*;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -139,6 +135,63 @@ public class PlateauTest {
         assertTrue(Expected.isEmpty());
     }
 
+    
+    /**
+     * Test of occuppes method, of class Plateau.
+     */
+    @Test
+    public void testOccupees() {
+        System.out.println("=============================================");
+        System.out.println("Test occupees ==============================>\n");
+        
+        Point3DH orig = new Point3DH(0, 0, 0);
+        Plateau instance = new Plateau();
+        Reine reine = new Reine(new JoueurHumain(instance));
+
+        System.out.println("test avec aucune case occupees :");
+        ArrayList<Case> expected = new ArrayList<>();
+
+        ArrayList<Case> res = (ArrayList<Case>) instance.occupees();
+
+        arrayCorresponds(res, expected);
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("test avec une case occupees :");
+        
+        expected = new ArrayList<>();
+        expected.add(new Case(orig));
+
+        instance.ajoutInsecte(reine, orig);
+        
+        res = (ArrayList<Case>) instance.occupees();
+
+        arrayCorresponds(res, expected);
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("test avec 6 cases occupees :");
+        
+        expected = new ArrayList<>();
+        expected.add(new Case(orig));
+        expected.add(new Case(new Point3DH(0,5,1)));
+        expected.add(new Case(new Point3DH(0,9,1)));
+        expected.add(new Case(new Point3DH(0,14,1)));
+        expected.add(new Case(new Point3DH(0,2,1)));
+        expected.add(new Case(new Point3DH(0,7,1)));
+
+        instance.ajoutInsecte(reine, new Point3DH(0,5,1));
+        instance.ajoutInsecte(reine, new Point3DH(0,9,1));
+        instance.ajoutInsecte(reine, new Point3DH(0,14,1));
+        instance.ajoutInsecte(reine, new Point3DH(0,2,1));
+        instance.ajoutInsecte(reine, new Point3DH(0,7,1));
+        
+        res = (ArrayList<Case>) instance.occupees();
+
+        arrayCorresponds(res, expected);
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("");
+    }
+    
     /**
      * Test of getCasesVoisinesOccupees method, of class Plateau.
      */
@@ -283,6 +336,14 @@ public class PlateauTest {
         instance.ajoutInsecte(reine, orig.voisinBas().voisinBas());
         assertFalse(instance.rucheBrisee(null, null));
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("test sur une ruche avec trois insectes en ligne ghost et casedest :");
+        instance = new Plateau();
+        instance.ajoutInsecte(reine, orig);
+        instance.ajoutInsecte(reine, orig.voisinBas());
+        instance.ajoutInsecte(reine, orig.voisinBas().voisinBas());
+        assertTrue(instance.rucheBrisee(new Case(orig.voisinBas()), new Case(orig.voisinBas().voisinBas().voisinBas())));
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
         System.out.println("test sur une ruche casé avec trois insectes :");
         instance = new Plateau();
@@ -317,6 +378,90 @@ public class PlateauTest {
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
     }
 
+        /**
+     * Test of rucheBrisee method, of class Plateau.
+     */
+    @Test
+    public void testRucheBrisee2() {
+        System.out.println("=============================================");
+        System.out.println("Test rucheBrisee ===========================>\n");
+
+        Point3DH orig = new Point3DH(0, 0, 0);
+        Plateau instance = new Plateau();
+        Reine reine = new Reine(new JoueurHumain(instance));
+
+        System.out.println("test sur une ruche vide :");
+        assertFalse(instance.rucheBrisee2(null));
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+
+        System.out.println("test sur une ruche avec un insecte :");
+        instance.ajoutInsecte(reine, orig);
+        assertFalse(instance.rucheBrisee2(null));
+        //assertFalse(instance.rucheBrisee(reine));
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+
+        System.out.println("test sur une ruche avec deux insectes collés :");
+        instance.ajoutInsecte(reine, orig.voisinBas());
+        assertFalse(instance.rucheBrisee2(null));
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+
+        System.out.println("test sur une ruche avec deux insectes non collés :");
+        instance.deleteInsecte(reine, orig.voisinBas());
+        instance.ajoutInsecte(reine, orig.voisinBas().voisinBas());
+        assertTrue(instance.rucheBrisee2(null));
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+
+        System.out.println("test sur une ruche avec trois insectes en ligne :");
+        instance = new Plateau();
+        instance.ajoutInsecte(reine, orig);
+        instance.ajoutInsecte(reine, orig.voisinBas());
+        instance.ajoutInsecte(reine, orig.voisinBas().voisinBas());
+        assertFalse(instance.rucheBrisee2(null));
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("test sur une ruche avec trois insectes en ligne ghost et casedest :");
+        instance = new Plateau();
+        instance.ajoutInsecte(reine, orig);
+        instance.ajoutInsecte(reine, orig.voisinBas());
+        instance.ajoutInsecte(reine, orig.voisinBas().voisinBas());
+        assertTrue(instance.rucheBrisee2(null));
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+
+        System.out.println("test sur une ruche casé avec trois insectes :");
+        instance = new Plateau();
+        instance.ajoutInsecte(reine, orig);
+        instance.ajoutInsecte(reine, orig.voisinBas().voisinDroiteBas());
+        instance.ajoutInsecte(reine, orig.voisinBas().voisinBas().voisinGaucheBas());
+        assertTrue(instance.rucheBrisee2(null));
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+
+        System.out.println("test sur une ruche avec 7 insectes (1 à l'origine et les 6 coins remplit) :");
+        instance = new Plateau();
+        instance.ajoutInsecte(reine, orig);
+        instance.ajoutInsecte(reine, orig.voisinBas());
+        instance.ajoutInsecte(reine, orig.voisinDroiteBas());
+        instance.ajoutInsecte(reine, orig.voisinDroiteHaut());
+        instance.ajoutInsecte(reine, orig.voisinGaucheBas());
+        instance.ajoutInsecte(reine, orig.voisinGaucheHaut());
+        instance.ajoutInsecte(reine, orig.voisinHaut());
+        assertFalse(instance.rucheBrisee2(null));
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+
+        System.out.println("test sur une ruche casé avec 7 insectes :");
+        instance = new Plateau();
+        instance.ajoutInsecte(reine, orig);
+        instance.ajoutInsecte(reine, orig.voisinBas().voisinDroiteBas());
+        instance.ajoutInsecte(reine, orig.voisinDroiteBas().voisinGaucheBas().voisinBas());
+        instance.ajoutInsecte(reine, orig.voisinDroiteHaut().voisinHaut().voisinHaut());
+        instance.ajoutInsecte(reine, orig.voisinGaucheBas().voisinGaucheBas().voisinBas().voisinBas());
+        instance.ajoutInsecte(reine, orig.voisinGaucheHaut().voisinBas());
+        instance.ajoutInsecte(reine, orig.voisinHaut());
+        assertTrue(instance.rucheBrisee2(null));
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+    }
+
+    
+    
     /**
      * Test of rucheVide method, of class Plateau.
      */

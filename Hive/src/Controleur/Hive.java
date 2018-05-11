@@ -1,7 +1,7 @@
 package Controleur;
 
-import Modele.Case;
 import Modele.Insectes.*;
+import Modele.Case;
 import Modele.Joueur;
 import Modele.JoueurHumain;
 import Modele.JoueurIA;
@@ -11,9 +11,7 @@ import Modele.TypeInsecte;
 import Vue.Vue;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.geometry.Point3D;
+
 
 public class Hive {
 
@@ -72,8 +70,8 @@ public class Hive {
         public ArrayList<Case> placementsPossibles() {
             return this.plateau.casesVidePlacement(this.joueurCourant);
         }
-        
-        public void placementInsecte(TypeInsecte insecte, Point3DH cible) {
+                
+        public void joueurPlaceInsecte(TypeInsecte insecte, Point3DH cible) {
             int i = 0; Insecte ins = null;
             switch (insecte) {
                 case ARAIGNEE:
@@ -133,15 +131,10 @@ public class Hive {
                     while ((ins instanceof Scarabee));
                     break;
             }
-            try {
-                this.plateau.getCase(cible).addInsecte(ins);
-            } catch (Exception ex) {
-                Logger.getLogger(Hive.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            joueurSuivant();
-                
-
+            this.joueurCourant.placementInsecte(ins, this.plateau.getCase(cible));
+            this.joueurSuivant();
         }
+
         
         private ArrayList<Insecte> pionsPosables() {
             ArrayList<Insecte> mainJoueur = this.joueurCourant.pionsEnMain(); 

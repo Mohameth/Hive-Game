@@ -1,19 +1,23 @@
 package Modele;
 
-import Modele.Insectes.Insecte;
-import Modele.Insectes.Reine;
+import Controleur.Hive;
+import Modele.Insectes.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class Joueur {
 
     protected ArrayList<Insecte> pions;
     protected Plateau plateau;
+    protected Insecte dernierDeplacement;
 
     public abstract boolean coup(Insecte insecte, Point3DH cible); //Joueur connait le plateau -> appelle déplacement sur insecte avec plateau (insect sait où il est)
 
 
     public Joueur(Plateau p) {
             this.plateau = p;
+            this.dernierDeplacement = null;
             this.pions = new ArrayList<>(); //On rentrera tous les pions ici
     }
 
@@ -39,10 +43,24 @@ public abstract class Joueur {
         return res;
     }   
 
+    
+    public void placementInsecte(Insecte insecte, Case caseCible) {
+        try {
+            caseCible.addInsecte(insecte);
+            this.dernierDeplacement = insecte;
+        } catch (Exception ex) {
+            Logger.getLogger(Joueur.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     public ArrayList<Insecte> getPions() {
         return pions;
     }
 
+    
 
+    
+    
+    
 }
 
