@@ -1,6 +1,6 @@
 package Modele;
 
-import Modele.Insectes.Insecte;
+import Insectes.Insecte;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +17,7 @@ import java.util.Objects;
  * 
  */
 
-public class Plateau implements Observable{
+public class Plateau {
 
     /**
      * ensemble des cases du plateau, évolue de façon dynamique
@@ -26,8 +26,6 @@ public class Plateau implements Observable{
      */
     private Map<Point3DH, Case> cases;
     private int nbPionsEnJeu;
-    private Observateur observateur;
-
     
     /**
      * construit un plateau avec une seul case en 0,0,0
@@ -176,6 +174,24 @@ public class Plateau implements Observable{
 
         return dep;
     }
+    
+    public boolean glissementPossibles(Case c1, Case c2) {
+        int nombreCasesAdjacentesNonVide = 0;
+        Collection<Case> voisinsC1 = getCasesVoisines(c1, false);
+        voisinsC1.remove(c2);
+        Collection<Case> voisinsC2 = getCasesVoisines(c2, false);
+        voisinsC2.remove(c1);
+
+        for (Case v1 : voisinsC1) {
+            if (voisinsC2.contains(v1)) {
+                if (!v1.estVide()) {
+                    nombreCasesAdjacentesNonVide++;
+                }
+            }
+        }
+
+        return nombreCasesAdjacentesNonVide == 1;
+    }
 
     public boolean gateBetween(Case c1, Case c2) {
         int nombreCasesAdjacentesNonVide = 0;
@@ -268,16 +284,6 @@ public class Plateau implements Observable{
         int hash = 7;
         hash = 37 * hash + Objects.hashCode(this.cases);
         return hash;
-    }
-
-    @Override
-    public void addObserver(Observateur newobserver) {
-        this.observateur = newobserver;
-    }
-
-    @Override
-    public void notifyListeners() {
-        this.observateur.coupJoue(this);
     }
 
 }
