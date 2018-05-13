@@ -31,6 +31,7 @@ public class Case {
         if (!this.estVide() && !(insecte instanceof Scarabee)) throw new Exception("Ajout impossible sur case non vide");
         if (this.insectes.size() == 5) throw new Exception("Ajout impossible -> 5 insectes maximum");
         this.insectes.add(insecte);
+        insecte.setEmplacement(this);
     }
 
     
@@ -91,7 +92,29 @@ public class Case {
         return hash;
     }
     
+    public boolean estVoisinHaut(Case c) {
+    	return this.getCoordonnees().voisinHaut().equals(c.getCoordonnees());
+    }
     
+    public boolean estVoisinDroiteHaut(Case c) {
+    	return this.getCoordonnees().voisinDroiteHaut().equals(c.getCoordonnees());
+    }
+    
+    public boolean estVoisinDroiteBas(Case c) {
+    	return this.getCoordonnees().voisinDroiteBas().equals(c.getCoordonnees());
+    }
+    
+    public boolean estVoisinBas(Case c) {
+    	return this.getCoordonnees().voisinBas().equals(c.getCoordonnees());
+    }
+    
+    public boolean estVoisinGaucheBas(Case c) {
+    	return this.getCoordonnees().voisinGaucheBas().equals(c.getCoordonnees());
+    }
+    
+    public boolean estVoisinGaucheHaut(Case c) {
+    	return this.getCoordonnees().voisinGaucheHaut().equals(c.getCoordonnees());
+    }
     
     
 }

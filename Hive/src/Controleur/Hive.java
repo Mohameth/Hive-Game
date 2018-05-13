@@ -1,13 +1,17 @@
 package Controleur;
 
-import Modele.Insectes.Insecte;
+import Modele.Insectes.*;
+import Modele.Case;
 import Modele.Joueur;
 import Modele.JoueurHumain;
 import Modele.JoueurIA;
 import Modele.Plateau;
 import Modele.Point3DH;
+import Modele.TypeInsecte;
 import Vue.Vue;
-import javafx.geometry.Point3D;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 
 public class Hive {
 
@@ -15,10 +19,12 @@ public class Hive {
 	Joueur joueur1;
         Joueur joueur2;
         Joueur joueurCourant;
+        int nbtours;
 
 	public Hive(String[] args) {
 		this.plateau = new Plateau();
                 Vue.initFenetre(args, this);
+                this.nbtours = 0;
 	}
         
         public void setJoueurs(int cas){
@@ -53,16 +59,125 @@ public class Hive {
             plateau.getCase(caseCible).getInsecteOnTop().deplacementPossible(plateau);
         }
         
-        public void deplacementInsecte(Point3DH origine, Point3DH cible) {
+        public boolean deplacementInsecte(Point3DH origine, Point3DH cible) {
             if (!plateau.getCase(origine).estVide() && appartient(origine)) {
                 joueurCourant.coup(plateau.getCase(origine).getInsecteOnTop(),cible);
                 this.joueurSuivant();
             }
-            
+            return true;
         }
         
-        public void placementInsecte(Insecte insecte) {
+        public ArrayList<Case> placementsPossibles() {
+            return this.plateau.casesVidePlacement(this.joueurCourant);
+        }
+                
+        public void joueurPlaceInsecte(TypeInsecte insecte, Point3DH cible) {
+            int i = 0; Insecte ins = null;
+            switch (insecte) {
+                case ARAIGNEE:
+                    do {
+                        ins = this.joueurCourant.pionsEnMain().get(i);
+                        i++;
+                    }
+                    while ((ins instanceof Araignee));
+                    break;
+                case CLOPORTE:
+                    do {
+                        ins = this.joueurCourant.pionsEnMain().get(i);
+                        i++;
+                    }
+                    while ((ins instanceof Cloporte));
+                    break;
+                case COCCINELLE:
+                    do {
+                        ins = this.joueurCourant.pionsEnMain().get(i);
+                        i++;
+                    }
+                    while ((ins instanceof Coccinelle));
+                    break;
+                case FOURMI:
+                    do {
+                        ins = this.joueurCourant.pionsEnMain().get(i);
+                        i++;
+                    }
+                    while ((ins instanceof Fourmi));
+                    break;
+                case MOUSTIQUE:
+                    do {
+                        ins = this.joueurCourant.pionsEnMain().get(i);
+                        i++;
+                    }
+                    while ((ins instanceof Moustique));
+                    break;
+                case REINE:
+                    do {
+                        ins = this.joueurCourant.pionsEnMain().get(i);
+                        i++;
+                    }
+                    while ((ins instanceof Reine));
+                    break;
+                case SAUTERELLE:
+                    do {
+                        ins = this.joueurCourant.pionsEnMain().get(i);
+                        i++;
+                    }
+                    while ((ins instanceof Sauterelle));
+                    break;
+                case SCARABEE:
+                    do {
+                        ins = this.joueurCourant.pionsEnMain().get(i);
+                        i++;
+                    }
+                    while ((ins instanceof Scarabee));
+                    break;
+            }
+            this.joueurCourant.placementInsecte(ins, this.plateau.getCase(cible));
+            this.joueurSuivant();
+        }
+
+        
+        private ArrayList<Insecte> pionsPosables() {
+            ArrayList<Insecte> mainJoueur = this.joueurCourant.pionsEnMain(); 
             
+            if (this.nbtours == 4) {
+                int i = 0; boolean reinePres = false; Insecte reine = null;
+                do {
+                    if (mainJoueur.get(i) instanceof Reine) {
+                        reinePres = true;
+                        reine = mainJoueur.get(i);
+                    }
+                } while (i< mainJoueur.size() && !reinePres);
+                
+                if (reinePres) {
+                    ArrayList<Insecte> res = new ArrayList<>();
+                    res.add(reine);
+                    return res;
+                }
+            }
+            return mainJoueur;
+        }
+        
+        public HashMap<Insecte, Boolean> mainJoueurCourant() {
+            ArrayList<Insecte> posables = this.pionsPosables();
+            ArrayList<Insecte> main = this.joueurCourant.pionsEnMain();
+            HashMap<Insecte, Boolean> res = new HashMap<>();
+
+            if (posables.equals(main)) {
+                for (Insecte ins : main) {
+                    res.put(ins, Boolean.TRUE);
+                }
+            } else {
+                for (Insecte ins : main) {
+                    if (posables.contains(ins)) {
+                        res.put(ins, Boolean.TRUE);
+                    } else {
+                        res.put(ins, Boolean.FALSE);
+                    }
+                }
+            }
+                
+            
+            return res;
         }
         
         private void joueurSuivant() {
@@ -71,4 +186,5 @@ public class Hive {
             else if (joueurCourant.equals(this.joueur2))
                 this.joueurCourant = this.joueur1;
         }
+        
 }

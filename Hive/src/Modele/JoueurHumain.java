@@ -1,7 +1,10 @@
 
 package Modele;
 
-import Modele.Insectes.Insecte;
+import Controleur.Hive;
+import Modele.Insectes.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class JoueurHumain extends Joueur {
@@ -19,5 +22,7 @@ public class JoueurHumain extends Joueur {
         }
         return false;
     }
+    
+
 
 }

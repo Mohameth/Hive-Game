@@ -16,17 +16,10 @@ public abstract class Insecte {
 
     public void deplacement(Plateau plat, Point3DH cible) {
         try {
-            this.getEmplacement().removeInsecte();
-            plat.getCase(cible).addInsecte(this);
-        } catch(Exception e) {
-            System.err.println("ERREUR DEPLACEMENT :" + e);
-        }
-    }
-    
-    public void deplacement(Plateau plat, Case cible) {
-        try {
-            this.getEmplacement().removeInsecte();
-            cible.addInsecte(this);
+            //this.getEmplacement().removeInsecte();
+            //plat.getCase(cible).addInsecte(this);
+            plat.deleteInsecte(this, this.getEmplacement().getCoordonnees());
+            plat.ajoutInsecte(this, cible);
         } catch(Exception e) {
             System.err.println("ERREUR DEPLACEMENT :" + e);
         }
@@ -51,23 +44,6 @@ public abstract class Insecte {
 
     public void setEmplacement(Case emplacement) {
         this.emplacement = emplacement;
-        try {
-        if (this.emplacement.getInsecteOnTop() != this) emplacement.addInsecte(this);
-        } catch (Exception e) {
-            System.err.println("ERREUR SET EMPLACEMENT : " + e);
-        } 
-    }
-        
-    
-    protected Collection<Case> getVoisinsAccessible(Plateau plateau) {
-        Collection<Case> dep = plateau.getCasesVoisines(getEmplacement(), true);
-        for (Case c : plateau.getCasesVoisines(getEmplacement(), true)) {
-            if (plateau.gateBetween(getEmplacement(), c)) {
-                dep.remove(c);
-            }
-        }
-
-        return dep;
     }
 
     @Override
