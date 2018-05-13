@@ -19,7 +19,6 @@ public class PieceHitbox {
         this.p = newp;
         this.posX = 0;
         this.posY = 0;
-
         this.libre = true;
         this.X = 47;
         this.Y = 47;
@@ -53,16 +52,16 @@ public class PieceHitbox {
         this.Z = z;
     }
 
+    public void setLibre(boolean libre) {
+        this.libre = libre;
+    }
+
     public void affiche() {
         System.out.println("HITBOX X: " + X + " Y:" + Y + " Z:" + Z + " \tPOS: " + numCoin);
     }
 
     public boolean isLibre() {
         return libre;
-    }
-
-    public void setLibre(boolean libre) {
-        this.libre = libre;
     }
 
     public void updateCoordZoom(double zoomFactor) {

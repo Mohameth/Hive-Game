@@ -1,6 +1,8 @@
 
 import javafx.scene.control.Button;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -21,9 +23,11 @@ import javafx.stage.Stage;
 
 public class Vue extends Application implements Observateur {
 
-    ArrayList<Piece> pieceList;
-    ArrayList<ImageView> hintZones;
-    Piece currentSelected;
+    private ArrayList<Piece> pieceList;
+    private Map joueurBlanc;
+    private Map joueurNoir;
+    private ArrayList<ImageView> hintZones;
+    private Piece currentSelected;
     private int sceneWidth, sceneHeight; //taille de la scene
     private double totZoom;  //zoom actuel du plateau
     private double totMoveBoardX, totMoveBoardY;  //position du plateau
@@ -33,31 +37,82 @@ public class Vue extends Application implements Observateur {
         Application.launch(args);
     }
 
+    @Override
+    public void start(Stage primaryStage) {
+        this.g = new Group();
+        this.pieceList = new ArrayList<>();
+        this.hintZones = new ArrayList<>();
+        this.joueurBlanc = new HashMap<>(); //todo coordonnée point
+        this.joueurNoir = new HashMap<>();
+        this.currentSelected = null; //aucune piece selectionnée
+        this.sceneWidth = 1280; //taille de base
+        this.sceneHeight = 720;
+        this.totZoom = 1;
+
+//        Map<String, String> m = new HashMap();
+//        m.put("salut", "valeur");
+//        m.put("cle2", "valeur2");
+//
+//        for (Map.Entry<String, String> entry : m.entrySet()) {
+//            String key = entry.getKey();
+//            String value = entry.getValue();
+//            System.out.println("key: " + key + " Val:" + value);
+//            System.out.println("sssss: " + m.get("cle2"));
+//        }
+        Scene scene = new Scene(g, sceneWidth, sceneHeight);
+
+        //creation du plateau
+        Rectangle rect = new Rectangle(0, 0);
+        Image img = new Image("background.jpg");
+        rect.setFill(new ImagePattern(img));
+        g.getChildren().add(rect);  //ajout dans le group
+        makeBoardDraggable(rect);   //si on clique sur le rectangle deplacer les images
+        makeBoardScrollZoom(rect);  //si on zoom scroll sur le plateau (rectangle) appliquer le zoom
+        rect.setCursor(Cursor.MOVE); //Change cursor to crosshair
+        rect.widthProperty().bind(scene.widthProperty());
+        rect.heightProperty().bind(scene.heightProperty());
+
+        makeSceneResizeEvent(scene);//Window resize event
+
+        primaryStage.setScene(scene);
+        primaryStage.show();
+        dessineTemplate();
+
+        /*
+        AnimationTimer anim = new AnimationTimer() {
+            public void handle(long temps) {
+                animHints(temps);
+            }
+        };
+        anim.start();
+         */
+    }
+
     //Ajoute le pion sur le plateau G au coordonnée x y.
-    private void addImage(String imgName, Group g, double x, double y) {
+    private void addPiece(String imgName, Group g, double x, double y) {
         Piece p = new Piece(imgName, sceneWidth, sceneHeight, totZoom);
-        if (this.pieceList.size() == 0) { //Si c'est la première piece alors on luis donne les coordonnées x0 y0
-            p.setXYZ(0, 0, 0);
-        }
+//        if (this.pieceList.size() == 0) { //Si c'est la première piece alors on lui donne les coordonnées x0 y0
+//            p.setXYZ(0, 0, 0);
+//        }
         p.addObserver(this);
         pieceList.add(p); //ajoute le pion dans la liste des pieces du plateau
-        p.moveToXY(x, y);
+        p.moveToXY(x, y);   //deplace la piece au bonne coordonnée
         g.getChildren().add(p.getImgv()); //ajoute l'image sur le plateau
     }
 
     //Initialisation de la vue
-    private void dessineTemplate(Group g) {
+    private void dessineTemplate() {
         //création des images
 
         String[] namePiece = new String[]{"araignee", "fourmis", "ladybug", "moustique", "pillbug", "renne", "sauterelles", "scarabée"};
         String[] colorPiece = new String[]{"black", "white"};
 
-        addImage("piontr_black_pillbug.png", g, 0, 0);
+        addPiece("piontr_black_pillbug.png", g, 0, 0);
 
         int x = -1800, y = -1800;
         for (String color : colorPiece) {
             for (String name : namePiece) {
-                addImage("piontr_" + color + "_" + name + ".png", g, x, y);
+                addPiece("piontr_" + color + "_" + name + ".png", g, x, y);
                 x += 470;  //image width + 9
             }
             x = -1800;
@@ -124,35 +179,7 @@ public class Vue extends Application implements Observateur {
         g.getChildren().add(hbox);
     }
 
-    @Override
-    public void start(Stage primaryStage) {
-        this.g = new Group();
-        this.pieceList = new ArrayList<>();
-        this.hintZones = new ArrayList<>();
-        this.currentSelected = null; //aucune piece selectionnée
-
-        //creation du plateau
-        Rectangle rect = new Rectangle(0, 0);
-
-        Image img = new Image("background.jpg");
-        rect.setFill(new ImagePattern(img));
-        g.getChildren().add(rect);  //ajout dans le group
-
-        //si on clique sur le rectangle deplacer les images
-        makeBoardDraggable(rect);
-        makeBoardScrollZoom(rect);
-        rect.setCursor(Cursor.MOVE); //Change cursor to crosshair
-
-        //taille de base
-        this.sceneWidth = 1280;
-        this.sceneHeight = 720;
-        this.totZoom = 1;
-
-        Scene scene = new Scene(g, sceneWidth, sceneHeight);
-        rect.widthProperty().bind(scene.widthProperty());
-        rect.heightProperty().bind(scene.heightProperty());
-
-        //Window resize event
+    private void makeSceneResizeEvent(Scene scene) {
         scene.widthProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
@@ -165,19 +192,6 @@ public class Vue extends Application implements Observateur {
                 updateWindowHeight(newSceneHeight);
             }
         });
-
-        primaryStage.setScene(scene);
-        primaryStage.show();
-        dessineTemplate(g);
-
-        /*
-        AnimationTimer anim = new AnimationTimer() {
-            public void handle(long temps) {
-                animHints(temps);
-            }
-        };
-        anim.start();
-         */
     }
 
     private void updateWindowWidth(Number w) {
@@ -208,15 +222,12 @@ public class Vue extends Application implements Observateur {
 
     private void makeBoardDraggable(Rectangle rect) {
         MouseLocation lastMouseLocation = new MouseLocation();
-
-        // --- remember initial coordinates of mouse cursor and node
         rect.addEventFilter(MouseEvent.MOUSE_PRESSED, (
                 final MouseEvent mouseEvent) -> {
-            lastMouseLocation.x = mouseEvent.getSceneX();
+            lastMouseLocation.x = mouseEvent.getSceneX(); //sauvegarde des coordonnées initial de la souris
             lastMouseLocation.y = mouseEvent.getSceneY();
             removeHint();
             unselectPiece();
-
         });
 
         // --- Shift node calculated from mouse cursor movement
@@ -224,13 +235,7 @@ public class Vue extends Application implements Observateur {
                 final MouseEvent mouseEvent) -> {
             double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x;
             double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y;
-//            for (Piece p : pieceList) {
-//                System.out.println("Delta: " + deltaX + " deltay: " + deltaY);
-//                p.moveXYBoard(deltaX, deltaY);
-//            }
-
             applyBoardMove(deltaX, deltaY);
-
             lastMouseLocation.x = mouseEvent.getSceneX();
             lastMouseLocation.y = mouseEvent.getSceneY();
         });
@@ -297,12 +302,9 @@ public class Vue extends Application implements Observateur {
     }
 
     public void checkCollision(Piece p) {
-        //si la piece n'est pas celle la et que le cercle et libre alors l'analyser (si colision placer l'image de la piece correctement + update X et Y)
-        //ajouter une boucle pour les autres points...
-
         for (Piece autrePiece : pieceList) {
-            if (!autrePiece.equals(p)) { //si c'est pas la meme piece
-                //alors on explore les cercles (hitbox) LIBRE de cette piece et on test la collision
+            if (!autrePiece.equals(p)) { //si ce n'est pas la meme piece
+                //alors on explore les hitbox LIBRE de cette piece et on test la collision
                 for (PieceHitbox hitbox : autrePiece.getPieceHitboxList()) {
                     if (hitbox.isLibre()) { //si elle est libre
                         //il y a t'il collision avec un des coins de la pièce qu'on bouge?
@@ -324,18 +326,19 @@ public class Vue extends Application implements Observateur {
     }
 
     private boolean collisionHitbox(Piece p, PieceHitbox ph) {
+        //C1 with center (x1,y1) and radius r1;
+        //C2 with center (x2,y2) and radius r2.
+        //(x2-x1)^2 + (y1-y2)^2 <= (r1+r2)^2
+
         double imgWidthRadius = (p.getImgv().getFitWidth() / 3) * totZoom;
         double imgx = p.getImgv().getX();
         double imgy = p.getImgv().getY();
 
-        //C1 with center (x1,y1) and radius r1;
-        //C2 with center (x2,y2) and radius r2.
-        //(x2-x1)^2 + (y1-y2)^2 <= (r1+r2)^2
         double r1 = (ph.getPosX() - imgx);
-        r1 *= r1;
         double r2 = (imgy - ph.getPosY());
+        double r3 = (imgWidthRadius + (75 * totZoom));  //75 radius du point d'encrage
+        r1 *= r1;
         r2 *= r2;
-        double r3 = (imgWidthRadius + (75 * totZoom));  //1 radius du point d'encrage
         r3 *= r3;
         return (r1 + r2 <= r3);
 
@@ -347,7 +350,6 @@ public class Vue extends Application implements Observateur {
     }
 
     public void updateMousePressPiece(Piece p) {
-
         unselectPiece();
         this.currentSelected = p;
         displayLibre(p);
@@ -360,11 +362,8 @@ public class Vue extends Application implements Observateur {
             for (Piece autrePiece : this.pieceList) {
                 if (!autrePiece.equals(p)) { //si c'est pas la meme piece
                     //alors on explore les cercles (hitbox) LIBRE de cette piece et on test la collision
-
                     for (PieceHitbox hitbox : autrePiece.getPieceHitboxList()) {
-
                         if (hitbox.isLibre()) { //si elle est libre
-
                             ImageView iv = new ImageView();
                             iv.setImage(img);
                             iv.setCursor(Cursor.HAND);
@@ -416,7 +415,6 @@ public class Vue extends Application implements Observateur {
         dropShadow.setOffsetY(0.0);
         dropShadow.setSpread(0.90);
         dropShadow.setColor(Color.rgb(0, 255, 0, 0.5));
-
         iv.setEffect(dropShadow);
     }
 
