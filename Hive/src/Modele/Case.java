@@ -96,39 +96,27 @@ public class Case {
     }
     
     public boolean estVoisinHaut(Case c) {
-    	return (this.getCoordonnees().getX()==c.getCoordonnees().getX()) 
-    			&& (this.getCoordonnees().getY()+1==c.getCoordonnees().getY()) 
-    			&& (this.getCoordonnees().getZ()-1==c.getCoordonnees().getZ());
+    	return this.getCoordonnees().voisinHaut().equals(c.getCoordonnees());
     }
     
     public boolean estVoisinDroiteHaut(Case c) {
-    	return (this.getCoordonnees().getX()+1==c.getCoordonnees().getX()) 
-    			&& (this.getCoordonnees().getY()==c.getCoordonnees().getY()) 
-    			&& (this.getCoordonnees().getZ()-1==c.getCoordonnees().getZ());
+    	return this.getCoordonnees().voisinDroiteHaut().equals(c.getCoordonnees());
     }
     
     public boolean estVoisinDroiteBas(Case c) {
-    	return (this.getCoordonnees().getX()+1==c.getCoordonnees().getX()) 
-    			&& (this.getCoordonnees().getY()-1==c.getCoordonnees().getY()) 
-    			&& (this.getCoordonnees().getZ()==c.getCoordonnees().getZ());
+    	return this.getCoordonnees().voisinDroiteBas().equals(c.getCoordonnees());
     }
     
     public boolean estVoisinBas(Case c) {
-    	return (this.getCoordonnees().getX()==c.getCoordonnees().getX()) 
-    			&& (this.getCoordonnees().getY()-1==c.getCoordonnees().getY()) 
-    			&& (this.getCoordonnees().getZ()+1==c.getCoordonnees().getZ());
+    	return this.getCoordonnees().voisinBas().equals(c.getCoordonnees());
     }
     
     public boolean estVoisinGaucheBas(Case c) {
-    	return (this.getCoordonnees().getX()-1==c.getCoordonnees().getX()) 
-    			&& (this.getCoordonnees().getY()==c.getCoordonnees().getY()) 
-    			&& (this.getCoordonnees().getZ()+1==c.getCoordonnees().getZ());
+    	return this.getCoordonnees().voisinGaucheBas().equals(c.getCoordonnees());
     }
     
     public boolean estVoisinGaucheHaut(Case c) {
-    	return (this.getCoordonnees().getX()-1==c.getCoordonnees().getX()) 
-    			&& (this.getCoordonnees().getY()+1==c.getCoordonnees().getY()) 
-    			&& (this.getCoordonnees().getZ()==c.getCoordonnees().getZ());
+    	return this.getCoordonnees().voisinGaucheHaut().equals(c.getCoordonnees());
     }
     
     @Override

@@ -89,19 +89,24 @@ public class Araignee extends Insecte {
         		}
         		if(!casePossibles1.isEmpty()) {
         			case1=casePossibles1.get(0);
+        		}else{
+        			case1=null;
         		}
+        		
         		if(!casePossibles2.isEmpty()) {
         			case2=casePossibles2.get(0);
+        		}else{
+        			case2=null;
         		}
         	}
         	casePossibles1.clear();
     		casePossibles2.clear();     	 
         }
         ArrayList<Case> casePossibles=new ArrayList<>();
-        if(!casePossibles1.isEmpty())
-        casePossibles.add(casePossibles1.get(0));
-        if(!casePossibles2.isEmpty())
-        casePossibles.add(casePossibles2.get(0));
+        if(case1!=null)
+        casePossibles.add(case1);
+        if(case2!=null)
+        casePossibles.add(case2);
         
         return casePossibles;
     }*/
