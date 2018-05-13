@@ -4,6 +4,7 @@ import Modele.Case;
 import Modele.Joueur;
 import Modele.Plateau;
 import Modele.Point3DH;
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class Moustique extends Insecte {
@@ -21,7 +22,7 @@ public class Moustique extends Insecte {
         	return new ArrayList<>();
         }
     	
-    	ArrayList<Case> caseVoisinesOccupees=(ArrayList<Case>) plateau.getCasesVoisinesOccupees(this.getEmplacement());
+    	   ArrayList<Case> caseVoisinesOccupees=(ArrayList<Case>) plateau.getCasesVoisinesOccupees(this.getEmplacement());
     	ArrayList<Case> casePossibles=new ArrayList<>();
     	
     	for(int i=0;i<caseVoisinesOccupees.size();i++) {

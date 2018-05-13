@@ -4,6 +4,7 @@ import Modele.Case;
 import Modele.Joueur;
 import Modele.Plateau;
 import Modele.Point3DH;
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class Coccinelle extends Insecte {
@@ -20,7 +21,7 @@ public class Coccinelle extends Insecte {
         	return new ArrayList<>();
         }
     	
-    	ArrayList<Case> casePossibles=new ArrayList<>();
+    	   ArrayList<Case> casePossibles=new ArrayList<>();
     	casePossibles.add(this.getEmplacement());
     	
     	for(int i=0;i<2;i++) {
