@@ -19,7 +19,7 @@ public abstract class Insecte {
             //this.getEmplacement().removeInsecte();
             //plat.getCase(cible).addInsecte(this);
             plat.deleteInsecte(this, this.getEmplacement().getCoordonnees());
-            plat.ajoutInsecte(this, cible);
+            plat.deplaceInsecte(this, cible);
         } catch(Exception e) {
             System.err.println("ERREUR DEPLACEMENT :" + e);
         }

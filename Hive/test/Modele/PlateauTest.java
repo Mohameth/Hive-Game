@@ -384,7 +384,7 @@ public class PlateauTest {
     @Test
     public void testRucheBrisee2() {
         System.out.println("=============================================");
-        System.out.println("Test rucheBrisee ===========================>\n");
+        System.out.println("Test rucheBrisee2 ===========================>\n");
 
         Point3DH orig = new Point3DH(0, 0, 0);
         Plateau instance = new Plateau();

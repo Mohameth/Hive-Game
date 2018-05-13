@@ -8,6 +8,7 @@ import Modele.Point3DH;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 public class Araignee extends Insecte {
 	
@@ -113,7 +114,7 @@ public class Araignee extends Insecte {
         ArrayList<Case> res = new ArrayList<>();
         res.addAll(deplacementPossibleworker(plateau, this.getEmplacement(), 1, new ArrayList<>()));
         return res;
-    }
+                }
         
         
     private HashSet<Case> deplacementPossibleworker(Plateau p, Case origine, int dist, ArrayList<Case> visitees) {

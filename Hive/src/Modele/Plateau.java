@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Plateau décrit l'Etat du plateau de jeu et les actions disponible pour le modifier.
@@ -25,7 +27,7 @@ public class Plateau implements Observable {
      * @see Point3DH
      */
     private Map<Point3DH, Case> cases;
-    private int nbPionsEnJeu;
+    public int nbPionsEnJeu;
     private Observateur observateur;
     
     
@@ -60,6 +62,19 @@ public class Plateau implements Observable {
         try {
             this.getCase(position).addInsecte(insecte);
             this.nbPionsEnJeu++;
+        } catch (Exception ex) {
+            System.err.println("Erreur ajout : " + ex);
+        }
+    }
+    
+    /**
+     * ajoute un insecte à la position donné
+     * @param insecte insecte à ajouter
+     * @param position coordonées de la case où ajouter l'insecte
+     */
+    public void deplaceInsecte(Insecte insecte, Point3DH position) {
+        try {
+            this.getCase(position).addInsecte(insecte);
         } catch (Exception ex) {
             System.err.println("Erreur ajout : " + ex);
         }
@@ -104,6 +119,26 @@ public class Plateau implements Observable {
             Case voisin = getCase(pointCourant);
             if (voisin.estVide() || !exclureCaseOccupee) {
                 voisins.add(voisin); //Case vide
+            }
+        }
+
+        return voisins;
+    }
+    
+    /**
+     * Donne toute les cases voisine
+     * @param c case d'origine
+     * @return une Collection generique contenant les cases voisine de c
+     *         avec les cases vides au début
+     */
+    public Collection<Case> getCasesVoisinesOrdonnees(Case c) {
+        LinkedList<Case> voisins = new LinkedList<>();
+        for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
+            Case voisin = getCase(pointCourant);
+            if (voisin.estVide()) {
+                voisins.addFirst(voisin);
+            } else {
+                voisins.addLast(voisin);
             }
         }
 
@@ -170,7 +205,7 @@ public class Plateau implements Observable {
         Iterator<Case> it = dep.iterator();
         while (it.hasNext()) {
             Case voisin = it.next();
-            if (this.gateBetween(voisin, c)) {//|| rucheBrisee(c, voisin)) {
+            if (!this.glissementPossible(c, voisin)) {
                 it.remove();
             } 
         }
@@ -178,7 +213,13 @@ public class Plateau implements Observable {
         return dep;
     }
     
-    public boolean glissementPossibles(Case c1, Case c2) {
+    /**
+     * Test du glissement à partir de la case c1 vers c2
+     * @param c1 case initiale
+     * @param c2 case destination
+     * @return true si le glissement de c1 à c2 est possible sans casser la ruche
+     */
+    public boolean glissementPossible(Case c1, Case c2) {
         int nombreCasesAdjacentesNonVide = 0;
         Collection<Case> voisinsC1 = getCasesVoisines(c1, false);
         voisinsC1.remove(c2);
@@ -192,8 +233,8 @@ public class Plateau implements Observable {
                 }
             }
         }
-
-        return nombreCasesAdjacentesNonVide == 1;
+        
+        return nombreCasesAdjacentesNonVide == 1 && !rucheBrisee(c1, c2);
     }
 
     public boolean gateBetween(Case c1, Case c2) {
@@ -213,7 +254,14 @@ public class Plateau implements Observable {
 
         return nombreCasesAdjacentesNonVide == 2;
     }
-
+    
+    /**
+     * Test sur l'unicité de la ruche
+     * @param ghost case à ignorer
+     * @param moveDest case à considérer
+     * @return true si la ruche est brisée après le déplacement (ghost->moveDest)
+     *         ou sans considérer de déplacement si ghost et moveDest valent null
+     */
     public boolean rucheBrisee(Case ghost, Case moveDest) { //Tester aussi avec un compteur de changements
         if (this.rucheVide()) return false;
         
@@ -228,8 +276,21 @@ public class Plateau implements Observable {
             } while (i < listeCases.length && (moveDest.estVide()));
         }
         
+        Insecte ghostBug = null;
+        if (ghost != null && moveDest != null) {
+            ghostBug = ghost.getInsecteOnTop();
+            if (ghostBug != null) {
+                try {
+                    ghost.removeInsecte();
+                    moveDest.addInsecte(ghostBug);
+                } catch (Exception e) {
+                    System.err.println("ERREUR Ruche brisé debut : "+e);
+                }
+            }
+        }
 
         ArrayList<Case> visites = new ArrayList<>();
+        int nbInsectesVisites = moveDest.getNbInsectes();
         LinkedList<Case> file = new LinkedList<>();
         visites.add(moveDest);
         file.add(moveDest);
@@ -237,15 +298,27 @@ public class Plateau implements Observable {
             Case courante = file.pollFirst();
             ArrayList<Case> voisins = (ArrayList<Case>) getCasesVoisinesOccupees(courante);
             for (Case caseC : voisins) {
-                if (!visites.contains(caseC) && !caseC.equals(ghost)) {
+                if (!visites.contains(caseC)) {
                     visites.add(caseC);
+                    nbInsectesVisites += caseC.getNbInsectes();
                     file.addLast(caseC);
                 }
 
             }
         }
         
-        return visites.size() != this.nbPionsEnJeu;
+        if (ghost != null && moveDest != null) {
+            if (ghostBug != null) {
+                try {
+                    moveDest.removeInsecte();
+                    ghost.addInsecte(ghostBug);
+                } catch (Exception e) {
+                    System.err.println("ERREUR Ruche brisé fin : "+e);
+                }
+            }
+        }
+        
+        return nbInsectesVisites != this.nbPionsEnJeu;
     }
 
     public boolean rucheBrisee2(Case ghost) { //Tester aussi avec un compteur de changements

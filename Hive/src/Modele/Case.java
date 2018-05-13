@@ -64,6 +64,9 @@ public class Case {
         return this.insectes.get(this.insectes.size()-1);
     }
     
+    public Integer getNbInsectes() {
+        return insectes.size();
+    }
 
     public Point3DH getCoordonnees() {
         return coordonnees;
@@ -128,5 +131,8 @@ public class Case {
     			&& (this.getCoordonnees().getZ()==c.getCoordonnees().getZ());
     }
     
-    
+    @Override
+    public String toString() {
+        return "Case[" + coordonnees + ']';
+    }
 }

@@ -15,45 +15,19 @@ public class Fourmi extends Insecte {
         super(j);
     }
     
-    private boolean estConnecte(Plateau p, Collection<Case> resultat, Case c) {
-        for (Case r : resultat) {
-            for (Case resVoisin : p.getCasesVoisines(r, true)) {
-                if (p.getCasesVoisines(c, true).contains(resVoisin)) return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    private boolean hasGate(Plateau p, Case c) {
-        for (Case d : p.getCasesVoisines(c, true)) {
-            if (!p.gateBetween(c, d)) return false;
-        }
-        
-        return true;
-    }
-    
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
         LinkedList<Case> result = new LinkedList<>();
         LinkedList<Case> toCheck = new LinkedList<>();
-        LinkedList<Case> alreadyChecked = new LinkedList<>();
         
-        toCheck.add(this.getEmplacement());
+        result.addAll(plateau.getCasesVoisinesAccessibles(this.getEmplacement(), true));
+        toCheck.addAll(result);
         while (!toCheck.isEmpty()) {
             Case courante = toCheck.removeLast();
-            alreadyChecked.add(courante);
-            
-            for (Case c : plateau.getCasesVoisines(courante, false)) {
-                if (c.estVide()) {
-                    if (!result.contains(c)) {
-                        if (!hasGate(plateau, c)) result.add(c);
-                    }
-                }
-                else {
-                    if (!alreadyChecked.contains(c)) {
-                        toCheck.add(c);
-                    }
+            for (Case c : plateau.getCasesVoisinesAccessibles(courante, true)) {
+                if (!result.contains(c) && plateau.glissementPossible(courante, c)) {
+                    result.add(c);
+                    toCheck.add(c);
                 }
             }
         }

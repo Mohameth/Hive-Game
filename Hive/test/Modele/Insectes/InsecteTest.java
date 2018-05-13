@@ -70,12 +70,12 @@ public class InsecteTest {
 
         System.out.println("test avec tous les voisins libres :");
         ArrayList<Point3DH> expected = new ArrayList<>();
-        expected.add(new Point3DH(0, +1, -1));
-        expected.add(new Point3DH(+1, 0, -1));
-        expected.add(new Point3DH(+1, -1, 0));
-        expected.add(new Point3DH(0, -1, +1));
-        expected.add(new Point3DH(-1, 0, +1));
-        expected.add(new Point3DH(-1, +1, 0));
+//        expected.add(new Point3DH(0, +1, -1));
+//        expected.add(new Point3DH(+1, 0, -1));
+//        expected.add(new Point3DH(+1, -1, 0));
+//        expected.add(new Point3DH(0, -1, +1));
+//        expected.add(new Point3DH(-1, 0, +1));
+//        expected.add(new Point3DH(-1, +1, 0));
 
         arrayCorresponds(result, expected);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
@@ -89,7 +89,7 @@ public class InsecteTest {
         //expectedWithGate.add(new Point3DH(0, -1, +1));
         //expectedWithGate.add(new Point3DH(-1, 0, +1));
         //expectedWithGate.add(new Point3DH(-1, +1, 0));
-
+        
         Case caseOccupe1 = instance.getCase(new Point3DH(0, 1, -1));
         Case caseOccupe2 = instance.getCase(new Point3DH(1, -1, 0));
 
@@ -129,30 +129,28 @@ public class InsecteTest {
         result.addAll(s.deplacementPossible(instance));
 
         ArrayList<Point3DH> expected = new ArrayList<>();
-        expected.add(new Point3DH(0, +1, -1));
-        expected.add(new Point3DH(+1, 0, -1));
-        expected.add(new Point3DH(+1, -1, 0));
-        expected.add(new Point3DH(0, -1, +1));
-        expected.add(new Point3DH(-1, 0, +1));
-        expected.add(new Point3DH(-1, +1, 0));
+//        expected.add(new Point3DH(0, +1, -1));
+//        expected.add(new Point3DH(+1, 0, -1));
+//        expected.add(new Point3DH(+1, -1, 0));
+//        expected.add(new Point3DH(0, -1, +1));
+//        expected.add(new Point3DH(-1, 0, +1));
+//        expected.add(new Point3DH(-1, +1, 0));
 
         arrayCorresponds(result, expected);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
-        expected.remove(new Point3DH(+1, 0, -1));
+//        expected.remove(new Point3DH(+1, 0, -1));
 
-        Point3DH Occupe1 = new Point3DH(0, 1, -1);
-        Point3DH Occupe2 = new Point3DH(1, -1, 0);
 
-        instance.ajoutInsecte(new Fourmi(j1), Occupe1);
-        instance.ajoutInsecte(new Fourmi(j1), Occupe2);
+        creeCaseEtPlaceInsecte(instance, new Fourmi(j1), 0, 1, -1);
+        creeCaseEtPlaceInsecte(instance, new Fourmi(j1), 1, -1, 0);
 
         System.out.println("test deplacement avec 2 cases occupées :");
         result = new ArrayList<>();
         result.addAll(s.deplacementPossible(instance));
 
         arrayCorresponds(result, new ArrayList<>());
-        s.deplacement(instance, Occupe2);
+        s.deplacement(instance, new Point3DH(1, -1, 0));
 
         ArrayList<Point3DH> newExpectation = new ArrayList<>();
 //        newExpectation.add(new Point3DH(0, 0, 0));
@@ -187,12 +185,12 @@ public class InsecteTest {
         System.out.println("test avec la fourmis seulement :");
 
         ArrayList<Point3DH> expected = new ArrayList<>();
-        expected.add(new Point3DH(0, +1, -1));
-        expected.add(new Point3DH(+1, 0, -1));
-        expected.add(new Point3DH(+1, -1, 0));
-        expected.add(new Point3DH(0, -1, +1));
-        expected.add(new Point3DH(-1, 0, +1));
-        expected.add(new Point3DH(-1, +1, 0));
+//        expected.add(new Point3DH(0, +1, -1));
+//        expected.add(new Point3DH(+1, 0, -1));
+//        expected.add(new Point3DH(+1, -1, 0));
+//        expected.add(new Point3DH(0, -1, +1));
+//        expected.add(new Point3DH(-1, 0, +1));
+//        expected.add(new Point3DH(-1, +1, 0));
 
         arrayCorresponds(f.deplacementPossible(instance), expected);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
@@ -209,7 +207,7 @@ public class InsecteTest {
             fail("L'ajout d'insecte a échoué");
         }
 
-        System.out.println("test deplacement avec 2 cases et 1 déplacement impossible occupées :");
+        System.out.println("test deplacement avec 2 cases occupées et 1 déplacement impossible  :");
 //        expected.remove(new Point3DH(0, 1, -1)); // Case occupée
 //        expected.remove(new Point3DH(1, 0, -1)); // RUCHE BRISE
 //        expected.remove(new Point3DH(1, -1, 0)); // Case occupée
@@ -306,15 +304,15 @@ public class InsecteTest {
         expectedScarabeeNoire.add(new Point3DH(0, 0, 0));
         expectedScarabeeNoire.add(new Point3DH(1, -1, 0));
         expectedScarabeeNoire.add(new Point3DH(1, -2, 1));
+        expectedScarabeeNoire.add(new Point3DH(-1, 0, 1));
         
         System.out.println("test deplacement Scarabee noire sur grosse ruche :");
         arrayCorresponds(scarabeeNoire.deplacementPossible(instance), expectedScarabeeNoire);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
-        /*ArrayList<Point3DH> expectedAraigneeNoire = new ArrayList<>();
+        ArrayList<Point3DH> expectedAraigneeNoire = new ArrayList<>();
         expectedAraigneeNoire.add(new Point3DH(3, -1, -2));
         expectedAraigneeNoire.add(new Point3DH(-2, 2, 0));
-        expectedAraigneeNoire.add(new Point3DH(1, -2, 1));
         
         System.out.println("test deplacement araignée noire sur grosse ruche :");
         arrayCorresponds(araigneeNoire.deplacementPossible(instance), expectedAraigneeNoire);
@@ -322,19 +320,16 @@ public class InsecteTest {
         
         System.out.println("test deplacement araignée blanche sur grosse ruche :");
         arrayCorresponds(araigneeBlanche.deplacementPossible(instance), new ArrayList<>());
-        System.out.println("\u001B[32m" + "\t Passed ✔ \n");*/
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
         //TODO: Les quatres sauterelles
     }
     
     private void arrayCorresponds(Collection<Case> result, ArrayList<Point3DH> pointsExpected) {
         ArrayList<Point3DH> copie = new ArrayList<>(pointsExpected);
-        ArrayList<Case> copie2 = new ArrayList<>();
-        //assertTrue(pointsExpected.size() == result.size());
+        assertTrue(pointsExpected.size() == result.size());
         for (Case c : result) {
-            //assertTrue(pointsExpected.contains(c.getCoordonnees()));
-            //copie2.remove(c);
-            int x = copie.size();
+            assertTrue(pointsExpected.contains(c.getCoordonnees()));
             copie.remove(c.getCoordonnees());
         }
 
