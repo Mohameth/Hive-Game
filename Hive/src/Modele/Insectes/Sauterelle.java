@@ -50,80 +50,68 @@ public class Sauterelle extends Insecte {
     }
     
     private Case extremiteHaut(Case c,Plateau plateau) {
-    	int x=c.getCoordonnees().getX();
-    	int y=c.getCoordonnees().getY()+1;
-    	int z=c.getCoordonnees().getZ()-1;
-    	Case c2=plateau.getCase(new Point3DH(x,y,z));
     	
-    	while(!c2.estVide()) {
-    		y++;z--;
-    		c2=plateau.getCase(new Point3DH(x,y,z));
-    	}
+    	Case c2=c;
+    	
+    	do {
+    		c2=plateau.getCase(c2.getCoordonnees().voisinHaut());
+    	}while(!c2.estVide());
+    	
     	return c2;
     }
     
     private Case extremiteDroiteHaut(Case c,Plateau plateau) {
-    	int x=c.getCoordonnees().getX()+1;
-    	int y=c.getCoordonnees().getY();
-    	int z=c.getCoordonnees().getZ()-1;
-    	Case c2=plateau.getCase(new Point3DH(x,y,z));
     	
-    	while(!c2.estVide()) {
-    		x++;z--;
-    		c2=plateau.getCase(new Point3DH(x,y,z));
-    	}
+    	Case c2=c;
+    	
+    	do {
+    		c2=plateau.getCase(c2.getCoordonnees().voisinDroiteHaut());
+    	}while(!c2.estVide());
+    	
     	return c2;
     }
     
     private Case extremiteDroiteBas(Case c,Plateau plateau) {
-    	int x=c.getCoordonnees().getX()+1;
-    	int y=c.getCoordonnees().getY()-1;
-    	int z=c.getCoordonnees().getZ();
-    	Case c2=plateau.getCase(new Point3DH(x,y,z));
     	
-    	while(!c2.estVide()) {
-    		x++;y--;
-    		c2=plateau.getCase(new Point3DH(x,y,z));
-    	}
+    	Case c2=c;
+    	
+    	do {
+    		c2=plateau.getCase(c2.getCoordonnees().voisinDroiteBas());
+    	}while(!c2.estVide());
+    	
     	return c2;
     }
     
     private Case extremiteBas(Case c,Plateau plateau) {
-    	int x=c.getCoordonnees().getX();
-    	int y=c.getCoordonnees().getY()-1;
-    	int z=c.getCoordonnees().getZ()+1;
-    	Case c2=plateau.getCase(new Point3DH(x,y,z));
     	
-    	while(!c2.estVide()) {
-    		y--;z++;
-    		c2=plateau.getCase(new Point3DH(x,y,z));
-    	}
+    	Case c2=c;
+    	
+    	do {
+    		c2=plateau.getCase(c2.getCoordonnees().voisinBas());
+    	}while(!c2.estVide());
+    	
     	return c2;
     }
     
     private Case extremiteGaucheBas(Case c,Plateau plateau) {
-    	int x=c.getCoordonnees().getX()-1;
-    	int y=c.getCoordonnees().getY();
-    	int z=c.getCoordonnees().getZ()+1;
-    	Case c2=plateau.getCase(new Point3DH(x,y,z));
     	
-    	while(!c2.estVide()) {
-    		x--;z++;
-    		c2=plateau.getCase(new Point3DH(x,y,z));
-    	}
+    	Case c2=c;
+    	
+    	do {
+    		c2=plateau.getCase(c2.getCoordonnees().voisinGaucheBas());
+    	}while(!c2.estVide());
+    	
     	return c2;
     }
     
     private Case extremiteGaucheHaut(Case c,Plateau plateau) {
-    	int x=c.getCoordonnees().getX()-1;
-    	int y=c.getCoordonnees().getY()+1;
-    	int z=c.getCoordonnees().getZ();
-    	Case c2=plateau.getCase(new Point3DH(x,y,z));
     	
-    	while(!c2.estVide()) {
-    		y++;x--;
-    		c2=plateau.getCase(new Point3DH(x,y,z));
-    	}
+    	Case c2=c;
+    	
+    	do {
+    		c2=plateau.getCase(c2.getCoordonnees().voisinGaucheHaut());
+    	}while(!c2.estVide());
+    	
     	return c2;
     }
 
