@@ -1,17 +1,13 @@
 package Modele;
 
 import Modele.Insectes.Insecte;
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Plateau décrit l'Etat du plateau de jeu et les actions disponible pour le modifier.
@@ -258,6 +254,7 @@ public class Plateau implements Observable {
         
         Insecte ghostBug = null;
         if (ghost != null && moveDest != null) {
+            ghost = this.getCase(ghost.getCoordonnees());
             ghostBug = ghost.getInsecteOnTop();
             if (ghostBug != null) {
                 try {
@@ -331,7 +328,7 @@ public class Plateau implements Observable {
             }
         }
         
-        return visites.size() != this.nbPionsEnJeu-1;
+        return visites.size() != this.nbPionsEnJeu;
     }
 
     
