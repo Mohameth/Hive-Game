@@ -220,10 +220,10 @@ public class InsecteTest {
     }
     
     private void creeCaseEtPlaceInsecte(Plateau plateau, Insecte insecte, int x, int y, int z) {
-        Case c = plateau.getCase(new Point3DH(x, y, z));
+        Point3DH p = new Point3DH(x, y, z);
+        plateau.ajoutInsecte(insecte, p);
         
-        insecte.setEmplacement(c);
-        plateau.ajoutInsecte(insecte, c.getCoordonnees());
+        insecte.setEmplacement(plateau.getCase(p));
     }
     
     @Test public void testDeplacementGrosseRuche() {
@@ -250,14 +250,15 @@ public class InsecteTest {
         creeCaseEtPlaceInsecte(instance, sauterelleBlanche, 0, 0, 0);
         creeCaseEtPlaceInsecte(instance, fourmiBlanche, 0, 1, -1);
         creeCaseEtPlaceInsecte(instance, araigneeBlanche, -1, 1, 0);
+        creeCaseEtPlaceInsecte(instance, araigneeNoire, 1, 1, -2);
         creeCaseEtPlaceInsecte(instance, reineBlanche, -2, 1, 1);
+        creeCaseEtPlaceInsecte(instance, araigneeNoire, 1, 1, -2);
         creeCaseEtPlaceInsecte(instance, sauterelleBlanche2, 2, 0, -2);
         creeCaseEtPlaceInsecte(instance, sauterelleBlanche3, -2, 0, 2);
+        creeCaseEtPlaceInsecte(instance, reineNoire, 2, -1, -1);
         creeCaseEtPlaceInsecte(instance, scarabeeNoire, 0, -1, 1);
         creeCaseEtPlaceInsecte(instance, sauterelleNoire, 1, -1, 0);
         creeCaseEtPlaceInsecte(instance, fourmiNoire, 2, -2, 0);
-        creeCaseEtPlaceInsecte(instance, reineNoire, 2, -1, -1);
-        creeCaseEtPlaceInsecte(instance, araigneeNoire, 1, 1, -2);
          
         ArrayList<Point3DH> expectedFourmi = new ArrayList<>();
         expectedFourmi.add(new Point3DH(1, 2, -3));
@@ -322,7 +323,45 @@ public class InsecteTest {
         arrayCorresponds(araigneeBlanche.deplacementPossible(instance), new ArrayList<>());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
-        //TODO: Les quatres sauterelles
+        ArrayList<Point3DH> expectedSauterelleBlanche1 = new ArrayList<>();
+        expectedSauterelleBlanche1.add(new Point3DH(-2, 2, 0));
+        expectedSauterelleBlanche1.add(new Point3DH(0, -2, 2));
+        expectedSauterelleBlanche1.add(new Point3DH(3, -3, 0));
+        expectedSauterelleBlanche1.add(new Point3DH(0, 2, -2));
+        
+        System.out.println("test Sauterelle blanche n°1 sur grosse ruche :");
+        arrayCorresponds(sauterelleBlanche.deplacementPossible(instance), expectedSauterelleBlanche1);
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        ArrayList<Point3DH> expectedSauterelleBlanche2 = new ArrayList<>();
+        expectedSauterelleBlanche2.add(new Point3DH(2, -3, 1));
+        expectedSauterelleBlanche2.add(new Point3DH(0, 2, -2));
+        
+        System.out.println("test Sauterelle blanche n°2 sur grosse ruche :");
+        arrayCorresponds(sauterelleBlanche2.deplacementPossible(instance), expectedSauterelleBlanche2);
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        ArrayList<Point3DH> expectedSauterelleBlanche3 = new ArrayList<>();
+        expectedSauterelleBlanche3.add(new Point3DH(-2, 2, 0));
+        
+        System.out.println("test Sauterelle blanche n°3 sur grosse ruche :");
+        arrayCorresponds(sauterelleBlanche3.deplacementPossible(instance), expectedSauterelleBlanche3);
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        ArrayList<Point3DH> expectedSauterelleNoire = new ArrayList<>();
+        expectedSauterelleNoire.add(new Point3DH(3, -1, -2));
+        expectedSauterelleNoire.add(new Point3DH(3, -3, 0));
+        expectedSauterelleNoire.add(new Point3DH(-2, 2, 0));
+        expectedSauterelleNoire.add(new Point3DH(-1, -1, 2));
+        
+        System.out.println("test Sauterelle noire sur grosse ruche :");
+        arrayCorresponds(sauterelleNoire.deplacementPossible(instance), expectedSauterelleNoire);
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+    }
+    
+    @Test public void testDeplacementGrosseRuche2() {
+        
     }
     
     private void arrayCorresponds(Collection<Case> result, ArrayList<Point3DH> pointsExpected) {
