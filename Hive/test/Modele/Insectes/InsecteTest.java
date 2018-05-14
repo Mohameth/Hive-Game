@@ -326,6 +326,11 @@ public class InsecteTest {
         expectedSauterelleBlanche1.add(new Point3DH(-2, 2, 0));
         expectedSauterelleBlanche1.add(new Point3DH(0, -2, 2));
         expectedSauterelleBlanche1.add(new Point3DH(3, -3, 0));
+        expectedSauterelleBlanche1.add(new Point3DH(0, 2, -2));
+        
+        System.out.println("test Sauterelle blanche n°1 sur grosse ruche :");
+        arrayCorresponds(sauterelleBlanche.deplacementPossible(instance), expectedSauterelleBlanche1);
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
         ArrayList<Point3DH> expectedSauterelleBlanche2 = new ArrayList<>();
         expectedSauterelleBlanche2.add(new Point3DH(2, -3, 1));
@@ -352,9 +357,6 @@ public class InsecteTest {
         arrayCorresponds(sauterelleNoire.deplacementPossible(instance), expectedSauterelleNoire);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
-        System.out.println("test Sauterelle blanche n°1 sur grosse ruche :");
-        arrayCorresponds(sauterelleBlanche.deplacementPossible(instance), expectedSauterelleBlanche1);
-        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
     }
     
     @Test public void testDeplacementGrosseRuche2() {
