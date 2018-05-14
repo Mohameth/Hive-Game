@@ -1,7 +1,6 @@
 package Vue;
 
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -10,6 +9,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -18,6 +18,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
 import java.util.Optional;
 import javafx.scene.control.Button;
 import java.util.ArrayList;
@@ -54,7 +55,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
     private Group root;
     private Stage primaryStage;
 
-    VueTerrain(Stage primaryStage) {
+    VueTerrain(Stage primaryStage){
+        boolean fs = primaryStage.isFullScreen();
         this.primaryStage = primaryStage;
         root = new Group();
 
@@ -73,6 +75,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         makeSceneResizeEvent(s);//Window resize event
 
         primaryStage.setScene(s);
+        primaryStage.setFullScreen(fs);
         primaryStage.show();
 
         dessineTemplate();
@@ -242,6 +245,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
     public void getPause() {
         Rectangle r = new Rectangle(width, heigth, Color.BLACK);
         r.setOpacity(0.5);
+        r.heightProperty().bind(primaryStage.getScene().heightProperty());
+        r.widthProperty().bind(primaryStage.getScene().widthProperty());
 
         Text t = new Text("PAUSE");
         t.setFont(Font.font(60));
@@ -260,8 +265,10 @@ public class VueTerrain extends Vue implements ObservateurVue {
         bQuit.setMaxWidth(200);
 
         VBox menu = new VBox();
-        menu.getChildren().addAll(t, bResume, bRules, bRestart, bSettings, bMain, bQuit);
-        menu.setMinSize(width, heigth);
+        menu.getChildren().addAll(t,bResume,bRules,bRestart,bSettings,bMain,bQuit);
+        menu.setMinSize(width,heigth);
+        menu.prefHeightProperty().bind(primaryStage.getScene().heightProperty());
+        menu.prefWidthProperty().bind(primaryStage.getScene().widthProperty());
         menu.setAlignment(Pos.CENTER);
         menu.setSpacing(10);
         menu.getStylesheets().add("Vue/button.css");
