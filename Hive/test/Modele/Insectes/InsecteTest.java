@@ -252,14 +252,13 @@ public class InsecteTest {
         creeCaseEtPlaceInsecte(instance, araigneeBlanche, -1, 1, 0);
         creeCaseEtPlaceInsecte(instance, araigneeNoire, 1, 1, -2);
         creeCaseEtPlaceInsecte(instance, reineBlanche, -2, 1, 1);
+        creeCaseEtPlaceInsecte(instance, araigneeNoire, 1, 1, -2);
         creeCaseEtPlaceInsecte(instance, sauterelleBlanche2, 2, 0, -2);
         creeCaseEtPlaceInsecte(instance, sauterelleBlanche3, -2, 0, 2);
         creeCaseEtPlaceInsecte(instance, reineNoire, 2, -1, -1);
         creeCaseEtPlaceInsecte(instance, scarabeeNoire, 0, -1, 1);
         creeCaseEtPlaceInsecte(instance, sauterelleNoire, 1, -1, 0);
         creeCaseEtPlaceInsecte(instance, fourmiNoire, 2, -2, 0);
-        
-        
          
         ArrayList<Point3DH> expectedFourmi = new ArrayList<>();
         expectedFourmi.add(new Point3DH(1, 2, -3));
