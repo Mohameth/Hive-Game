@@ -331,15 +331,7 @@ public class Plateau implements Observable {
             return false;
         }
         
-        ArrayList<Case> caseOccupe = (ArrayList<Case>) this.cases.values();
-        for(int i=0;i<caseOccupe.size();i++) {
-        	if(caseOccupe.get(i).estVide()) {
-        		caseOccupe.remove(i);
-        	}
-        }
-        
-        caseOccupe.remove(ghost);
-        int nb=caseOccupe.size();
+        ArrayList<Case> caseOccupe = (ArrayList<Case>) this.getCasesVoisinesOccupees(ghost);
         ArrayList<Case> caseOccupe2=new ArrayList<>();
         caseOccupe2.add(caseOccupe.get(0));
         caseOccupe.clear();
@@ -352,14 +344,14 @@ public class Plateau implements Observable {
         	}
         	ArrayList<Case> caseVoisines=(ArrayList<Case>) this.getCasesVoisinesOccupees(c);
         	for(int i=0;i<caseVoisines.size();i++) {
-        		if(!caseOccupe.contains(caseVoisines.get(i))) {
+        		if(!caseOccupe.contains(caseVoisines.get(i)) && !caseVoisines.get(i).equals(ghost)) {
         			caseOccupe2.add(caseVoisines.get(i));
         		}
         	}
         	
         }
 
-        return caseOccupe.size()==nb;
+        return caseOccupe.size()==this.nbPionsEnJeu;
     }
 
     @Override
