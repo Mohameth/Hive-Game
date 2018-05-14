@@ -419,12 +419,12 @@ public class PlateauTest {
         assertFalse(instance.rucheBrisee2(null));
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
-        System.out.println("test sur une ruche avec trois insectes en ligne ghost et casedest :");
+        System.out.println("test sur une ruche avec trois insectes en ligne ghost :");
         instance = new Plateau();
         instance.ajoutInsecte(reine, orig);
         instance.ajoutInsecte(reine, orig.voisinBas());
         instance.ajoutInsecte(reine, orig.voisinBas().voisinBas());
-        assertTrue(instance.rucheBrisee2(null));
+        assertTrue(instance.rucheBrisee2(new Case(orig.voisinBas())));
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
         System.out.println("test sur une ruche casé avec trois insectes :");
