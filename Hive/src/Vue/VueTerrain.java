@@ -13,8 +13,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -242,11 +240,11 @@ public class VueTerrain extends Vue implements ObservateurVue {
         return pDroite;
     }
 
-    public void getPause() {
-        Rectangle r = new Rectangle(width, heigth, Color.BLACK);
+ public void getPause(){
+        /*Rectangle r = new Rectangle(primaryStage.getWidth(),primaryStage.getHeight(),Color.BLACK);
         r.setOpacity(0.5);
         r.heightProperty().bind(primaryStage.getScene().heightProperty());
-        r.widthProperty().bind(primaryStage.getScene().widthProperty());
+        r.widthProperty().bind(primaryStage.getScene().widthProperty());*/
 
         Text t = new Text("PAUSE");
         t.setFont(Font.font(60));
@@ -272,9 +270,10 @@ public class VueTerrain extends Vue implements ObservateurVue {
         menu.setAlignment(Pos.CENTER);
         menu.setSpacing(10);
         menu.getStylesheets().add("Vue/button.css");
+        menu.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
 
         bResume.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            root.getChildren().removeAll(menu, r);
+            root.getChildren().removeAll(menu);
         });
 
         bMain.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
@@ -305,8 +304,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
             }
         });
 
-        root.getChildren().addAll(r, menu);
-    }
+        root.getChildren().addAll(menu);
+}
 
     private BorderPane getHudGauche() {
 
