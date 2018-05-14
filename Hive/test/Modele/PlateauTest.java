@@ -505,4 +505,42 @@ public class PlateauTest {
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
     }
 
+    /**
+     * Test of casesVidePlacement method, of class Plateau.
+     */
+    @Test
+    public void testCasesVidePlacement() {
+        System.out.println("=============================================");
+        System.out.println("Test casesVidePlacement ====================>\n");
+    
+        Point3DH orig = new Point3DH(0, 0, 0);
+        Plateau instance = new Plateau();
+        JoueurHumain j1 = new JoueurHumain(instance);
+        JoueurHumain j2 = new JoueurHumain(instance);
+        Reine reinej1 = new Reine(j1);
+        Reine reinej2 = new Reine(j2);
+        j1.pions.add(reinej1);
+        j2.pions.add(reinej2);
+        
+        
+        ArrayList<Case> expectedj1;
+        ArrayList<Case> expectedj2;
+        ArrayList<Case> resj1;
+        ArrayList<Case> resj2;
+        
+        System.out.println("test sur une ruche venant d'être créé :");
+        expectedj1 = new ArrayList<>();
+        expectedj2 = new ArrayList<>();
+        resj1 = instance.casesVidePlacement(j1);
+        resj2 = instance.casesVidePlacement(j2);
+        
+        arrayCorresponds(resj1, expectedj1);
+        arrayCorresponds(resj2, expectedj2);
+        
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+
+        
+        
+        System.out.println("");
+    }
 }
