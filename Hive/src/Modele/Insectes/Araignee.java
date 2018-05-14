@@ -117,12 +117,12 @@ public class Araignee extends Insecte {
         ArrayList<Case> res = new ArrayList<>();
         ArrayList<Case> visitees = new ArrayList<>();
         visitees.addAll(plateau.getCasesVoisines(this.getEmplacement(), true));
-        deplacementPossibleworker(plateau, plateau.getCasesVoisinesAccessibles(this.getEmplacement(), true), 1, res, visitees);
+        deplacementPossibleWorker(plateau, plateau.getCasesVoisinesAccessibles(this.getEmplacement(), true), 1, res, visitees);
         return res;
     }
         
         
-    private void deplacementPossibleworker(Plateau p, Collection<Case> departs, int dist, ArrayList<Case> res, ArrayList<Case> visitees) {
+    private void deplacementPossibleWorker(Plateau p, Collection<Case> departs, int dist, ArrayList<Case> res, ArrayList<Case> visitees) {
         if (dist > 4) return;
         visitees.addAll(departs);
         for (Case c : departs) {
@@ -130,7 +130,7 @@ public class Araignee extends Insecte {
             else if (dist < 3) {
                 Collection<Case> aVisite = p.getCasesVoisinesAccessibles(c, true);
                 aVisite.removeAll(visitees);
-                deplacementPossibleworker(p, aVisite, dist+1, res, visitees);
+                deplacementPossibleWorker(p, aVisite, dist+1, res, visitees);
             }
         }
     }
