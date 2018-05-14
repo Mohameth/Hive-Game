@@ -36,7 +36,7 @@ public class VueTerrain extends Vue {
         b.setLeft(getHudGauche());
 
         root.getChildren().add(b);
-        Scene s = new Scene(root,primaryStage.getWidth(),primaryStage.getHeight());
+        Scene s = new Scene(root, primaryStage.getWidth(), primaryStage.getHeight());
         b.prefWidthProperty().bind(s.widthProperty());
         b.prefHeightProperty().bind(s.heightProperty());
         primaryStage.setScene(s);
@@ -44,19 +44,19 @@ public class VueTerrain extends Vue {
         primaryStage.show();
     }
 
-    private BorderPane getHudBas(){
+    private BorderPane getHudBas() {
         Button bEdit = new Button();
-        bEdit.setGraphic(new ImageView(new Image("Vue/pencil.png")));
+        bEdit.setGraphic(new ImageView(new Image("icons/pencil.png")));
         bEdit.setStyle("-fx-background-color: Transparent;\n");
         Text txt1 = new Text("Point du joueur 1");
 
         HBox hName = new HBox();
         hName.setAlignment(Pos.CENTER_LEFT);
-        hName.getChildren().addAll(bEdit,txt1);
+        hName.getChildren().addAll(bEdit, txt1);
         hName.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 3 0 0 0;\n");
 
         HBox pointJ1 = new HBox();
-        Piece p2 = new Piece("Vue/piontr_black_abeille.png",pointJ1,width,heigth);
+        //Piece p2 = new Piece("Vue/piontr_black_abeille.png", pointJ1, width, heigth);
         pointJ1.getChildren().addAll(hName);
         pointJ1.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 3 0 0 0;\n");
 
@@ -64,7 +64,7 @@ public class VueTerrain extends Vue {
             TextInputDialog ti = new TextInputDialog(txt1.getText());
             ti.setHeaderText("Enter your name");
             Optional<String> result = ti.showAndWait();
-            if(result.isPresent()){
+            if (result.isPresent()) {
                 txt1.setText(result.get());
             }
         });
@@ -75,19 +75,19 @@ public class VueTerrain extends Vue {
         return b;
     }
 
-    private BorderPane getHudHaut(){
+    private BorderPane getHudHaut() {
         Button bEdit = new Button();
-        bEdit.setGraphic(new ImageView(new Image("Vue/pencil.png")));
+        bEdit.setGraphic(new ImageView(new Image("icons/pencil.png")));
         bEdit.setStyle("-fx-background-color: Transparent;\n");
         Text txt = new Text("joueur 2");
 
         HBox hName = new HBox();
         hName.setAlignment(Pos.CENTER_LEFT);
-        hName.getChildren().addAll(bEdit,txt);
+        hName.getChildren().addAll(bEdit, txt);
         hName.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 0 0 3 0;\n");
 
         HBox pointJ2 = new HBox();
-        //Piece p = new Piece("Vue/piontr_black_abeille.png",pointJ2,width,heigth);
+        //Piece p = new Piece("pieces/piontr_black_sauterelles.png", pointJ2, width, heigth);
         pointJ2.getChildren().addAll(hName);
         pointJ2.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 0 0 3 0;\n");
 
@@ -95,7 +95,7 @@ public class VueTerrain extends Vue {
             TextInputDialog ti = new TextInputDialog(txt.getText());
             ti.setHeaderText("Enter your name");
             Optional<String> result = ti.showAndWait();
-            if(result.isPresent()){
+            if (result.isPresent()) {
                 txt.setText(result.get());
             }
         });
@@ -106,52 +106,52 @@ public class VueTerrain extends Vue {
         return b;
     }
 
-    private BorderPane getHudDroite(){
+    private BorderPane getHudDroite() {
 
         Button bPause = new Button();
 
-        bPause.setGraphic(new ImageView(new Image("Vue/pause.png")));
-        bPause.setMinSize(100,100);
+        bPause.setGraphic(new ImageView(new Image("icons/pause.png")));
+        bPause.setMinSize(100, 100);
         bPause.setStyle("-fx-background-color: Transparent;\n");
 
         Button bSave = new Button();
         Button bLoad = new Button();
 
-        bSave.setGraphic(new ImageView(new Image("Vue/diskette.png")));
-        bSave.setMinSize(32,32);
+        bSave.setGraphic(new ImageView(new Image("icons/diskette.png")));
+        bSave.setMinSize(32, 32);
         bSave.setStyle("-fx-background-color: Transparent;\n");
-        bLoad.setGraphic(new ImageView(new Image("Vue/upload.png")));
-        bLoad.setMinSize(32,32);
+        bLoad.setGraphic(new ImageView(new Image("icons/upload.png")));
+        bLoad.setMinSize(32, 32);
         bLoad.setStyle("-fx-background-color: Transparent;\n");
 
         HBox hb = new HBox();
-        hb.getChildren().addAll(bSave,bLoad);
+        hb.getChildren().addAll(bSave, bLoad);
 
         Button bUndo = new Button();
         Button bRedo = new Button();
         Button bSug = new Button();
 
-        bUndo.setGraphic(new ImageView(new Image("Vue/icon.png")));
-        bUndo.setMinSize(32,32);
+        bUndo.setGraphic(new ImageView(new Image("icons/icon.png")));
+        bUndo.setMinSize(32, 32);
         bUndo.setStyle("-fx-background-color: Transparent;\n");
-        bRedo.setGraphic(new ImageView(new Image("Vue/redo-arrow.png")));
-        bRedo.setMinSize(32,32);
+        bRedo.setGraphic(new ImageView(new Image("icons/redo-arrow.png")));
+        bRedo.setMinSize(32, 32);
         bRedo.setStyle("-fx-background-color: Transparent;\n");
-        bSug.setGraphic(new ImageView(new Image("Vue/small-light-bulb.png")));
-        bSug.setMinSize(32,32);
+        bSug.setGraphic(new ImageView(new Image("icons/small-light-bulb.png")));
+        bSug.setMinSize(32, 32);
         bSug.setStyle("-fx-background-color: Transparent;\n");
 
         HBox hb1 = new HBox();
-        hb1.getChildren().addAll(bUndo,bRedo);
+        hb1.getChildren().addAll(bUndo, bRedo);
 
         VBox vb1 = new VBox();
-        vb1.getChildren().addAll(hb1,bSug);
+        vb1.getChildren().addAll(hb1, bSug);
         vb1.setSpacing(10);
         vb1.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 3 0 0 0;\n");
         vb1.setAlignment(Pos.BOTTOM_CENTER);
 
         VBox vb = new VBox();
-        vb.getChildren().addAll(bPause,hb);
+        vb.getChildren().addAll(bPause, hb);
         vb.setSpacing(50);
 
         BorderPane pDroite = new BorderPane();
@@ -166,45 +166,45 @@ public class VueTerrain extends Vue {
         return pDroite;
     }
 
-    private BorderPane getHudGauche(){
+    private BorderPane getHudGauche() {
 
         Button bZoom = new Button();
         Button bDeZoom = new Button();
 
-        bZoom.setGraphic(new ImageView(new Image("Vue/zoom-in.png")));
+        bZoom.setGraphic(new ImageView(new Image("icons/zoom-in.png")));
         bZoom.setStyle("-fx-background-color: Transparent;\n");
-        bZoom.setMinSize(32,32);
-        bDeZoom.setGraphic(new ImageView(new Image("Vue/zoom-out.png")));
-        bDeZoom.setMinSize(32,32);
+        bZoom.setMinSize(32, 32);
+        bDeZoom.setGraphic(new ImageView(new Image("icons/zoom-out.png")));
+        bDeZoom.setMinSize(32, 32);
         bDeZoom.setStyle("-fx-background-color: Transparent;\n");
 
         HBox hb3 = new HBox();
-        hb3.getChildren().addAll(bZoom,bDeZoom);
+        hb3.getChildren().addAll(bZoom, bDeZoom);
 
         Button bUp = new Button();
         Button bLeft = new Button();
         Button bDown = new Button();
         Button bRight = new Button();
 
-        bUp.setGraphic(new ImageView(new Image("Vue/up-arrowhead-in-a-circle.png")));
+        bUp.setGraphic(new ImageView(new Image("icons/up-arrowhead-in-a-circle.png")));
         bUp.setStyle("-fx-background-color: Transparent;\n");
-        bUp.setMinSize(24,24);
-        bRight.setGraphic(new ImageView(new Image("Vue/right-arrow-in-circular-button.png")));
-        bRight.setMaxSize(24,24);
+        bUp.setMinSize(24, 24);
+        bRight.setGraphic(new ImageView(new Image("icons/right-arrow-in-circular-button.png")));
+        bRight.setMaxSize(24, 24);
         bRight.setStyle("-fx-background-color: Transparent;\n");
-        bDown.setGraphic(new ImageView(new Image("Vue/down-arrowhead-in-a-circle.png")));
-        bDown.setMaxSize(24,24);
+        bDown.setGraphic(new ImageView(new Image("icons/down-arrowhead-in-a-circle.png")));
+        bDown.setMaxSize(24, 24);
         bDown.setStyle("-fx-background-color: Transparent;\n");
-        bLeft.setGraphic(new ImageView(new Image("Vue/left-arrow-in-circular-button.png")));
-        bLeft.setMaxSize(24,24);
+        bLeft.setGraphic(new ImageView(new Image("icons/left-arrow-in-circular-button.png")));
+        bLeft.setMaxSize(24, 24);
         bLeft.setStyle("-fx-background-color: Transparent;\n");
-        ImageView img = new ImageView(new Image("Vue/target.png"));
+        ImageView img = new ImageView(new Image("icons/target.png"));
 
         HBox hb = new HBox();
-        hb.getChildren().addAll(bLeft,img,bRight);
+        hb.getChildren().addAll(bLeft, img, bRight);
 
         VBox vb = new VBox();
-        vb.getChildren().addAll(bUp,hb,bDown);
+        vb.getChildren().addAll(bUp, hb, bDown);
         vb.setAlignment(Pos.CENTER);
 
         BorderPane bgauche = new BorderPane();
@@ -246,7 +246,7 @@ public class VueTerrain extends Vue {
         menu.getStylesheets().add("Vue/button.css");
 
         bResume.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            root.getChildren().removeAll(menu,r);
+            root.getChildren().removeAll(menu, r);
         });
 
         bMain.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
@@ -255,10 +255,10 @@ public class VueTerrain extends Vue {
             alert.setHeaderText("Do you want back to main menu ?");
             ButtonType buttonTypeYes = new ButtonType("Yes");
             ButtonType buttonTypeNo = new ButtonType("No");
-            alert.getButtonTypes().setAll(buttonTypeYes,buttonTypeNo);
+            alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
 
             Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == buttonTypeYes){
+            if (result.get() == buttonTypeYes) {
                 new VueMenuPrincipal(this.primaryStage);
             }
         });
@@ -269,14 +269,14 @@ public class VueTerrain extends Vue {
             alert.setHeaderText("Do you want quit the game ?");
             ButtonType buttonTypeYes = new ButtonType("Yes");
             ButtonType buttonTypeNo = new ButtonType("No");
-            alert.getButtonTypes().setAll(buttonTypeYes,buttonTypeNo);
+            alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
 
             Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == buttonTypeYes){
+            if (result.get() == buttonTypeYes) {
                 System.exit(0);
             }
         });
 
-        root.getChildren().addAll(r,menu);
+        root.getChildren().addAll(r, menu);
     }
 }
