@@ -50,28 +50,10 @@ public class Plateau implements Observable {
     }
     
     public void ajoutCase(Point3DH origine) {
-        if (! cases.containsKey(origine.voisinBas())) {
-            cases.put(origine.voisinBas(), new Case(origine.voisinBas()));
-        }
-        
-        if (! cases.containsKey(origine.voisinDroiteBas())) {
-            cases.put(origine.voisinDroiteBas(), new Case(origine.voisinDroiteBas()));
-        }
-        
-        if (! cases.containsKey(origine.voisinDroiteHaut())) {
-            cases.put(origine.voisinDroiteHaut(), new Case(origine.voisinDroiteHaut()));
-        }
-        
-        if (! cases.containsKey(origine.voisinGaucheBas())) {
-            cases.put(origine.voisinGaucheBas(), new Case(origine.voisinGaucheBas()));
-        }
-        
-        if (! cases.containsKey(origine.voisinGaucheHaut())) {
-            cases.put(origine.voisinGaucheHaut(), new Case(origine.voisinGaucheHaut()));
-        }
-        
-        if (! cases.containsKey(origine.voisinHaut())) {
-            cases.put(origine.voisinHaut(), new Case(origine.voisinHaut()));
+        for (Point3DH p : origine.coordonneesVoisins()) {
+            if (!this.cases.containsKey(p)) {
+                this.cases.put(p, new Case(p));
+            }
         }
     }
     
