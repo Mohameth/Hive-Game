@@ -1,0 +1,126 @@
+package Modele;
+
+import Modele.Insectes.Insecte;
+import Modele.Insectes.Scarabee;
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Objects;
+
+public class Case {
+
+    private ArrayList<Insecte> insectes;
+    private Point3DH coordonnees;
+
+    public Case(Point3DH p, Insecte insecte) {
+        this.insectes = new ArrayList<>();
+        this.insectes.add(insecte);
+        this.coordonnees = p;
+    }
+    
+    public Case(Point3DH p) {
+        this.coordonnees = p;
+        this.insectes = new ArrayList<>();
+    }
+
+    public boolean estVide() {
+        return this.insectes.isEmpty();
+    }
+
+    public void addInsecte(Insecte insecte) throws Exception {
+        if (!this.estVide() && !(insecte instanceof Scarabee)) throw new Exception("Ajout impossible sur case non vide");
+        if (this.insectes.size() == 5) throw new Exception("Ajout impossible -> 5 insectes maximum");
+        this.insectes.add(insecte);
+        insecte.setEmplacement(this);
+    }
+
+    
+    public void removeInsecte() throws Exception{
+        if (this.estVide()) throw new Exception("Retrait impossible sur case vide");
+        
+        Insecte i = this.insectes.get(this.insectes.size()-1);
+        this.insectes.remove(i);
+    }
+    
+    public boolean insecteBloque(Insecte insecte) throws Exception {
+        if (this.estVide()) throw new Exception("Case vide");
+        
+        
+        if (!this.insectes.contains(insecte))
+            throw new Exception("Cet insecte n'est pas sur cette case");
+        
+        if(this.insectes.contains(insecte) && !this.getInsecteOnTop().equals(insecte))
+            return true;
+        
+        return false;
+    }
+
+    public ArrayList<Insecte> getInsectes() {
+        return insectes;
+    }
+    
+    public Insecte getInsecteOnTop() {
+        if (this.insectes.isEmpty()) return null;
+        return this.insectes.get(this.insectes.size()-1);
+    }
+    
+    public Integer getNbInsectes() {
+        return insectes.size();
+    }
+
+    public Point3DH getCoordonnees() {
+        return coordonnees;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        
+        return ((Case) obj).getCoordonnees().equals(this.getCoordonnees());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 71 * hash + Objects.hashCode(this.insectes);
+        hash = 71 * hash + Objects.hashCode(this.coordonnees);
+        return hash;
+    }
+    
+    public boolean estVoisinHaut(Case c) {
+    	return this.getCoordonnees().voisinHaut().equals(c.getCoordonnees());
+    }
+    
+    public boolean estVoisinDroiteHaut(Case c) {
+    	return this.getCoordonnees().voisinDroiteHaut().equals(c.getCoordonnees());
+    }
+    
+    public boolean estVoisinDroiteBas(Case c) {
+    	return this.getCoordonnees().voisinDroiteBas().equals(c.getCoordonnees());
+    }
+    
+    public boolean estVoisinBas(Case c) {
+    	return this.getCoordonnees().voisinBas().equals(c.getCoordonnees());
+    }
+    
+    public boolean estVoisinGaucheBas(Case c) {
+    	return this.getCoordonnees().voisinGaucheBas().equals(c.getCoordonnees());
+    }
+    
+    public boolean estVoisinGaucheHaut(Case c) {
+    	return this.getCoordonnees().voisinGaucheHaut().equals(c.getCoordonnees());
+    }
+    
+    @Override
+    public String toString() {
+        return "Case[" + coordonnees + ']';
+    }
+}

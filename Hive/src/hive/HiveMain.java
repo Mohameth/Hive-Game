@@ -5,17 +5,20 @@
  */
 package hive;
 
+import Controleur.Hive;
+import Vue.Vue;
+
 /**
  *
  * @author firmyn
  */
-public class Hive {
+public class HiveMain {
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        Hive hive = new Hive(args);
     }
     
 }
