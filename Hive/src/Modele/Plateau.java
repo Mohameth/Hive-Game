@@ -48,7 +48,7 @@ public class Plateau implements Observable {
     public Case getCase(Point3DH point) {
         return cases.get(point);
     }
-    
+
     public void ajoutCase(Point3DH origine) {
         for (Point3DH p : origine.coordonneesVoisins()) {
             if (!this.cases.containsKey(p)) {
@@ -56,7 +56,7 @@ public class Plateau implements Observable {
             }
         }
     }
-    
+
     /**
      * ajoute un insecte à la position donné
      *

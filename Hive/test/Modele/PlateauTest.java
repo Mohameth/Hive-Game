@@ -59,8 +59,7 @@ public class PlateauTest {
 
         System.out.println("test avec une case éloigner (pas encore crée) :");
         point = new Point3DH(2, 5, 6);
-        expResult = new Case(point);
-        assertTrue(expResult.equals(instance.getCase(point)));
+        assertTrue(instance.getCase(point) == null);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         System.out.println("");
     }
@@ -76,7 +75,8 @@ public class PlateauTest {
         Point3DH orig = new Point3DH(0, 0, 0);
         Plateau instance = new Plateau();
         Reine reine = new Reine(new JoueurHumain(instance));
-
+        instance.ajoutInsecte(reine, orig);
+        
         System.out.println("test avec l'origine, libre ou non :");
         ArrayList<Case> expected = new ArrayList<>();
         expected.add(new Case(orig.voisinBas()));
@@ -172,17 +172,17 @@ public class PlateauTest {
         
         expected = new ArrayList<>();
         expected.add(new Case(orig));
-        expected.add(new Case(new Point3DH(0,5,1)));
-        expected.add(new Case(new Point3DH(0,9,1)));
-        expected.add(new Case(new Point3DH(0,14,1)));
-        expected.add(new Case(new Point3DH(0,2,1)));
-        expected.add(new Case(new Point3DH(0,7,1)));
+        expected.add(new Case(new Point3DH(0,-1,1)));
+        expected.add(new Case(new Point3DH(0,-2,2)));
+        expected.add(new Case(new Point3DH(0,-3,3)));
+        expected.add(new Case(new Point3DH(0,-4,4)));
+        expected.add(new Case(new Point3DH(0,-5,5)));
 
-        instance.ajoutInsecte(reine, new Point3DH(0,5,1));
-        instance.ajoutInsecte(reine, new Point3DH(0,9,1));
-        instance.ajoutInsecte(reine, new Point3DH(0,14,1));
-        instance.ajoutInsecte(reine, new Point3DH(0,2,1));
-        instance.ajoutInsecte(reine, new Point3DH(0,7,1));
+        instance.ajoutInsecte(reine, new Point3DH(0,-1,1));
+        instance.ajoutInsecte(reine, new Point3DH(0,-2,2));
+        instance.ajoutInsecte(reine, new Point3DH(0,-3,3));
+        instance.ajoutInsecte(reine, new Point3DH(0,-4,4));
+        instance.ajoutInsecte(reine, new Point3DH(0,-5,5));
         
         res = (ArrayList<Case>) instance.occupees();
 
@@ -203,7 +203,8 @@ public class PlateauTest {
         Point3DH orig = new Point3DH(0, 0, 0);
         Plateau instance = new Plateau();
         Reine reine = new Reine(new JoueurHumain(instance));
-
+        instance.ajoutInsecte(reine, orig);
+        
         System.out.println("test avec l'origine, haut et bas occupé :");
         ArrayList<Case> expected = new ArrayList<>();
         expected.add(new Case(orig.voisinBas()));
@@ -269,6 +270,7 @@ public class PlateauTest {
         instance.ajoutInsecte(reine, orig);
         instance.ajoutInsecte(reine, orig.voisinDroiteBas());
         instance.ajoutInsecte(reine, orig.voisinGaucheBas());
+        instance.ajoutCase(orig.voisinBas());
         instance.ajoutInsecte(reine, orig.voisinBas().voisinBas());
 
         System.out.println("Test dans une configuration (ocupper: origine -> bas droite -> bas gauche -> bas bas) :\n");
@@ -307,7 +309,9 @@ public class PlateauTest {
         Point3DH orig = new Point3DH(0, 0, 0);
         Plateau instance = new Plateau();
         Reine reine = new Reine(new JoueurHumain(instance));
-
+        
+        instance.ajoutCase(orig);
+        
         System.out.println("test sur une ruche vide :");
         assertFalse(instance.rucheBrisee(null, null));
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
@@ -324,6 +328,7 @@ public class PlateauTest {
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
         System.out.println("test sur une ruche avec deux insectes non collés :");
+        instance.ajoutCase(orig.voisinBas());
         instance.deleteInsecte(reine, orig.voisinBas());
         instance.ajoutInsecte(reine, orig.voisinBas().voisinBas());
         assertTrue(instance.rucheBrisee(null, null));
@@ -331,6 +336,8 @@ public class PlateauTest {
 
         System.out.println("test sur une ruche avec trois insectes en ligne :");
         instance = new Plateau();
+        instance.ajoutCase(orig);
+        instance.ajoutCase(orig.voisinBas());
         instance.ajoutInsecte(reine, orig);
         instance.ajoutInsecte(reine, orig.voisinBas());
         instance.ajoutInsecte(reine, orig.voisinBas().voisinBas());
@@ -339,6 +346,8 @@ public class PlateauTest {
         
         System.out.println("test sur une ruche avec trois insectes en ligne ghost et casedest :");
         instance = new Plateau();
+        instance.ajoutCase(orig);
+        instance.ajoutCase(orig.voisinBas());
         instance.ajoutInsecte(reine, orig);
         instance.ajoutInsecte(reine, orig.voisinBas());
         instance.ajoutInsecte(reine, orig.voisinBas().voisinBas());
@@ -347,6 +356,8 @@ public class PlateauTest {
 
         System.out.println("test sur une ruche casé avec trois insectes :");
         instance = new Plateau();
+        instance.ajoutCase(orig);
+        instance.ajoutCase(orig.voisinBas());
         instance.ajoutInsecte(reine, orig);
         instance.ajoutInsecte(reine, orig.voisinBas().voisinDroiteBas());
         instance.ajoutInsecte(reine, orig.voisinBas().voisinBas().voisinGaucheBas());
@@ -355,6 +366,8 @@ public class PlateauTest {
 
         System.out.println("test sur une ruche avec 7 insectes (1 à l'origine et les 6 coins remplit) :");
         instance = new Plateau();
+        instance.ajoutCase(orig);
+        instance.ajoutCase(orig.voisinBas());
         instance.ajoutInsecte(reine, orig);
         instance.ajoutInsecte(reine, orig.voisinBas());
         instance.ajoutInsecte(reine, orig.voisinDroiteBas());
@@ -367,6 +380,8 @@ public class PlateauTest {
 
         System.out.println("test sur une ruche casé avec 7 insectes :");
         instance = new Plateau();
+        instance.ajoutCase(orig);
+        instance.ajoutCase(orig.voisinBas());
         instance.ajoutInsecte(reine, orig);
         instance.ajoutInsecte(reine, orig.voisinBas().voisinDroiteBas());
         instance.ajoutInsecte(reine, orig.voisinDroiteBas().voisinGaucheBas().voisinBas());
@@ -389,6 +404,8 @@ public class PlateauTest {
         Point3DH orig = new Point3DH(0, 0, 0);
         Plateau instance = new Plateau();
         Reine reine = new Reine(new JoueurHumain(instance));
+        instance.ajoutCase(orig);
+        instance.ajoutCase(orig.voisinBas());
 
         System.out.println("test sur une ruche vide :");
         assertFalse(instance.rucheBrisee2(null));
@@ -413,6 +430,8 @@ public class PlateauTest {
 
         System.out.println("test sur une ruche avec trois insectes en ligne :");
         instance = new Plateau();
+        instance.ajoutCase(orig);
+        instance.ajoutCase(orig.voisinBas());
         instance.ajoutInsecte(reine, orig);
         instance.ajoutInsecte(reine, orig.voisinBas());
         instance.ajoutInsecte(reine, orig.voisinBas().voisinBas());
@@ -421,6 +440,8 @@ public class PlateauTest {
         
         System.out.println("test sur une ruche avec trois insectes en ligne ghost :");
         instance = new Plateau();
+        instance.ajoutCase(orig);
+        instance.ajoutCase(orig.voisinBas());
         instance.ajoutInsecte(reine, orig);
         instance.ajoutInsecte(reine, orig.voisinBas());
         instance.ajoutInsecte(reine, orig.voisinBas().voisinBas());
@@ -429,6 +450,8 @@ public class PlateauTest {
 
         System.out.println("test sur une ruche casé avec trois insectes :");
         instance = new Plateau();
+        instance.ajoutCase(orig);
+        instance.ajoutCase(orig.voisinBas());
         instance.ajoutInsecte(reine, orig);
         instance.ajoutInsecte(reine, orig.voisinBas().voisinDroiteBas());
         instance.ajoutInsecte(reine, orig.voisinBas().voisinBas().voisinGaucheBas());
@@ -437,6 +460,8 @@ public class PlateauTest {
 
         System.out.println("test sur une ruche avec 7 insectes (1 à l'origine et les 6 coins remplit) :");
         instance = new Plateau();
+        instance.ajoutCase(orig);
+        instance.ajoutCase(orig.voisinBas());
         instance.ajoutInsecte(reine, orig);
         instance.ajoutInsecte(reine, orig.voisinBas());
         instance.ajoutInsecte(reine, orig.voisinDroiteBas());
@@ -449,6 +474,8 @@ public class PlateauTest {
 
         System.out.println("test sur une ruche casé avec 7 insectes :");
         instance = new Plateau();
+        instance.ajoutCase(orig);
+        instance.ajoutCase(orig.voisinBas());
         instance.ajoutInsecte(reine, orig);
         instance.ajoutInsecte(reine, orig.voisinBas().voisinDroiteBas());
         instance.ajoutInsecte(reine, orig.voisinDroiteBas().voisinGaucheBas().voisinBas());
@@ -480,27 +507,6 @@ public class PlateauTest {
 
         System.out.println("test avec un insecte a l'origine :");
         instance.ajoutInsecte(reine, orig);
-        assertFalse(instance.rucheVide());
-        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
-
-        System.out.println("test avec un insecte éloigné de l'origine :");
-        instance = new Plateau();
-        instance.ajoutInsecte(reine, new Point3DH(50, 89, 44));
-        assertFalse(instance.rucheVide());
-        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
-
-        System.out.println("test aprés avoir supprimé l'insecte :");
-        instance.deleteInsecte(reine, new Point3DH(50, 89, 44));
-        assertTrue(instance.rucheVide());
-        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
-
-        System.out.println("test avec plusieur insectes éloigné de l'origine :");
-        instance = new Plateau();
-        instance.ajoutInsecte(reine, new Point3DH(50, 89, 44));
-        instance.ajoutInsecte(reine, new Point3DH(96, 59, 24));
-        instance.ajoutInsecte(reine, new Point3DH(2, 49, 84));
-        instance.ajoutInsecte(reine, new Point3DH(3, 19, 84));
-        instance.ajoutInsecte(reine, new Point3DH(9, 9, 4));
         assertFalse(instance.rucheVide());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
     }

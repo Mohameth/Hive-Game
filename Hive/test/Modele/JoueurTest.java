@@ -69,7 +69,7 @@ public class JoueurTest {
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
         System.out.println("test avec la reine posé :");
-        plat.ajoutInsecte(reine, new Point3DH(0, 1, 0));
+        plat.ajoutInsecte(reine, new Point3DH(0, -1, 1));
         assertTrue(instance.reinePosee());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
     }
