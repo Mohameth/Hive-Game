@@ -35,7 +35,7 @@ public class Plateau implements Observable {
         cases = new HashMap<Point3DH, Case>();
         Point3DH origine = new Point3DH(0, 0, 0);
         cases.put(origine, new Case(origine));
-        this.ajoutCase(origine);
+        //this.ajoutCase(origine);
         this.nbPionsEnJeu = 0; //Peut-être à remplacer par une méthode
     }
 
@@ -130,7 +130,7 @@ public class Plateau implements Observable {
         ArrayList<Case> voisins = new ArrayList<>();
         for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
             Case voisin = getCase(pointCourant);
-            if (voisin.estVide() || !exclureCaseOccupee) {
+            if (voisin != null && (voisin.estVide() || !exclureCaseOccupee)) {
                 voisins.add(voisin); //Case vide
             }
         }
@@ -189,7 +189,7 @@ public class Plateau implements Observable {
         ArrayList<Case> voisins = new ArrayList<>();
         for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
             Case voisin = this.getCase(pointCourant);
-            if (!voisin.estVide()) {
+            if (voisin != null && !voisin.estVide()) {
                 voisins.add(voisin);
             }
         }
@@ -219,6 +219,7 @@ public class Plateau implements Observable {
      * ruche
      */
     public boolean glissementPossible(Case c1, Case c2) {
+        if (c1 == null || c2 == null) return false;
         int nombreCasesAdjacentesNonVide = 0;
         Collection<Case> voisinsC1 = getCasesVoisines(c1, false);
         voisinsC1.remove(c2);
