@@ -21,7 +21,7 @@ public class Coccinelle extends Insecte {
         	return new ArrayList<>();
         }
     	
-    	   ArrayList<Case> casePossibles=new ArrayList<>();
+    	ArrayList<Case> casePossibles=new ArrayList<>();
     	casePossibles.add(this.getEmplacement());
     	
     	for(int i=0;i<2;i++) {
@@ -49,6 +49,11 @@ public class Coccinelle extends Insecte {
 	    		}
     		}
     	}
+    	
+    	if(casePossibles3.contains(this.getEmplacement())) {
+    		casePossibles3.remove(this.getEmplacement());
+    	}
+    	
     	return casePossibles3;
     }
 
