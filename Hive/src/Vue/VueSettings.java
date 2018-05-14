@@ -48,7 +48,7 @@ public class VueSettings extends Vue {
 
         g.prefHeightProperty().bind(s.heightProperty());
         g.prefWidthProperty().bind(s.widthProperty());
-        g.setStyle("-fx-background-image: url(Vue/woodenTable.jpg);");
+        g.setStyle("-fx-background-image: url(background.jpg));");
 
         primaryStage.setScene(s);
         primaryStage.setFullScreen(fs);
