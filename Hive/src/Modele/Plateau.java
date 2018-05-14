@@ -351,7 +351,7 @@ public class Plateau implements Observable {
         	
         }
 
-        return caseOccupe.size()==this.nbPionsEnJeu;
+        return caseOccupe.size()==this.nbPionsEnJeu-1;
     }
 
     @Override
