@@ -35,7 +35,6 @@ public class Plateau implements Observable {
         cases = new HashMap<Point3DH, Case>();
         Point3DH origine = new Point3DH(0, 0, 0);
         cases.put(origine, new Case(origine));
-        this.ajoutCase(origine);
         this.nbPionsEnJeu = 0; //Peut-être à remplacer par une méthode
     }
 
