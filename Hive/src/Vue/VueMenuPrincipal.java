@@ -17,6 +17,7 @@ public class VueMenuPrincipal extends Vue {
     private static int NB_COL = 5;
 
     VueMenuPrincipal(Stage primaryStage){
+        boolean fs = primaryStage.isFullScreen();
 
         Group root = new Group();
         Scene scene = new Scene(root, primaryStage.getWidth(),primaryStage.getHeight());
@@ -29,7 +30,7 @@ public class VueMenuPrincipal extends Vue {
         bp.setCenter(t);
 
         Button solo = new Button();
-        solo.setText("Solo");
+        solo.setText(getLangStr("solo"));
         solo.setMaxWidth(200.0);
 
         solo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
@@ -37,15 +38,22 @@ public class VueMenuPrincipal extends Vue {
         });
 
         Button jvj = new Button();
-        jvj.setText("2 Joueurs");
+        jvj.setText(getLangStr("deuxjoueur"));
         jvj.setMaxWidth(200.0);
 
+        jvj.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            SceneMulti(primaryStage);
+        });
+
+        Button loadGame = new Button(getLangStr("ldgame"));
+        loadGame.setMaxWidth(200.0);
+
         Button tuto = new Button();
-        tuto.setText("Tutoriel");
+        tuto.setText(getLangStr("tuto"));
         tuto.setMaxWidth(200.0);
 
         Button setting = new Button();
-        setting.setText("Paramètres");
+        setting.setText(getLangStr("setting"));
         setting.setMaxWidth(200.0);
 
         setting.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
@@ -53,7 +61,7 @@ public class VueMenuPrincipal extends Vue {
         });
 
         Button quit = new Button();
-        quit.setText("Quitter");
+        quit.setText(getLangStr("quitter"));
         quit.setMaxWidth(200.0);
 
         quit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
@@ -64,11 +72,11 @@ public class VueMenuPrincipal extends Vue {
         vb.setSpacing(20.0);
         vb.getChildren().add(solo);
         vb.getChildren().add(jvj);
+        vb.getChildren().add(loadGame);
         vb.getChildren().add(tuto);
         vb.getChildren().addAll(setting,quit);
 
         GridPane g = new GridPane();
-        //ImageView fond = new ImageView(new Image("sample/hive.jpeg"));
         for (int column = 0; column < NB_COL; column++) {
             g.getColumnConstraints().add(new ColumnConstraints(5, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, HPos.CENTER, true));
         }
@@ -79,12 +87,13 @@ public class VueMenuPrincipal extends Vue {
 
         g.prefHeightProperty().bind(scene.heightProperty());
         g.prefWidthProperty().bind(scene.widthProperty());
-        //g.add(fond,0,0,5,5);
         g.add(bp,0,0,5,1);
         g.add(vb,4,2,1,5);
+        g.setStyle("-fx-background-image: url(Vue/woodenTable.jpg);");
 
         root.getChildren().addAll(g);
         primaryStage.setScene(scene);
+        primaryStage.setFullScreen(fs);
         primaryStage.show();
     }
 }

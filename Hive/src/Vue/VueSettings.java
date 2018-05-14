@@ -5,15 +5,20 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
+import java.awt.*;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 
 public class VueSettings extends Vue {
@@ -21,6 +26,7 @@ public class VueSettings extends Vue {
     private static int NB_COL = 7;
 
     VueSettings(Stage primaryStage){
+        boolean fs = primaryStage.isFullScreen();
         GridPane g = new GridPane();
         Scene s = new Scene(g,primaryStage.getWidth(),primaryStage.getHeight());
         s.getStylesheets().add("Vue/button.css");
@@ -32,63 +38,76 @@ public class VueSettings extends Vue {
         for (int row = 0; row < NB_LIGNE; row++) {
             g.getRowConstraints().add(new RowConstraints(primaryStage.getHeight()/NB_LIGNE, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, VPos.TOP, true));
         }
-        Rectangle r = new Rectangle((g.getWidth()/NB_COL)*3,g.getHeight(),Color.WHITE);
-        r.setOpacity(0.7);
-        r.heightProperty().bind(g.prefHeightProperty());
+
+        g.getRowConstraints().get(1).setMinHeight((primaryStage.getHeight()/NB_LIGNE)/2);
         VBox solo = getSolo();
-        VBox multi = getMulti();
-        g.add(r,2,0,3,NB_LIGNE);
+        VBox multi = getMulti();;
         g.add(solo,2,0,3,1);
-        g.add(multi,2,1,3,1);
         g.add(getAll(primaryStage),2,2,3,1);
-        r.widthProperty().bind(solo.widthProperty());
+        g.add(multi,2,1,3,1);
 
         g.prefHeightProperty().bind(s.heightProperty());
         g.prefWidthProperty().bind(s.widthProperty());
         g.setStyle("-fx-background-image: url(Vue/woodenTable.jpg);");
 
         primaryStage.setScene(s);
+        primaryStage.setFullScreen(fs);
         primaryStage.show();
     }
 
     private GridPane getAll(Stage primaryStage){
         GridPane gAll = new GridPane();
         for (int column = 0; column < 2; column++) {
-            gAll.getColumnConstraints().add(new ColumnConstraints(5, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, HPos.LEFT, true));
+            gAll.getColumnConstraints().add(new ColumnConstraints((primaryStage.getWidth()/NB_COL), Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, HPos.LEFT, true));
         }
 
-        for (int row = 0; row < 3; row++) {
+        for (int row = 0; row < 4; row++) {
             gAll.getRowConstraints().add(new RowConstraints(5, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS,VPos.TOP, true));
         }
 
-        Label t5 = new Label("All");
+        gAll.getColumnConstraints().get(1).setHalignment(HPos.CENTER);
+
+        Label t5 = new Label(getLangStr("all"));
         t5.setFont(Font.font(36));
         t5.setAlignment(Pos.TOP_LEFT);
 
-        Text t6 = new Text("Window size");
-        ComboBox<String> cb = new ComboBox();
-        cb.getItems().addAll("1280*720","1920*1080");
-        cb.getSelectionModel().select("1280*720");
+        Text t6 = new Text(getLangStr("wSize"));
+        ComboBox<Point> cb = new ComboBox();
+        cb.getItems().addAll(new Point(1920,1080),new Point(1280,720));
+        cb.getSelectionModel().select(cb.getItems().get(0));
+        cb.setConverter(new StringConverter<Point>() {
+            @Override
+            public String toString(Point object) {
+                if(object == null)
+                    return null;
+                return object.x + "x" + object.y;
+            }
 
-        Text t7 = new Text("Language");
+            @Override
+            public Point fromString(String string) {
+                return null;
+            }
+        });
+
+        Text t7 = new Text(getLangStr("language"));
         ComboBox<String> cb1 = new ComboBox();
-        cb1.getItems().addAll("French","English");
-        cb1.getSelectionModel().select("French");
+        cb1.getItems().addAll(getLangStr("fr"),getLangStr("en"));
+        cb1.getSelectionModel().select(getLangStr("fr"));
 
         HBox hb2 = new HBox();
         hb2.getChildren().addAll(t6,cb);
         hb2.setSpacing(10);
 
-        CheckBox chb = new CheckBox("FullScreen");
+        CheckBox chb = new CheckBox(getLangStr("fullscreen"));
         chb.setAlignment(Pos.TOP_CENTER);
 
         HBox hb3 = new HBox();
         hb3.getChildren().addAll(t7,cb1);
-        hb3.setSpacing(30);
+        hb3.setSpacing(40);
 
-        Button bSaveDef = new Button("Save");
-        Button bCancel = new Button("Cancel");
-        Button bSave = new Button("Save for\nthe game");
+        Button bSaveDef = new Button(getLangStr("save"));
+        Button bCancel = new Button(getLangStr("cancel"));
+        Button bSave = new Button(getLangStr("saveGame"));
 
         bCancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             SceneMain(primaryStage);
@@ -96,47 +115,53 @@ public class VueSettings extends Vue {
 
         bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             if(chb.isSelected()){
-
+                primaryStage.setFullScreen(true);
             } else {
-                System.out.println(cb.getValue());
-                if(cb.getValue().equals("1920*1080")){
-                    primaryStage.setHeight(1080);
-                    primaryStage.setWidth(1920);
-                } else if(cb.getValue().equals("1280*720")){
-                    primaryStage.setHeight(720);
-                    primaryStage.setWidth(1280);
-                }
-                //primaryStage.setHeight(0);
+                primaryStage.setFullScreen(false);
+                primaryStage.setWidth(cb.getValue().x);
+                primaryStage.setHeight(cb.getValue().y);
             }
+            if(cb1.getValue().equals(getLangStr("fr"))){
+                language = "fr";
+                country = "FR";
+            } else if(cb1.getValue().equals(getLangStr("en"))){
+                System.out.println("en");
+                language = "en";
+                country = "US";
+                System.out.println(getLangStr("white"));
+            }
+            this.currentLocale = new Locale(this.language, this.country);
+            this.messages = ResourceBundle.getBundle("MessagesBundle", currentLocale);
+            SceneSettings(primaryStage);
         });
 
         HBox hb5 = new HBox();
         if(true)
             hb5.getChildren().add(bSave);
         hb5.getChildren().addAll(bCancel,bSaveDef);
-        hb5.setSpacing(50);
+        hb5.setSpacing(20);
 
         gAll.add(t5,0,0,1,1);
         gAll.add(hb2,0,1,1,1);
         gAll.add(hb3,0,2,1,1);
         gAll.add(chb,1,1,1,1);
-        gAll.add(hb5,1,2,1,1);
+        gAll.add(hb5,0,3,2,1);
 
         gAll.setPadding(new Insets(0,20.0,0,20.0));
-        gAll.setStyle("-fx-border-color: black; -fx-border-width: 0 3 0 3;");
+        gAll.setStyle("-fx-background-color : rgba(255, 255, 255, .7);-fx-border-color: black; -fx-border-width: 0 3 0 3;");
 
         return gAll;
     }
 
     private VBox getMulti(){
-        Label t1 = new Label("Multi");
+        Label t1 = new Label(getLangStr("multi"));
         t1.setFont(Font.font(36));
 
-        Label t2 = new Label("Players names");
+        Label t2 = new Label(getLangStr("pname"));
 
-        Text t3 = new Text("White");
+        Text t3 = new Text(getLangStr("white"));
         TextField tf = new TextField();
-        Text t4 = new Text("Black");
+        Text t4 = new Text(getLangStr("black"));
         TextField tf1 = new TextField();
 
         HBox hb = new HBox();
@@ -152,21 +177,21 @@ public class VueSettings extends Vue {
         VBox v = new VBox();
         v.getChildren().addAll(t1,t2,hb,hb1);
         v.setPadding(new Insets(0,20.0,0,20.0));
-        v.setStyle("-fx-border-color: black; -fx-border-width: 0 3 0 3;");
-        v.setSpacing(20.0);
+        v.setStyle("-fx-background-color : rgba(255, 255, 255, .7);-fx-border-color: black; -fx-border-width: 0 3 0 3;");
+        v.setSpacing(10.0);
 
         return v;
     }
 
     private VBox getSolo(){
-        Label t = new Label("Solo");
+        Label t = new Label(getLangStr("solo"));
         t.setFont(Font.font(36));
 
-        Text td = new Text("Difficulty :");
+        Text td = new Text(getLangStr("difficulte"));
         final ToggleGroup group = new ToggleGroup();
-        RadioButton rEasy = new RadioButton("Easy");
-        RadioButton rMedium = new RadioButton("Medium");
-        RadioButton rHard = new RadioButton("Hard");
+        RadioButton rEasy = new RadioButton(getLangStr("easy"));
+        RadioButton rMedium = new RadioButton(getLangStr("medi"));
+        RadioButton rHard = new RadioButton(getLangStr("hard"));
         rEasy.setToggleGroup(group);
         rMedium.setToggleGroup(group);
         rHard.setToggleGroup(group);
@@ -182,9 +207,9 @@ public class VueSettings extends Vue {
         VBox v = new VBox();
         v.getChildren().addAll(t,vb);
         v.setAlignment(Pos.CENTER_LEFT);
-        v.setStyle("-fx-border-color: black; -fx-border-width: 0 3 0 3;");
+        v.setStyle("-fx-background-color : rgba(255, 255, 255, .7);-fx-border-color: black; -fx-border-width: 0 3 0 3;");
         v.setSpacing(20);
-        v.setPadding(new Insets(0,0,10,20));
+        v.setPadding(new Insets(0,0,0,20));
 
         return v;
     }
