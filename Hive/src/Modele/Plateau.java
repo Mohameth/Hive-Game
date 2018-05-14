@@ -35,7 +35,7 @@ public class Plateau implements Observable {
         cases = new HashMap<Point3DH, Case>();
         Point3DH origine = new Point3DH(0, 0, 0);
         cases.put(origine, new Case(origine));
-        this.ajoutCase(origine);
+        //this.ajoutCase(origine);
         this.nbPionsEnJeu = 0; //Peut-être à remplacer par une méthode
     }
 
@@ -48,7 +48,7 @@ public class Plateau implements Observable {
     public Case getCase(Point3DH point) {
         return cases.get(point);
     }
-    
+
     public void ajoutCase(Point3DH origine) {
         for (Point3DH p : origine.coordonneesVoisins()) {
             if (!this.cases.containsKey(p)) {
@@ -56,7 +56,7 @@ public class Plateau implements Observable {
             }
         }
     }
-    
+
     /**
      * ajoute un insecte à la position donné
      *
@@ -130,7 +130,7 @@ public class Plateau implements Observable {
         ArrayList<Case> voisins = new ArrayList<>();
         for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
             Case voisin = getCase(pointCourant);
-            if (voisin.estVide() || !exclureCaseOccupee) {
+            if (voisin != null && (voisin.estVide() || !exclureCaseOccupee)) {
                 voisins.add(voisin); //Case vide
             }
         }
@@ -189,7 +189,7 @@ public class Plateau implements Observable {
         ArrayList<Case> voisins = new ArrayList<>();
         for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
             Case voisin = this.getCase(pointCourant);
-            if (!voisin.estVide()) {
+            if (voisin != null && !voisin.estVide()) {
                 voisins.add(voisin);
             }
         }
