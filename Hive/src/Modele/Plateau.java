@@ -27,7 +27,7 @@ public class Plateau implements Observable {
      * @see Point3DH
      */
     private Map<Point3DH, Case> cases;
-    public int nbPionsEnJeu;
+    private int nbPionsEnJeu;
     private Observateur observateur;
     
     
@@ -125,26 +125,6 @@ public class Plateau implements Observable {
         return voisins;
     }
     
-    /**
-     * Donne toute les cases voisine
-     * @param c case d'origine
-     * @return une Collection generique contenant les cases voisine de c
-     *         avec les cases vides au début
-     */
-    public Collection<Case> getCasesVoisinesOrdonnees(Case c) {
-        LinkedList<Case> voisins = new LinkedList<>();
-        for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
-            Case voisin = getCase(pointCourant);
-            if (voisin.estVide()) {
-                voisins.addFirst(voisin);
-            } else {
-                voisins.addLast(voisin);
-            }
-        }
-
-        return voisins;
-    }
-
     /**
      * Donne toute les cases occupées du plateau
      * @return un ArrayList des cases occupées

@@ -114,32 +114,26 @@ public class Araignee extends Insecte {
     
     //@Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
-        if (plateau.rucheBrisee2(this.getEmplacement()))
-            return null;
         ArrayList<Case> res = new ArrayList<>();
-        res.addAll(deplacementPossibleworker(plateau, this.getEmplacement(), 1, new ArrayList<>()));
+        ArrayList<Case> visitees = new ArrayList<>();
+        visitees.addAll(plateau.getCasesVoisines(this.getEmplacement(), true));
+        deplacementPossibleworker(plateau, plateau.getCasesVoisinesAccessibles(this.getEmplacement(), true), 1, res, visitees);
         return res;
-                }
+    }
         
         
-    private HashSet<Case> deplacementPossibleworker(Plateau p, Case origine, int dist, ArrayList<Case> visitees) {
-        HashSet<Case> res = new HashSet<>();
-        ArrayList<Case> voisins = (ArrayList<Case>) p.getCasesVoisines(origine, true);
-        for (Case c : voisins) {
-            if (!p.getCasesVoisinesOccupees(c).isEmpty() && !p.gateBetween(this.getEmplacement(), c)) {
-                if (dist < 3){
-                    visitees.add(c);
-                    res.addAll(deplacementPossibleworker(p, c, dist++, visitees));
-                } else {
-                    if (!visitees.contains(c))
-                        res.add(c);
-                }
-            } else {
-                
+    private void deplacementPossibleworker(Plateau p, Collection<Case> departs, int dist, ArrayList<Case> res, ArrayList<Case> visitees) {
+        if (dist > 4) return;
+        visitees.addAll(departs);
+        for (Case c : departs) {
+            if (dist == 3) res.addAll(departs);
+            else if (dist < 3) {
+                Collection<Case> aVisite = p.getCasesVoisinesAccessibles(c, true);
+                aVisite.removeAll(visitees);
+                deplacementPossibleworker(p, aVisite, dist+1, res, visitees);
             }
         }
-        return res;
-}
+    }
     
     /*@Override
     public void deplacement(Plateau plat, Point3DH cible) {
