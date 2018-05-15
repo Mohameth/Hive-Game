@@ -11,12 +11,12 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-public class VueSolo extends Vue {
+public class VueMulti extends Vue {
     private static int NB_COL = 7;
 
-    VueSolo(Stage primaryStage){
+    VueMulti(Stage primaryStage){
         boolean fs = primaryStage.isFullScreen();
-        Label t = new Label(getLangStr("solo"));
+        Label t = new Label(getLangStr("multi"));
         t.setFont(Font.font(60));
 
         GridPane root = new GridPane();
@@ -30,39 +30,30 @@ public class VueSolo extends Vue {
         }
 
         HBox hb = new HBox();
-        Label tp = new Label(getLangStr("entername"));
+        Label tp = new Label(getLangStr("white"));
         TextField ta = new TextField(getLangStr("joueur1"));
-        ta.setMaxSize(300.0,5.0);
+        ta.setMaxSize(200.0,5.0);
         hb.getChildren().addAll(tp,ta);
-        hb.setAlignment(Pos.CENTER);
+        hb.setSpacing(5);
+
+        HBox hb1 = new HBox();
+        Label tp1 = new Label(getLangStr("black"));
+        TextField ta1 = new TextField(getLangStr("joueur2"));
+        ta1.setMaxSize(300.0,5.0);
+        hb1.getChildren().addAll(tp1,ta1);
+        hb1.setSpacing(12.0);
 
         Button bplay = new Button(getLangStr("jouer"));
-        bplay.setMinSize(300.0,50.0);
+        bplay.setMinSize(200.0,50.0);
 
-        VBox vb1 = new VBox();
-        Label td = new Label(getLangStr("difficulte"));
-        final ToggleGroup group = new ToggleGroup();
-        RadioButton rEasy = new RadioButton(getLangStr("easy"));
-        RadioButton rMedium = new RadioButton(getLangStr("medi"));
-        RadioButton rHard = new RadioButton(getLangStr("hard"));
-        rEasy.setToggleGroup(group);
-        rMedium.setToggleGroup(group);
-        rHard.setToggleGroup(group);
-        rMedium.setSelected(true);
-        vb1.getChildren().addAll(td,rEasy,rMedium,rHard);
+        Label tc = new Label(getLangStr("pname"));
 
         VBox vb2 = new VBox();
-        Label tc = new Label(getLangStr("chColor"));
-        final ToggleGroup group2 = new ToggleGroup();
-        RadioButton rWhite= new RadioButton(getLangStr("white"));
-        RadioButton rBlack = new RadioButton(getLangStr("black"));
-        rBlack.setToggleGroup(group2);
-        rWhite.setToggleGroup(group2);
-        rWhite.setSelected(true);
-        vb2.getChildren().addAll(tc,rWhite,rBlack);
+        vb2.getChildren().addAll(tc,hb,hb1);
+        vb2.setSpacing(5);
 
         Button bBack = new Button(getLangStr("back"));
-        bBack.setAlignment(Pos.CENTER);
+        bBack.setAlignment(Pos.CENTER_LEFT);
 
         bBack.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             SceneMain(primaryStage);
@@ -74,15 +65,13 @@ public class VueSolo extends Vue {
 
         GridPane g = new GridPane();
         g.add(bplay,0,0);
-        g.add(vb1,1,0);
         g.add(bBack,0,1);
-        g.add(vb2,1,1);
+        g.add(vb2,1,0,1,2);
         g.setHgap(30.0);
         g.setVgap(25.0);
-        g.setAlignment(Pos.CENTER);
 
         VBox vb = new VBox();
-        vb.getChildren().addAll(t,hb,g);
+        vb.getChildren().addAll(t,g);
         vb.setAlignment(Pos.CENTER);
         vb.setSpacing(100.0);
         vb.setPrefHeight(primaryStage.getHeight());
@@ -95,7 +84,7 @@ public class VueSolo extends Vue {
         s.getStylesheets().add("Vue/button.css");
         root.prefHeightProperty().bind(s.heightProperty());
         root.prefWidthProperty().bind(s.widthProperty());
-        root.setStyle("-fx-background-image: url(background.jpg);");
+        root.setStyle("-fx-background-image: url(background.jpg));");
         primaryStage.setScene(s);
         primaryStage.setFullScreen(fs);
         primaryStage.show();

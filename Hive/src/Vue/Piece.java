@@ -47,6 +47,7 @@ public class Piece implements ObservableVue {
         //Ajout des events de la souris
         imgv.setCursor(Cursor.HAND);
         makeDraggable();
+        snap = true;
 
         setTranslation(sceneWidth, sceneHeight);
         initCornerHitbox();

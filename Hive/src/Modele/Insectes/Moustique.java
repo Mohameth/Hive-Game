@@ -13,8 +13,6 @@ public class Moustique extends Insecte {
         super(j);
     }
 
-
-    
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
     	
@@ -22,7 +20,11 @@ public class Moustique extends Insecte {
         	return new ArrayList<>();
         }
     	
-    	   ArrayList<Case> caseVoisinesOccupees=(ArrayList<Case>) plateau.getCasesVoisinesOccupees(this.getEmplacement());
+    	if(this.getEmplacement().getInsectes().size()>1) {
+        	return plateau.getCasesVoisines(this.getEmplacement(), false);
+        }
+    	
+    	ArrayList<Case> caseVoisinesOccupees=(ArrayList<Case>) plateau.getCasesVoisinesOccupees(this.getEmplacement());
     	ArrayList<Case> casePossibles=new ArrayList<>();
     	
     	for(int i=0;i<caseVoisinesOccupees.size();i++) {
@@ -34,7 +36,9 @@ public class Moustique extends Insecte {
     			}
     		}
     	}
-    	
+    	if(casePossibles.contains(this.getEmplacement())) {
+    		casePossibles.remove(this.getEmplacement());
+    	}
     	return casePossibles;
     }
     

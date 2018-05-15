@@ -35,6 +35,7 @@ public class Plateau implements Observable {
         cases = new HashMap<Point3DH, Case>();
         Point3DH origine = new Point3DH(0, 0, 0);
         cases.put(origine, new Case(origine));
+
         this.nbPionsEnJeu = 0; //Peut-être à remplacer par une méthode
     }
 
@@ -47,7 +48,7 @@ public class Plateau implements Observable {
     public Case getCase(Point3DH point) {
         return cases.get(point);
     }
-    
+
     public void ajoutCase(Point3DH origine) {
         for (Point3DH p : origine.coordonneesVoisins()) {
             if (!this.cases.containsKey(p)) {
@@ -55,7 +56,7 @@ public class Plateau implements Observable {
             }
         }
     }
-    
+
     /**
      * ajoute un insecte à la position donné
      *
@@ -129,7 +130,7 @@ public class Plateau implements Observable {
         ArrayList<Case> voisins = new ArrayList<>();
         for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
             Case voisin = getCase(pointCourant);
-            if (voisin.estVide() || !exclureCaseOccupee) {
+            if (voisin != null && (voisin.estVide() || !exclureCaseOccupee)) {
                 voisins.add(voisin); //Case vide
             }
         }
@@ -188,7 +189,7 @@ public class Plateau implements Observable {
         ArrayList<Case> voisins = new ArrayList<>();
         for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
             Case voisin = this.getCase(pointCourant);
-            if (!voisin.estVide()) {
+            if (voisin != null && !voisin.estVide()) {
                 voisins.add(voisin);
             }
         }
@@ -218,6 +219,7 @@ public class Plateau implements Observable {
      * ruche
      */
     public boolean glissementPossible(Case c1, Case c2) {
+        if (c1 == null || c2 == null) return false;
         int nombreCasesAdjacentesNonVide = 0;
         Collection<Case> voisinsC1 = getCasesVoisines(c1, false);
         voisinsC1.remove(c2);
@@ -328,33 +330,28 @@ public class Plateau implements Observable {
         if (this.rucheVide()) {
             return false;
         }
-
-        Object[] listeCases;
-        Case c;
-        int i = 0;
-        listeCases = this.cases.values().toArray();
-        do {
-            c = (Case) listeCases[i];
-            i++;
-        } while (i < listeCases.length && (c.estVide()));
-
-        ArrayList<Case> visites = new ArrayList<>();
-        LinkedList<Case> file = new LinkedList<>();
-        visites.add(c);
-        file.add(c);
-        while (!file.isEmpty()) {
-            Case courante = file.pollFirst();
-            ArrayList<Case> voisins = (ArrayList<Case>) getCasesVoisinesOccupees(courante);
-            for (Case caseC : voisins) {
-                if (!visites.contains(caseC) && !caseC.equals(ghost)) {
-                    visites.add(caseC);
-                    file.addLast(caseC);
-                }
-
-            }
+        
+        ArrayList<Case> caseOccupe = (ArrayList<Case>) this.getCasesVoisinesOccupees(ghost);
+        ArrayList<Case> caseOccupe2=new ArrayList<>();
+        caseOccupe2.add(caseOccupe.get(0));
+        caseOccupe.clear();
+        
+        while(!caseOccupe2.isEmpty()) {
+        	Case c=caseOccupe2.get(0);
+        	caseOccupe2.remove(c);
+        	if(!caseOccupe.contains(c)) {
+        		caseOccupe.add(c);
+        	}
+        	ArrayList<Case> caseVoisines=(ArrayList<Case>) this.getCasesVoisinesOccupees(c);
+        	for(int i=0;i<caseVoisines.size();i++) {
+        		if(!caseOccupe.contains(caseVoisines.get(i)) && !caseVoisines.get(i).equals(ghost)) {
+        			caseOccupe2.add(caseVoisines.get(i));
+        		}
+        	}
+        	
         }
 
-        return visites.size() != this.nbPionsEnJeu;
+        return caseOccupe.size()==this.nbPionsEnJeu-1;
     }
 
     @Override
