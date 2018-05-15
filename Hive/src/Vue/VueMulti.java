@@ -60,7 +60,7 @@ public class VueMulti extends Vue {
         });
 
         bplay.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            SceneTerrain(primaryStage);
+            SceneTerrain(primaryStage, 1);
         });
 
         GridPane g = new GridPane();

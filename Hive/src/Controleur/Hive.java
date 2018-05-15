@@ -21,6 +21,7 @@ public class Hive {
         Joueur joueurCourant;
         int nbtours;
 
+        
 	public Hive(String[] args) {
 		this.plateau = new Plateau();
                 Vue.initFenetre(args, this);
@@ -179,6 +180,15 @@ public class Hive {
             
             return res;
         }
+        
+        public void reset() {
+            this.plateau = new Plateau();
+            this.nbtours = 0;
+            this.joueur1 = null;
+            this.joueur2 = null;
+            this.joueurCourant = null;
+        }
+
         
         public boolean estBlanc() {
             if (this.joueurCourant == this.joueur1)

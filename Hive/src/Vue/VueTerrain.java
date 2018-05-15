@@ -1,5 +1,6 @@
 package Vue;
 
+import Controleur.Hive;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -45,6 +46,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     private ArrayList<Piece> joueurBlanc;
     private ArrayList<Piece> joueurNoir;
     private ArrayList<ImageView> hintZones;
+    private Hive controleur;
     private Piece currentSelected;
     private int sceneWidth, sceneHeight; //taille de la scene
     private double totZoom;  //zoom actuel du plateau
@@ -53,11 +55,16 @@ public class VueTerrain extends Vue implements ObservateurVue {
     private Group root;
     private Stage primaryStage;
 
-    VueTerrain(Stage primaryStage){
+    VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs){
         boolean fs = primaryStage.isFullScreen();
         this.primaryStage = primaryStage;
         root = new Group();
 
+        this.controleur = controleur;
+        this.controleur.reset();
+        this.controleur.setJoueurs(casJoueurs);
+        
+        
         this.pieceListPlateau = new ArrayList<>();
         this.hintZones = new ArrayList<>();
         this.joueurBlanc = new ArrayList<>(); //todo coordonnée point
@@ -66,7 +73,6 @@ public class VueTerrain extends Vue implements ObservateurVue {
         this.sceneWidth = 1280; //taille de base
         this.sceneHeight = 720;
         this.totZoom = 1;
-
         Scene s = new Scene(root, primaryStage.getWidth(), primaryStage.getHeight());
         demarrer(s);
 
@@ -447,6 +453,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
         }
 
     }
+
+
 
     private void makeSceneResizeEvent(Scene scene) {
         scene.widthProperty().addListener(new ChangeListener<Number>() {
