@@ -330,10 +330,21 @@ public class Plateau implements Observable {
         if (this.rucheVide()) {
             return false;
         }
+        ArrayList<Case> caseOccupe;
+        if (ghost == null) 
+            ghost = this.cases.get(new Point3DH(0,0,0));
+            
+        if (ghost.estVide()) {
+            caseOccupe = (ArrayList<Case>) this.getCasesVoisinesOccupees(ghost);
+        }
+        else {
+            caseOccupe = new ArrayList<>();
+            caseOccupe.add(ghost);
+        }
         
-        ArrayList<Case> caseOccupe = (ArrayList<Case>) this.getCasesVoisinesOccupees(ghost);
         ArrayList<Case> caseOccupe2=new ArrayList<>();
-        caseOccupe2.add(caseOccupe.get(0));
+        if(!caseOccupe.isEmpty())
+            caseOccupe2.add(caseOccupe.get(0));
         caseOccupe.clear();
         
         while(!caseOccupe2.isEmpty()) {
@@ -351,7 +362,7 @@ public class Plateau implements Observable {
         	
         }
 
-        return caseOccupe.size()==this.nbPionsEnJeu-1;
+        return caseOccupe.size()!=this.nbPionsEnJeu;
     }
 
     @Override
