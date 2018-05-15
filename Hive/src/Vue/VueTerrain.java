@@ -66,7 +66,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     private Group root;
     private Stage primaryStage;
 
-    VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs){
+    VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs) {
         boolean fs = primaryStage.isFullScreen();
         this.primaryStage = primaryStage;
         root = new Group();
@@ -74,8 +74,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         this.controleur = controleur;
         this.controleur.reset();
         this.controleur.setJoueurs(casJoueurs);
-        
-        
+
         this.pieceListPlateau = new ArrayList<>();
         this.hintZones = new ArrayList<>();
         this.joueurBlanc = new ArrayList<>(); //todo coordonnée point
@@ -166,7 +165,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         rect.heightProperty().bind(s.heightProperty());
         makeSceneResizeEvent(s);//Window resize event
 
-        addPiece("piontr_black_pillbug.png", root, 0, 0);
+        addPiece("piontr_black_cloporte.png", root, 0, 0);
     }
 
     public void updateMainJoueur() { //liste d'insect en param
@@ -512,8 +511,6 @@ public class VueTerrain extends Vue implements ObservateurVue {
         }
 
     }
-
-
 
     private void makeSceneResizeEvent(Scene scene) {
         scene.widthProperty().addListener(new ChangeListener<Number>() {
