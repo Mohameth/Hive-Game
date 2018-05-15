@@ -176,7 +176,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         rect.heightProperty().bind(s.heightProperty());
         makeSceneResizeEvent(s);//Window resize event
 
-        addPiece("piontr_black_cloporte.png", root, 0, 0);
+        //addPiece("piontr_black_cloporte.png", root, 0, 0);
     }
 
     public void updateMainJoueur() { //liste d'insect en param

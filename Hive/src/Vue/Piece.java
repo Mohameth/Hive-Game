@@ -98,9 +98,9 @@ public class Piece implements ObservableVue {
             lastMouseLocation.x = mouseEvent.getSceneX();
             lastMouseLocation.y = mouseEvent.getSceneY();
 
+            this.getImgv().toFront(); //afficher par dessus les autres
             notifyListenersMousePressed(this, null);
             setSelected();
-            this.getImgv().toFront(); //afficher par dessus les autres
             snapConfirm = false;
             affiche();
             // printVoisin();
