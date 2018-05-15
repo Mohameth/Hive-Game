@@ -18,45 +18,143 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.Optional;
+import javafx.scene.control.Button;
+import java.util.ArrayList;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
+import javafx.scene.Cursor;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 
-public class VueTerrain extends Vue {
-    private AnchorPane root;
+public class VueTerrain extends Vue implements ObservateurVue {
+
+    private ArrayList<Piece> pieceList;
+    private ArrayList<Piece> pieceListPlateau;
+    private ArrayList<Piece> joueurBlanc;
+    private ArrayList<Piece> joueurNoir;
+    private ArrayList<ImageView> hintZones;
+    private Piece currentSelected;
+    private int sceneWidth, sceneHeight; //taille de la scene
+    private double totZoom;  //zoom actuel du plateau
+    private double totMoveBoardX, totMoveBoardY;  //position du plateau
+
+    private Group root;
     private Stage primaryStage;
 
     VueTerrain(Stage primaryStage){
         boolean fs = primaryStage.isFullScreen();
         this.primaryStage = primaryStage;
-        root = new AnchorPane();
-        BorderPane b = new BorderPane();
-        b.setTop(getHudHaut());
-        b.setBottom(getHudBas());
-        b.setRight(getHudDroite());
-        b.setLeft(getHudGauche());
+        root = new Group();
 
-        root.getChildren().add(b);
+        this.pieceListPlateau = new ArrayList<>();
+        this.hintZones = new ArrayList<>();
+        this.joueurBlanc = new ArrayList<>(); //todo coordonnée point
+        this.joueurNoir = new ArrayList<>();
+        this.currentSelected = null; //aucune piece selectionnée
+        this.sceneWidth = 1280; //taille de base
+        this.sceneHeight = 720;
+        this.totZoom = 1;
+
         Scene s = new Scene(root, primaryStage.getWidth(), primaryStage.getHeight());
-        b.prefWidthProperty().bind(s.widthProperty());
-        b.prefHeightProperty().bind(s.heightProperty());
+        demarrer(s);
+
+        makeSceneResizeEvent(s);//Window resize event
+
         primaryStage.setScene(s);
         primaryStage.setFullScreen(fs);
         primaryStage.show();
+
+        dessineTemplate();
+
+        BorderPane p = getHudDroite();
+        p.minWidth(150);
+        p.setLayoutX(-150);
+        p.prefHeightProperty().bind(s.heightProperty());
+        p.translateXProperty().bind(s.widthProperty());
+
+        BorderPane ctrlView = getHudGauche();
+        ctrlView.minHeight(220);
+        ctrlView.setLayoutY(-220);
+        ctrlView.translateYProperty().bind(s.heightProperty());
+
+//        BorderPane playerOne = getHudPlayer(joueurBlanc, 1);
+//        playerOne.setMaxWidth(s.getWidth());
+//        BorderPane playerTwo = getHudPlayer(joueurNoir, 2);
+//
+//        playerTwo.setLayoutY(-100);
+//        playerTwo.translateYProperty().bind(s.heightProperty());
+        root.getChildren().addAll(p, ctrlView);
+
+        //faire on clic
+        ctrlView.toFront();
+        p.toFront();
     }
 
-    private BorderPane getHudBas() {
+    public void demarrer(Scene s) {
+        this.pieceList = new ArrayList<>();
+        this.hintZones = new ArrayList<>();
+        this.joueurBlanc = new ArrayList<>(); //todo coordonnée point
+        this.joueurNoir = new ArrayList<>();
+        this.currentSelected = null; //aucune piece selectionnée
+        this.sceneWidth = 1280; //taille de base
+        this.sceneHeight = 720;
+        this.totZoom = 1;
+
+        //creation du plateau
+        Rectangle rect = new Rectangle(0, 0);
+        Image img = new Image("background.jpg");
+        rect.setFill(new ImagePattern(img));
+        root.getChildren().add(rect);  //ajout dans le group
+        makeBoardDraggable(rect);   //si on clique sur le rectangle deplacer les images
+        makeBoardScrollZoom(rect);  //si on zoom scroll sur le plateau (rectangle) appliquer le zoom
+        rect.setCursor(Cursor.MOVE); //Change cursor to crosshair
+        rect.widthProperty().bind(s.widthProperty());
+        rect.heightProperty().bind(s.heightProperty());
+        makeSceneResizeEvent(s);//Window resize event
+    }
+
+    private BorderPane getHudPlayer(ArrayList m, int numplayer) {
+        String[] namePiece = new String[]{"araignee", "fourmis", "ladybug", "moustique", "pillbug", "renne", "sauterelles", "scarabée"};
+        String[] colorPiece = new String[]{"black", "white"};
+
         Button bEdit = new Button();
         bEdit.setGraphic(new ImageView(new Image("icons/pencil.png")));
         bEdit.setStyle("-fx-background-color: Transparent;\n");
-        Text txt1 = new Text("Point du joueur 1");
+        Text txt1 = new Text("Nom joueur " + numplayer);
 
         HBox hName = new HBox();
         hName.setAlignment(Pos.CENTER_LEFT);
         hName.getChildren().addAll(bEdit, txt1);
-        hName.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 3 0 0 0;\n");
+        //hName.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 3 0 0 0;\n");
 
         HBox pointJ1 = new HBox();
-        //Piece p2 = new Piece("Vue/piontr_black_abeille.png", pointJ1, width, heigth);
-        pointJ1.getChildren().addAll(hName);
-        pointJ1.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 3 0 0 0;\n");
+
+        addPiece("piontr_black_pillbug.png", root, 0, 0);
+
+        int x = -1800, y = -1800;
+        for (String color : colorPiece) {
+            for (String name : namePiece) {
+                Image img = new Image("pieces/" + "piontr_" + color + "_" + name + ".png");
+                ImageView imgv = new ImageView();
+                imgv.setImage(img);
+                imgv.setScaleX(0.1);
+                imgv.setScaleY(0.1);
+                pointJ1.getChildren().add(imgv);
+            }
+        }
+        //pointJ1.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 3 0 0 0;\n");
 
         bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             TextInputDialog ti = new TextInputDialog(txt1.getText());
@@ -73,56 +171,27 @@ public class VueTerrain extends Vue {
         return b;
     }
 
-    private BorderPane getHudHaut() {
-        Button bEdit = new Button();
-        bEdit.setGraphic(new ImageView(new Image("icons/pencil.png")));
-        bEdit.setStyle("-fx-background-color: Transparent;\n");
-        Text txt = new Text("joueur 2");
-
-        HBox hName = new HBox();
-        hName.setAlignment(Pos.CENTER_LEFT);
-        hName.getChildren().addAll(bEdit, txt);
-        hName.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 0 0 3 0;\n");
-
-        HBox pointJ2 = new HBox();
-        //Piece p = new Piece("pieces/piontr_black_sauterelles.png", pointJ2, width, heigth);
-        pointJ2.getChildren().addAll(hName);
-        pointJ2.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 0 0 3 0;\n");
-
-        bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            TextInputDialog ti = new TextInputDialog(txt.getText());
-            ti.setHeaderText("Enter your name");
-            Optional<String> result = ti.showAndWait();
-            if (result.isPresent()) {
-                txt.setText(result.get());
-            }
-        });
-
-        BorderPane b = new BorderPane();
-        b.setLeft(hName);
-        b.setCenter(pointJ2);
-        return b;
-    }
-
     private BorderPane getHudDroite() {
 
         Button bPause = new Button();
 
         bPause.setGraphic(new ImageView(new Image("icons/pause.png")));
         bPause.setMinSize(100, 100);
-        bPause.setStyle("-fx-background-color: Transparent;\n");
+        // bPause.setStyle("-fx-background-color: Transparent;\n");
 
         Button bSave = new Button();
         Button bLoad = new Button();
 
         bSave.setGraphic(new ImageView(new Image("icons/diskette.png")));
         bSave.setMinSize(32, 32);
-        bSave.setStyle("-fx-background-color: Transparent;\n");
+        //bSave.setStyle("-fx-background-color: Transparent;\n");
         bLoad.setGraphic(new ImageView(new Image("icons/upload.png")));
         bLoad.setMinSize(32, 32);
-        bLoad.setStyle("-fx-background-color: Transparent;\n");
+        // bLoad.setStyle("-fx-background-color: Transparent;\n");
 
         HBox hb = new HBox();
+        hb.setAlignment(Pos.BOTTOM_CENTER);
+        hb.setSpacing(10);
         hb.getChildren().addAll(bSave, bLoad);
 
         Button bUndo = new Button();
@@ -131,31 +200,38 @@ public class VueTerrain extends Vue {
 
         bUndo.setGraphic(new ImageView(new Image("icons/icon.png")));
         bUndo.setMinSize(32, 32);
-        bUndo.setStyle("-fx-background-color: Transparent;\n");
+        // bUndo.setStyle("-fx-background-color: Transparent;\n");
         bRedo.setGraphic(new ImageView(new Image("icons/redo-arrow.png")));
         bRedo.setMinSize(32, 32);
-        bRedo.setStyle("-fx-background-color: Transparent;\n");
+        // bRedo.setStyle("-fx-background-color: Transparent;\n");
         bSug.setGraphic(new ImageView(new Image("icons/small-light-bulb.png")));
         bSug.setMinSize(32, 32);
-        bSug.setStyle("-fx-background-color: Transparent;\n");
+        // bSug.setStyle("-fx-background-color: Transparent;\n");
 
         HBox hb1 = new HBox();
+        hb1.setAlignment(Pos.BOTTOM_CENTER);
+        hb1.setSpacing(10);
         hb1.getChildren().addAll(bUndo, bRedo);
 
         VBox vb1 = new VBox();
         vb1.getChildren().addAll(hb1, bSug);
         vb1.setSpacing(10);
-        vb1.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 3 0 0 0;\n");
+        //vb1.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 3 0 0 0;\n");
         vb1.setAlignment(Pos.BOTTOM_CENTER);
 
         VBox vb = new VBox();
+        vb.setAlignment(Pos.BOTTOM_CENTER);
         vb.getChildren().addAll(bPause, hb);
         vb.setSpacing(50);
 
         BorderPane pDroite = new BorderPane();
+        pDroite.setPadding(new Insets(15, 0, 15, 0));
         pDroite.setTop(vb);
         pDroite.setBottom(vb1);
-        pDroite.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 0 0 0 3;\n");
+//        String style = "-fx-border-color:black; -fx-border-width: 0 0 0 3; -fx-background-color: rgba(255, 255, 255, 0.8);";
+//        pDroite.setStyle(style);
+
+        pDroite.getStylesheets().add("Vue/button.css");
 
         bPause.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             getPause();
@@ -164,55 +240,7 @@ public class VueTerrain extends Vue {
         return pDroite;
     }
 
-    private BorderPane getHudGauche() {
-
-        Button bZoom = new Button();
-        Button bDeZoom = new Button();
-
-        bZoom.setGraphic(new ImageView(new Image("icons/zoom-in.png")));
-        bZoom.setStyle("-fx-background-color: Transparent;\n");
-        bZoom.setMinSize(32, 32);
-        bDeZoom.setGraphic(new ImageView(new Image("icons/zoom-out.png")));
-        bDeZoom.setMinSize(32, 32);
-        bDeZoom.setStyle("-fx-background-color: Transparent;\n");
-
-        HBox hb3 = new HBox();
-        hb3.getChildren().addAll(bZoom, bDeZoom);
-
-        Button bUp = new Button();
-        Button bLeft = new Button();
-        Button bDown = new Button();
-        Button bRight = new Button();
-
-        bUp.setGraphic(new ImageView(new Image("icons/up-arrowhead-in-a-circle.png")));
-        bUp.setStyle("-fx-background-color: Transparent;\n");
-        bUp.setMinSize(24, 24);
-        bRight.setGraphic(new ImageView(new Image("icons/right-arrow-in-circular-button.png")));
-        bRight.setMaxSize(24, 24);
-        bRight.setStyle("-fx-background-color: Transparent;\n");
-        bDown.setGraphic(new ImageView(new Image("icons/down-arrowhead-in-a-circle.png")));
-        bDown.setMaxSize(24, 24);
-        bDown.setStyle("-fx-background-color: Transparent;\n");
-        bLeft.setGraphic(new ImageView(new Image("icons/left-arrow-in-circular-button.png")));
-        bLeft.setMaxSize(24, 24);
-        bLeft.setStyle("-fx-background-color: Transparent;\n");
-        ImageView img = new ImageView(new Image("icons/target.png"));
-
-        HBox hb = new HBox();
-        hb.getChildren().addAll(bLeft, img, bRight);
-
-        VBox vb = new VBox();
-        vb.getChildren().addAll(bUp, hb, bDown);
-        vb.setAlignment(Pos.CENTER);
-
-        BorderPane bgauche = new BorderPane();
-        bgauche.setTop(hb3);
-        bgauche.setBottom(vb);
-
-        return bgauche;
-    }
-
-    public void getPause(){
+ public void getPause(){
         /*Rectangle r = new Rectangle(primaryStage.getWidth(),primaryStage.getHeight(),Color.BLACK);
         r.setOpacity(0.5);
         r.heightProperty().bind(primaryStage.getScene().heightProperty());
@@ -277,5 +305,390 @@ public class VueTerrain extends Vue {
         });
 
         root.getChildren().addAll(menu);
+}
+
+    private BorderPane getHudGauche() {
+
+        Button bZoom = new Button();
+        Button bDeZoom = new Button();
+
+        bZoom.setGraphic(new ImageView(new Image("icons/zoom-in.png")));
+        bZoom.setCursor(Cursor.HAND);
+        //bZoom.setStyle("-fx-background-color: Transparent;\n");
+        bZoom.setMinSize(32, 32);
+        bDeZoom.setGraphic(new ImageView(new Image("icons/zoom-out.png")));
+        bDeZoom.setCursor(Cursor.HAND);
+        bDeZoom.setMinSize(32, 32);
+        // bDeZoom.setStyle("-fx-background-color: Transparent;\n");
+
+        HBox hb3 = new HBox();
+        hb3.getChildren().addAll(bZoom, bDeZoom);
+        hb3.setPadding(new Insets(0, 0, 15, 0));
+        hb3.setSpacing(10);
+
+        hb3.setAlignment(Pos.CENTER);
+        Button bUp = new Button();
+        Button bLeft = new Button();
+        Button bDown = new Button();
+        Button bRight = new Button();
+        Button breset = new Button();
+
+        bUp.setGraphic(new ImageView(new Image("icons/up-arrowhead-in-a-circle.png")));
+        //bUp.setStyle("-fx-background-color: Transparent;\n");
+        bUp.setMinSize(24, 24);
+        bUp.setCursor(Cursor.HAND);
+        bRight.setGraphic(new ImageView(new Image("icons/right-arrow-in-circular-button.png")));
+        bRight.setMaxSize(24, 24);
+        bRight.setCursor(Cursor.HAND);
+        //bRight.setStyle("-fx-background-color: Transparent;\n");
+        bDown.setGraphic(new ImageView(new Image("icons/down-arrowhead-in-a-circle.png")));
+        bDown.setMaxSize(24, 24);
+        bDown.setCursor(Cursor.HAND);
+        // bDown.setStyle("-fx-background-color: Transparent;\n");
+        bLeft.setGraphic(new ImageView(new Image("icons/left-arrow-in-circular-button.png")));
+        bLeft.setMaxSize(24, 24);
+        bLeft.setCursor(Cursor.HAND);
+        // bLeft.setStyle("-fx-background-color: Transparent;\n");
+        breset.setGraphic(new ImageView(new Image("icons/target.png")));
+        breset.setMaxSize(24, 24);
+        breset.setCursor(Cursor.HAND);
+        //  breset.setStyle("-fx-background-color: Transparent;\n");
+
+        HBox hb = new HBox();
+        hb.getChildren().addAll(bLeft, breset, bRight);
+
+        VBox vb = new VBox();
+        vb.getChildren().addAll(bUp, hb, bDown);
+        vb.setAlignment(Pos.CENTER);
+
+        BorderPane bgauche = new BorderPane();
+        bgauche.setTop(hb3);
+        bgauche.setBottom(vb);
+        bgauche.getStylesheets().add("Vue/button.css");
+
+        bgauche.setPadding(new Insets(0, 0, 15, 15));
+
+        double moveRangeXY = 40;
+        double ZoomRangePM = 3; //equivaut a 3 zoom
+
+        breset.addEventHandler(MouseEvent.MOUSE_CLICKED,
+                (MouseEvent e) -> {
+                    resetView();
+                }
+        );
+
+        bLeft.addEventHandler(MouseEvent.MOUSE_PRESSED,
+                (MouseEvent e) -> {
+                    applyBoardMove(moveRangeXY, 0);
+                }
+        );
+        bRight.addEventHandler(MouseEvent.MOUSE_PRESSED,
+                (MouseEvent e) -> {
+                    applyBoardMove(-moveRangeXY, 0);
+                }
+        );
+        bUp.addEventHandler(MouseEvent.MOUSE_PRESSED,
+                (MouseEvent e) -> {
+                    applyBoardMove(0, moveRangeXY);
+                }
+        );
+        bDown.addEventHandler(MouseEvent.MOUSE_PRESSED,
+                (MouseEvent e) -> {
+                    applyBoardMove(0, -moveRangeXY);
+                }
+        );
+        bZoom.addEventHandler(MouseEvent.MOUSE_PRESSED,
+                (MouseEvent e) -> {
+                    for (int i = 0; i < ZoomRangePM; i++) {
+                        ZoomFactor(20);
+                    }
+                }
+        );
+        bDeZoom.addEventHandler(MouseEvent.MOUSE_PRESSED,
+                (MouseEvent e) -> {
+                    for (int i = 0; i < ZoomRangePM; i++) {
+                        ZoomFactor(-20);
+                    }
+                }
+        );
+
+        return bgauche;
+    }
+
+    //Ajoute le pion sur le plateau G au coordonnée x y.
+    private void addPiece(String imgName, Group g, double x, double y) {
+        Piece p = new Piece(imgName, sceneWidth, sceneHeight, totZoom);
+//        if (this.pieceList.size() == 0) { //Si c'est la première piece alors on lui donne les coordonnées x0 y0
+//            p.setXYZ(0, 0, 0);
+//        }
+        p.addObserver(this);
+        pieceList.add(p); //ajoute le pion dans la liste des pieces du plateau
+        p.moveToXY(x, y);   //deplace la piece au bonne coordonnée
+        g.getChildren().add(p.getImgv()); //ajoute l'image sur le plateau
+    }
+
+    //Initialisation de la vue
+    private void dessineTemplate() {
+        //création des images
+
+        String[] namePiece = new String[]{"araignee", "fourmis", "ladybug", "moustique", "pillbug", "renne", "sauterelles", "scarabée"};
+        String[] colorPiece = new String[]{"black", "white"};
+
+        addPiece("piontr_black_pillbug.png", root, 0, 0);
+
+        int x = -1800, y = -1800;
+        for (String color : colorPiece) {
+            for (String name : namePiece) {
+                addPiece("piontr_" + color + "_" + name + ".png", root, x, y);
+                x += 470;  //image width + 9
+            }
+            x = -1800;
+            y += 4000;
+        }
+
+    }
+
+    private void makeSceneResizeEvent(Scene scene) {
+        scene.widthProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
+                updateWindowWidth(newSceneWidth);
+            }
+        });
+        scene.heightProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneHeight, Number newSceneHeight) {
+                updateWindowHeight(newSceneHeight);
+            }
+        });
+    }
+
+    private void updateWindowWidth(Number w) {
+        this.sceneWidth = w.intValue();
+        updateTranslationPiece();
+    }
+
+    private void updateWindowHeight(Number h) {
+        this.sceneHeight = h.intValue();
+        //System.out.println(h.intValue());
+        updateTranslationPiece();
+    }
+
+    private void updateTranslationPiece() {
+        for (Piece p : pieceList) {
+            p.setTranslation(sceneWidth, sceneHeight);
+        }
+        removeHint();
+
+    }
+
+    private void unselectPiece() {
+        if (this.currentSelected != null) {
+            this.currentSelected.unSelect();
+        }
+        removeHint();
+    }
+
+    private void makeBoardDraggable(Rectangle rect) {
+        MouseLocation lastMouseLocation = new MouseLocation();
+        rect.addEventFilter(MouseEvent.MOUSE_PRESSED, (
+                final MouseEvent mouseEvent) -> {
+            lastMouseLocation.x = mouseEvent.getSceneX(); //sauvegarde des coordonnées initial de la souris
+            lastMouseLocation.y = mouseEvent.getSceneY();
+            removeHint();
+            unselectPiece();
+        });
+
+        // --- Shift node calculated from mouse cursor movement
+        rect.addEventFilter(MouseEvent.MOUSE_DRAGGED, (
+                final MouseEvent mouseEvent) -> {
+            double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x;
+            double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y;
+            applyBoardMove(deltaX, deltaY);
+            lastMouseLocation.x = mouseEvent.getSceneX();
+            lastMouseLocation.y = mouseEvent.getSceneY();
+        });
+    }
+
+    private void applyBoardMove(double dx, double dy) {
+        for (Piece p : pieceList) {
+            p.moveXYBoard(dx, dy);
+        }
+        this.totMoveBoardX += dx;
+        this.totMoveBoardY += dy;
+    }
+
+    private void resetView() {
+        for (Piece p : pieceList) {
+            p.moveXYBoard(-this.totMoveBoardX, -this.totMoveBoardY);
+        }
+        while (this.totZoom < 0.95 || this.totZoom > 1.05) {
+            if (totZoom < 1) {
+                ZoomFactor(this.totZoom);
+            } else {
+                ZoomFactor(-this.totZoom);
+            }
+        }
+        this.totMoveBoardX = 0;
+        this.totMoveBoardY = 0;
+        this.totZoom = 1;
+    }
+
+    private void makeBoardScrollZoom(Rectangle rect) {
+        rect.setOnScroll((ScrollEvent event) -> {
+            double deltaY = event.getDeltaY();
+            ZoomFactor(deltaY);
+            removeHint();
+        }
+        );
+    }
+
+    private void ZoomFactor(double delta) {
+        double zoomFactor = 1.05;
+        if (delta < 0) {
+            zoomFactor = 2.0 - zoomFactor;
+        }
+        for (Piece p : pieceList) {
+            p.zoomFactor(zoomFactor);
+            updateZoom(p, zoomFactor);
+        }
+        this.totZoom *= zoomFactor;
+        this.totMoveBoardX *= zoomFactor;
+        this.totMoveBoardY *= zoomFactor;
+    }
+
+    @Override
+    public void updateMove(Piece p, double deltaX, double deltaY, boolean isBoardMove) { //on deplace un seul pion
+        //DEplacer les cercles hitbox
+        for (PieceHitbox pieceh : p.getPieceHitboxList()) {
+            pieceh.updateCoordMove(deltaX, deltaY);
+        }
+        if (!isBoardMove) {
+            checkCollision(p);
+        } else {
+            removeHint();
+        }
+    }
+
+    public void checkCollision(Piece p) {
+        for (Piece autrePiece : pieceList) {
+            if (!autrePiece.equals(p)) { //si ce n'est pas la meme piece
+                //alors on explore les hitbox LIBRE de cette piece et on test la collision
+                for (PieceHitbox hitbox : autrePiece.getPieceHitboxList()) {
+                    if (hitbox.isLibre()) { //si elle est libre
+                        //il y a t'il collision avec un des coins de la pièce qu'on bouge?
+                        if (collisionHitbox(p, hitbox)) {
+                            p.snap(hitbox);
+                            removeHint();
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    public void updateZoom(Piece p, double zoomFactor) {
+        for (PieceHitbox pieceh : p.getPieceHitboxList()) {
+            pieceh.updateCoordZoom(zoomFactor);
+        }
+    }
+
+    private boolean collisionHitbox(Piece p, PieceHitbox ph) {
+        //C1 with center (x1,y1) and radius r1;
+        //C2 with center (x2,y2) and radius r2.
+        //(x2-x1)^2 + (y1-y2)^2 <= (r1+r2)^2
+
+        double imgWidthRadius = (p.getImgv().getFitWidth() / 3) * totZoom;
+        double imgx = p.getImgv().getX();
+        double imgy = p.getImgv().getY();
+
+        double r1 = (ph.getPosX() - imgx);
+        double r2 = (imgy - ph.getPosY());
+        double r3 = (imgWidthRadius + (75 * totZoom));  //75 radius du point d'encrage
+        r1 *= r1;
+        r2 *= r2;
+        r3 *= r3;
+        return (r1 + r2 <= r3);
+
+    }
+
+    public void removeHint() {
+        root.getChildren().removeAll(this.hintZones);
+        this.hintZones.clear();
+    }
+
+    public void updateMousePressPiece(Piece p) {
+        unselectPiece();
+        this.currentSelected = p;
+        displayLibre(p);
+    }
+
+    public void displayLibre(Piece p) {
+        // removeHint();
+        Image img = new Image("hint.png");
+        if (this.hintZones.isEmpty()) {
+            for (Piece autrePiece : this.pieceList) {
+                if (!autrePiece.equals(p)) { //si c'est pas la meme piece
+                    //alors on explore les cercles (hitbox) LIBRE de cette piece et on test la collision
+                    for (PieceHitbox hitbox : autrePiece.getPieceHitboxList()) {
+                        if (hitbox.isLibre()) { //si elle est libre
+                            ImageView iv = new ImageView();
+                            iv.setImage(img);
+                            iv.setCursor(Cursor.HAND);
+                            iv.setLayoutX(-(img.getWidth() / 2));
+                            iv.setLayoutY(-(img.getHeight() / 2));
+                            iv.setTranslateX(sceneWidth / 2);
+                            iv.setTranslateY(sceneHeight / 2);
+
+                            double x = hitbox.getPosX();
+                            double y = hitbox.getPosY();
+
+                            iv.setX(x);
+                            iv.setY(y);
+
+                            iv.setScaleX(iv.getScaleX() * totZoom);
+                            iv.setScaleY(iv.getScaleY() * totZoom);
+
+                            hintZones.add(iv);
+
+                            iv.addEventFilter(MouseEvent.MOUSE_PRESSED, (
+                                    final MouseEvent mouseEvent) -> {
+                                p.snap(hitbox);
+                                unselectPiece();
+
+                            });
+
+                            iv.addEventFilter(MouseEvent.MOUSE_ENTERED, (
+                                    final MouseEvent mouseEvent) -> {
+                                setSelected(iv);
+                            });
+
+                            iv.addEventFilter(MouseEvent.MOUSE_EXITED, (
+                                    final MouseEvent mouseEvent) -> {
+                                iv.setEffect(null);
+                            });
+                        }
+                    }
+                }
+            }
+            root.getChildren().addAll(hintZones);
+        }
+    }
+
+    public void setSelected(ImageView iv) {
+        //DropShadow effect
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(0.0);
+        dropShadow.setOffsetX(0.0);
+        dropShadow.setOffsetY(0.0);
+        dropShadow.setSpread(0.90);
+        dropShadow.setColor(Color.rgb(0, 255, 0, 0.5));
+        iv.setEffect(dropShadow);
+    }
+
+    private static final class MouseLocation {
+
+        public double x, y;
     }
 }
