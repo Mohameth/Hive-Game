@@ -1,5 +1,15 @@
 package Vue;
 
+import Modele.Insectes.Araignee;
+import Modele.Insectes.Cloporte;
+import Modele.Insectes.Fourmi;
+import Modele.Insectes.Insecte;
+import Modele.Insectes.Moustique;
+import Modele.Insectes.Reine;
+import Modele.Insectes.Sauterelle;
+import Modele.Insectes.Scarabee;
+import Modele.JoueurHumain;
+import Modele.Plateau;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -36,14 +46,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 public class VueTerrain extends Vue implements ObservateurVue {
 
     private ArrayList<Piece> pieceList;
     private ArrayList<Piece> pieceListPlateau;
-    private ArrayList<Piece> joueurBlanc;
-    private ArrayList<Piece> joueurNoir;
+    private ArrayList<PionMain> joueurBlanc;
+    private ArrayList<PionMain> joueurNoir;
     private ArrayList<ImageView> hintZones;
     private Piece currentSelected;
     private int sceneWidth, sceneHeight; //taille de la scene
@@ -53,7 +64,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     private Group root;
     private Stage primaryStage;
 
-    VueTerrain(Stage primaryStage){
+    VueTerrain(Stage primaryStage) {
         boolean fs = primaryStage.isFullScreen();
         this.primaryStage = primaryStage;
         root = new Group();
@@ -76,29 +87,54 @@ public class VueTerrain extends Vue implements ObservateurVue {
         primaryStage.setFullScreen(fs);
         primaryStage.show();
 
-        dessineTemplate();
-
+        //dessineTemplate();
         BorderPane p = getHudDroite();
         p.minWidth(150);
-        p.setLayoutX(-150);
+        p.setLayoutX(-155);
         p.prefHeightProperty().bind(s.heightProperty());
         p.translateXProperty().bind(s.widthProperty());
 
         BorderPane ctrlView = getHudGauche();
         ctrlView.minHeight(220);
-        ctrlView.setLayoutY(-220);
+        ctrlView.setLayoutY(-320);
         ctrlView.translateYProperty().bind(s.heightProperty());
 
-//        BorderPane playerOne = getHudPlayer(joueurBlanc, 1);
-//        playerOne.setMaxWidth(s.getWidth());
-//        BorderPane playerTwo = getHudPlayer(joueurNoir, 2);
-//
-//        playerTwo.setLayoutY(-100);
-//        playerTwo.translateYProperty().bind(s.heightProperty());
-        root.getChildren().addAll(p, ctrlView);
+        /*liste d'insect*/
+        ArrayList<Insecte> jermList = new ArrayList<>();
 
-        //faire on clic
+        Plateau instance = new Plateau();
+        Insecte ins1 = new Reine(new JoueurHumain(instance));
+        Insecte ins2 = new Fourmi(new JoueurHumain(instance));
+        Insecte ins3 = new Sauterelle(new JoueurHumain(instance));
+        Insecte ins4 = new Araignee(new JoueurHumain(instance));
+        Insecte ins5 = new Cloporte(new JoueurHumain(instance));
+        Insecte ins6 = new Moustique(new JoueurHumain(instance));
+        Insecte ins7 = new Scarabee(new JoueurHumain(instance));
+        jermList.add(ins1);
+        jermList.add(ins2);
+        jermList.add(ins3);
+        jermList.add(ins4);
+        jermList.add(ins5);
+        jermList.add(ins6);
+        jermList.add(ins7);
+
+        BorderPane playerOne = getHudPlayer(jermList, 1);
+
+        playerOne.minWidthProperty().bind(s.widthProperty());
+        playerOne.maxWidthProperty().bind(s.widthProperty());
+
+        BorderPane playerTwo = getHudPlayer(jermList, 2);
+        playerTwo.minWidthProperty().bind(s.widthProperty());
+        playerTwo.maxWidthProperty().bind(s.widthProperty());
+
+        playerTwo.setLayoutY(-100);
+        playerTwo.translateYProperty().bind(s.heightProperty());
+
+        root.getChildren().addAll(p, ctrlView, playerOne, playerTwo);
+
+        //faire au clic passer devant HUD
         ctrlView.toFront();
+        playerOne.toFront();
         p.toFront();
     }
 
@@ -123,9 +159,21 @@ public class VueTerrain extends Vue implements ObservateurVue {
         rect.widthProperty().bind(s.widthProperty());
         rect.heightProperty().bind(s.heightProperty());
         makeSceneResizeEvent(s);//Window resize event
+
+        addPiece("piontr_black_pillbug.png", root, 0, 0);
     }
 
-    private BorderPane getHudPlayer(ArrayList m, int numplayer) {
+    public void updateMainJoueur() { //liste d'insect en param
+
+        //if (ins2.getJoueur().isWhite()) {
+        if (true) {
+            this.joueurBlanc.clear();
+        } else { //mise a jour joueur noir
+            this.joueurNoir.clear();
+        }
+    }
+
+    private BorderPane getHudPlayer(ArrayList<Insecte> m, int numplayer) {
         String[] namePiece = new String[]{"araignee", "fourmis", "ladybug", "moustique", "pillbug", "renne", "sauterelles", "scarabée"};
         String[] colorPiece = new String[]{"black", "white"};
 
@@ -133,29 +181,29 @@ public class VueTerrain extends Vue implements ObservateurVue {
         bEdit.setGraphic(new ImageView(new Image("icons/pencil.png")));
         bEdit.setStyle("-fx-background-color: Transparent;\n");
         Text txt1 = new Text("Nom joueur " + numplayer);
+        //txt1.setFont(FontWeight.BOLD, 70);
+        txt1.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
+        txt1.setFill(Color.WHITE);
 
         HBox hName = new HBox();
         hName.setAlignment(Pos.CENTER_LEFT);
         hName.getChildren().addAll(bEdit, txt1);
-        //hName.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 3 0 0 0;\n");
+        //hName.setStyle("-fx-background-color:#FFFFFF;");
 
         HBox pointJ1 = new HBox();
 
-        addPiece("piontr_black_pillbug.png", root, 0, 0);
-
-        int x = -1800, y = -1800;
-        for (String color : colorPiece) {
-            for (String name : namePiece) {
-                Image img = new Image("pieces/" + "piontr_" + color + "_" + name + ".png");
-                ImageView imgv = new ImageView();
-                imgv.setImage(img);
-                imgv.setScaleX(0.1);
-                imgv.setScaleY(0.1);
-                pointJ1.getChildren().add(imgv);
-            }
+        for (Insecte p : m) {
+            PionMain pm = new PionMain(p);
+            pm.addObserver(this);
+            ImageView imgv = pm.getImgPion();
+            imgv.setFitWidth(imgv.getImage().getWidth() / 4.5);
+            imgv.setFitHeight(imgv.getImage().getHeight() / 4.5);
+            pointJ1.getChildren().add(imgv);
         }
-        //pointJ1.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 3 0 0 0;\n");
+        pointJ1.setAlignment(Pos.CENTER);
+        pointJ1.setPadding(new Insets(5, 0, 5, 0));
 
+        //pointJ1.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 3 0 0 0;\n");
         bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             TextInputDialog ti = new TextInputDialog(txt1.getText());
             ti.setHeaderText("Enter your name");
@@ -165,9 +213,21 @@ public class VueTerrain extends Vue implements ObservateurVue {
             }
         });
 
+        String style = "-fx-background-color: rgba(255, 255, 255, 0.2);";
+        hName.setStyle(style);
+        pointJ1.setStyle(style);
+
+        HBox Space = new HBox();
+        Space.setMinWidth(155);
+        Space.setMaxWidth(155);
+        hName.setMinWidth(155);
+        hName.setMaxWidth(155);
+
         BorderPane b = new BorderPane();
         b.setLeft(hName);
         b.setCenter(pointJ1);
+        b.setRight(Space);
+
         return b;
     }
 
@@ -225,11 +285,11 @@ public class VueTerrain extends Vue implements ObservateurVue {
         vb.setSpacing(50);
 
         BorderPane pDroite = new BorderPane();
-        pDroite.setPadding(new Insets(15, 0, 15, 0));
+        pDroite.setPadding(new Insets(15, 10, 15, 10));
         pDroite.setTop(vb);
         pDroite.setBottom(vb1);
-//        String style = "-fx-border-color:black; -fx-border-width: 0 0 0 3; -fx-background-color: rgba(255, 255, 255, 0.8);";
-//        pDroite.setStyle(style);
+        String style = "-fx-background-color: rgba(255, 255, 255, 0.2);";
+        pDroite.setStyle(style);
 
         pDroite.getStylesheets().add("Vue/button.css");
 
@@ -240,7 +300,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         return pDroite;
     }
 
- public void getPause(){
+    public void getPause() {
         /*Rectangle r = new Rectangle(primaryStage.getWidth(),primaryStage.getHeight(),Color.BLACK);
         r.setOpacity(0.5);
         r.heightProperty().bind(primaryStage.getScene().heightProperty());
@@ -263,8 +323,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
         bQuit.setMaxWidth(200);
 
         VBox menu = new VBox();
-        menu.getChildren().addAll(t,bResume,bRules,bRestart,bSettings,bMain,bQuit);
-        menu.setMinSize(width,heigth);
+        menu.getChildren().addAll(t, bResume, bRules, bRestart, bSettings, bMain, bQuit);
+        menu.setMinSize(width, heigth);
         menu.prefHeightProperty().bind(primaryStage.getScene().heightProperty());
         menu.prefWidthProperty().bind(primaryStage.getScene().widthProperty());
         menu.setAlignment(Pos.CENTER);
@@ -305,7 +365,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         });
 
         root.getChildren().addAll(menu);
-}
+    }
 
     private BorderPane getHudGauche() {
 
@@ -431,11 +491,10 @@ public class VueTerrain extends Vue implements ObservateurVue {
     private void dessineTemplate() {
         //création des images
 
-        String[] namePiece = new String[]{"araignee", "fourmis", "ladybug", "moustique", "pillbug", "renne", "sauterelles", "scarabée"};
+        String[] namePiece = new String[]{"araignee", "fourmis", "ladybug", "moustique", "pillbug", "reine", "sauterelles", "scarabée"};
         String[] colorPiece = new String[]{"black", "white"};
 
-        addPiece("piontr_black_pillbug.png", root, 0, 0);
-
+        //addPiece("piontr_black_pillbug.png", root, 0, 0);
         int x = -1800, y = -1800;
         for (String color : colorPiece) {
             for (String name : namePiece) {
@@ -618,13 +677,23 @@ public class VueTerrain extends Vue implements ObservateurVue {
         this.hintZones.clear();
     }
 
-    public void updateMousePressPiece(Piece p) {
+    public void updateMousePressPiece(Piece p, PionMain pm) {
         unselectPiece();
-        this.currentSelected = p;
-        displayLibre(p);
+        if (pm == null) {
+            this.currentSelected = p;
+            displayLibre(p, false);
+        } else {
+            String imgPath = pm.getImgPath(pm.getPion());
+            System.out.println(imgPath);
+            Piece p2 = new Piece(imgPath, sceneWidth, sceneHeight, 1);
+            p2.addObserver(this);
+            this.currentSelected = p2;
+            displayLibre(p2, true);
+        }
+
     }
 
-    public void displayLibre(Piece p) {
+    public void displayLibre(Piece p, boolean isnew) {
         // removeHint();
         Image img = new Image("hint.png");
         if (this.hintZones.isEmpty()) {
@@ -654,6 +723,12 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
                             iv.addEventFilter(MouseEvent.MOUSE_PRESSED, (
                                     final MouseEvent mouseEvent) -> {
+                                if (isnew) {
+                                    pieceList.add(p);
+                                    p.zoomFactor(this.totZoom);
+                                    updateZoom(p, this.totZoom);
+                                    root.getChildren().add(p.getImgv());
+                                }
                                 p.snap(hitbox);
                                 unselectPiece();
 

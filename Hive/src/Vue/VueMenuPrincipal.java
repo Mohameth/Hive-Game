@@ -13,14 +13,15 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class VueMenuPrincipal extends Vue {
+
     private static int NB_LIGNE = 5;
     private static int NB_COL = 5;
 
-    VueMenuPrincipal(Stage primaryStage){
+    VueMenuPrincipal(Stage primaryStage) {
         boolean fs = primaryStage.isFullScreen();
 
         Group root = new Group();
-        Scene scene = new Scene(root, primaryStage.getWidth(),primaryStage.getHeight());
+        Scene scene = new Scene(root, primaryStage.getWidth(), primaryStage.getHeight());
         scene.getStylesheets().add("Vue/button.css");
 
         Text t = new Text("Hive");
@@ -74,7 +75,7 @@ public class VueMenuPrincipal extends Vue {
         vb.getChildren().add(jvj);
         vb.getChildren().add(loadGame);
         vb.getChildren().add(tuto);
-        vb.getChildren().addAll(setting,quit);
+        vb.getChildren().addAll(setting, quit);
 
         GridPane g = new GridPane();
         for (int column = 0; column < NB_COL; column++) {
@@ -87,9 +88,9 @@ public class VueMenuPrincipal extends Vue {
 
         g.prefHeightProperty().bind(scene.heightProperty());
         g.prefWidthProperty().bind(scene.widthProperty());
-        g.add(bp,0,0,5,1);
-        g.add(vb,4,2,1,5);
-        g.setStyle("-fx-background-image: url(background.jpg));");
+        g.add(bp, 0, 0, 5, 1);
+        g.add(vb, 4, 2, 1, 5);
+        g.setStyle("-fx-background-image: url(background.jpg);");
 
         root.getChildren().addAll(g);
         primaryStage.setScene(scene);

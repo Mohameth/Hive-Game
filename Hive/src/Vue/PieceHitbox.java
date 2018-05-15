@@ -59,7 +59,7 @@ public class PieceHitbox {
     }
 
     public void affiche() {
-        System.out.println("HITBOX X: " + X + " Y:" + Y + " Z:" + Z + " \tPOS: " + numCoin);
+        System.out.println("HITBOX X: " + X + " Y:" + Y + " Z:" + Z + " \tPOS: " + numCoin + "IMGX: " + getPosX() + " IMGY: " + getPosY());
     }
 
     public boolean isLibre() {
