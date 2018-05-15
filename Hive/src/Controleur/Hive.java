@@ -36,15 +36,15 @@ public class Hive {
                 break;
                 case 2:
                     this.joueur1 = new JoueurHumain(this.plateau);
-                    this.joueur2 = new JoueurIA(this.plateau,1);
+                    this.joueur2 = new JoueurIA(this.plateau,1); //Easy
                 break;
                 case 3:
                     this.joueur1 = new JoueurHumain(this.plateau);
-                    this.joueur2 = new JoueurIA(this.plateau,2);
+                    this.joueur2 = new JoueurIA(this.plateau,2); //Medium
                 break;
                 case 4:
                     this.joueur1 = new JoueurHumain(this.plateau);
-                    this.joueur2 = new JoueurIA(this.plateau,3);
+                    this.joueur2 = new JoueurIA(this.plateau,3); //hard
                 break;
             }
         }
@@ -190,7 +190,7 @@ public class Hive {
         }
 
         
-        public boolean estBlanc() {
+        public boolean tourJoueurBlanc() {
             if (this.joueurCourant == this.joueur1)
                 return true;
             
