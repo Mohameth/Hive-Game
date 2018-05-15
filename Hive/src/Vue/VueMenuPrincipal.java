@@ -88,8 +88,8 @@ public class VueMenuPrincipal extends Vue {
 
         g.prefHeightProperty().bind(scene.heightProperty());
         g.prefWidthProperty().bind(scene.widthProperty());
-        g.add(bp, 0, 0, 5, 1);
-        g.add(vb, 4, 2, 1, 5);
+        g.add(bp,0,0,5,1);
+        g.add(vb,4,2,1,5);
         g.setStyle("-fx-background-image: url(background.jpg);");
 
         root.getChildren().addAll(g);

@@ -21,6 +21,7 @@ public class Hive {
         Joueur joueurCourant;
         int nbtours;
 
+        
 	public Hive(String[] args) {
 		this.plateau = new Plateau();
                 Vue.initFenetre(args, this);
@@ -35,15 +36,15 @@ public class Hive {
                 break;
                 case 2:
                     this.joueur1 = new JoueurHumain(this.plateau);
-                    this.joueur2 = new JoueurIA(this.plateau);
+                    this.joueur2 = new JoueurIA(this.plateau,1);
                 break;
                 case 3:
                     this.joueur1 = new JoueurHumain(this.plateau);
-                    this.joueur2 = new JoueurIA(this.plateau);
+                    this.joueur2 = new JoueurIA(this.plateau,2);
                 break;
                 case 4:
                     this.joueur1 = new JoueurHumain(this.plateau);
-                    this.joueur2 = new JoueurIA(this.plateau);
+                    this.joueur2 = new JoueurIA(this.plateau,3);
                 break;
             }
         }
@@ -178,6 +179,22 @@ public class Hive {
                 
             
             return res;
+        }
+        
+        public void reset() {
+            this.plateau = new Plateau();
+            this.nbtours = 0;
+            this.joueur1 = null;
+            this.joueur2 = null;
+            this.joueurCourant = null;
+        }
+
+        
+        public boolean estBlanc() {
+            if (this.joueurCourant == this.joueur1)
+                return true;
+            
+            return false;
         }
         
         private void joueurSuivant() {

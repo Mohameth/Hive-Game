@@ -43,12 +43,16 @@ public class VueSolo extends Vue {
         Label td = new Label(getLangStr("difficulte"));
         final ToggleGroup group = new ToggleGroup();
         RadioButton rEasy = new RadioButton(getLangStr("easy"));
+        rEasy.setUserData("easy");
         RadioButton rMedium = new RadioButton(getLangStr("medi"));
+        rMedium.setUserData("medium");
         RadioButton rHard = new RadioButton(getLangStr("hard"));
+        rHard.setUserData("hard");
         rEasy.setToggleGroup(group);
         rMedium.setToggleGroup(group);
         rHard.setToggleGroup(group);
-        rMedium.setSelected(true);
+        //rMedium.setSelected(true);
+        group.selectToggle(rMedium);
         vb1.getChildren().addAll(td,rEasy,rMedium,rHard);
 
         VBox vb2 = new VBox();
@@ -69,7 +73,21 @@ public class VueSolo extends Vue {
         });
 
         bplay.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            SceneTerrain(primaryStage);
+            if (group.getSelectedToggle() != null) {
+                int difficulte = 0;
+                switch (group.getSelectedToggle().getUserData().toString()) {
+                    case "easy":
+                        difficulte = 2;
+                    break;
+                    case "medium":
+                        difficulte = 3;
+                    break;
+                    case "hard":
+                        difficulte = 4;
+                    break;
+                }
+                SceneTerrain(primaryStage,difficulte);
+            }
         });
 
         GridPane g = new GridPane();
