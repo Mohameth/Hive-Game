@@ -139,9 +139,9 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
         root.getChildren().addAll(p, ctrlView, playerOne, playerTwo);
         this.hudElems.add(ctrlView);
-        this.hudElems.add(p);
         this.hudElems.add(playerOne);
         this.hudElems.add(playerTwo);
+        this.hudElems.add(p);
         //faire au clic passer devant HUD
         hudToFront();
 
@@ -176,7 +176,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         rect.heightProperty().bind(s.heightProperty());
         makeSceneResizeEvent(s);//Window resize event
 
-        //addPiece("piontr_black_cloporte.png", root, 0, 0);
+        addPiece("piontr_black_cloporte.png", root, 0, 0);
     }
 
     public void updateMainJoueur() { //liste d'insect en param
