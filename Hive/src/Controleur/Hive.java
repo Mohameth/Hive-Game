@@ -180,6 +180,13 @@ public class Hive {
             return res;
         }
         
+        public boolean estBlanc() {
+            if (this.joueurCourant == this.joueur1)
+                return true;
+            
+            return false;
+        }
+        
         private void joueurSuivant() {
             if (joueurCourant.equals(this.joueur1))
                 this.joueurCourant = this.joueur2;
