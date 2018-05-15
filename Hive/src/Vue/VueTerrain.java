@@ -62,6 +62,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     private int sceneWidth, sceneHeight; //taille de la scene
     private double totZoom;  //zoom actuel du plateau
     private double totMoveBoardX, totMoveBoardY;  //position du plateau
+    private ArrayList<BorderPane> hudElems;
 
     private Group root;
     private Stage primaryStage;
@@ -79,6 +80,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         this.hintZones = new ArrayList<>();
         this.joueurBlanc = new ArrayList<>(); //todo coordonnée point
         this.joueurNoir = new ArrayList<>();
+        hudElems = new ArrayList<>();
         this.currentSelected = null; //aucune piece selectionnée
         this.sceneWidth = 1280; //taille de base
         this.sceneHeight = 720;
@@ -136,11 +138,20 @@ public class VueTerrain extends Vue implements ObservateurVue {
         playerTwo.translateYProperty().bind(s.heightProperty());
 
         root.getChildren().addAll(p, ctrlView, playerOne, playerTwo);
-
+        this.hudElems.add(ctrlView);
+        this.hudElems.add(p);
+        this.hudElems.add(playerOne);
+        this.hudElems.add(playerTwo);
         //faire au clic passer devant HUD
-        ctrlView.toFront();
-        playerOne.toFront();
-        p.toFront();
+        hudToFront();
+
+    }
+
+    public void hudToFront() {
+        for (BorderPane p : hudElems) {
+            p.toFront();
+            System.out.println("To front");
+        }
     }
 
     public void demarrer(Scene s) {
@@ -165,7 +176,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         rect.heightProperty().bind(s.heightProperty());
         makeSceneResizeEvent(s);//Window resize event
 
-        addPiece("piontr_black_cloporte.png", root, 0, 0);
+        //addPiece("piontr_black_cloporte.png", root, 0, 0);
     }
 
     public void updateMainJoueur() { //liste d'insect en param
@@ -596,6 +607,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         this.totMoveBoardX = 0;
         this.totMoveBoardY = 0;
         this.totZoom = 1;
+        hudToFront();
     }
 
     private void makeBoardScrollZoom(Rectangle rect) {
@@ -608,6 +620,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     private void ZoomFactor(double delta) {
+        removeHint();
         double zoomFactor = 1.05;
         if (delta < 0) {
             zoomFactor = 2.0 - zoomFactor;
@@ -684,6 +697,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     public void updateMousePressPiece(Piece p, PionMain pm) {
         unselectPiece();
+        hudToFront();
         if (pm == null) {
             this.currentSelected = p;
             displayLibre(p, false);
@@ -701,58 +715,106 @@ public class VueTerrain extends Vue implements ObservateurVue {
     public void displayLibre(Piece p, boolean isnew) {
         // removeHint();
         Image img = new Image("hint.png");
-        if (this.hintZones.isEmpty()) {
-            for (Piece autrePiece : this.pieceList) {
-                if (!autrePiece.equals(p)) { //si c'est pas la meme piece
-                    //alors on explore les cercles (hitbox) LIBRE de cette piece et on test la collision
-                    for (PieceHitbox hitbox : autrePiece.getPieceHitboxList()) {
-                        if (hitbox.isLibre()) { //si elle est libre
-                            ImageView iv = new ImageView();
-                            iv.setImage(img);
-                            iv.setCursor(Cursor.HAND);
-                            iv.setLayoutX(-(img.getWidth() / 2));
-                            iv.setLayoutY(-(img.getHeight() / 2));
-                            iv.setTranslateX(sceneWidth / 2);
-                            iv.setTranslateY(sceneHeight / 2);
 
-                            double x = hitbox.getPosX();
-                            double y = hitbox.getPosY();
+        if (pieceList.isEmpty() && this.hintZones.isEmpty() && isnew) {
+            ImageView iv = new ImageView();
+            iv.setImage(img);
+            iv.setCursor(Cursor.HAND);
+            iv.setLayoutX(-(img.getWidth() / 2));
+            iv.setLayoutY(-(img.getHeight() / 2));
+            iv.setTranslateX(sceneWidth / 2);
+            iv.setTranslateY(sceneHeight / 2);
 
-                            iv.setX(x);
-                            iv.setY(y);
+            iv.setX(0);
+            iv.setY(0);
 
-                            iv.setScaleX(iv.getScaleX() * totZoom);
-                            iv.setScaleY(iv.getScaleY() * totZoom);
+            iv.setScaleX(iv.getScaleX() * totZoom);
+            iv.setScaleY(iv.getScaleY() * totZoom);
 
-                            hintZones.add(iv);
+            hintZones.add(iv);
 
-                            iv.addEventFilter(MouseEvent.MOUSE_PRESSED, (
-                                    final MouseEvent mouseEvent) -> {
-                                if (isnew) {
-                                    pieceList.add(p);
-                                    p.zoomFactor(this.totZoom);
-                                    updateZoom(p, this.totZoom);
-                                    root.getChildren().add(p.getImgv());
-                                }
-                                p.snap(hitbox);
-                                unselectPiece();
+            iv.addEventFilter(MouseEvent.MOUSE_PRESSED, (
+                    final MouseEvent mouseEvent) -> {
+                if (isnew) {
+                    pieceList.add(p);
+                    p.zoomFactor(this.totZoom);
+                    updateZoom(p, this.totZoom);
+                    root.getChildren().add(p.getImgv());
+                    p.moveToXY(0, 0);
+                }
+                unselectPiece();
+            });
 
-                            });
+            iv.addEventFilter(MouseEvent.MOUSE_ENTERED, (
+                    final MouseEvent mouseEvent) -> {
+                setSelected(iv);
+            });
 
-                            iv.addEventFilter(MouseEvent.MOUSE_ENTERED, (
-                                    final MouseEvent mouseEvent) -> {
-                                setSelected(iv);
-                            });
+            iv.addEventFilter(MouseEvent.MOUSE_EXITED, (
+                    final MouseEvent mouseEvent) -> {
+                iv.setEffect(null);
+            });
 
-                            iv.addEventFilter(MouseEvent.MOUSE_EXITED, (
-                                    final MouseEvent mouseEvent) -> {
-                                iv.setEffect(null);
-                            });
+            root.getChildren().addAll(hintZones);
+
+        } else {
+
+            if (this.hintZones.isEmpty()) {
+                for (Piece autrePiece : this.pieceList) {
+                    if (!autrePiece.equals(p)) { //si c'est pas la meme piece
+                        //alors on explore les cercles (hitbox) LIBRE de cette piece et on test la collision
+                        for (PieceHitbox hitbox : autrePiece.getPieceHitboxList()) {
+                            if (hitbox.isLibre()) { //si elle est libre
+                                ImageView iv = new ImageView();
+                                iv.setImage(img);
+                                iv.setCursor(Cursor.HAND);
+                                iv.setLayoutX(-(img.getWidth() / 2));
+                                iv.setLayoutY(-(img.getHeight() / 2));
+                                iv.setTranslateX(sceneWidth / 2);
+                                iv.setTranslateY(sceneHeight / 2);
+
+                                double x = hitbox.getPosX();
+                                double y = hitbox.getPosY();
+
+                                iv.setX(x);
+                                iv.setY(y);
+
+                                iv.setScaleX(iv.getScaleX() * totZoom);
+                                iv.setScaleY(iv.getScaleY() * totZoom);
+
+                                hintZones.add(iv);
+
+                                iv.addEventFilter(MouseEvent.MOUSE_PRESSED, (
+                                        final MouseEvent mouseEvent) -> {
+                                    if (isnew) {
+                                        pieceList.add(p);
+                                        p.zoomFactor(this.totZoom);
+                                        updateZoom(p, this.totZoom);
+                                        root.getChildren().add(p.getImgv());
+                                        p.addObserver(this);
+                                    }
+
+                                    p.snap(hitbox);
+
+                                    unselectPiece();
+
+                                });
+
+                                iv.addEventFilter(MouseEvent.MOUSE_ENTERED, (
+                                        final MouseEvent mouseEvent) -> {
+                                    setSelected(iv);
+                                });
+
+                                iv.addEventFilter(MouseEvent.MOUSE_EXITED, (
+                                        final MouseEvent mouseEvent) -> {
+                                    iv.setEffect(null);
+                                });
+                            }
                         }
                     }
                 }
+                root.getChildren().addAll(hintZones);
             }
-            root.getChildren().addAll(hintZones);
         }
     }
 
