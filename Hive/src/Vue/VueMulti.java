@@ -89,4 +89,6 @@ public class VueMulti extends Vue {
         primaryStage.setFullScreen(fs);
         primaryStage.show();
     }
+
+
 }

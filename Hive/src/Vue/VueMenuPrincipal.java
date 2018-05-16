@@ -1,30 +1,39 @@
 package Vue;
 
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class VueMenuPrincipal extends Vue {
     private static int NB_LIGNE = 5;
     private static int NB_COL = 5;
+    private Group root;
+    private Stage primayStage;
 
     VueMenuPrincipal(Stage primaryStage){
         boolean fs = primaryStage.isFullScreen();
 
-        Group root = new Group();
+        this.primayStage = primaryStage;
+        root = new Group();
         Scene scene = new Scene(root, primaryStage.getWidth(),primaryStage.getHeight());
         scene.getStylesheets().add("Vue/button.css");
 
-        Text t = new Text("Hive");
-        t.setFont(Font.font(100.0));
+        Font f = Font.loadFont(getClass().getClassLoader().getResource("FunSized.ttf").toExternalForm(),150);
+
+        Label t = new Label("Hive");
+        t.setFont(f);
+        t.setTextFill(Color.WHITE);
 
         BorderPane bp = new BorderPane();
         bp.setCenter(t);
@@ -65,7 +74,7 @@ public class VueMenuPrincipal extends Vue {
         quit.setMaxWidth(200.0);
 
         quit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            System.exit(0);
+            getPupExit();
         });
 
         VBox vb = new VBox();
@@ -95,5 +104,38 @@ public class VueMenuPrincipal extends Vue {
         primaryStage.setScene(scene);
         primaryStage.setFullScreen(fs);
         primaryStage.show();
+    }
+
+    public void getPupExit(){
+        Label l = new Label(getLangStr("quitGame"));
+        l.setTextFill(Color.WHITE);
+        l.prefWidthProperty().bind(primayStage.widthProperty());
+        l.setAlignment(Pos.CENTER);
+        l.setPadding(new Insets(10,0,0,0));
+        l.setStyle("-fx-background-color : rgba(0, 0, 0, .5);-fx-font-weight: bold;\n-fx-font-size: 1.1em;\n-fx-text-fill: white;");
+        Button y = new Button(getLangStr("oui"));
+        y.setPrefWidth(150);
+        Button n = new Button(getLangStr("non"));
+        n.setPrefWidth(150);
+
+        HBox h = new HBox(y,n);
+        h.setSpacing(30);
+        h.setAlignment(Pos.CENTER);
+        h.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
+        h.setPadding(new Insets(20,0,10,0));
+        VBox v = new VBox(l,h);
+        //v.setSpacing(20);
+        v.prefWidthProperty().bind(primayStage.widthProperty());
+        v.prefHeightProperty().bind(primayStage.heightProperty());
+        v.setAlignment(Pos.CENTER);
+
+        y.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            System.exit(0);
+        });
+
+        n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            root.getChildren().remove(v);
+        });
+        root.getChildren().add(v);
     }
 }
