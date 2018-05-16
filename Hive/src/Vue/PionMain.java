@@ -31,9 +31,10 @@ public class PionMain implements ObservableVue {
     private ImageView imgPion;
     private boolean white;
 
-    public PionMain(Insecte pion) {
+    public PionMain(Insecte pion, boolean white) {
         pionsIdentique = new ArrayList<>();
         addPion(pion);
+        this.white = white;
         this.imgPion = getImgFromClass(pion);
         makeCliquable();
 
@@ -43,9 +44,6 @@ public class PionMain implements ObservableVue {
         return white;
     }
 
-    public void setWhite(boolean white) {
-        this.white = white;
-    }
 
     public Insecte getPion() {
         if (!pionsIdentique.isEmpty()) {
@@ -99,7 +97,7 @@ public class PionMain implements ObservableVue {
         } else if (pion instanceof Cloporte) {
             m = "piontr_" + color + "_" + namePiece[6] + ".png";
         } else {
-            m = "piontr_" + color + "_" + namePiece[1] + ".png";
+            m = "piontr_" + color + "_" + namePiece[7] + ".png";
         }
 
         return m;

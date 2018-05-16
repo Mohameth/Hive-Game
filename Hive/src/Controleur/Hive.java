@@ -28,23 +28,23 @@ public class Hive {
                 this.nbtours = 0;
 	}
         
-        public void setJoueurs(int cas){
+        public void setJoueurs(int cas, boolean extension){
             switch(cas) {
                 case 1:
-                    this.joueur1 = new JoueurHumain(this.plateau);
-                    this.joueur2 = new JoueurHumain(this.plateau);
+                    this.joueur1 = new JoueurHumain(this.plateau, extension);
+                    this.joueur2 = new JoueurHumain(this.plateau, extension);
                 break;
                 case 2:
-                    this.joueur1 = new JoueurHumain(this.plateau);
-                    this.joueur2 = new JoueurIA(this.plateau,1); //Easy
+                    this.joueur1 = new JoueurHumain(this.plateau, extension);
+                    this.joueur2 = new JoueurIA(this.plateau,1, extension); //Easy
                 break;
                 case 3:
-                    this.joueur1 = new JoueurHumain(this.plateau);
-                    this.joueur2 = new JoueurIA(this.plateau,2); //Medium
+                    this.joueur1 = new JoueurHumain(this.plateau, extension);
+                    this.joueur2 = new JoueurIA(this.plateau,2 , extension); //Medium
                 break;
                 case 4:
-                    this.joueur1 = new JoueurHumain(this.plateau);
-                    this.joueur2 = new JoueurIA(this.plateau,3); //hard
+                    this.joueur1 = new JoueurHumain(this.plateau, extension);
+                    this.joueur2 = new JoueurIA(this.plateau,3, extension); //hard
                 break;
             }
         }
@@ -179,6 +179,10 @@ public class Hive {
                 
             
             return res;
+        }
+        
+        public ArrayList<Insecte> mainsInit() {
+            return this.joueur1.pionsEnMain();
         }
         
         public void reset() {

@@ -9,9 +9,8 @@ import java.util.logging.Logger;
 
 public class JoueurHumain extends Joueur {
 
-
-    public JoueurHumain(Plateau p) {
-            super(p);
+    public JoueurHumain(Plateau p, boolean extensions) {
+        super(p, extensions);
     }
 
     @Override

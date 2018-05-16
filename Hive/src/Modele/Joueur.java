@@ -15,10 +15,12 @@ public abstract class Joueur {
     public abstract boolean coup(Insecte insecte, Point3DH cible); //Joueur connait le plateau -> appelle déplacement sur insecte avec plateau (insect sait où il est)
 
 
-    public Joueur(Plateau p) {
+    public Joueur(Plateau p, boolean extensions) {
             this.plateau = p;
             this.dernierDeplacement = null;
             this.pions = new ArrayList<>(); //On rentrera tous les pions ici
+            
+            this.initInsectes();
     }
 
     public boolean reinePosee() {
@@ -57,7 +59,21 @@ public abstract class Joueur {
         return pions;
     }
 
-    
+    private void initInsectes() {
+        this.pions.add(new Reine(this));
+        for (int i = 0; i < 2; i++) {
+            this.pions.add(new Scarabee(this));
+            this.pions.add(new Araignee(this));
+        }
+        for (int i = 0; i < 3; i++) {
+            this.pions.add(new Fourmi(this));
+            this.pions.add(new Sauterelle(this));
+        }
+        this.pions.add(new Moustique(this));
+        this.pions.add(new Cloporte(this));
+        this.pions.add(new Coccinelle(this));
+        
+    }
 
     
     
