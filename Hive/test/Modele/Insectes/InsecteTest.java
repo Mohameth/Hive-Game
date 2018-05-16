@@ -58,7 +58,7 @@ public class InsecteTest {
         System.out.println("Test deplacementReine ======================>\n");
         Point3DH point = new Point3DH(0, 0, 0);
         Plateau instance = new Plateau();
-        Joueur j1 = new JoueurHumain(instance);
+        Joueur j1 = new JoueurHumain(instance,true);
 
         Case caseReine = instance.getCase(point);
         Reine r = new Reine(j1);
@@ -119,7 +119,7 @@ public class InsecteTest {
         System.out.println("Test deplacementScarabee ======================>\n");
         Point3DH point = new Point3DH(0, 0, 0);
         Plateau instance = new Plateau();
-        Joueur j1 = new JoueurHumain(instance);
+        Joueur j1 = new JoueurHumain(instance,true);
         
         Scarabee s = new Scarabee(j1);
         instance.ajoutInsecte(s, point);
@@ -175,7 +175,7 @@ public class InsecteTest {
         System.out.println("Test deplacementFourmi ======================>\n");
 
         Plateau instance = new Plateau();
-        Joueur j1 = new JoueurHumain(instance);
+        Joueur j1 = new JoueurHumain(instance,true);
 
         Case caseFourmi = instance.getCase(new Point3DH(0, 0, 0));
         Fourmi f = new Fourmi(j1);
@@ -232,8 +232,8 @@ public class InsecteTest {
         System.out.println("Test deplacementGrooseRuche ======================>\n");
 
         Plateau instance = new Plateau();
-        Joueur j1 = new JoueurHumain(instance);
-        Joueur j2 = new JoueurHumain(instance);
+        Joueur j1 = new JoueurHumain(instance,true);
+        Joueur j2 = new JoueurHumain(instance,true);
 
         Sauterelle sauterelleBlanche = new Sauterelle(j1);
         Fourmi fourmiBlanche = new Fourmi(j1);
