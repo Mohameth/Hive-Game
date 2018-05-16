@@ -20,7 +20,7 @@ public abstract class Joueur {
             this.dernierDeplacement = null;
             this.pions = new ArrayList<>(); //On rentrera tous les pions ici
             
-            this.initInsectes();
+            this.initInsectes(extensions);
     }
 
     public boolean reinePosee() {
@@ -59,7 +59,7 @@ public abstract class Joueur {
         return pions;
     }
 
-    private void initInsectes() {
+    private void initInsectes(boolean extensions) {
         this.pions.add(new Reine(this));
         for (int i = 0; i < 2; i++) {
             this.pions.add(new Scarabee(this));
@@ -69,9 +69,11 @@ public abstract class Joueur {
             this.pions.add(new Fourmi(this));
             this.pions.add(new Sauterelle(this));
         }
-        this.pions.add(new Moustique(this));
-        this.pions.add(new Cloporte(this));
-        this.pions.add(new Coccinelle(this));
+        if (extensions) {
+            this.pions.add(new Moustique(this));
+            this.pions.add(new Cloporte(this));
+            this.pions.add(new Coccinelle(this));
+        }
         
     }
 
