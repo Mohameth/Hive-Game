@@ -4,6 +4,9 @@ import Modele.Insectes.Insecte;
 import java.util.ArrayList;
 import java.util.Random;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 
 public class JoueurIA extends Joueur {
 	private int difficulte;

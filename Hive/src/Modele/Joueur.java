@@ -6,12 +6,39 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Decrit le Joueur General, ses pions et action.
+ * Elle est specialisé en 2 classes, JoueurHumain et JoueurIA
+ * @see JoueurHumain
+ * @see JoueurIA
+ * @author GRP3
+ */
 public abstract class Joueur {
 
+    /**
+     * Pions du joueur 
+     * @see Insecte
+     */
     protected ArrayList<Insecte> pions;
+    
+    /**
+     * Plateau au quel le joueur est lié
+     * @see Plateau
+     */
     protected Plateau plateau;
+    
+    /**
+     * Dernier insecte déplacé
+     * @see Insecte
+     */
     protected Insecte dernierDeplacement;
 
+    /**
+     * Coup d'un joueur
+     * @param insecte insecte déplacé
+     * @param cible Case cible du déplacement
+     * @return vrai si le coup est jouer faux sinon
+     */
     public abstract boolean coup(Insecte insecte, Point3DH cible); //Joueur connait le plateau -> appelle déplacement sur insecte avec plateau (insect sait où il est)
 
 
@@ -23,6 +50,10 @@ public abstract class Joueur {
             this.initInsectes(extensions);
     }
 
+    /**
+     * Verifie si la reine du joueur est posé
+     * @return vrai si la reine est posé faux sinon
+     */
     public boolean reinePosee() {
         Insecte reine; int i = 0;
         do {
@@ -35,6 +66,10 @@ public abstract class Joueur {
         return true;
     }
         
+    /**
+     * Donne la liste des pions que le joueur à encore en main
+     * @return liste des pions en main
+     */
     public ArrayList<Insecte> pionsEnMain() {
         ArrayList<Insecte> res = new ArrayList<>();
         for (Insecte ins : this.pions) {
@@ -45,9 +80,14 @@ public abstract class Joueur {
         return res;
     }   
 
-    
+    /**
+     * Place un insecte sur la case caseCible
+     * @param insecte insecte à placer
+     * @param caseCible case où placer l'insecte
+     */
     public void placementInsecte(Insecte insecte, Case caseCible) {
         try {
+            //this.plateau.ajoutInsecte(insecte, caseCible.getCoordonnees());
             caseCible.addInsecte(insecte);
             this.dernierDeplacement = insecte;
         } catch (Exception ex) {
@@ -55,11 +95,19 @@ public abstract class Joueur {
         }
     }
     
+    /**
+     * donne tout les pions du joueur
+     * @return liste des pions du joueur
+     */
     public ArrayList<Insecte> getPions() {
         return pions;
     }
 
+    /**
+     * initialise les pions du joueur
+     */
     private void initInsectes(boolean extensions) {
+
         this.pions.add(new Reine(this));
         for (int i = 0; i < 2; i++) {
             this.pions.add(new Scarabee(this));
