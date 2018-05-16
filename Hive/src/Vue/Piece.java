@@ -98,12 +98,12 @@ public class Piece implements ObservableVue {
             lastMouseLocation.x = mouseEvent.getSceneX();
             lastMouseLocation.y = mouseEvent.getSceneY();
 
-            notifyListenersMousePressed(this);
-            setSelected();
             this.getImgv().toFront(); //afficher par dessus les autres
+            notifyListenersMousePressed(this, null);
+            setSelected();
             snapConfirm = false;
             affiche();
-            //printVoisin();
+            // printVoisin();
         }
         );
 
@@ -141,7 +141,8 @@ public class Piece implements ObservableVue {
     public void printVoisin() {
         int i = 0;
         for (PieceHitbox ph : pieceHitboxList) {
-            System.out.println("POS: " + i++ + "\t X: " + ph.getX() + " Y: " + ph.getY() + " Z: " + ph.getZ() + " Libre: " + ph.isLibre());
+            //System.out.println("POS: " + i++ + "\t X: " + ph.getX() + " Y: " + ph.getY() + " Z: " + ph.getZ() + " Libre: " + ph.isLibre());
+            ph.affiche();
         }
     }
 
@@ -224,8 +225,8 @@ public class Piece implements ObservableVue {
     }
 
     @Override
-    public void notifyListenersMousePressed(Piece p) {
-        this.obs.updateMousePressPiece(p);
+    public void notifyListenersMousePressed(Piece p, PionMain pm) {
+        this.obs.updateMousePressPiece(p, pm);
     }
 
     public void initCornerHitbox() {

@@ -48,8 +48,8 @@ public class Vue extends Application {
         new VueSolo(primaryStage);
     }
 
-    protected void SceneTerrain(Stage primaryStage){
-        new VueTerrain(primaryStage);
+    protected void SceneTerrain(Stage primaryStage, int casJoueur){
+        new VueTerrain(primaryStage, controleur, 1);
     }
 
     protected void SceneSettings(Stage primaryStage){ new VueSettings(primaryStage);}

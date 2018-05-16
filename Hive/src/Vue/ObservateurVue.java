@@ -13,6 +13,6 @@ public interface ObservateurVue {
 
     public void updateMove(Piece p, double deltaX, double deltaY, boolean isBoardMove);
 
-    public void updateMousePressPiece(Piece p);
+    public void updateMousePressPiece(Piece p, PionMain pm);
 
 }

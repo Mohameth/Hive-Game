@@ -1,6 +1,8 @@
 package Modele;
 
 import Modele.Insectes.Insecte;
+import java.util.ArrayList;
+import java.util.Random;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -9,10 +11,11 @@ import java.util.Random;
 public class JoueurIA extends Joueur {
 	private int difficulte;
 
-    public JoueurIA(Plateau p,int difficulte) {
-            super(p);
-            this.difficulte=difficulte;
+    public JoueurIA(Plateau p, int difficulte, boolean extensions) {
+        super(p, extensions);
+        this.difficulte = difficulte;
     }
+
 
     @Override
     public boolean coup(Insecte insecte, Point3DH cible) {

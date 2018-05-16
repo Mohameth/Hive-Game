@@ -16,12 +16,13 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class VueMenuPrincipal extends Vue {
+
     private static int NB_LIGNE = 5;
     private static int NB_COL = 5;
     private Group root;
     private Stage primayStage;
 
-    VueMenuPrincipal(Stage primaryStage){
+    VueMenuPrincipal(Stage primaryStage) {
         boolean fs = primaryStage.isFullScreen();
 
         this.primayStage = primaryStage;
@@ -83,7 +84,7 @@ public class VueMenuPrincipal extends Vue {
         vb.getChildren().add(jvj);
         vb.getChildren().add(loadGame);
         vb.getChildren().add(tuto);
-        vb.getChildren().addAll(setting,quit);
+        vb.getChildren().addAll(setting, quit);
 
         GridPane g = new GridPane();
         for (int column = 0; column < NB_COL; column++) {

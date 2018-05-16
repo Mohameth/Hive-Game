@@ -21,29 +21,30 @@ public class Hive {
         Joueur joueurCourant;
         int nbtours;
 
+        
 	public Hive(String[] args) {
 		this.plateau = new Plateau();
                 Vue.initFenetre(args, this);
                 this.nbtours = 0;
 	}
         
-        public void setJoueurs(int cas){
+        public void setJoueurs(int cas, boolean extension){
             switch(cas) {
                 case 1:
-                    this.joueur1 = new JoueurHumain(this.plateau);
-                    this.joueur2 = new JoueurHumain(this.plateau);
+                    this.joueur1 = new JoueurHumain(this.plateau, extension);
+                    this.joueur2 = new JoueurHumain(this.plateau, extension);
                 break;
                 case 2:
-                    this.joueur1 = new JoueurHumain(this.plateau);
-                    this.joueur2 = new JoueurIA(this.plateau,1);
+                    this.joueur1 = new JoueurHumain(this.plateau, extension);
+                    this.joueur2 = new JoueurIA(this.plateau,1, extension); //Easy
                 break;
                 case 3:
-                    this.joueur1 = new JoueurHumain(this.plateau);
-                    this.joueur2 = new JoueurIA(this.plateau,2);
+                    this.joueur1 = new JoueurHumain(this.plateau, extension);
+                    this.joueur2 = new JoueurIA(this.plateau,2 , extension); //Medium
                 break;
                 case 4:
-                    this.joueur1 = new JoueurHumain(this.plateau);
-                    this.joueur2 = new JoueurIA(this.plateau,3);
+                    this.joueur1 = new JoueurHumain(this.plateau, extension);
+                    this.joueur2 = new JoueurIA(this.plateau,3, extension); //hard
                 break;
             }
         }
@@ -180,7 +181,20 @@ public class Hive {
             return res;
         }
         
-        public boolean estBlanc() {
+        public ArrayList<Insecte> mainsInit() {
+            return this.joueur1.pionsEnMain();
+        }
+        
+        public void reset() {
+            this.plateau = new Plateau();
+            this.nbtours = 0;
+            this.joueur1 = null;
+            this.joueur2 = null;
+            this.joueurCourant = null;
+        }
+
+        
+        public boolean tourJoueurBlanc() {
             if (this.joueurCourant == this.joueur1)
                 return true;
             
