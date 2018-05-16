@@ -596,14 +596,18 @@ public class VueTerrain extends Vue implements ObservateurVue {
     private void resetView() {
         for (Piece p : pieceList) {
             p.moveXYBoard(-this.totMoveBoardX, -this.totMoveBoardY);
+//            p.zoomFactor(this.totZoom);
+//            updateZoom(p, this.totZoom);
+//            p.updateHitBoxPos();
         }
-        while (this.totZoom < 0.95 || this.totZoom > 1.05) {
+        while (this.totZoom < 0.99 || this.totZoom > 1.01) {
             if (totZoom < 1) {
                 ZoomFactor(this.totZoom);
             } else {
                 ZoomFactor(-this.totZoom);
             }
         }
+
         this.totMoveBoardX = 0;
         this.totMoveBoardY = 0;
         this.totZoom = 1;
