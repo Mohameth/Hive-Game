@@ -49,6 +49,10 @@ public class Plateau implements Observable {
         return cases.get(point);
     }
 
+    /**
+     * crée les cases voisines de la case origine et les ajoutent dans le plateau
+     * @param origine case d'origine
+     */
     public void ajoutCase(Point3DH origine) {
         for (Point3DH p : origine.coordonneesVoisins()) {
             if (!this.cases.containsKey(p)) {
@@ -119,7 +123,7 @@ public class Plateau implements Observable {
     }
 
     /**
-     * Donne toute les cases voisine
+     * Donne toute les cases voisines
      *
      * @param c case d'origine
      * @param exclureCaseOccupee si true donne uniquement les cases vide si
@@ -155,6 +159,11 @@ public class Plateau implements Observable {
         return res;
     }
 
+    /**
+     * Donne les cases où le joueur j peut placer un pions sur le plateau
+     * @param j Joueur voulant placer un pions
+     * @return liste des cases vide sur les quels le joueur j peut placer un pions
+     */
     public ArrayList<Case> casesVidePlacement(Joueur j) {
         ArrayList<Case> res = new ArrayList<>();
         Iterator<Case> it = this.cases.values().iterator();
@@ -197,6 +206,12 @@ public class Plateau implements Observable {
         return voisins;
     }
 
+    /**
+     * Donne les cases voisine de c qui sont accessible pour un insecte (sans porte)
+     * @param c case de départ
+     * @param exclureCaseOccupee si vraie on enleve les cases occupee par un insecte si faux on donne toute les cases accessibles
+     * @return la liste des cases accessibles
+     */
     public Collection<Case> getCasesVoisinesAccessibles(Case c, boolean exclureCaseOccupee) {
         Collection<Case> dep = this.getCasesVoisines(c, exclureCaseOccupee);
         Iterator<Case> it = dep.iterator();
@@ -261,7 +276,7 @@ public class Plateau implements Observable {
      * @param ghost case à ignorer
      * @param moveDest case à considérer
      * @return true si la ruche est brisée après le déplacement
-     * (ghost->moveDest) ou sans considérer de déplacement si ghost et moveDest
+     * (ghost moveDest) ou sans considérer de déplacement si ghost et moveDest
      * valent null
      */
     public boolean rucheBrisee(Case ghost, Case moveDest) { //Tester aussi avec un compteur de changements

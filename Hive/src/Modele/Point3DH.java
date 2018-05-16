@@ -10,8 +10,8 @@ import java.util.Collection;
 import javafx.geometry.Point3D;
 
 /**
- *
- * @author Jeremy
+ * la classe décrit un case du plateau selon un syteme de coordonées pour les plateaux en hexagone (voir https://www.redblobgames.com/grids/hexagons/ )
+ * @author GRP3
  */
 public class Point3DH {
     
@@ -60,7 +60,11 @@ public class Point3DH {
         this.y = y+dy;
         this.z = z+dz;
     }
-
+    
+    /**
+     * Donne les 6 points voisins du point actuel
+     * @return les 6 points voisins
+     */
     public Collection<Point3DH> coordonneesVoisins() { //Voisins en sens horaire en partant du haut (face plate)
         ArrayList<Point3DH> resultat = new ArrayList<>();
         resultat.add(new Point3DH(this.x, this.y+1, this.z-1));
@@ -72,26 +76,50 @@ public class Point3DH {
         return resultat;
     }
     
+    /**
+     * Point situé en haut de l'hexagone actuel
+     * @return le voisin haut du point actuel
+     */
     public Point3DH voisinHaut() { //Voisins en sens horaire en partant du haut (face plate)
         return new Point3DH(this.x, this.y+1, this.z-1);
     }
 
+    /**
+     * Point situé en haut à droite de l'hexagone actuel
+     * @return le voisin haut droite du point actuel
+     */
     public Point3DH voisinDroiteHaut() { //Voisins en sens horaire en partant du haut (face plate)
         return new Point3DH(this.x+1, this.y, this.z-1);
     }
 
+    /**
+     * Point situé en bas à droite de l'hexagone actuel
+     * @return le voisin bas droite du point actuel
+     */
     public Point3DH voisinDroiteBas() { //Voisins en sens horaire en partant du haut (face plate)
         return new Point3DH(this.x+1, this.y-1, this.z);
     }
 
+    /**
+     * Point situé en bas de l'hexagone actuel
+     * @return le voisin bas du point actuel
+     */
     public Point3DH voisinBas() { //Voisins en sens horaire en partant du haut (face plate)
         return new Point3DH(this.x, this.y-1, this.z+1);
     }
 
+    /**
+     * Point situé en bas à gauche de l'hexagone actuel
+     * @return le voisin bas gauche du point actuel
+     */
     public Point3DH voisinGaucheBas() { //Voisins en sens horaire en partant du haut (face plate)
         return new Point3DH(this.x-1, this.y, this.z+1);
     }
 
+    /**
+     * Point situé en haut à gauche de l'hexagone actuel
+     * @return le voisin haut gauche du point actuel
+     */
     public Point3DH voisinGaucheHaut() { //Voisins en sens horaire en partant du haut (face plate)
         return new Point3DH(this.x-1, this.y+1, this.z);
     }

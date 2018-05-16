@@ -74,7 +74,7 @@ public class PlateauTest {
         System.out.println("Test getCasesVoisines ======================>\n");
         Point3DH orig = new Point3DH(0, 0, 0);
         Plateau instance = new Plateau();
-        Reine reine = new Reine(new JoueurHumain(instance));
+        Reine reine = new Reine(new JoueurHumain(instance,true));
         instance.ajoutInsecte(reine, orig);
         
         System.out.println("test avec l'origine, libre ou non :");
@@ -146,7 +146,7 @@ public class PlateauTest {
         
         Point3DH orig = new Point3DH(0, 0, 0);
         Plateau instance = new Plateau();
-        Reine reine = new Reine(new JoueurHumain(instance));
+        Reine reine = new Reine(new JoueurHumain(instance,true));
 
         System.out.println("test avec aucune case occupees :");
         ArrayList<Case> expected = new ArrayList<>();
@@ -202,7 +202,7 @@ public class PlateauTest {
 
         Point3DH orig = new Point3DH(0, 0, 0);
         Plateau instance = new Plateau();
-        Reine reine = new Reine(new JoueurHumain(instance));
+        Reine reine = new Reine(new JoueurHumain(instance,true));
         instance.ajoutInsecte(reine, orig);
         
         System.out.println("test avec l'origine, haut et bas occupé :");
@@ -265,7 +265,7 @@ public class PlateauTest {
 
         Point3DH orig = new Point3DH(0, 0, 0);
         Plateau instance = new Plateau();
-        Reine reine = new Reine(new JoueurHumain(instance));
+        Reine reine = new Reine(new JoueurHumain(instance,true));
 
         instance.ajoutInsecte(reine, orig);
         instance.ajoutInsecte(reine, orig.voisinDroiteBas());
@@ -308,7 +308,7 @@ public class PlateauTest {
 
         Point3DH orig = new Point3DH(0, 0, 0);
         Plateau instance = new Plateau();
-        Reine reine = new Reine(new JoueurHumain(instance));
+        Reine reine = new Reine(new JoueurHumain(instance,true));
         
         instance.ajoutCase(orig);
         
@@ -403,7 +403,7 @@ public class PlateauTest {
 
         Point3DH orig = new Point3DH(0, 0, 0);
         Plateau instance = new Plateau();
-        Reine reine = new Reine(new JoueurHumain(instance));
+        Reine reine = new Reine(new JoueurHumain(instance,true));
         instance.ajoutCase(orig);
         instance.ajoutCase(orig.voisinBas());
 
@@ -414,7 +414,7 @@ public class PlateauTest {
         System.out.println("test sur une ruche avec un insecte :");
         instance.ajoutInsecte(reine, orig);
         assertFalse(instance.rucheBrisee2(null));
-        //assertFalse(instance.rucheBrisee(reine));
+        assertFalse(instance.rucheBrisee2(reine.getEmplacement()));
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
         System.out.println("test sur une ruche avec deux insectes collés :");
@@ -499,7 +499,7 @@ public class PlateauTest {
 
         Point3DH orig = new Point3DH(0, 0, 0);
         Plateau instance = new Plateau();
-        Reine reine = new Reine(new JoueurHumain(instance));
+        Reine reine = new Reine(new JoueurHumain(instance,true));
 
         System.out.println("test sur une ruche venant d'être créé :");
         assertTrue(instance.rucheVide());
@@ -521,8 +521,8 @@ public class PlateauTest {
     
         Point3DH orig = new Point3DH(0, 0, 0);
         Plateau instance = new Plateau();
-        JoueurHumain j1 = new JoueurHumain(instance);
-        JoueurHumain j2 = new JoueurHumain(instance);
+        JoueurHumain j1 = new JoueurHumain(instance,true);
+        JoueurHumain j2 = new JoueurHumain(instance,true);
         Reine reinej1 = new Reine(j1);
         Reine reinej2 = new Reine(j2);
         j1.pions.add(reinej1);

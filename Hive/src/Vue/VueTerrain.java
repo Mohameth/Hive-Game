@@ -29,22 +29,31 @@ import java.util.Map;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Optional;
 
 public class VueTerrain extends Vue implements ObservateurVue {
 
@@ -366,29 +375,52 @@ public class VueTerrain extends Vue implements ObservateurVue {
             getPause();
         });
 
+        bLoad.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            ListView<String> lv = getSaveFile();
+            Button load = new Button(getLangStr("load"));
+            Button cancel = new Button(getLangStr("cancel"));
+
+            HBox hbutton = new HBox();
+            hbutton.getStylesheets().add("Vue/button.css");
+            hbutton.getChildren().addAll(load,cancel);
+            hbutton.setSpacing(10);
+            hbutton.setAlignment(Pos.CENTER);
+
+            VBox vLoad = new VBox();
+            vLoad.getChildren().addAll(lv,hbutton);
+            vLoad.prefWidthProperty().bind(primaryStage.widthProperty());
+            vLoad.prefHeightProperty().bind(primaryStage.heightProperty());
+            vLoad.setAlignment(Pos.CENTER);
+            vLoad.setSpacing(10);
+            vLoad.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
+            lv.setMaxWidth((primaryStage.getWidth()*33)/100);
+            lv.getStylesheets().add("Vue/button.css");
+
+            cancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
+                root.getChildren().removeAll(vLoad);
+            });
+
+            root.getChildren().addAll(vLoad);
+        });
+
         return pDroite;
     }
 
-    public void getPause() {
-        /*Rectangle r = new Rectangle(primaryStage.getWidth(),primaryStage.getHeight(),Color.BLACK);
-        r.setOpacity(0.5);
-        r.heightProperty().bind(primaryStage.getScene().heightProperty());
-        r.widthProperty().bind(primaryStage.getScene().widthProperty());*/
-
+ public void getPause(){
         Text t = new Text("PAUSE");
         t.setFont(Font.font(60));
         t.setStyle("-fx-fill: white;\n");
-        Button bResume = new Button("Resume");
+        Button bResume = new Button(getLangStr("resume"));
         bResume.setMaxWidth(200);
-        Button bRules = new Button("Rules");
+        Button bRules = new Button(getLangStr("rule"));
         bRules.setMaxWidth(200);
-        Button bRestart = new Button("Restart");
+        Button bRestart = new Button(getLangStr("restart"));
         bRestart.setMaxWidth(200);
-        Button bSettings = new Button("Settings");
+        Button bSettings = new Button(getLangStr("setting"));
         bSettings.setMaxWidth(200);
-        Button bMain = new Button("Back main menu");
+        Button bMain = new Button(getLangStr("backmenu"));
         bMain.setMaxWidth(200);
-        Button bQuit = new Button("Quit");
+        Button bQuit = new Button(getLangStr("quitter"));
         bQuit.setMaxWidth(200);
 
         VBox menu = new VBox();
@@ -406,31 +438,13 @@ public class VueTerrain extends Vue implements ObservateurVue {
         });
 
         bMain.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirmation Dialog");
-            alert.setHeaderText("Do you want back to main menu ?");
-            ButtonType buttonTypeYes = new ButtonType("Yes");
-            ButtonType buttonTypeNo = new ButtonType("No");
-            alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == buttonTypeYes) {
-                new VueMenuPrincipal(this.primaryStage);
-            }
+            root.getChildren().removeAll(menu);
+            getPupBackMain();
         });
 
         bQuit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirmation Dialog");
-            alert.setHeaderText("Do you want quit the game ?");
-            ButtonType buttonTypeYes = new ButtonType("Yes");
-            ButtonType buttonTypeNo = new ButtonType("No");
-            alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == buttonTypeYes) {
-                System.exit(0);
-            }
+            root.getChildren().removeAll(menu);
+            getPupExit();
         });
 
         root.getChildren().addAll(menu);
@@ -853,5 +867,84 @@ public class VueTerrain extends Vue implements ObservateurVue {
     private static final class MouseLocation {
 
         public double x, y;
+    }
+
+    public ListView<String> getSaveFile(){
+        String path = "C:\\Users\\louch\\IdeaProjects\\Projet-HIVE\\Hive\\rsc\\save";
+        File rep = new File(path);
+        ListView<String> listSaveFile = new ListView<>();
+        for(String s : rep.list())
+            listSaveFile.getItems().add(s);
+        return listSaveFile;
+    }
+
+    public void getPupExit(){
+        Label l = new Label(getLangStr("quitGame"));
+        l.setTextFill(Color.WHITE);
+        l.prefWidthProperty().bind(primaryStage.widthProperty());
+        l.setAlignment(Pos.CENTER);
+        l.setPadding(new Insets(10,0,0,0));
+        l.setStyle("-fx-background-color : rgba(0, 0, 0, .5);-fx-font-weight: bold;\n-fx-font-size: 1.1em;\n-fx-text-fill: white;");
+        Button y = new Button(getLangStr("oui"));
+        y.setPrefWidth(150);
+        Button n = new Button(getLangStr("non"));
+        n.setPrefWidth(150);
+
+        HBox h = new HBox(y,n);
+        h.getStylesheets().add("Vue/button.css");
+        h.setSpacing(30);
+        h.setAlignment(Pos.CENTER);
+        h.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
+        h.setPadding(new Insets(20,0,10,0));
+        VBox v = new VBox(l,h);
+        //v.setSpacing(20);
+        v.prefWidthProperty().bind(this.primaryStage.widthProperty());
+        v.prefHeightProperty().bind(this.primaryStage.heightProperty());
+        v.setAlignment(Pos.CENTER);
+
+        y.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            System.exit(0);
+        });
+
+        n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            root.getChildren().remove(v);
+            getPause();
+        });
+        root.getChildren().add(v);
+    }
+
+    public void getPupBackMain(){
+        Label l = new Label(getLangStr("backMain"));
+        l.setTextFill(Color.WHITE);
+        l.prefWidthProperty().bind(primaryStage.widthProperty());
+        l.setAlignment(Pos.CENTER);
+        l.setPadding(new Insets(10,0,0,0));
+        l.setStyle("-fx-background-color : rgba(0, 0, 0, .5);-fx-font-weight: bold;\n-fx-font-size: 1.1em;\n-fx-text-fill: white;");
+        Button y = new Button(getLangStr("oui"));
+        y.setPrefWidth(150);
+        Button n = new Button(getLangStr("non"));
+        n.setPrefWidth(150);
+
+        HBox h = new HBox(y,n);
+        h.getStylesheets().add("Vue/button.css");
+        h.setSpacing(30);
+        h.setAlignment(Pos.CENTER);
+        h.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
+        h.setPadding(new Insets(20,0,10,0));
+        VBox v = new VBox(l,h);
+        //v.setSpacing(20);
+        v.prefWidthProperty().bind(this.primaryStage.widthProperty());
+        v.prefHeightProperty().bind(this.primaryStage.heightProperty());
+        v.setAlignment(Pos.CENTER);
+
+        y.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            SceneMain(this.primaryStage);
+        });
+
+        n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            root.getChildren().remove(v);
+            getPause();
+        });
+        root.getChildren().add(v);
     }
 }

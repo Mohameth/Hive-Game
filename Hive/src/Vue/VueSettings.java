@@ -29,7 +29,7 @@ public class VueSettings extends Vue {
         boolean fs = primaryStage.isFullScreen();
         GridPane g = new GridPane();
         Scene s = new Scene(g, primaryStage.getWidth(), primaryStage.getHeight());
-        s.getStylesheets().add("Vue/button.css");
+        s.getStylesheets().add("Vue/button1.css");
 
         for (int column = 0; column < NB_COL; column++) {
             g.getColumnConstraints().add(new ColumnConstraints(primaryStage.getWidth() / NB_COL, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, HPos.LEFT, true));
