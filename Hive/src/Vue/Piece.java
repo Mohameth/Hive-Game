@@ -1,12 +1,10 @@
 package Vue;
 
-import java.util.ArrayList;
+import Modele.TypeInsecte;
 import javafx.scene.Cursor;
-import javafx.scene.Group;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 
@@ -19,22 +17,25 @@ import javafx.scene.paint.Color;
  *
  * @author Sylvestre
  */
-public class Piece implements ObservableVue {
+public abstract class Piece implements ObservableVue {
 
-    private ObservateurVue obs;
-    private ImageView imgv;
-    private double sceneWidth, sceneHeight;
-    private int X, Y, Z; //la pièce possède les coordonnées suivantes sur le plateau (coordonnée plateau pas du canvas javafx)
-    private ArrayList<PieceHitbox> pieceHitboxList;
-    private boolean snap, snapConfirm;
-    private double prevImgX, prevImgY;
-    private double totzoom;
+    protected ObservateurVue obs;
+    protected TypeInsecte pionsType;
+    protected ImageView imgPion;
+    protected boolean white;
 
-    public Piece(String imgName, int sceneWidth, int sceneHeight, double totzoom) {
-        Image img = new Image("pieces/" + imgName);
-        this.imgv = new ImageView();
-        this.pieceHitboxList = new ArrayList<>();
-        this.totzoom = totzoom;
+    public Piece(TypeInsecte pionType, boolean isWhite) {
+        this.pionsType = pionType;
+        this.white = isWhite;
+        this.imgPion = getImgFromType(pionType);
+    }
+
+    private ImageView getImgFromType(TypeInsecte pion) {
+        String m = getImgPath(pion);
+        Image img = new Image("pieces/" + m);
+        ImageView imgv = new ImageView();
+        imgv.setCursor(Cursor.HAND);
+
         imgv.setImage(img);
         imgv.setFitWidth(img.getWidth());
         imgv.setFitHeight(img.getHeight());
@@ -44,106 +45,41 @@ public class Piece implements ObservableVue {
         imgv.setX(0);
         imgv.setY(0);
 
-        //Ajout des events de la souris
-        imgv.setCursor(Cursor.HAND);
-        makeDraggable();
-        snap = true;
-
-        setTranslation(sceneWidth, sceneHeight);
-        initCornerHitbox();
-        setXYZ(0, 0, 0);
-
-    }
-
-    public void setXYZ(int x, int y, int z) {
-        this.X = x;
-        this.Y = y;
-        this.Z = z;
-        updateHitBoxPos();
-    }
-
-    public int getX() {
-        return X;
-    }
-
-    public int getY() {
-        return Y;
-    }
-
-    public int getZ() {
-        return Z;
-    }
-
-    public ImageView getImgv() {
         return imgv;
     }
 
-    public ArrayList<PieceHitbox> getPieceHitboxList() {
-        return pieceHitboxList;
-    }
+    public String getImgPath(TypeInsecte pion) {
+        String m = null;
 
-    public void setTranslation(int sw, int sh) {
-        this.sceneWidth = sw;
-        this.sceneHeight = sh;
-        this.imgv.setTranslateX(sceneWidth / 2);
-        this.imgv.setTranslateY(sceneHeight / 2);
-    }
-
-    public void makeDraggable() {
-        MouseLocation lastMouseLocation = new MouseLocation();
-
-        // --- remember initial coordinates of mouse cursor and node
-        this.imgv.addEventFilter(MouseEvent.MOUSE_PRESSED, (
-                final MouseEvent mouseEvent) -> {
-            lastMouseLocation.x = mouseEvent.getSceneX();
-            lastMouseLocation.y = mouseEvent.getSceneY();
-
-            this.getImgv().toFront(); //afficher par dessus les autres
-            notifyListenersMousePressed(this, null);
-            setSelected();
-            snapConfirm = false;
-            affiche();
-            // printVoisin();
+        String[] namePiece = new String[]{"araignee", "ladybug", "fourmis", "reine", "sauterelles", "scarabee", "cloporte", "moustique"};
+        String[] colorPiece = new String[]{"black", "white"};
+        String color = colorPiece[0];
+        if (isWhite()) {
+            color = colorPiece[1];
         }
-        );
 
-        this.imgv.addEventFilter(MouseEvent.MOUSE_RELEASED, (
-                final MouseEvent mouseEvent) -> {
-            if (!snap) { //retour position origine
-                moveToXY(this.prevImgX, this.prevImgY);
-            } else {
-
-                updatePrevPos();
-            }
-            snapConfirm = true;
-            snap = true;
+        if (pion == TypeInsecte.ARAIGNEE) {
+            m = "piontr_" + color + "_" + namePiece[0] + ".png";
+        } else if (pion == TypeInsecte.COCCINELLE) {
+            m = "piontr_" + color + "_" + namePiece[1] + ".png";
+        } else if (pion == TypeInsecte.FOURMI) {
+            m = "piontr_" + color + "_" + namePiece[2] + ".png";
+        } else if (pion == TypeInsecte.REINE) {
+            m = "piontr_" + color + "_" + namePiece[3] + ".png";
+        } else if (pion == TypeInsecte.SAUTERELLE) {
+            m = "piontr_" + color + "_" + namePiece[4] + ".png";
+        } else if (pion == TypeInsecte.SCARABEE) {
+            m = "piontr_" + color + "_" + namePiece[5] + ".png";
+        } else if (pion == TypeInsecte.CLOPORTE) {
+            m = "piontr_" + color + "_" + namePiece[6] + ".png";
+        } else if (pion == TypeInsecte.MOUSTIQUE) {
+            m = "piontr_" + color + "_" + namePiece[7] + ".png";
         }
-        );
-        // --- Shift node calculated from mouse cursor movement
-        this.imgv.addEventFilter(MouseEvent.MOUSE_DRAGGED, (
-                final MouseEvent mouseEvent) -> {
-            double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x;
-            double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y;
-
-            snap = false;
-            moveToXY(mouseEvent.getSceneX() - (sceneWidth / 2), mouseEvent.getSceneY() - (sceneHeight / 2));
-            moveXY(deltaX, deltaY); //si enleve plus de snap
-
-            lastMouseLocation.x = mouseEvent.getSceneX();
-            lastMouseLocation.y = mouseEvent.getSceneY();
-        });
+        return m;
     }
 
-    public void affiche() {
-        System.out.println("PIECE : X: " + X + " Y:" + Y + " Z:" + Z + " Snap: " + snap);
-    }
-
-    public void printVoisin() {
-        int i = 0;
-        for (PieceHitbox ph : pieceHitboxList) {
-            //System.out.println("POS: " + i++ + "\t X: " + ph.getX() + " Y: " + ph.getY() + " Z: " + ph.getZ() + " Libre: " + ph.isLibre());
-            ph.affiche();
-        }
+    public boolean isWhite() {
+        return this.white;
     }
 
     public void setSelected() {
@@ -152,66 +88,20 @@ public class Piece implements ObservableVue {
         dropShadow.setOffsetX(0.0);
         dropShadow.setOffsetY(0.0);
         dropShadow.setSpread(0.90);
-        dropShadow.setColor(Color.RED);
-        this.getImgv().setEffect(dropShadow);
+        dropShadow.setColor(Color.DARKORANGE);
+        this.getImgPion().setEffect(dropShadow);
     }
 
     public void unSelect() {
-        this.getImgv().setEffect(null);
+        this.getImgPion().setEffect(null);
     }
 
-    public void moveXY(double deltaX, double deltaY) {
-        Applymove(deltaX, deltaY);
-        this.notifyListenersMove(deltaX, deltaY, false);
+    public TypeInsecte getPionsType() {
+        return pionsType;
     }
 
-    public void moveXYBoard(double deltaX, double deltaY) { //move sans maj des collisions
-        Applymove(deltaX, deltaY);
-        this.notifyListenersMove(deltaX, deltaY, true);
-    }
-
-    public void moveToXY(double x, double y) {
-        double dx = x - getImgv().getX();
-        double dy = y - getImgv().getY();
-        moveXYBoard(dx, dy);
-    }
-
-    private void Applymove(double dx, double dy) {
-        this.imgv.setX(this.imgv.getX() + dx);
-        this.imgv.setY(this.imgv.getY() + dy);
-        if (snap && snapConfirm) {
-            updatePrevPos();
-        }
-    }
-
-    private void updatePrevPos() {
-        prevImgX = imgv.getX();
-        prevImgY = imgv.getY();
-    }
-
-    public void snap(PieceHitbox ph) {
-        this.snap = true;
-        moveToXY(ph.getPosX(), ph.getPosY());
-        setXYZ(ph.getX(), ph.getY(), ph.getZ());
-    }
-
-    public void zoomFactor(double zoomFactor) {
-        double imgX, imgY;
-
-        this.imgv.setScaleX(this.imgv.getScaleX() * zoomFactor);  //faire un visiteur
-        this.imgv.setScaleY(this.imgv.getScaleY() * zoomFactor);
-
-        //mise a jour des coordonnées car l'image est plus grande
-        imgX = this.imgv.getX() * zoomFactor;
-        imgY = this.imgv.getY() * zoomFactor;
-        this.imgv.setX(imgX);
-        this.imgv.setY(imgY);
-
-        //update pos previous
-        this.prevImgX = imgX;
-        this.prevImgY = imgY;
-
-        this.totzoom *= Math.abs(zoomFactor);
+    public ImageView getImgPion() {
+        return imgPion;
     }
 
     @Override
@@ -221,74 +111,19 @@ public class Piece implements ObservableVue {
 
     @Override
     public void notifyListenersMove(double deltaX, double deltaY, boolean isBoardMove) {
-        this.obs.updateMove(this, deltaX, deltaY, isBoardMove);
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void notifyListenersMousePressed(Piece p, PionMain pm) {
-        this.obs.updateMousePressPiece(p, pm);
+    public void notifyListenersMousePressed(Piece p) {
+        obs.updateMousePressPiece(p);
     }
 
-    public void initCornerHitbox() {
-        pieceHitboxList.clear();
-        for (int i = 0; i < 6; i++) {
-            PieceHitbox pieceHitbox;
-            pieceHitbox = new PieceHitbox(this, i);
-            pieceHitbox.setCenterOfImageHitbox(totzoom);
-            pieceHitboxList.add(pieceHitbox);
-        }
-    }
+    public abstract void affiche();
 
-    private int[] getHitboxCoord(int pos, int coordX, int coordY, int coordZ) { //en fonction de la position du coin et de la position de la piece sur la grille
-        int x = 0;
-        int y = 0;
-        int z = 0;
-        switch (pos) {
-            case 0:
-                x = coordX;
-                y = coordY + 1;
-                z = coordZ - 1;
-                break;
-            case 1:
-                x = coordX + 1;
-                y = coordY;
-                z = coordZ - 1;
-                break;
-            case 2:
-                x = coordX + 1;
-                y = coordY - 1;
-                z = coordZ;
-                break;
-            case 3:
-                x = coordX;
-                y = coordY - 1;
-                z = coordZ + 1;
-                break;
-            case 4:
-                x = coordX - 1;
-                y = coordY;
-                z = coordZ + 1;
-                break;
-            case 5:
-                x = coordX - 1;
-                y = coordY + 1;
-                z = coordZ;
-                break;
-        }
-        return new int[]{x, y, z};
-    }
+    public abstract void setOnClicEvent();
 
-    public void updateHitBoxPos() {
-        int i = 0;
-        for (PieceHitbox pieceh : this.pieceHitboxList) {
-            int result[] = getHitboxCoord(i++, getX(), getY(), getZ());
-            pieceh.setXYZ(result[0], result[1], result[2]);
-        }
-    }
+    public abstract void snap(PieceHitbox pm);
 
-    private static final class MouseLocation {
-
-        public double x, y;
-    }
-
+    public abstract int decrNbPion();
 }

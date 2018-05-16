@@ -77,8 +77,8 @@ public class PieceHitbox {
     }
 
     public double[] getCenterOfHitbox(double totZoom, double scale) {
-        double x = p.getImgv().getX();
-        double y = p.getImgv().getY();
+        double x = p.getImgPion().getX();
+        double y = p.getImgPion().getY();
         switch (numCoin) {
             case 0:
                 x = 0;
@@ -113,7 +113,7 @@ public class PieceHitbox {
     }
 
     public void setCenterOfImageHitbox(double totZoom) {
-        double scale = this.p.getImgv().getFitWidth() * totZoom + 25;
+        double scale = this.p.getImgPion().getFitWidth() * totZoom + 25;
         double result[] = getCenterOfHitbox(totZoom, scale);
         this.posX = result[0];
         this.posY = result[1];
