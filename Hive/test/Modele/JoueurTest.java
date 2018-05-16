@@ -52,10 +52,11 @@ public class JoueurTest {
         System.out.println("Test reinePosee  ===========================>\n");
 
         Plateau plat = new Plateau();
-        JoueurHumain instance = new JoueurHumain(plat);
+        JoueurHumain instance = new JoueurHumain(plat, true);
         Fourmi fourmi = new Fourmi(instance);
         Reine reine = new Reine(instance);
 
+        instance.pions.clear();
         instance.pions.add(fourmi);
         instance.pions.add(reine);
 
@@ -85,7 +86,7 @@ public class JoueurTest {
         System.out.println("Pions en Mains : 2xScarabee 3xFourmis 1xReine 2xSauterelle\n");
 
         Plateau plat = new Plateau();
-        JoueurHumain instance = new JoueurHumain(plat);
+        JoueurHumain instance = new JoueurHumain(plat, true);
         Fourmi fourmi1 = new Fourmi(instance);
         Fourmi fourmi2 = new Fourmi(instance);
         Fourmi fourmi3 = new Fourmi(instance);
@@ -94,6 +95,8 @@ public class JoueurTest {
         Scarabee scarabee2 = new Scarabee(instance);
         Sauterelle sauterelle1 = new Sauterelle(instance);
         Sauterelle sauterelle2 = new Sauterelle(instance);
+
+        instance.pions.clear();
         
         instance.pions.add(fourmi1);
         instance.pions.add(fourmi2);
@@ -103,9 +106,9 @@ public class JoueurTest {
         instance.pions.add(scarabee2);
         instance.pions.add(sauterelle1);
         instance.pions.add(sauterelle2);
-        
+
         System.out.println("test avec tout en main :");
-        
+
         ArrayList<Insecte> expected = new ArrayList<>();
         expected.add(fourmi1);
         expected.add(fourmi2);
@@ -117,13 +120,13 @@ public class JoueurTest {
         expected.add(sauterelle2);
 
         ArrayList<Insecte> res = instance.pionsEnMain();
-        
-        arrayCorresponds(res,expected);
-        
+
+        arrayCorresponds(res, expected);
+
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
         System.out.println("test en ayant posé la reine :");
-        
+
         expected = new ArrayList<>();
         expected.add(fourmi1);
         expected.add(fourmi2);
@@ -133,50 +136,50 @@ public class JoueurTest {
         expected.add(sauterelle1);
         expected.add(sauterelle2);
 
-        plat.ajoutInsecte(reine, new Point3DH(0,0,0));
-        
+        plat.ajoutInsecte(reine, new Point3DH(0, 0, 0));
+
         res = instance.pionsEnMain();
-        
-        arrayCorresponds(res,expected);
-        
+
+        arrayCorresponds(res, expected);
+
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
-        
+
         System.out.println("test en ayant posé la reine les scarabee et une sauterelle");
-        
-         expected = new ArrayList<>();
+
+        expected = new ArrayList<>();
         expected.add(fourmi1);
         expected.add(fourmi2);
         expected.add(fourmi3);
         expected.add(sauterelle2);
-        
-        plat.ajoutInsecte(scarabee1, new Point3DH(0,0,0).voisinBas());
-        plat.ajoutInsecte(scarabee2, new Point3DH(0,0,0).voisinDroiteBas());
-        plat.ajoutInsecte(sauterelle1, new Point3DH(0,0,0).voisinDroiteHaut());
-        
+
+        plat.ajoutInsecte(scarabee1, new Point3DH(0, 0, 0).voisinBas());
+        plat.ajoutInsecte(scarabee2, new Point3DH(0, 0, 0).voisinDroiteBas());
+        plat.ajoutInsecte(sauterelle1, new Point3DH(0, 0, 0).voisinDroiteHaut());
+
         res = instance.pionsEnMain();
-        
-        arrayCorresponds(res,expected);
-        
+
+        arrayCorresponds(res, expected);
+
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
-        
+
         System.out.println("test en ayant tout posé :");
-        
+
         expected = new ArrayList<>();
-        
-        plat.ajoutInsecte(fourmi1, new Point3DH(0,0,0).voisinGaucheHaut());
-        plat.ajoutInsecte(fourmi2, new Point3DH(0,0,0).voisinHaut());
-        plat.ajoutInsecte(fourmi3, new Point3DH(0,0,0).voisinHaut().voisinHaut());
-        plat.ajoutInsecte(sauterelle2, new Point3DH(0,0,0).voisinGaucheBas());
-        
+
+        plat.ajoutInsecte(fourmi1, new Point3DH(0, 0, 0).voisinGaucheHaut());
+        plat.ajoutInsecte(fourmi2, new Point3DH(0, 0, 0).voisinHaut());
+        plat.ajoutInsecte(fourmi3, new Point3DH(0, 0, 0).voisinHaut().voisinHaut());
+        plat.ajoutInsecte(sauterelle2, new Point3DH(0, 0, 0).voisinGaucheBas());
+
         res = instance.pionsEnMain();
-        
-        arrayCorresponds(res,expected);
-        
+
+        arrayCorresponds(res, expected);
+
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
-        
+
         System.out.println("");
     }
-    
+
     private void arrayCorresponds(ArrayList<Insecte> result, ArrayList<Insecte> Expected) {
         assertTrue(Expected.size() == result.size());
         for (Insecte i : result) {
