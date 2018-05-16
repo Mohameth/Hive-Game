@@ -19,7 +19,6 @@ public class TestModele1 {
      */
     public static void main(String[] args) {
         Hive controleur = new Hive(args);
-        controleur.setJoueurs(1);
         
         
     }

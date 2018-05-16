@@ -31,6 +31,7 @@ import javafx.stage.Stage;
 import java.util.Optional;
 import javafx.scene.control.Button;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -74,7 +75,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
         this.controleur = controleur;
         this.controleur.reset();
-        this.controleur.setJoueurs(casJoueurs);
+        this.controleur.setJoueurs(casJoueurs, true);
 
         this.pieceListPlateau = new ArrayList<>();
         this.hintZones = new ArrayList<>();
@@ -106,31 +107,22 @@ public class VueTerrain extends Vue implements ObservateurVue {
         ctrlView.setLayoutY(-320);
         ctrlView.translateYProperty().bind(s.heightProperty());
 
+        
+        
         /*liste d'insect*/
-        ArrayList<Insecte> jermList = new ArrayList<>();
+        ArrayList<Insecte> initInsectes = new ArrayList<>();
 
-        Plateau instance = new Plateau();
-        Insecte ins1 = new Reine(new JoueurHumain(instance));
-        Insecte ins2 = new Fourmi(new JoueurHumain(instance));
-        Insecte ins3 = new Sauterelle(new JoueurHumain(instance));
-        Insecte ins4 = new Araignee(new JoueurHumain(instance));
-        Insecte ins5 = new Cloporte(new JoueurHumain(instance));
-        Insecte ins6 = new Moustique(new JoueurHumain(instance));
-        Insecte ins7 = new Scarabee(new JoueurHumain(instance));
-        jermList.add(ins1);
-        jermList.add(ins2);
-        jermList.add(ins3);
-        jermList.add(ins4);
-        jermList.add(ins5);
-        jermList.add(ins6);
-        jermList.add(ins7);
+        
+        initInsectes = this.controleur.mainsInit();
 
-        BorderPane playerOne = getHudPlayer(jermList, 1);
+        
+
+        BorderPane playerOne = getHudPlayer(initInsectes, 1);
 
         playerOne.minWidthProperty().bind(s.widthProperty());
         playerOne.maxWidthProperty().bind(s.widthProperty());
 
-        BorderPane playerTwo = getHudPlayer(jermList, 2);
+        BorderPane playerTwo = getHudPlayer(initInsectes, 2);
         playerTwo.minWidthProperty().bind(s.widthProperty());
         playerTwo.maxWidthProperty().bind(s.widthProperty());
 
@@ -154,6 +146,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         }
     }
 
+    
     public void demarrer(Scene s) {
         this.pieceList = new ArrayList<>();
         this.hintZones = new ArrayList<>();
@@ -209,7 +202,12 @@ public class VueTerrain extends Vue implements ObservateurVue {
         HBox pointJ1 = new HBox();
 
         for (Insecte p : m) {
-            PionMain pm = new PionMain(p);
+            PionMain pm;
+            if (numplayer == 2) {
+                pm = new PionMain(p, false);
+            } else {
+                pm = new PionMain(p, true);
+            }
             pm.addObserver(this);
             ImageView imgv = pm.getImgPion();
             imgv.setFitWidth(imgv.getImage().getWidth() / 4.5);
