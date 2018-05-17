@@ -82,7 +82,6 @@ public class PionPlateau extends Piece {
             lastMouseLocation.x = mouseEvent.getSceneX();
             lastMouseLocation.y = mouseEvent.getSceneY();
 
-            getImgPion().toFront(); //afficher par dessus les autres
             notifyListenersMousePressed(this);
             setSelected();
             snapConfirm = false;
@@ -96,8 +95,9 @@ public class PionPlateau extends Piece {
             if (!snap) { //retour position origine
                 moveToXY(this.prevImgX, this.prevImgY);
             } else {
-
                 updatePrevPos();
+                //Jouer un coup user
+                System.out.println("Jouer:" + this.getPionsType() + "Coordonnée : X: " + getX() + " Y: " + getY() + " Z: " + getZ());
             }
             snapConfirm = true;
             snap = true;

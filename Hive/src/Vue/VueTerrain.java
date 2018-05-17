@@ -630,11 +630,26 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     private void makeBoardScrollZoom(Rectangle rect) {
         rect.setOnScroll((ScrollEvent event) -> {
-            double deltaY = event.getDeltaY();
-            ZoomFactor(deltaY);
-            removeHint();
+            applyZoomEvent(event);
         }
         );
+    }
+
+    private void makePionScrollZoom(PionPlateau p) {
+        makeImageScrollZoom(p.getImgPion());
+    }
+
+    private void makeImageScrollZoom(ImageView iv) {
+        iv.setOnScroll((ScrollEvent event) -> {
+            applyZoomEvent(event);
+        }
+        );
+    }
+
+    private void applyZoomEvent(ScrollEvent event) {
+        double deltaY = event.getDeltaY();
+        ZoomFactor(deltaY);
+        removeHint();
     }
 
     private void ZoomFactor(double delta) {
@@ -665,7 +680,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         if (!isBoardMove) {
             checkCollision(p);
         } else {
-            removeHint();
+            //removeHint();
         }
     }
 
@@ -678,7 +693,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
                         //il y a t'il collision avec un des coins de la pièce qu'on bouge?
                         if (collisionHitbox(p, hitbox)) {
                             p.snap(hitbox);
-                            removeHint();
+                            //removeHint();
                         }
                     }
                 }
@@ -719,10 +734,10 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     public void updateMousePressPiece(Piece p) {
         unselectPiece();
-        hudToFront();
         this.currentSelected = p;
         displayLibre(p);
-
+        p.getImgPion().toFront();
+        hudToFront();
     }
 
     public ImageView showValidPos(double x, double y) {
@@ -743,6 +758,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
         hintZones.add(iv);
 
+        makeImageScrollZoom(iv);
+
         iv.addEventFilter(MouseEvent.MOUSE_ENTERED, (
                 final MouseEvent mouseEvent) -> {
             setSelected(iv);
@@ -761,11 +778,13 @@ public class VueTerrain extends Vue implements ObservateurVue {
             PionPlateau newp = new PionPlateau(p.getPionsType(), sceneWidth, sceneHeight, 1, p.isWhite());
             newp.addObserver(this);
             pieceList.add(newp);
+            makePionScrollZoom(newp); //ajouter l'event uniquemet pour les nouveaux pions
             newp.zoomFactor(this.totZoom);
             updateZoom(newp, this.totZoom);
             root.getChildren().add(newp.getImgPion());
             newp.snap(hitbox);
             unselectPiece();
+            hudToFront();
         }
     }
 
@@ -806,6 +825,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
                                         } else {  //mise a jour d'un pion deja sur le plateau a une nouvelle position
                                             p.snap(hitbox);
                                             unselectPiece();
+                                            hudToFront();
                                         }
 
                                     });
@@ -840,7 +860,6 @@ public class VueTerrain extends Vue implements ObservateurVue {
         dropShadow.setSpread(0.90);
         dropShadow.setColor(Color.rgb(0, 255, 0, 0.5));
         iv.setEffect(dropShadow);
-
     }
 
     private static final class MouseLocation {

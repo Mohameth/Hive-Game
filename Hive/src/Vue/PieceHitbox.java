@@ -22,9 +22,9 @@ public class PieceHitbox {
         this.posX = 0;
         this.posY = 0;
         this.libre = true;
-        this.X = 47;
-        this.Y = 47;
-        this.Z = 47;
+        this.X = 0;
+        this.Y = 0;
+        this.Z = 0;
         this.numCoin = numCoin;
     }
 

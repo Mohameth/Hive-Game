@@ -71,8 +71,8 @@ public class PionMain extends Piece {
             @Override
             public void handle(final MouseEvent mouseEvent) {
                 if (getNbPions() > 0) {
-                    setSelected();
                     notifyListenersMousePressed(PionMain.this);
+                    setSelected();
                 } else {
                     getImgPion().setCursor(new ImageCursor(new Image("notallowed.png")));
 
