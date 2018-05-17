@@ -4,6 +4,7 @@ import Modele.Case;
 import Modele.Joueur;
 import Modele.Plateau;
 import Modele.Point3DH;
+import Modele.TypeInsecte;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -47,5 +48,10 @@ public class Fourmi extends Insecte {
 
         return dep;
     }*/
+
+    @Override
+    public TypeInsecte getType() {
+        return TypeInsecte.FOURMI;
+    }
 
 }

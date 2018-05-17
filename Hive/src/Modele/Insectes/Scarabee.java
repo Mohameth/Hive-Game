@@ -4,6 +4,7 @@ import Modele.Case;
 import Modele.Joueur;
 import Modele.Plateau;
 import Modele.Point3DH;
+import Modele.TypeInsecte;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -41,5 +42,10 @@ public class Scarabee extends Insecte {
     public void deplacement(Plateau plat, Point3DH cible) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }*/
+
+    @Override
+    public TypeInsecte getType() {
+        return TypeInsecte.SCARABEE;
+    }
 
 }
