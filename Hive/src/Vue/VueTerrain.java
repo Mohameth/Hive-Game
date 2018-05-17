@@ -656,7 +656,6 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     private void ZoomFactor(double delta) {
         removeHint();
-        System.out.println(delta);
         //bug de mise a jour des positions des hitbox si vide
         if (!pieceList.isEmpty()) {
             double zoomFactor = 1.05;
