@@ -53,7 +53,7 @@ public class Plateau implements Observable {
      * crée les cases voisines de la case origine et les ajoutent dans le plateau
      * @param origine case d'origine
      */
-    public void ajoutCase(Point3DH origine) {
+    public void ajoutCasesVoisines(Point3DH origine) {
         for (Point3DH p : origine.coordonneesVoisins()) {
             if (!this.cases.containsKey(p)) {
                 this.cases.put(p, new Case(p));
@@ -71,7 +71,7 @@ public class Plateau implements Observable {
         try {
             this.getCase(position).addInsecte(insecte);
             this.nbPionsEnJeu++;
-            this.ajoutCase(position);
+            this.ajoutCasesVoisines(position);
         } catch (Exception ex) {
             System.err.println("Erreur ajout : " + ex);
         }
@@ -86,7 +86,7 @@ public class Plateau implements Observable {
     public void deplaceInsecte(Insecte insecte, Point3DH position) {
         try {
             this.getCase(position).addInsecte(insecte);
-            this.ajoutCase(position);
+            this.ajoutCasesVoisines(position);
         } catch (Exception ex) {
             System.err.println("Erreur ajout : " + ex);
         }
