@@ -135,11 +135,6 @@ public class Araignee extends Insecte {
             }
         }
     }
-    
-    /*@Override
-    public void deplacement(Plateau plat, Point3DH cible) {
-        super.deplacement(plat, cible);
-    }*/
 
     @Override
     public TypeInsecte getType() {
