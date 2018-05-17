@@ -53,6 +53,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     private boolean isDragging;
     private boolean clicSurCaseLibre;
     private PionPlateau pionDepl;
+    private Point3DH pionDeplOrigin;
 
     private Group root;
     private Stage primaryStage;
@@ -171,6 +172,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     public void updateMainJoueur() { //liste d'insect en param
 
+        //todo
         //if (ins2.getJoueur().isWhite()) {
         if (true) {
             this.joueurBlanc.clear();
@@ -718,6 +720,9 @@ public class VueTerrain extends Vue implements ObservateurVue {
     public void updateMousePressPiece(Piece p) {
         unselectPiece();
         this.currentSelected = p;
+        if (p instanceof PionPlateau) {
+            pionDeplOrigin = new Point3DH(((PionPlateau) p).getX(), ((PionPlateau) p).getY(), ((PionPlateau) p).getZ());
+        }
         displayLibre(p);
         p.getImgPion().toFront();
         hudToFront();
@@ -759,7 +764,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     public void addPion(Piece p, PieceHitbox hitbox) { //ajoute un pion de la main au plateau
         if (p.decrNbPion() >= 0) {
             PionPlateau newp = new PionPlateau(p.getPionsType(), sceneWidth, sceneHeight, 1, p.isWhite());
-            this.controleur.joueurPlaceInsecte(p.getPionsType(), new Point3DH(hitbox.getX(), hitbox.getY(), hitbox.getZ()));
+
             newp.addObserver(this);
             pieceList.add(newp);
             makePionScrollZoom(newp); //ajouter l'event uniquemet pour les nouveaux pions
@@ -770,9 +775,11 @@ public class VueTerrain extends Vue implements ObservateurVue {
             unselectPiece();
             hudToFront();
             this.pionDepl = newp;
+            this.controleur.joueurPlaceInsecte(p.getPionsType(), new Point3DH(hitbox.getX(), hitbox.getY(), hitbox.getZ()));
+            updateMainJoueur();
         }
     }
-  
+
     public void displayLibre(Piece p) {
         // removeHint();
 
@@ -860,23 +867,28 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     @Override
     public void updateMouseReleasedPiece() {
-        if (isDragging && !clicSurCaseLibre) {
+        if ((isDragging && !clicSurCaseLibre)) {
             System.out.println("Released Clic Drag");
             removeHint();
+
+            if (this.pionDepl != null && pionDeplOrigin != null) {
+                //sauvegarde coordonnée de départ du pion
+                //et les coordonnées cibles
+                this.controleur.deplacementInsecte(pionDeplOrigin, new Point3DH(this.pionDepl.getX(), this.pionDepl.getY(), this.pionDepl.getY()));
+                System.out.println("---------------------------------");
+                pionDepl.affiche();
+                System.out.println("---------------------------------");
+            }
         }
 
         if (clicSurCaseLibre) {
             System.out.println("Clic action joueur");
         }
 
-        if (this.pionDepl != null) {
-            System.out.println("---------------------------------");
-            pionDepl.affiche();
-            System.out.println("---------------------------------");
-        }
         this.pionDepl = null;
         this.isDragging = false;
         clicSurCaseLibre = false;
+        pionDeplOrigin = null;
     }
 
     private static final class MouseLocation {
