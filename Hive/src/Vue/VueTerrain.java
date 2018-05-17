@@ -1,29 +1,9 @@
 package Vue;
 
-import Modele.Insectes.Araignee;
-import Modele.Insectes.Cloporte;
-import Modele.Insectes.Fourmi;
-import Modele.Insectes.Insecte;
-import Modele.Insectes.Moustique;
-import Modele.Insectes.Reine;
-import Modele.Insectes.Sauterelle;
-import Modele.Insectes.Scarabee;
+import Modele.Insectes.*;
 import Controleur.Hive;
-import Modele.Insectes.Coccinelle;
+import Modele.*;
 import Modele.TypeInsecte;
-import com.sun.javafx.scene.text.HitInfo;
-import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-
-import java.util.Optional;
-import javafx.scene.control.Button;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.beans.value.ChangeListener;
@@ -778,6 +758,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     public void addPion(Piece p, PieceHitbox hitbox) { //ajoute un pion de la main au plateau
         if (p.decrNbPion() >= 0) {
             PionPlateau newp = new PionPlateau(p.getPionsType(), sceneWidth, sceneHeight, 1, p.isWhite());
+            this.controleur.joueurPlaceInsecte(p.getPionsType(), new Point3DH(hitbox.getX(), hitbox.getY(), hitbox.getZ()));
             newp.addObserver(this);
             pieceList.add(newp);
             makePionScrollZoom(newp); //ajouter l'event uniquemet pour les nouveaux pions
@@ -789,7 +770,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
             hudToFront();
         }
     }
-
+  
     public void displayLibre(Piece p) {
         // removeHint();
 
