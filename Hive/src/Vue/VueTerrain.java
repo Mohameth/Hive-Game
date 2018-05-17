@@ -596,21 +596,17 @@ public class VueTerrain extends Vue implements ObservateurVue {
     private void resetView() {
         for (PionPlateau p : pieceList) {
             p.moveXYBoard(-this.totMoveBoardX, -this.totMoveBoardY);
-//            p.zoomFactor(this.totZoom);
-//            updateZoom(p, this.totZoom);
-//            p.updateHitBoxPos();
         }
         while (this.totZoom < 0.99 || this.totZoom > 1.01) {
             if (totZoom < 1) {
-                ZoomFactor(this.totZoom);
+                ZoomFactor(40);
             } else {
-                ZoomFactor(-this.totZoom);
+                ZoomFactor(-40);
             }
         }
 
         this.totMoveBoardX = 0;
         this.totMoveBoardY = 0;
-        this.totZoom = 1;
         hudToFront();
     }
 
@@ -640,6 +636,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     private void ZoomFactor(double delta) {
         removeHint();
+        System.out.println(delta);
         //bug de mise a jour des positions des hitbox si vide
         if (!pieceList.isEmpty()) {
             double zoomFactor = 1.05;
@@ -866,6 +863,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     public void updateMouseReleasedPiece() {
         if (isDragging && !clicSurCaseLibre) {
             System.out.println("Released Clic Drag");
+            removeHint();
         }
 
         if (clicSurCaseLibre) {
@@ -875,6 +873,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         if (this.pionDepl != null) {
             System.out.println("---------------------------------");
             pionDepl.affiche();
+            System.out.println("---------------------------------");
         }
         this.pionDepl = null;
         this.isDragging = false;
