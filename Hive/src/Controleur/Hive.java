@@ -47,6 +47,7 @@ public class Hive {
                     this.joueur2 = new JoueurIA(this.plateau,3, extension); //hard
                 break;
             }
+            this.joueurCourant = this.joueur1;
         }
         
         public boolean appartient(Point3DH caseCible) {
@@ -156,5 +157,11 @@ public class Hive {
             else if (joueurCourant.equals(this.joueur2))
                 this.joueurCourant = this.joueur1;
         }
+
+        public Joueur getJoueurCourant() {
+            return joueurCourant;
+        }
+        
+        
         
 }
