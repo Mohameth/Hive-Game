@@ -4,6 +4,7 @@ import Modele.Case;
 import Modele.Joueur;
 import Modele.Plateau;
 import Modele.Point3DH;
+import Modele.TypeInsecte;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -134,10 +135,10 @@ public class Araignee extends Insecte {
             }
         }
     }
-    
-    /*@Override
-    public void deplacement(Plateau plat, Point3DH cible) {
-        super.deplacement(plat, cible);
-    }*/
+
+    @Override
+    public TypeInsecte getType() {
+       return TypeInsecte.ARAIGNEE;
+    }
 
 }

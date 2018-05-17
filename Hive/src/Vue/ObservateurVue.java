@@ -11,8 +11,8 @@ package Vue;
 
 public interface ObservateurVue {
 
-    public void updateMove(Piece p, double deltaX, double deltaY, boolean isBoardMove);
+    public void updateMove(PionPlateau p, double deltaX, double deltaY, boolean isBoardMove);
 
-    public void updateMousePressPiece(Piece p, PionMain pm);
+    public void updateMousePressPiece(Piece p);
 
 }

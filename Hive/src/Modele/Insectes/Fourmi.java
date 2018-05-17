@@ -4,6 +4,7 @@ import Modele.Case;
 import Modele.Joueur;
 import Modele.Plateau;
 import Modele.Point3DH;
+import Modele.TypeInsecte;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -34,11 +35,6 @@ public class Fourmi extends Insecte {
         
         return result;
     }
-
-    /*@Override
-    public void deplacement(Plateau plat, Point3DH cible) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }*/
     
     /*@Override protected Collection<Case> getVoisinsAccessible(Plateau plateau) {
         Collection<Case> dep = super.getVoisinsAccessible(plateau);
@@ -47,5 +43,10 @@ public class Fourmi extends Insecte {
 
         return dep;
     }*/
+
+    @Override
+    public TypeInsecte getType() {
+        return TypeInsecte.FOURMI;
+    }
 
 }
