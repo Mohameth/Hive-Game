@@ -74,64 +74,13 @@ public class Hive {
                 
         public void joueurPlaceInsecte(TypeInsecte insecte, Point3DH cible) {
             int i = 0; Insecte ins = null;
-            switch (insecte) {
-                case ARAIGNEE:
-                    do {
-                        ins = this.joueurCourant.pionsEnMain().get(i);
-                        i++;
-                    }
-                    while ((ins instanceof Araignee));
-                    break;
-                case CLOPORTE:
-                    do {
-                        ins = this.joueurCourant.pionsEnMain().get(i);
-                        i++;
-                    }
-                    while ((ins instanceof Cloporte));
-                    break;
-                case COCCINELLE:
-                    do {
-                        ins = this.joueurCourant.pionsEnMain().get(i);
-                        i++;
-                    }
-                    while ((ins instanceof Coccinelle));
-                    break;
-                case FOURMI:
-                    do {
-                        ins = this.joueurCourant.pionsEnMain().get(i);
-                        i++;
-                    }
-                    while ((ins instanceof Fourmi));
-                    break;
-                case MOUSTIQUE:
-                    do {
-                        ins = this.joueurCourant.pionsEnMain().get(i);
-                        i++;
-                    }
-                    while ((ins instanceof Moustique));
-                    break;
-                case REINE:
-                    do {
-                        ins = this.joueurCourant.pionsEnMain().get(i);
-                        i++;
-                    }
-                    while ((ins instanceof Reine));
-                    break;
-                case SAUTERELLE:
-                    do {
-                        ins = this.joueurCourant.pionsEnMain().get(i);
-                        i++;
-                    }
-                    while ((ins instanceof Sauterelle));
-                    break;
-                case SCARABEE:
-                    do {
-                        ins = this.joueurCourant.pionsEnMain().get(i);
-                        i++;
-                    }
-                    while ((ins instanceof Scarabee));
-                    break;
+            
+            do {
+                ins = this.joueurCourant.pionsEnMain().get(i);
+                i++;
             }
+            while (ins.getType() != insecte);
+            
             this.joueurCourant.placementInsecte(ins, this.plateau.getCase(cible));
             this.joueurSuivant();
         }
