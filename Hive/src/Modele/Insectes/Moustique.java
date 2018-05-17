@@ -71,12 +71,6 @@ public class Moustique extends Insecte {
     	insecte2.setEmplacement(this.getEmplacement());
     	return (ArrayList<Case>) insecte2.deplacementPossible(plateau);
     }
-    
-
-    /*@Override
-    public void deplacement(Plateau plat, Point3DH cible) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }*/
 
     @Override
     public TypeInsecte getType() {

@@ -40,11 +40,6 @@ public class Reine extends Insecte {
 		}
 		
 		return casePossibles2;
-    }
-
-    /*@Override
-    public void deplacement(Plateau plat, Point3DH cible) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }*/
 
     @Override

@@ -35,11 +35,6 @@ public class Fourmi extends Insecte {
         
         return result;
     }
-
-    /*@Override
-    public void deplacement(Plateau plat, Point3DH cible) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }*/
     
     /*@Override protected Collection<Case> getVoisinsAccessible(Plateau plateau) {
         Collection<Case> dep = super.getVoisinsAccessible(plateau);
