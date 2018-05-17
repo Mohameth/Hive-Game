@@ -85,7 +85,7 @@ public class PionPlateau extends Piece {
             notifyListenersMousePressed(this);
             setSelected();
             snapConfirm = false;
-            affiche();
+            //affiche();
             // printVoisin();
         }
         );
@@ -97,10 +97,11 @@ public class PionPlateau extends Piece {
             } else {
                 updatePrevPos();
                 //Jouer un coup user
-                System.out.println("Jouer:" + this.getPionsType() + "Coordonnée : X: " + getX() + " Y: " + getY() + " Z: " + getZ());
+                notifyListenersMouseReleased();
             }
             snapConfirm = true;
             snap = true;
+
         }
         );
         // --- Shift node calculated from mouse cursor movement
@@ -261,6 +262,11 @@ public class PionPlateau extends Piece {
     @Override
     public int decrNbPion() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void notifyListenersMouseReleased() {
+        obs.updateMouseReleasedPiece();
     }
 
     private static final class MouseLocation {

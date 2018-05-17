@@ -70,6 +70,9 @@ public class VueTerrain extends Vue implements ObservateurVue {
     private double totZoom;  //zoom actuel du plateau
     private double totMoveBoardX, totMoveBoardY;  //position du plateau
     private ArrayList<BorderPane> hudElems;
+    private boolean isDragging;
+    private boolean clicSurCaseLibre;
+    private PionPlateau pionDepl;
 
     private Group root;
     private Stage primaryStage;
@@ -83,7 +86,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
         this.controleur = controleur;
         this.controleur.reset();
         this.controleur.setJoueurs(casJoueurs, true);
-
+        this.isDragging = false;
+        this.clicSurCaseLibre = false;
         this.hintZones = new ArrayList<>();
         this.joueurBlanc = new ArrayList<>(); //todo coordonnée point
         this.joueurNoir = new ArrayList<>();
@@ -423,10 +427,10 @@ public class VueTerrain extends Vue implements ObservateurVue {
             getPupExit();
         });
 
-         bRules.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-             root.getChildren().removeAll(menu);
-             getRule();
-         });
+        bRules.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            root.getChildren().removeAll(menu);
+            getRule();
+        });
 
         root.getChildren().addAll(menu);
     }
@@ -682,6 +686,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
         if (!isBoardMove) {
             checkCollision(p);
         } else {
+            this.isDragging = true;
+            this.pionDepl = p;
             //removeHint();
         }
     }
@@ -695,7 +701,6 @@ public class VueTerrain extends Vue implements ObservateurVue {
                         //il y a t'il collision avec un des coins de la pièce qu'on bouge?
                         if (collisionHitbox(p, hitbox)) {
                             p.snap(hitbox);
-                            //removeHint();
                         }
                     }
                 }
@@ -787,6 +792,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
             newp.snap(hitbox);
             unselectPiece();
             hudToFront();
+            this.pionDepl = newp;
         }
     }
 
@@ -800,12 +806,16 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
                 iv.addEventFilter(MouseEvent.MOUSE_PRESSED, (
                         final MouseEvent mouseEvent) -> {
-
+                    clicSurCaseLibre = true;
                     PieceHitbox hitbox = new PieceHitbox(p, 0);
                     addPion(p, hitbox); //premier pion du plateau position 0 0
                     //newp.snap(hb);
                     //newp.moveToXY(0, 0);
 
+                });
+                iv.addEventFilter(MouseEvent.MOUSE_RELEASED, (
+                        final MouseEvent mouseEvent) -> {
+                    updateMouseReleasedPiece();
                 });
 
             } else {
@@ -822,14 +832,21 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
                                     iv.addEventFilter(MouseEvent.MOUSE_PRESSED, (
                                             final MouseEvent mouseEvent) -> {
+                                        clicSurCaseLibre = true;
                                         if (p instanceof PionMain) {  //ajout d'un pion depuis la main avec un plateau non vide
                                             addPion(p, hitbox);
                                         } else {  //mise a jour d'un pion deja sur le plateau a une nouvelle position
                                             p.snap(hitbox);
                                             unselectPiece();
                                             hudToFront();
+                                            this.pionDepl = (PionPlateau) p;
                                         }
 
+                                    });
+
+                                    iv.addEventFilter(MouseEvent.MOUSE_RELEASED, (
+                                            final MouseEvent mouseEvent) -> {
+                                        updateMouseReleasedPiece();
                                     });
 
                                     iv.addEventFilter(MouseEvent.MOUSE_ENTERED, (
@@ -862,6 +879,25 @@ public class VueTerrain extends Vue implements ObservateurVue {
         dropShadow.setSpread(0.90);
         dropShadow.setColor(Color.rgb(0, 255, 0, 0.5));
         iv.setEffect(dropShadow);
+    }
+
+    @Override
+    public void updateMouseReleasedPiece() {
+        if (isDragging && !clicSurCaseLibre) {
+            System.out.println("Released Clic Drag");
+        }
+
+        if (clicSurCaseLibre) {
+            System.out.println("Clic action joueur");
+        }
+
+        if (this.pionDepl != null) {
+            System.out.println("---------------------------------");
+            pionDepl.affiche();
+        }
+        this.pionDepl = null;
+        this.isDragging = false;
+        clicSurCaseLibre = false;
     }
 
     private static final class MouseLocation {
@@ -949,12 +985,12 @@ public class VueTerrain extends Vue implements ObservateurVue {
         root.getChildren().add(v);
     }
 
-    public void getPupName(Text tname){
+    public void getPupName(Text tname) {
         Label l = new Label(getLangStr("name"));
         l.setTextFill(Color.WHITE);
         l.prefWidthProperty().bind(primaryStage.widthProperty());
         l.setAlignment(Pos.CENTER);
-        l.setPadding(new Insets(10,0,0,0));
+        l.setPadding(new Insets(10, 0, 0, 0));
         l.setStyle("-fx-background-color : rgba(0, 0, 0, .5);-fx-font-weight: bold;\n-fx-font-size: 1.1em;\n-fx-text-fill: white;");
         Button y = new Button("Ok");
         y.setPrefWidth(150);
@@ -966,15 +1002,15 @@ public class VueTerrain extends Vue implements ObservateurVue {
         tf.setMaxWidth(300);
         hb1.setAlignment(Pos.CENTER);
         hb1.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
-        hb1.setPadding(new Insets(10,0,0,0));
+        hb1.setPadding(new Insets(10, 0, 0, 0));
 
-        HBox h = new HBox(y,n);
+        HBox h = new HBox(y, n);
         h.getStylesheets().add("Vue/button.css");
         h.setSpacing(30);
         h.setAlignment(Pos.CENTER);
         h.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
-        h.setPadding(new Insets(20,0,10,0));
-        VBox v = new VBox(l,hb1,h);
+        h.setPadding(new Insets(20, 0, 10, 0));
+        VBox v = new VBox(l, hb1, h);
         //v.setSpacing(20);
         v.prefWidthProperty().bind(this.primaryStage.widthProperty());
         v.prefHeightProperty().bind(this.primaryStage.heightProperty());
@@ -996,23 +1032,23 @@ public class VueTerrain extends Vue implements ObservateurVue {
         String[] urlImg = new String[20];
         l.setStyle("-fx-font-weight: bold;\n-fx-font-size: 100px;\n-fx-text-fill: white;");
 
-        for (int x = 1; x < 12; x++){
+        for (int x = 1; x < 12; x++) {
             urlImg[x - 1] = "rules/rule" + x + ".png";
         }
 
         ImageView img = new ImageView(new Image(urlImg[i]));
         Button back = new Button(getLangStr("previous"));
         back.setPrefWidth(150);
-        Label nbPage = new Label((i+1) + "/11");
+        Label nbPage = new Label((i + 1) + "/11");
         nbPage.setStyle("-fx-font-weight: bold;\n-fx-font-size: 1.1em;\n-fx-text-fill: white;");
         Button next = new Button(getLangStr("next"));
         next.setPrefWidth(150);
         Button retour = new Button(getLangStr("back"));
 
-        HBox h = new HBox(back,nbPage,next);
+        HBox h = new HBox(back, nbPage, next);
         h.setAlignment(Pos.CENTER);
         h.setSpacing(20);
-        VBox v = new VBox(l,img,h,retour);
+        VBox v = new VBox(l, img, h, retour);
         v.prefHeightProperty().bind(primaryStage.heightProperty());
         v.prefWidthProperty().bind(primaryStage.widthProperty());
         v.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
@@ -1021,11 +1057,11 @@ public class VueTerrain extends Vue implements ObservateurVue {
         v.setSpacing(15);
 
         back.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            img.setImage(changeImg(urlImg,false,nbPage));
+            img.setImage(changeImg(urlImg, false, nbPage));
         });
 
         next.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            img.setImage(changeImg(urlImg,true,nbPage));
+            img.setImage(changeImg(urlImg, true, nbPage));
         });
 
         retour.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
@@ -1036,13 +1072,13 @@ public class VueTerrain extends Vue implements ObservateurVue {
         root.getChildren().add(v);
     }
 
-    private Image changeImg(String[] url, boolean next, Label l){
-        if(next && i<10){
+    private Image changeImg(String[] url, boolean next, Label l) {
+        if (next && i < 10) {
             i++;
-        } else if(!next && i>0){
+        } else if (!next && i > 0) {
             i--;
         }
-        l.setText((i+1) + "/11");
+        l.setText((i + 1) + "/11");
         return new Image(url[i]);
     }
 }
