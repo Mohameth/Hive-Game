@@ -6,7 +6,11 @@
 package Vue;
 
 import Modele.TypeInsecte;
+import javafx.event.EventHandler;
+import javafx.scene.Cursor;
+import javafx.scene.ImageCursor;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 
@@ -37,6 +41,10 @@ public class PionMain extends Piece {
         return nbPions;
     }
 
+    public int getNbPions() {
+        return nbPions;
+    }
+
     @Override
     public void addObserver(ObservateurVue newobserver) {
         this.obs = newobserver;
@@ -59,18 +67,28 @@ public class PionMain extends Piece {
 
     @Override
     public void setOnClicEvent() {
-        this.getImgPion().addEventFilter(MouseEvent.MOUSE_PRESSED, (
-                final MouseEvent mouseEvent) -> {
-            setSelected();
-            notifyListenersMousePressed(this);
-        }
-        );
+        this.getImgPion().addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(final MouseEvent mouseEvent) {
+                if (getNbPions() > 0) {
+                    setSelected();
+                    notifyListenersMousePressed(PionMain.this);
+                } else {
+                    getImgPion().setCursor(new ImageCursor(new Image("notallowed.png")));
 
-        this.getImgPion().addEventFilter(MouseEvent.MOUSE_RELEASED, (
-                final MouseEvent mouseEvent) -> {
-            //unSelect();
-        }
-        );
+                }
+            }
+        });
+
+        this.getImgPion().addEventFilter(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(final MouseEvent mouseEvent) {
+                if (getNbPions() <= 0) {
+                    getImgPion().setCursor(new ImageCursor(new Image("notallowed.png")));
+                }
+            }
+        });
+
     }
 
     @Override

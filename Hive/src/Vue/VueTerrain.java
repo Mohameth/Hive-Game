@@ -139,36 +139,15 @@ public class VueTerrain extends Vue implements ObservateurVue {
     public HashMap<TypeInsecte, Integer> getnbInsect(ArrayList<Insecte> a) {
         HashMap<TypeInsecte, Integer> m = new HashMap<>();
         for (Insecte insecte : a) {
-            TypeInsecte ti = getTypeFromClass(insecte);
+            TypeInsecte ti = insecte.getType();
             if (m.containsKey(ti)) {
                 int v = m.get(ti).intValue() + 1;
-                m.put(getTypeFromClass(insecte), new Integer(v));
+                m.put(ti, new Integer(v));
             } else {
                 m.put(ti, 1);
             }
         }
         return m;
-    }
-
-    public TypeInsecte getTypeFromClass(Insecte i) {
-        if (i instanceof Araignee) {
-            return TypeInsecte.ARAIGNEE;
-        } else if (i instanceof Coccinelle) {
-            return TypeInsecte.COCCINELLE;
-        } else if (i instanceof Fourmi) {
-            return TypeInsecte.FOURMI;
-        } else if (i instanceof Reine) {
-            return TypeInsecte.REINE;
-        } else if (i instanceof Sauterelle) {
-            return TypeInsecte.SAUTERELLE;
-        } else if (i instanceof Scarabee) {
-            return TypeInsecte.SCARABEE;
-        } else if (i instanceof Cloporte) {
-            return TypeInsecte.CLOPORTE;
-        } else if (i instanceof Moustique) {
-            return TypeInsecte.MOUSTIQUE;
-        }
-        return TypeInsecte.ARAIGNEE;
     }
 
     public void hudToFront() {
@@ -382,18 +361,18 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
             HBox hbutton = new HBox();
             hbutton.getStylesheets().add("Vue/button.css");
-            hbutton.getChildren().addAll(load,cancel);
+            hbutton.getChildren().addAll(load, cancel);
             hbutton.setSpacing(10);
             hbutton.setAlignment(Pos.CENTER);
 
             VBox vLoad = new VBox();
-            vLoad.getChildren().addAll(lv,hbutton);
+            vLoad.getChildren().addAll(lv, hbutton);
             vLoad.prefWidthProperty().bind(primaryStage.widthProperty());
             vLoad.prefHeightProperty().bind(primaryStage.heightProperty());
             vLoad.setAlignment(Pos.CENTER);
             vLoad.setSpacing(10);
             vLoad.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
-            lv.setMaxWidth((primaryStage.getWidth()*33)/100);
+            lv.setMaxWidth((primaryStage.getWidth() * 33) / 100);
             lv.getStylesheets().add("Vue/button.css");
 
             cancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
@@ -406,7 +385,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         return pDroite;
     }
 
- public void getPause(){
+    public void getPause() {
         Text t = new Text("PAUSE");
         t.setFont(Font.font(60));
         t.setStyle("-fx-fill: white;\n");
@@ -869,34 +848,35 @@ public class VueTerrain extends Vue implements ObservateurVue {
         public double x, y;
     }
 
-    public ListView<String> getSaveFile(){
+    public ListView<String> getSaveFile() {
         String path = "C:\\Users\\louch\\IdeaProjects\\Projet-HIVE\\Hive\\rsc\\save";
         File rep = new File(path);
         ListView<String> listSaveFile = new ListView<>();
-        for(String s : rep.list())
+        for (String s : rep.list()) {
             listSaveFile.getItems().add(s);
+        }
         return listSaveFile;
     }
 
-    public void getPupExit(){
+    public void getPupExit() {
         Label l = new Label(getLangStr("quitGame"));
         l.setTextFill(Color.WHITE);
         l.prefWidthProperty().bind(primaryStage.widthProperty());
         l.setAlignment(Pos.CENTER);
-        l.setPadding(new Insets(10,0,0,0));
+        l.setPadding(new Insets(10, 0, 0, 0));
         l.setStyle("-fx-background-color : rgba(0, 0, 0, .5);-fx-font-weight: bold;\n-fx-font-size: 1.1em;\n-fx-text-fill: white;");
         Button y = new Button(getLangStr("oui"));
         y.setPrefWidth(150);
         Button n = new Button(getLangStr("non"));
         n.setPrefWidth(150);
 
-        HBox h = new HBox(y,n);
+        HBox h = new HBox(y, n);
         h.getStylesheets().add("Vue/button.css");
         h.setSpacing(30);
         h.setAlignment(Pos.CENTER);
         h.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
-        h.setPadding(new Insets(20,0,10,0));
-        VBox v = new VBox(l,h);
+        h.setPadding(new Insets(20, 0, 10, 0));
+        VBox v = new VBox(l, h);
         //v.setSpacing(20);
         v.prefWidthProperty().bind(this.primaryStage.widthProperty());
         v.prefHeightProperty().bind(this.primaryStage.heightProperty());
@@ -913,25 +893,25 @@ public class VueTerrain extends Vue implements ObservateurVue {
         root.getChildren().add(v);
     }
 
-    public void getPupBackMain(){
+    public void getPupBackMain() {
         Label l = new Label(getLangStr("backMain"));
         l.setTextFill(Color.WHITE);
         l.prefWidthProperty().bind(primaryStage.widthProperty());
         l.setAlignment(Pos.CENTER);
-        l.setPadding(new Insets(10,0,0,0));
+        l.setPadding(new Insets(10, 0, 0, 0));
         l.setStyle("-fx-background-color : rgba(0, 0, 0, .5);-fx-font-weight: bold;\n-fx-font-size: 1.1em;\n-fx-text-fill: white;");
         Button y = new Button(getLangStr("oui"));
         y.setPrefWidth(150);
         Button n = new Button(getLangStr("non"));
         n.setPrefWidth(150);
 
-        HBox h = new HBox(y,n);
+        HBox h = new HBox(y, n);
         h.getStylesheets().add("Vue/button.css");
         h.setSpacing(30);
         h.setAlignment(Pos.CENTER);
         h.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
-        h.setPadding(new Insets(20,0,10,0));
-        VBox v = new VBox(l,h);
+        h.setPadding(new Insets(20, 0, 10, 0));
+        VBox v = new VBox(l, h);
         //v.setSpacing(20);
         v.prefWidthProperty().bind(this.primaryStage.widthProperty());
         v.prefHeightProperty().bind(this.primaryStage.heightProperty());
