@@ -4,6 +4,7 @@ import Modele.Joueur;
 import Modele.Case;
 import Modele.Plateau;
 import Modele.Point3DH;
+import Modele.TypeInsecte;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -13,6 +14,8 @@ public abstract class Insecte {
     private Case emplacement;
 
     public abstract Collection<Case> deplacementPossible(Plateau plateau);
+    
+    public abstract TypeInsecte getType();
 
     public void deplacement(Plateau plat, Point3DH cible) {
         try {
