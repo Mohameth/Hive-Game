@@ -20,12 +20,12 @@ public class VueMenuPrincipal extends Vue {
     private static int NB_LIGNE = 5;
     private static int NB_COL = 5;
     private Group root;
-    private Stage primayStage;
+    private Stage primaryStage;
 
     VueMenuPrincipal(Stage primaryStage) {
         boolean fs = primaryStage.isFullScreen();
 
-        this.primayStage = primaryStage;
+        this.primaryStage = primaryStage;
         root = new Group();
         Scene scene = new Scene(root, primaryStage.getWidth(),primaryStage.getHeight());
         scene.getStylesheets().add("Vue/button.css");
@@ -107,10 +107,10 @@ public class VueMenuPrincipal extends Vue {
         primaryStage.show();
     }
 
-    public void getPupExit(){
+    private void getPupExit(){
         Label l = new Label(getLangStr("quitGame"));
         l.setTextFill(Color.WHITE);
-        l.prefWidthProperty().bind(primayStage.widthProperty());
+        l.prefWidthProperty().bind(primaryStage.widthProperty());
         l.setAlignment(Pos.CENTER);
         l.setPadding(new Insets(10,0,0,0));
         l.setStyle("-fx-background-color : rgba(0, 0, 0, .5);-fx-font-weight: bold;\n-fx-font-size: 1.1em;\n-fx-text-fill: white;");
@@ -126,8 +126,8 @@ public class VueMenuPrincipal extends Vue {
         h.setPadding(new Insets(20,0,10,0));
         VBox v = new VBox(l,h);
         //v.setSpacing(20);
-        v.prefWidthProperty().bind(primayStage.widthProperty());
-        v.prefHeightProperty().bind(primayStage.heightProperty());
+        v.prefWidthProperty().bind(primaryStage.widthProperty());
+        v.prefHeightProperty().bind(primaryStage.heightProperty());
         v.setAlignment(Pos.CENTER);
 
         y.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {

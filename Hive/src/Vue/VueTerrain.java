@@ -1,37 +1,7 @@
 package Vue;
 
-import Modele.Insectes.Araignee;
-import Modele.Insectes.Cloporte;
-import Modele.Insectes.Fourmi;
-import Modele.Insectes.Insecte;
-import Modele.Insectes.Moustique;
-import Modele.Insectes.Reine;
-import Modele.Insectes.Sauterelle;
-import Modele.Insectes.Scarabee;
-import Modele.JoueurHumain;
-import Modele.Plateau;
 import Controleur.Hive;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
-
-import java.util.Optional;
-import javafx.scene.control.Button;
-import java.util.ArrayList;
-import java.util.HashMap;
+import Modele.Insectes.Insecte;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -39,7 +9,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -51,14 +24,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Optional;
 
 public class VueTerrain extends Vue implements ObservateurVue {
 
@@ -76,6 +48,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     private Group root;
     private Stage primaryStage;
+    private int i = 0;
 
     VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs) {
         boolean fs = primaryStage.isFullScreen();
@@ -228,12 +201,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
         //pointJ1.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 3 0 0 0;\n");
         bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            TextInputDialog ti = new TextInputDialog(txt1.getText());
-            ti.setHeaderText("Enter your name");
-            Optional<String> result = ti.showAndWait();
-            if (result.isPresent()) {
-                txt1.setText(result.get());
-            }
+            getPupName(txt1);
         });
 
         String style = "-fx-background-color: rgba(255, 255, 255, 0.2);";
@@ -391,6 +359,11 @@ public class VueTerrain extends Vue implements ObservateurVue {
             root.getChildren().removeAll(menu);
             getPupExit();
         });
+
+         bRules.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+             root.getChildren().removeAll(menu);
+             getRule();
+         });
 
         root.getChildren().addAll(menu);
     }
@@ -923,5 +896,102 @@ public class VueTerrain extends Vue implements ObservateurVue {
             getPause();
         });
         root.getChildren().add(v);
+    }
+
+    public void getPupName(Text tname){
+        Label l = new Label(getLangStr("name"));
+        l.setTextFill(Color.WHITE);
+        l.prefWidthProperty().bind(primaryStage.widthProperty());
+        l.setAlignment(Pos.CENTER);
+        l.setPadding(new Insets(10,0,0,0));
+        l.setStyle("-fx-background-color : rgba(0, 0, 0, .5);-fx-font-weight: bold;\n-fx-font-size: 1.1em;\n-fx-text-fill: white;");
+        Button y = new Button("Ok");
+        y.setPrefWidth(150);
+        Button n = new Button(getLangStr("cancel"));
+        n.setPrefWidth(150);
+
+        TextField tf = new TextField(tname.getText());
+        HBox hb1 = new HBox(tf);
+        tf.setMaxWidth(300);
+        hb1.setAlignment(Pos.CENTER);
+        hb1.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
+        hb1.setPadding(new Insets(10,0,0,0));
+
+        HBox h = new HBox(y,n);
+        h.getStylesheets().add("Vue/button.css");
+        h.setSpacing(30);
+        h.setAlignment(Pos.CENTER);
+        h.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
+        h.setPadding(new Insets(20,0,10,0));
+        VBox v = new VBox(l,hb1,h);
+        //v.setSpacing(20);
+        v.prefWidthProperty().bind(this.primaryStage.widthProperty());
+        v.prefHeightProperty().bind(this.primaryStage.heightProperty());
+        v.setAlignment(Pos.CENTER);
+
+        y.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            tname.setText(tf.getText());
+            root.getChildren().remove(v);
+        });
+
+        n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            root.getChildren().remove(v);
+        });
+        root.getChildren().add(v);
+    }
+
+    private void getRule() {
+        Label l = new Label(getLangStr("rule"));
+        String[] urlImg = new String[20];
+        l.setStyle("-fx-font-weight: bold;\n-fx-font-size: 100px;\n-fx-text-fill: white;");
+
+        for (int x = 1; x < 12; x++){
+            urlImg[x - 1] = "rules/rule" + x + ".png";
+        }
+
+        ImageView img = new ImageView(new Image(urlImg[i]));
+        Button back = new Button(getLangStr("previous"));
+        back.setPrefWidth(150);
+        Label nbPage = new Label((i+1) + "/11");
+        nbPage.setStyle("-fx-font-weight: bold;\n-fx-font-size: 1.1em;\n-fx-text-fill: white;");
+        Button next = new Button(getLangStr("next"));
+        next.setPrefWidth(150);
+        Button retour = new Button(getLangStr("back"));
+
+        HBox h = new HBox(back,nbPage,next);
+        h.setAlignment(Pos.CENTER);
+        h.setSpacing(20);
+        VBox v = new VBox(l,img,h,retour);
+        v.prefHeightProperty().bind(primaryStage.heightProperty());
+        v.prefWidthProperty().bind(primaryStage.widthProperty());
+        v.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
+        v.getStylesheets().add("Vue/button1.css");
+        v.setAlignment(Pos.CENTER);
+        v.setSpacing(15);
+
+        back.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            img.setImage(changeImg(urlImg,false,nbPage));
+        });
+
+        next.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            img.setImage(changeImg(urlImg,true,nbPage));
+        });
+
+        retour.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            root.getChildren().remove(v);
+            getPause();
+        });
+
+        root.getChildren().add(v);
+    }
+
+    private Image changeImg(String[] url, boolean next, Label l){
+        if(next && i<10){
+            i++;
+        } else if(!next && i>0){
+            i--;
+        }
+        l.setText((i+1) + "/11");
+        return new Image(url[i]);
     }
 }
