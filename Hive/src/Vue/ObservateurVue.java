@@ -15,4 +15,6 @@ public interface ObservateurVue {
 
     public void updateMousePressPiece(Piece p);
 
+    public void updateMouseReleasedPiece();
+
 }

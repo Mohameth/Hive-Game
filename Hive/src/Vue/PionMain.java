@@ -37,7 +37,6 @@ public class PionMain extends Piece {
         if (nbPions <= 0) {
             idTextLab.setText("X");
         }
-
         return nbPions;
     }
 
@@ -93,6 +92,11 @@ public class PionMain extends Piece {
 
     @Override
     public void snap(PieceHitbox pm) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void notifyListenersMouseReleased() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
