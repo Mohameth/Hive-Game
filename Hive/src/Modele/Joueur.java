@@ -85,10 +85,10 @@ public abstract class Joueur {
      * @param insecte insecte à placer
      * @param caseCible case où placer l'insecte
      */
-    public void placementInsecte(Insecte insecte, Case caseCible) {
+    public void placementInsecte(Insecte insecte, Point3DH caseCible) {
         try {
             //this.plateau.ajoutInsecte(insecte, caseCible.getCoordonnees());
-            caseCible.addInsecte(insecte);
+            this.plateau.ajoutInsecte(insecte, caseCible);
             this.dernierDeplacement = insecte;
         } catch (Exception ex) {
             Logger.getLogger(Joueur.class.getName()).log(Level.SEVERE, null, ex);

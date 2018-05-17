@@ -82,7 +82,7 @@ public class Hive {
             }
             while (ins.getType() != insecte);
             
-            this.joueurCourant.placementInsecte(ins, this.plateau.getCase(cible));
+            this.joueurCourant.placementInsecte(ins, cible);
             this.joueurSuivant();
         }
 
