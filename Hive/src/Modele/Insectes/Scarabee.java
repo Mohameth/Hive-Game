@@ -45,6 +45,6 @@ public class Scarabee extends Insecte {
 
     @Override
     public String toString() {
-        return "Scarabee";
+        return "Scarabee  ";
     }
 }

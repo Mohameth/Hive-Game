@@ -143,6 +143,6 @@ public class Araignee extends Insecte {
 
     @Override
     public String toString() {
-        return "Araignee";
+        return "Araignee  ";
     }
 }

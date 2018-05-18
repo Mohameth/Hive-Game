@@ -79,6 +79,6 @@ public class Moustique extends Insecte {
 
     @Override
     public String toString() {
-        return "Moustique";
+        return "Moustique ";
     }
 }

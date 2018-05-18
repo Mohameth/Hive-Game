@@ -52,7 +52,7 @@ public class Fourmi extends Insecte {
     
     @Override
     public String toString() {
-        return "Fourmi";
+        return "Fourmi    ";
     }
 
 }
