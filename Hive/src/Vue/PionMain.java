@@ -22,12 +22,26 @@ public class PionMain extends Piece {
 
     private int nbPions;
     private Text idTextLab;
+    private boolean locked;
 
-    public PionMain(TypeInsecte pion, int nbInsect, boolean white, Text idTextLab) {
+    public PionMain(TypeInsecte pion, int nbInsect, boolean white, Text idTextLab, boolean lock) {
         super(pion, white);
         nbPions = nbInsect;
         this.idTextLab = idTextLab;
         setOnClicEvent();
+        locked = lock;
+    }
+
+    public boolean isLocked() {
+        return this.locked;
+    }
+
+    public void setlock() {
+        this.locked = true;
+    }
+
+    public void removelock() {
+        this.locked = false;
     }
 
     public int decrNbPion() {
@@ -69,7 +83,7 @@ public class PionMain extends Piece {
         this.getImgPion().addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(final MouseEvent mouseEvent) {
-                if (getNbPions() > 0) {
+                if (getNbPions() > 0 && !isLocked()) {
                     notifyListenersMousePressed(PionMain.this);
                     setSelected();
                 } else {
@@ -82,7 +96,7 @@ public class PionMain extends Piece {
         this.getImgPion().addEventFilter(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(final MouseEvent mouseEvent) {
-                if (getNbPions() <= 0) {
+                if (getNbPions() <= 0 || isLocked()) {
                     getImgPion().setCursor(new ImageCursor(new Image("notallowed.png")));
                 }
             }
