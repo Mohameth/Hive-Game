@@ -38,7 +38,7 @@ public class JoueurIA extends Joueur {
     		if(insecte.getEmplacement()==null) {
     			ArrayList<Case> casePlacement=plateau.casesVidePlacement(this);
     			if(!casePlacement.isEmpty()) {
-    				insecte.deplacement(plateau,casePlacement.get(r.nextInt(casePlacement.size())).getCoordonnees());
+    				this.plateau.ajoutInsecte(insecte, casePlacement.get(r.nextInt(casePlacement.size())).getCoordonnees());
     				return true;
     			}
     		}else if(this.reinePosee()){

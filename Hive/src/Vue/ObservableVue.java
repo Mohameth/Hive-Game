@@ -16,4 +16,6 @@ public interface ObservableVue {
     public void notifyListenersMove(double deltaX, double deltaY, boolean isBoardMove);
 
     public void notifyListenersMousePressed(Piece p);
+
+    public void notifyListenersMouseReleased();
 }

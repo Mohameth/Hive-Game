@@ -47,6 +47,7 @@ public class Hive {
                     this.joueur2 = new JoueurIA(this.plateau,3, extension); //hard
                 break;
             }
+            this.joueurCourant = this.joueur1;
         }
         
         public boolean appartient(Point3DH caseCible) {
@@ -74,111 +75,44 @@ public class Hive {
                 
         public void joueurPlaceInsecte(TypeInsecte insecte, Point3DH cible) {
             int i = 0; Insecte ins = null;
-            switch (insecte) {
-                case ARAIGNEE:
-                    do {
-                        ins = this.joueurCourant.pionsEnMain().get(i);
-                        i++;
-                    }
-                    while ((ins instanceof Araignee));
-                    break;
-                case CLOPORTE:
-                    do {
-                        ins = this.joueurCourant.pionsEnMain().get(i);
-                        i++;
-                    }
-                    while ((ins instanceof Cloporte));
-                    break;
-                case COCCINELLE:
-                    do {
-                        ins = this.joueurCourant.pionsEnMain().get(i);
-                        i++;
-                    }
-                    while ((ins instanceof Coccinelle));
-                    break;
-                case FOURMI:
-                    do {
-                        ins = this.joueurCourant.pionsEnMain().get(i);
-                        i++;
-                    }
-                    while ((ins instanceof Fourmi));
-                    break;
-                case MOUSTIQUE:
-                    do {
-                        ins = this.joueurCourant.pionsEnMain().get(i);
-                        i++;
-                    }
-                    while ((ins instanceof Moustique));
-                    break;
-                case REINE:
-                    do {
-                        ins = this.joueurCourant.pionsEnMain().get(i);
-                        i++;
-                    }
-                    while ((ins instanceof Reine));
-                    break;
-                case SAUTERELLE:
-                    do {
-                        ins = this.joueurCourant.pionsEnMain().get(i);
-                        i++;
-                    }
-                    while ((ins instanceof Sauterelle));
-                    break;
-                case SCARABEE:
-                    do {
-                        ins = this.joueurCourant.pionsEnMain().get(i);
-                        i++;
-                    }
-                    while ((ins instanceof Scarabee));
-                    break;
+            
+            do {
+                ins = this.joueurCourant.pionsEnMain().get(i);
+                i++;
             }
-            this.joueurCourant.placementInsecte(ins, this.plateau.getCase(cible));
+            while (ins.getType() != insecte);
+            
+            this.joueurCourant.placementInsecte(ins, cible);
             this.joueurSuivant();
         }
 
         
-        private ArrayList<Insecte> pionsPosables() {
-            ArrayList<Insecte> mainJoueur = this.joueurCourant.pionsEnMain(); 
-            
-            if (this.nbtours == 4) {
-                int i = 0; boolean reinePres = false; Insecte reine = null;
-                do {
-                    if (mainJoueur.get(i) instanceof Reine) {
-                        reinePres = true;
-                        reine = mainJoueur.get(i);
-                    }
-                } while (i< mainJoueur.size() && !reinePres);
-                
-                if (reinePres) {
-                    ArrayList<Insecte> res = new ArrayList<>();
-                    res.add(reine);
-                    return res;
-                }
+        public ArrayList<Insecte> mainJoueur(int joueur) {
+            Joueur j = null;
+            switch (joueur) {
+                case(1):
+                    j = this.joueur1;
+                break;
+                case(2):
+                    j = this.joueur2;
+                break;
             }
-            return mainJoueur;
+            return j.pionsEnMain();
         }
         
-        public HashMap<Insecte, Boolean> mainJoueurCourant() {
-            ArrayList<Insecte> posables = this.pionsPosables();
-            ArrayList<Insecte> main = this.joueurCourant.pionsEnMain();
-            HashMap<Insecte, Boolean> res = new HashMap<>();
-
-            if (posables.equals(main)) {
-                for (Insecte ins : main) {
-                    res.put(ins, Boolean.TRUE);
-                }
-            } else {
-                for (Insecte ins : main) {
-                    if (posables.contains(ins)) {
-                        res.put(ins, Boolean.TRUE);
-                    } else {
-                        res.put(ins, Boolean.FALSE);
-                    }
-                }
+        public boolean tousPionsPosables(int joueur) {
+            Joueur j = null;
+            switch (joueur) {
+                case (1):
+                    j = this.joueur1;
+                break;
+                case (2):
+                    j = this.joueur2;
+                break;
             }
-                
-            
-            return res;
+            if (!j.reinePosee() && this.nbtours == 4)
+                    return false;
+            return true;
         }
         
         public ArrayList<Insecte> mainsInit() {
@@ -204,8 +138,16 @@ public class Hive {
         private void joueurSuivant() {
             if (joueurCourant.equals(this.joueur1))
                 this.joueurCourant = this.joueur2;
-            else if (joueurCourant.equals(this.joueur2))
+            else if (joueurCourant.equals(this.joueur2)) {
                 this.joueurCourant = this.joueur1;
+                this.nbtours++;
+            }
         }
+
+        public Joueur getJoueurCourant() {
+            return joueurCourant;
+        }
+        
+        
         
 }

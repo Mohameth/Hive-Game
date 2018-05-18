@@ -50,10 +50,12 @@ public class Plateau implements Observable {
     }
 
     /**
-     * crée les cases voisines de la case origine et les ajoutent dans le plateau
+     * crée les cases voisines de la case origine et les ajoutent dans le
+     * plateau
+     *
      * @param origine case d'origine
      */
-    public void ajoutCase(Point3DH origine) {
+    public void ajoutCasesVoisines(Point3DH origine) {
         for (Point3DH p : origine.coordonneesVoisins()) {
             if (!this.cases.containsKey(p)) {
                 this.cases.put(p, new Case(p));
@@ -71,7 +73,7 @@ public class Plateau implements Observable {
         try {
             this.getCase(position).addInsecte(insecte);
             this.nbPionsEnJeu++;
-            this.ajoutCase(position);
+            this.ajoutCasesVoisines(position);
         } catch (Exception ex) {
             System.err.println("Erreur ajout : " + ex);
         }
@@ -86,7 +88,7 @@ public class Plateau implements Observable {
     public void deplaceInsecte(Insecte insecte, Point3DH position) {
         try {
             this.getCase(position).addInsecte(insecte);
-            this.ajoutCase(position);
+            this.ajoutCasesVoisines(position);
         } catch (Exception ex) {
             System.err.println("Erreur ajout : " + ex);
         }
@@ -98,14 +100,27 @@ public class Plateau implements Observable {
      * @return true si la ruche est vide false sinon
      */
     public boolean rucheVide() {
-        Object[] cases = this.cases.values().toArray();
-        for (int i = 0; i < this.cases.size(); i++) {
-            Case c = (Case) cases[i];
+        for (Case c : this.cases.values()) {
             if (!c.estVide()) {
                 return false;
             }
         }
         return true;
+    }
+
+    /**
+     * indique si la ruche a un seul insecte
+     *
+     * @return true si la ruche a un seul insecte false sinon
+     */
+    public boolean rucheAUninsecte() {
+        int nbNonVide = 0;
+        for (Case c : this.cases.values()) {
+            if (!c.estVide()) {
+                nbNonVide++;
+            }
+        }
+        return nbNonVide == 1;
     }
 
     /**
@@ -161,11 +176,20 @@ public class Plateau implements Observable {
 
     /**
      * Donne les cases où le joueur j peut placer un pions sur le plateau
+     *
      * @param j Joueur voulant placer un pions
-     * @return liste des cases vide sur les quels le joueur j peut placer un pions
+     * @return liste des cases vide sur les quels le joueur j peut placer un
+     * pions
      */
     public ArrayList<Case> casesVidePlacement(Joueur j) {
         ArrayList<Case> res = new ArrayList<>();
+        if (this.rucheVide()) {
+            res.add(this.getCase(new Point3DH(0, 0, 0)));
+            return res;
+        } else if (this.rucheAUninsecte()) {
+            res.addAll(this.getCasesVoisines(this.getCase(new Point3DH(0,0,0)), false));
+            return res;
+        }
         Iterator<Case> it = this.cases.values().iterator();
         boolean joueurAdverse = false;
         while (it.hasNext()) {
@@ -174,7 +198,7 @@ public class Plateau implements Observable {
             if (c.estVide() && !voisins.isEmpty()) {
                 joueurAdverse = false;
                 Iterator<Case> itv = voisins.iterator();
-                while (!joueurAdverse && it.hasNext()) {
+                while (!joueurAdverse && itv.hasNext()) {
                     if (!itv.next().getInsecteOnTop().getJoueur().equals(j)) {
                         joueurAdverse = true;
                     }
@@ -207,9 +231,12 @@ public class Plateau implements Observable {
     }
 
     /**
-     * Donne les cases voisine de c qui sont accessible pour un insecte (sans porte)
+     * Donne les cases voisine de c qui sont accessible pour un insecte (sans
+     * porte)
+     *
      * @param c case de départ
-     * @param exclureCaseOccupee si vraie on enleve les cases occupee par un insecte si faux on donne toute les cases accessibles
+     * @param exclureCaseOccupee si vraie on enleve les cases occupee par un
+     * insecte si faux on donne toute les cases accessibles
      * @return la liste des cases accessibles
      */
     public Collection<Case> getCasesVoisinesAccessibles(Case c, boolean exclureCaseOccupee) {
@@ -234,16 +261,18 @@ public class Plateau implements Observable {
      * ruche
      */
     public boolean glissementPossible(Case c1, Case c2) {
-        if (c1 == null || c2 == null) return false;
+        if (c1 == null || c2 == null) {
+            return false;
+        }
         int nombreCasesAdjacentesNonVide = 0;
         Collection<Case> voisinsC1 = getCasesVoisines(c1, false);
         voisinsC1.remove(c2);
         Collection<Case> voisinsC2 = getCasesVoisines(c2, false);
         voisinsC2.remove(c1);
 
-        for (Case v1 : voisinsC1) {
-            if (voisinsC2.contains(v1)) {
-                if (!v1.estVide()) {
+        for (Case voisinCourant : voisinsC1) {
+            if (voisinsC2.contains(voisinCourant)) {//Voisin en commun de c1 et c2
+                if (!voisinCourant.estVide() && voisinCourant.getNbInsectes() >= c1.getNbInsectes()) {
                     nombreCasesAdjacentesNonVide++;
                 }
             }
@@ -275,34 +304,34 @@ public class Plateau implements Observable {
      *
      * @param ghost case à ignorer
      * @param moveDest case à considérer
-     * @return true si la ruche est brisée après le déplacement
-     * (ghost moveDest) ou sans considérer de déplacement si ghost et moveDest
-     * valent null
+     * @return true si la ruche est brisée après le déplacement (ghost moveDest)
+     * ou sans considérer de déplacement si ghost et moveDest valent null
      */
     public boolean rucheBrisee(Case ghost, Case moveDest) { //Tester aussi avec un compteur de changements
         if (this.rucheVide()) {
             return false;
         }
 
-        Object[] listeCases;
-        //Case c;
         int i = 0;
-        listeCases = this.cases.values().toArray();
+        ArrayList<Case> listeCases = new ArrayList<>(this.cases.values());
         if (ghost == null && moveDest == null) {
             do {
-                moveDest = (Case) listeCases[i];
+                moveDest = listeCases.get(i);
                 i++;
-            } while (i < listeCases.length && (moveDest.estVide()));
+            } while (i < this.cases.values().size() && (moveDest.estVide()));
         }
 
+        //Sauvegarde du ghost et ajout de l'insecte sur moveDest (si moveDest != null)
         Insecte ghostBug = null;
-        if (ghost != null && moveDest != null) {
+        if (ghost != null) {
             ghost = this.getCase(ghost.getCoordonnees());
             ghostBug = ghost.getInsecteOnTop();
             if (ghostBug != null) {
                 try {
                     ghost.removeInsecte();
-                    moveDest.addInsecte(ghostBug);
+                    if (moveDest != null) {
+                        moveDest.addInsecte(ghostBug);
+                    }
                 } catch (Exception e) {
                     System.err.println("ERREUR Ruche brisé debut : " + e);
                 }
@@ -327,10 +356,13 @@ public class Plateau implements Observable {
             }
         }
 
-        if (ghost != null && moveDest != null) {
+        //Restauration du ghost et de moveDest
+        if (ghost != null) {
             if (ghostBug != null) {
                 try {
-                    moveDest.removeInsecte();
+                    if (moveDest != null) {
+                        moveDest.removeInsecte();
+                    }
                     ghost.addInsecte(ghostBug);
                 } catch (Exception e) {
                     System.err.println("ERREUR Ruche brisé fin : " + e);
@@ -346,38 +378,39 @@ public class Plateau implements Observable {
             return false;
         }
         ArrayList<Case> caseOccupe;
-        if (ghost == null) 
-            ghost = this.cases.get(new Point3DH(0,0,0));
-            
+        if (ghost == null) {
+            ghost = this.cases.get(new Point3DH(0, 0, 0));
+        }
+
         if (ghost.estVide()) {
             caseOccupe = (ArrayList<Case>) this.getCasesVoisinesOccupees(ghost);
-        }
-        else {
+        } else {
             caseOccupe = new ArrayList<>();
             caseOccupe.add(ghost);
         }
-        
-        ArrayList<Case> caseOccupe2=new ArrayList<>();
-        if(!caseOccupe.isEmpty())
+
+        ArrayList<Case> caseOccupe2 = new ArrayList<>();
+        if (!caseOccupe.isEmpty()) {
             caseOccupe2.add(caseOccupe.get(0));
+        }
         caseOccupe.clear();
-        
-        while(!caseOccupe2.isEmpty()) {
-        	Case c=caseOccupe2.get(0);
-        	caseOccupe2.remove(c);
-        	if(!caseOccupe.contains(c)) {
-        		caseOccupe.add(c);
-        	}
-        	ArrayList<Case> caseVoisines=(ArrayList<Case>) this.getCasesVoisinesOccupees(c);
-        	for(int i=0;i<caseVoisines.size();i++) {
-        		if(!caseOccupe.contains(caseVoisines.get(i)) && !caseVoisines.get(i).equals(ghost)) {
-        			caseOccupe2.add(caseVoisines.get(i));
-        		}
-        	}
-        	
+
+        while (!caseOccupe2.isEmpty()) {
+            Case c = caseOccupe2.get(0);
+            caseOccupe2.remove(c);
+            if (!caseOccupe.contains(c)) {
+                caseOccupe.add(c);
+            }
+            ArrayList<Case> caseVoisines = (ArrayList<Case>) this.getCasesVoisinesOccupees(c);
+            for (int i = 0; i < caseVoisines.size(); i++) {
+                if (!caseOccupe.contains(caseVoisines.get(i)) && !caseVoisines.get(i).equals(ghost)) {
+                    caseOccupe2.add(caseVoisines.get(i));
+                }
+            }
+
         }
 
-        return caseOccupe.size()!=this.nbPionsEnJeu;
+        return caseOccupe.size() != this.nbPionsEnJeu;
     }
 
     @Override

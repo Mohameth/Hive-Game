@@ -33,7 +33,8 @@ public class VueMenuPrincipal extends Vue {
         Font f = Font.loadFont(getClass().getClassLoader().getResource("FunSized.ttf").toExternalForm(),150);
 
         Label t = new Label("Hive");
-        t.setFont(f);
+        if (f !=  null)
+            t.setFont(f);
         t.setTextFill(Color.WHITE);
 
         BorderPane bp = new BorderPane();
