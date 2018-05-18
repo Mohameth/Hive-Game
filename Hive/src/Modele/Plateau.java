@@ -215,15 +215,11 @@ public class Plateau implements Observable {
                         joueurAdverse = true;
                     }
                 }
-                if (!joueurAdverse) {
+                if (!joueurAdverse && !res.contains(c.getCoordonnees())) {
                     res.add(c.getCoordonnees());
                 }
             }
         }
-        HashSet<Point3DH> retraitDoublons = new HashSet<>();
-        retraitDoublons.addAll(res);
-        res.clear();
-        res.addAll(retraitDoublons);
         return res;
     }
 
