@@ -897,7 +897,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     public ListView<String> getSaveFile() {
-        String path = "C:\\Users\\louch\\IdeaProjects\\Projet-HIVE\\Hive\\rsc\\save";
+        String path = System.getProperty("user.dir").concat("\\save");
         File rep = new File(path);
         ListView<String> listSaveFile = new ListView<>();
         for (String s : rep.list()) {
