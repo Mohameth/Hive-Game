@@ -33,14 +33,14 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Optional;
+import javafx.scene.effect.ColorAdjust;
 import java.util.HashMap;
 import java.util.Map;
 
 public class VueTerrain extends Vue implements ObservateurVue {
 
     private ArrayList<PionPlateau> pieceList;
-    private ArrayList<PionMain> joueurBlanc;
-    private ArrayList<PionMain> joueurNoir;
     private ArrayList<ImageView> hintZones;
     private Hive controleur;
     private Piece currentSelected;
@@ -52,6 +52,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
     private boolean clicSurCaseLibre;
     private PionPlateau pionDepl;
     private Point3DH pionDeplOrigin;
+    private HBox hudCenterPlayer1, hudCenterPlayer2;
+    private ArrayList<PionMain> pionMainPlayer1, pionMainPlayer2;
 
     private Group root;
     private Stage primaryStage;
@@ -68,8 +70,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
         this.isDragging = false;
         this.clicSurCaseLibre = false;
         this.hintZones = new ArrayList<>();
-        this.joueurBlanc = new ArrayList<>(); //todo coordonnée point
-        this.joueurNoir = new ArrayList<>();
+        pionMainPlayer1 = new ArrayList<>();
+        pionMainPlayer2 = new ArrayList<>();
         hudElems = new ArrayList<>();
         this.currentSelected = null; //aucune piece selectionnée
         this.sceneWidth = 1280; //taille de base
@@ -101,7 +103,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
         initInsectes = this.controleur.mainsInit();
 
-        BorderPane playerOne = getHudPlayer(getnbInsect(initInsectes), 1);
+        BorderPane playerOne = getHudPlayer(getnbInsect(initInsectes), 1); //initialisation tout les pions possable
 
         playerOne.minWidthProperty().bind(s.widthProperty());
         playerOne.maxWidthProperty().bind(s.widthProperty());
@@ -121,6 +123,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         //faire au clic passer devant HUD
         hudToFront();
 
+        newTour();
     }
 
     public HashMap<TypeInsecte, Integer> getnbInsect(ArrayList<Insecte> a) {
@@ -128,7 +131,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
         for (Insecte insecte : a) {
             TypeInsecte ti = insecte.getType();
             if (m.containsKey(ti)) {
-                int v = m.get(ti).intValue() + 1;
+                int v;
+                v = m.get(ti).intValue() + 1;
                 m.put(ti, new Integer(v));
             } else {
                 m.put(ti, 1);
@@ -146,8 +150,6 @@ public class VueTerrain extends Vue implements ObservateurVue {
     public void demarrer(Scene s) {
         this.pieceList = new ArrayList<>();
         this.hintZones = new ArrayList<>();
-        this.joueurBlanc = new ArrayList<>(); //todo coordonnée point
-        this.joueurNoir = new ArrayList<>();
         this.currentSelected = null; //aucune piece selectionnée
         this.sceneWidth = 1280; //taille de base
         this.sceneHeight = 720;
@@ -168,14 +170,45 @@ public class VueTerrain extends Vue implements ObservateurVue {
         //addPiece("piontr_black_cloporte.png", root, 0, 0);
     }
 
-    public void updateMainJoueur() { //liste d'insect en param
+    public void newTour() {
+        unselectPiece();
+        updateMainJoueur();
+    }
 
-        //todo
-        //if (ins2.getJoueur().isWhite()) {
-        if (true) {
-            this.joueurBlanc.clear();
-        } else { //mise a jour joueur noir
-            this.joueurNoir.clear();
+    public void updateMainJoueur() { //liste d'insect en param
+        //joueur 1 = blanc
+        //2 = noir
+        ArrayList<Insecte> mainJoueur = new ArrayList<>();
+        System.out.println("----------------------------- NOUVEAU TOUR -----------------------------");
+        if (this.controleur.tourJoueurBlanc()) {
+            System.out.println("joueur blanc peut jouer");
+            System.out.println("Tout Pion Possable" + this.controleur.tousPionsPosables(1));
+            setlock(pionMainPlayer1);  //pour griser les pions
+            removeLock(pionMainPlayer1, this.controleur.tousPionsPosables(1));
+            System.out.println("lock noir");
+            setlock(pionMainPlayer2);
+            System.out.println("----blanc");
+        } else {
+            System.out.println("joueur noir peut jouer");
+            setlock(pionMainPlayer2); //pour griser les pions
+            removeLock(pionMainPlayer2, this.controleur.tousPionsPosables(2));
+            System.out.println("lock blanc");
+            setlock(pionMainPlayer1);
+            System.out.println("----noir");
+        }
+    }
+
+    private void removeLock(ArrayList<PionMain> a, boolean toutPion) {
+        for (PionMain pm : a) {
+            if (toutPion || (pm.getPionsType() == TypeInsecte.REINE)) {
+                pm.removelock();
+            }
+        }
+    }
+
+    private void setlock(ArrayList<PionMain> a) {
+        for (PionMain pm : a) {
+            pm.setlock();
         }
     }
 
@@ -193,43 +226,9 @@ public class VueTerrain extends Vue implements ObservateurVue {
         hName.setAlignment(Pos.CENTER_LEFT);
         hName.getChildren().addAll(bEdit, txt1);
         //hName.setStyle("-fx-background-color:#FFFFFF;");
-
         HBox pointJ1 = new HBox();
 
-        for (Map.Entry<TypeInsecte, Integer> entry : m.entrySet()) {
-            BorderPane bp = new BorderPane();
-            PionMain pm;
-            Text t;
-
-//            if (entry.getValue().intValue() > 1) {
-//                  t = new Text("" + entry.getValue().intValue());
-//            } else {
-//                t = new Text(" ");
-//            }
-            t = new Text("" + entry.getValue().intValue());
-
-            if (numplayer == 2) {
-                pm = new PionMain(entry.getKey(), entry.getValue().intValue(), false, t);
-            } else {
-                pm = new PionMain(entry.getKey(), entry.getValue().intValue(), true, t);
-            }
-            pm.addObserver(this);
-            ImageView imgv = pm.getImgPion();
-            imgv.setFitWidth(imgv.getImage().getWidth() / 4.5);
-            imgv.setFitHeight(imgv.getImage().getHeight() / 4.5);
-
-            t.setFont(Font.font("Verdana", FontWeight.BOLD, 10));
-            t.setFill(Color.WHITE);
-            BorderPane.setAlignment(t, Pos.CENTER);
-            if (numplayer == 2) {
-                bp.setTop(t);
-            } else {
-                bp.setBottom(t);
-            }
-
-            bp.setCenter(imgv);
-            pointJ1.getChildren().add(bp);
-        }
+        pointJ1.getChildren().addAll(genListPionsMain(m, numplayer));
 
         pointJ1.setAlignment(Pos.CENTER);
 
@@ -257,7 +256,6 @@ public class VueTerrain extends Vue implements ObservateurVue {
                 155);
         hName.setMaxWidth(
                 155);
-
         BorderPane b = new BorderPane();
 
         b.setLeft(hName);
@@ -267,6 +265,60 @@ public class VueTerrain extends Vue implements ObservateurVue {
         b.setRight(Space);
 
         return b;
+    }
+
+    public ArrayList<BorderPane> genListPionsMain(HashMap<TypeInsecte, Integer> m, int numplayer) {
+        ArrayList<BorderPane> bps = new ArrayList<>();
+        if (numplayer == 1) {
+            this.pionMainPlayer1.clear();
+        } else {
+            this.pionMainPlayer2.clear();
+        }
+        System.out.println("player: " + numplayer);
+
+        HBox pointJ1 = new HBox();
+        for (Map.Entry<TypeInsecte, Integer> entry : m.entrySet()) {
+            BorderPane bp = new BorderPane();
+            PionMain pm;
+            Text t;
+            int nbPions = entry.getValue().intValue();
+
+            t = new Text("" + nbPions);
+
+            boolean iswhite = false;
+            if (numplayer == 1) {
+                iswhite = true;
+            }
+
+            pm = new PionMain(entry.getKey(), nbPions, iswhite, t, bp);
+
+            pm.addObserver(this);
+            ImageView imgv = pm.getImgPion();
+            imgv.setFitWidth(imgv.getImage().getWidth() / 4.5);
+            imgv.setFitHeight(imgv.getImage().getHeight() / 4.5);
+
+            t.setFont(Font.font("Verdana", FontWeight.BOLD, 10));
+            t.setFill(Color.WHITE);
+            BorderPane.setAlignment(t, Pos.CENTER);
+            if (numplayer == 2) {
+                bp.setTop(t);
+                pionMainPlayer2.add(pm);
+            } else {
+                bp.setBottom(t);
+                pionMainPlayer1.add(pm);
+            }
+
+            bp.setCenter(imgv);
+            bps.add(bp);
+        }
+
+        if (numplayer == 2) {
+            hudCenterPlayer2 = pointJ1;
+        } else {
+            hudCenterPlayer1 = pointJ1;
+        }
+
+        return bps;
     }
 
     private BorderPane getHudDroite() {
@@ -365,10 +417,10 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
         bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             TextField tnom = new TextField("Save");
-            tnom.setStyle("-fx-font-weight: bold;\n" +
-                    "     -fx-font-size: 24px;\n" +
-                    "    -fx-background-color: transparent;\n" +
-                    "    -fx-text-fill : rgb(255,255,255);");
+            tnom.setStyle("-fx-font-weight: bold;\n"
+                    + "     -fx-font-size: 24px;\n"
+                    + "    -fx-background-color: transparent;\n"
+                    + "    -fx-text-fill : rgb(255,255,255);");
             ListView<String> lv = getSaveFile();
             Button load = new Button(getLangStr("save"));
             Button cancel = new Button(getLangStr("cancel"));
@@ -383,7 +435,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
             hbutton.setAlignment(Pos.CENTER);
 
             VBox vLoad = new VBox();
-            vLoad.getChildren().addAll(htextin,lv, hbutton);
+            vLoad.getChildren().addAll(htextin, lv, hbutton);
             vLoad.prefWidthProperty().bind(primaryStage.widthProperty());
             vLoad.prefHeightProperty().bind(primaryStage.heightProperty());
             vLoad.setAlignment(Pos.CENTER);
@@ -457,7 +509,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         });
 
         bSettings.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            VueSettings v = new VueSettings(primaryStage,true,root);
+            VueSettings v = new VueSettings(primaryStage, true, root);
             root.getChildren().add(v.getSetting());
         });
 
@@ -608,6 +660,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     private void unselectPiece() {
         if (this.currentSelected != null) {
             this.currentSelected.unSelect();
+            this.currentSelected = null;
         }
         removeHint();
     }
@@ -822,13 +875,13 @@ public class VueTerrain extends Vue implements ObservateurVue {
             hudToFront();
 
             this.controleur.joueurPlaceInsecte(p.getPionsType(), new Point3DH(hitbox.getX(), hitbox.getY(), hitbox.getZ()));
+            newTour();
 
             this.pionDepl = null;
             this.isDragging = false;
             clicSurCaseLibre = false;
             pionDeplOrigin = null;
 
-            updateMainJoueur();
         }
     }
 
@@ -932,6 +985,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
             this.isDragging = false;
             clicSurCaseLibre = false;
             pionDeplOrigin = null;
+            //newTour();
         }
     }
 

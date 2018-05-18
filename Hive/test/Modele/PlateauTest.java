@@ -591,22 +591,22 @@ public class PlateauTest {
         Reine reine = new Reine(new JoueurHumain(instance, true));
 
         System.out.println("test sur une ruche venant d'être créé :");
-        assertFalse(instance.rucheAUninsecte());
+        assertFalse(instance.rucheAUnSeulInsecte());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
         System.out.println("test avec un insecte a l'origine :");
         instance.ajoutInsecte(reine, orig);
-        assertTrue(instance.rucheAUninsecte());
+        assertTrue(instance.rucheAUnSeulInsecte());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
         System.out.println("test avec deux insectes :");
         instance.ajoutInsecte(reine, orig.voisinBas());
-        assertFalse(instance.rucheAUninsecte());
+        assertFalse(instance.rucheAUnSeulInsecte());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
         System.out.println("test avec trois insectes :");
         instance.ajoutInsecte(reine, orig.voisinHaut());
-        assertFalse(instance.rucheAUninsecte());
+        assertFalse(instance.rucheAUnSeulInsecte());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
         System.out.println("");

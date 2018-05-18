@@ -36,7 +36,11 @@ public class JoueurIA extends Joueur {
     	do {
     		insecte=this.getPions().get(r.nextInt(this.getPions().size()));
     		if(insecte.getEmplacement()==null) {
-    			ArrayList<Case> casePlacement=plateau.casesVidePlacement(this);
+    			ArrayList<Point3DH> coordPlacement = plateau.casesVidePlacement(this);
+                        ArrayList<Case> casePlacement = new ArrayList<>();
+                        for (Point3DH p : coordPlacement) {
+                            casePlacement.add(this.plateau.getCase(p));
+                        }
     			if(!casePlacement.isEmpty()) {
     				this.plateau.ajoutInsecte(insecte, casePlacement.get(r.nextInt(casePlacement.size())).getCoordonnees());
     				return true;

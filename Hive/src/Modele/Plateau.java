@@ -4,6 +4,7 @@ import Modele.Insectes.Insecte;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -113,7 +114,7 @@ public class Plateau implements Observable {
      *
      * @return true si la ruche a un seul insecte false sinon
      */
-    public boolean rucheAUninsecte() {
+    public boolean rucheAUnSeulInsecte() {
         int nbNonVide = 0;
         for (Case c : this.cases.values()) {
             if (!c.estVide()) {
@@ -192,13 +193,13 @@ public class Plateau implements Observable {
      * @return liste des cases vide sur les quels le joueur j peut placer un
      * pions
      */
-    public ArrayList<Case> casesVidePlacement(Joueur j) {
-        ArrayList<Case> res = new ArrayList<>();
+    public ArrayList<Point3DH> casesVidePlacement(Joueur j) {
+        ArrayList<Point3DH> res = new ArrayList<>();
         if (this.rucheVide()) {
-            res.add(this.getCase(new Point3DH(0, 0, 0)));
+            res.add(new Point3DH(0,0,0));
             return res;
-        } else if (this.rucheAUninsecte()) {
-            res.addAll(this.getCasesVoisines(this.getCase(new Point3DH(0,0,0)), false));
+        } else if (this.rucheAUnSeulInsecte()) {
+            res.addAll(new Point3DH(0,0,0).coordonneesVoisins());
             return res;
         }
         Iterator<Case> it = this.cases.values().iterator();
@@ -215,10 +216,14 @@ public class Plateau implements Observable {
                     }
                 }
                 if (!joueurAdverse) {
-                    res.add(c);
+                    res.add(c.getCoordonnees());
                 }
             }
         }
+        HashSet<Point3DH> retraitDoublons = new HashSet<>();
+        retraitDoublons.addAll(res);
+        res.clear();
+        res.addAll(retraitDoublons);
         return res;
     }
 
