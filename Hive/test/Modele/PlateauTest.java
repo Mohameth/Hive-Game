@@ -525,53 +525,53 @@ public class PlateauTest {
         j1.pions.add(reinej1);
         j2.pions.add(reinej2);
 
-        ArrayList<Case> expectedj1;
-        ArrayList<Case> expectedj2;
-        ArrayList<Case> resj1;
-        ArrayList<Case> resj2;
+        ArrayList<Point3DH> expectedj1;
+        ArrayList<Point3DH> expectedj2;
+        ArrayList<Point3DH> resj1;
+        ArrayList<Point3DH> resj2;
 
         System.out.println("test sur une ruche venant d'être créé :");
         expectedj1 = new ArrayList<>();
-        expectedj1.add(new Case(orig));
+        expectedj1.add(orig);
         expectedj2 = new ArrayList<>();
-        expectedj2.add(new Case(orig));
+        expectedj2.add(orig);
         resj1 = instance.casesVidePlacement(j1);
         resj2 = instance.casesVidePlacement(j2);
 
-        arrayCorresponds(resj1, expectedj1);
-        arrayCorresponds(resj2, expectedj2);
+        arrayCorrespondsp(resj1, expectedj1);
+        arrayCorrespondsp(resj2, expectedj2);
 
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
         System.out.println("test sur avec l'insecte de j1 à l'origine :");
         instance.ajoutInsecte(reinej1, orig);
         expectedj1 = new ArrayList<>();
-        expectedj1.addAll(instance.getCasesVoisines(new Case(orig), false));
+        expectedj1.addAll(orig.coordonneesVoisins());
         expectedj2 = new ArrayList<>();
-        expectedj2.addAll(instance.getCasesVoisines(new Case(orig), false));
+        expectedj2.addAll(orig.coordonneesVoisins());
         resj1 = instance.casesVidePlacement(j1);
         resj2 = instance.casesVidePlacement(j2);
 
-        arrayCorresponds(resj1, expectedj1);
-        arrayCorresponds(resj2, expectedj2);
+        arrayCorrespondsp(resj1, expectedj1);
+        arrayCorrespondsp(resj2, expectedj2);
 
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
         System.out.println("test sur avec l'insecte de j1 à l'origine et j2 en bas:");
         instance.ajoutInsecte(reinej2, orig.voisinBas());
         expectedj1 = new ArrayList<>();
-        expectedj1.add(new Case(orig.voisinDroiteHaut()));
-        expectedj1.add(new Case(orig.voisinGaucheHaut()));
-        expectedj1.add(new Case(orig.voisinHaut()));
+        expectedj1.add(orig.voisinDroiteHaut());
+        expectedj1.add(orig.voisinGaucheHaut());
+        expectedj1.add(orig.voisinHaut());
         expectedj2 = new ArrayList<>();
-        expectedj2.add(new Case(orig.voisinBas().voisinBas()));
-        expectedj2.add(new Case(orig.voisinBas().voisinDroiteBas()));
-        expectedj2.add(new Case(orig.voisinBas().voisinGaucheBas()));;
+        expectedj2.add(orig.voisinBas().voisinBas());
+        expectedj2.add(orig.voisinBas().voisinDroiteBas());
+        expectedj2.add(orig.voisinBas().voisinGaucheBas());;
         resj1 = instance.casesVidePlacement(j1);
         resj2 = instance.casesVidePlacement(j2);
 
-        arrayCorresponds(resj1, expectedj1);
-        arrayCorresponds(resj2, expectedj2);
+        arrayCorrespondsp(resj1, expectedj1);
+        arrayCorrespondsp(resj2, expectedj2);
 
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
@@ -610,5 +610,15 @@ public class PlateauTest {
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
         System.out.println("");
+    }
+    
+    private void arrayCorrespondsp(ArrayList<Point3DH> result, ArrayList<Point3DH> Expected) {
+        assertTrue(Expected.size() == result.size());
+        for (Point3DH c : result) {
+            assertTrue(Expected.contains(c));
+            Expected.remove(c);
+        }
+
+        assertTrue(Expected.isEmpty());
     }
 }
