@@ -100,14 +100,27 @@ public class Plateau implements Observable {
      * @return true si la ruche est vide false sinon
      */
     public boolean rucheVide() {
-        Object[] cases = this.cases.values().toArray();
-        for (int i = 0; i < this.cases.size(); i++) {
-            Case c = (Case) cases[i];
+        for (Case c : this.cases.values()) {
             if (!c.estVide()) {
                 return false;
             }
         }
         return true;
+    }
+
+    /**
+     * indique si la ruche a un seul insecte
+     *
+     * @return true si la ruche a un seul insecte false sinon
+     */
+    public boolean rucheAUninsecte() {
+        int nbNonVide = 0;
+        for (Case c : this.cases.values()) {
+            if (!c.estVide()) {
+                nbNonVide++;
+            }
+        }
+        return nbNonVide == 1;
     }
 
     /**
@@ -173,6 +186,9 @@ public class Plateau implements Observable {
         if (this.rucheVide()) {
             res.add(this.getCase(new Point3DH(0, 0, 0)));
             return res;
+        } else if (this.rucheAUninsecte()) {
+            res.addAll(this.getCasesVoisines(this.getCase(new Point3DH(0,0,0)), false));
+            return res;
         }
         Iterator<Case> it = this.cases.values().iterator();
         boolean joueurAdverse = false;
@@ -182,7 +198,7 @@ public class Plateau implements Observable {
             if (c.estVide() && !voisins.isEmpty()) {
                 joueurAdverse = false;
                 Iterator<Case> itv = voisins.iterator();
-                while (!joueurAdverse && it.hasNext()) {
+                while (!joueurAdverse && itv.hasNext()) {
                     if (!itv.next().getInsecteOnTop().getJoueur().equals(j)) {
                         joueurAdverse = true;
                     }
