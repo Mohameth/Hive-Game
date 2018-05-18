@@ -1,11 +1,9 @@
 package Vue;
 
-import Modele.Insectes.*;
 import Controleur.Hive;
-import Modele.*;
+import Modele.Insectes.Insecte;
+import Modele.Point3DH;
 import Modele.TypeInsecte;
-import java.util.HashMap;
-import java.util.Map;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -35,7 +33,8 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 public class VueTerrain extends Vue implements ObservateurVue {
 
@@ -356,6 +355,50 @@ public class VueTerrain extends Vue implements ObservateurVue {
             vLoad.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
             lv.setMaxWidth((primaryStage.getWidth() * 33) / 100);
             lv.getStylesheets().add("Vue/button.css");
+
+            cancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
+                root.getChildren().removeAll(vLoad);
+            });
+
+            root.getChildren().addAll(vLoad);
+        });
+
+        bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            TextField tnom = new TextField("Save");
+            tnom.setStyle("-fx-font-weight: bold;\n" +
+                    "     -fx-font-size: 24px;\n" +
+                    "    -fx-background-color: transparent;\n" +
+                    "    -fx-text-fill : rgb(255,255,255);");
+            ListView<String> lv = getSaveFile();
+            Button load = new Button(getLangStr("save"));
+            Button cancel = new Button(getLangStr("cancel"));
+
+            HBox htextin = new HBox(tnom);
+            htextin.setAlignment(Pos.CENTER);
+
+            HBox hbutton = new HBox();
+            hbutton.getStylesheets().add("Vue/button.css");
+            hbutton.getChildren().addAll(load, cancel);
+            hbutton.setSpacing(10);
+            hbutton.setAlignment(Pos.CENTER);
+
+            VBox vLoad = new VBox();
+            vLoad.getChildren().addAll(htextin,lv, hbutton);
+            vLoad.prefWidthProperty().bind(primaryStage.widthProperty());
+            vLoad.prefHeightProperty().bind(primaryStage.heightProperty());
+            vLoad.setAlignment(Pos.CENTER);
+            vLoad.setSpacing(10);
+            vLoad.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
+            lv.setMaxWidth((primaryStage.getWidth() * 33) / 100);
+            tnom.setMaxWidth((primaryStage.getWidth() * 33) / 100);
+            lv.getStylesheets().add("Vue/button.css");
+
+            lv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                    tnom.setText(newValue);
+                }
+            });
 
             cancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
                 root.getChildren().removeAll(vLoad);
@@ -898,7 +941,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     public ListView<String> getSaveFile() {
-        String path = System.getProperty("user.dir").concat("\\save");
+        String path = System.getProperty("user.dir").concat("\\Hive\\rsc\\save");
+        System.out.println(path);
         File rep = new File(path);
         ListView<String> listSaveFile = new ListView<>();
         for (String s : rep.list()) {
