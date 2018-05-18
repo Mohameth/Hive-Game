@@ -66,6 +66,16 @@ public class Hive {
         return true;
     }
 
+    public ArrayList<Point3DH> deplacementsPossibles(Point3DH insecte) {
+        ArrayList<Case> cases = (ArrayList) this.plateau.getCase(insecte).getInsecteOnTop().deplacementPossible(plateau);
+        ArrayList<Point3DH> res = new ArrayList<>();
+        for (Case c : cases) {
+            if (!res.contains(c.getCoordonnees()))
+                res.add(c.getCoordonnees());
+        }
+        return res;
+    }
+    
     public ArrayList<Point3DH> placementsPossibles() {
         return this.plateau.casesVidePlacement(this.joueurCourant);
     }
