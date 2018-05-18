@@ -37,6 +37,8 @@ public abstract class Joueur {
      */
     protected Insecte dernierDeplacement;
 
+    protected int tourJoueur;
+    
     /**
      * Coup d'un joueur
      *
@@ -50,7 +52,7 @@ public abstract class Joueur {
         this.plateau = p;
         this.dernierDeplacement = null;
         this.pions = new ArrayList<>(); //On rentrera tous les pions ici
-
+        this.tourJoueur = 1;
         this.initInsectes(extensions);
     }
 
@@ -65,7 +67,7 @@ public abstract class Joueur {
         do {
             reine = this.pions.get(i);
             i++;
-        } while (i < this.pions.size() && (!(reine.getType() != TypeInsecte.REINE)));
+        } while (i < this.pions.size() && ((reine.getType() != TypeInsecte.REINE)));
         if (reine.getEmplacement() == null) {
             return false;
         }
@@ -80,7 +82,7 @@ public abstract class Joueur {
             do {
                 reine = this.pions.get(i);
                 i++;
-            } while (i < this.pions.size() && (!(reine.getType() != TypeInsecte.REINE)));
+            } while (i < this.pions.size() && ((reine.getType() != TypeInsecte.REINE)));
 
             return plateau.getCasesVoisinesOccupees(reine.getEmplacement()).size() == 6;
         } else {
@@ -114,6 +116,7 @@ public abstract class Joueur {
             //this.plateau.ajoutInsecte(insecte, caseCible.getCoordonnees());
             this.plateau.ajoutInsecte(insecte, caseCible);
             this.dernierDeplacement = insecte;
+            this.tourJoueur++;
         } catch (Exception ex) {
             Logger.getLogger(Joueur.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -149,5 +152,17 @@ public abstract class Joueur {
         }
 
     }
+    
+    public boolean tousPionsPosables() {
+        if (!this.reinePosee() && this.tourJoueur == 4)
+                return false;
+        return true;
+    }
 
+    public int getTourJoueur() {
+        return tourJoueur;
+    }
+
+    
+    
 }

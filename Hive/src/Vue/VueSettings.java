@@ -4,6 +4,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.*;
@@ -24,12 +25,31 @@ public class VueSettings extends Vue {
 
     private static int NB_LIGNE = 3;
     private static int NB_COL = 7;
+    Stage primaryStage;
+    boolean inGame;
+    Group root;
+    GridPane g;
 
     VueSettings(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+        this.inGame = false;
+
         boolean fs = primaryStage.isFullScreen();
-        GridPane g = new GridPane();
-        Scene s = new Scene(g, primaryStage.getWidth(), primaryStage.getHeight());
+        Scene s = new Scene(getSetting(), primaryStage.getWidth(), primaryStage.getHeight());
         s.getStylesheets().add("Vue/button1.css");
+        primaryStage.setScene(s);
+        primaryStage.setFullScreen(fs);
+        primaryStage.show();
+    }
+
+    VueSettings(Stage primaryStage, boolean inGame, Group root){
+        this.inGame = inGame;
+        this.root = root;
+        this.primaryStage = primaryStage;
+    }
+
+    public GridPane getSetting(){
+        g = new GridPane();
 
         for (int column = 0; column < NB_COL; column++) {
             g.getColumnConstraints().add(new ColumnConstraints(primaryStage.getWidth() / NB_COL, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, HPos.LEFT, true));
@@ -41,21 +61,21 @@ public class VueSettings extends Vue {
 
         g.getRowConstraints().get(1).setMinHeight((primaryStage.getHeight() / NB_LIGNE) / 2);
         VBox solo = getSolo();
-        VBox multi = getMulti();;
+        VBox multi = getMulti();
+        GridPane all = getAll();
         g.add(solo, 2, 0, 3, 1);
-        g.add(getAll(primaryStage), 2, 2, 3, 1);
+        g.add(all, 2, 2, 3, 1);
         g.add(multi, 2, 1, 3, 1);
 
-        g.prefHeightProperty().bind(s.heightProperty());
-        g.prefWidthProperty().bind(s.widthProperty());
+        g.prefHeightProperty().bind(primaryStage.heightProperty());
+        g.prefWidthProperty().bind(primaryStage.widthProperty());
         g.setStyle("-fx-background-image: url(background.jpg);");
+        g.getStylesheets().add("Vue/button1.css");
 
-        primaryStage.setScene(s);
-        primaryStage.setFullScreen(fs);
-        primaryStage.show();
+        return g;
     }
 
-    private GridPane getAll(Stage primaryStage) {
+    private GridPane getAll() {
         GridPane gAll = new GridPane();
         for (int column = 0; column < 2; column++) {
             gAll.getColumnConstraints().add(new ColumnConstraints((primaryStage.getWidth() / NB_COL), Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, HPos.LEFT, true));
@@ -111,8 +131,13 @@ public class VueSettings extends Vue {
         Button bSave = new Button(getLangStr("saveGame"));
 
         bCancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            SceneMain(primaryStage);
+            if(!inGame)
+                SceneMain(primaryStage);
+            else {
+                root.getChildren().remove(g);
+            }
         });
+
 
         bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             if (chb.isSelected()) {
@@ -137,7 +162,7 @@ public class VueSettings extends Vue {
         });
 
         HBox hb5 = new HBox();
-        if (true) {
+        if (this.inGame) {
             hb5.getChildren().add(bSave);
         }
         hb5.getChildren().addAll(bCancel, bSaveDef);

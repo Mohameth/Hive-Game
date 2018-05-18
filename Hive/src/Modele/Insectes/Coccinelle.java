@@ -64,4 +64,8 @@ public class Coccinelle extends Insecte {
         return TypeInsecte.COCCINELLE;
     }
 
+    @Override
+    public String toString() {
+        return "Coccinelle";
+    }
 }
