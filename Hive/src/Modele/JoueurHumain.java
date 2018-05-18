@@ -17,6 +17,7 @@ public class JoueurHumain extends Joueur {
     public boolean coup(Insecte insecte, Point3DH cible) {
         if (this.pions.contains(insecte) && insecte.deplacementPossible(plateau).contains(this.plateau.getCase(cible))) {
             insecte.deplacement(plateau, cible);
+            this.tourJoueur++;
             return true;
         }
         return false;
