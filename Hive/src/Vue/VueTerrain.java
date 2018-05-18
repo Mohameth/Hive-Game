@@ -658,13 +658,9 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     private void unselectPiece() {
-//        System.out.println("unselect");
-//        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-//        for (StackTraceElement stackTraceElement : stackTraceElements) {
-//            System.out.println(stackTraceElement);
-//        }
         if (this.currentSelected != null) {
             this.currentSelected.unSelect();
+            this.currentSelected = null;
         }
         removeHint();
     }
@@ -676,6 +672,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
             lastMouseLocation.x = mouseEvent.getSceneX(); //sauvegarde des coordonnées initial de la souris
             lastMouseLocation.y = mouseEvent.getSceneY();
             removeHint();
+            unselectPiece();
         });
 
         // --- Shift node calculated from mouse cursor movement
