@@ -39,4 +39,9 @@ public class Cloporte extends Insecte {
         return TypeInsecte.CLOPORTE;
     }
     
+    @Override
+    public String toString() {
+        return "Cloporte";
+    }
+    
 }

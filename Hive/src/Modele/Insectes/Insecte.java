@@ -56,4 +56,8 @@ public abstract class Insecte {
         return hash;
     }
 
+    @Override
+    public String toString() {
+        return "Insecte";
+    }
 }

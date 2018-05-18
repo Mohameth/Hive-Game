@@ -141,4 +141,8 @@ public class Araignee extends Insecte {
        return TypeInsecte.ARAIGNEE;
     }
 
+    @Override
+    public String toString() {
+        return "Araignee";
+    }
 }

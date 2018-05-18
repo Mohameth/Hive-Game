@@ -67,7 +67,7 @@ public abstract class Joueur {
         do {
             reine = this.pions.get(i);
             i++;
-        } while (i < this.pions.size() && (!(reine.getType() != TypeInsecte.REINE)));
+        } while (i < this.pions.size() && ((reine.getType() != TypeInsecte.REINE)));
         if (reine.getEmplacement() == null) {
             return false;
         }
@@ -82,7 +82,7 @@ public abstract class Joueur {
             do {
                 reine = this.pions.get(i);
                 i++;
-            } while (i < this.pions.size() && (!(reine.getType() != TypeInsecte.REINE)));
+            } while (i < this.pions.size() && ((reine.getType() != TypeInsecte.REINE)));
 
             return plateau.getCasesVoisinesOccupees(reine.getEmplacement()).size() == 6;
         } else {

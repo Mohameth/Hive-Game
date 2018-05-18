@@ -47,4 +47,8 @@ public class Reine extends Insecte {
         return TypeInsecte.REINE;
     }
 
+    @Override
+    public String toString() {
+        return "Reine";
+    }
 }
