@@ -43,4 +43,8 @@ public class Scarabee extends Insecte {
         return TypeInsecte.SCARABEE;
     }
 
+    @Override
+    public String toString() {
+        return "Scarabee";
+    }
 }

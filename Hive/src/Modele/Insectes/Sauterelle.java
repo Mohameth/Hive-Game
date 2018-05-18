@@ -121,4 +121,8 @@ public class Sauterelle extends Insecte {
         return TypeInsecte.SAUTERELLE;
     }
 
+    @Override
+    public String toString() {
+        return "Sauterelle";
+    }
 }

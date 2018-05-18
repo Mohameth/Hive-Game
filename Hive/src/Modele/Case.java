@@ -121,6 +121,10 @@ public class Case {
     
     @Override
     public String toString() {
-        return "Case[" + coordonnees + ']';
+        String res = "Case[" + coordonnees + ']' + ":\n";
+        for (Insecte i : this.insectes) {
+            res += "\t " + i.toString() + "\n";
+        }
+        return res;
     }
 }

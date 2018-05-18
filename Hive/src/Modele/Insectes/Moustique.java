@@ -77,4 +77,8 @@ public class Moustique extends Insecte {
         return TypeInsecte.MOUSTIQUE;
     }
 
+    @Override
+    public String toString() {
+        return "Moustique";
+    }
 }

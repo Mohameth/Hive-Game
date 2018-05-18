@@ -5,6 +5,7 @@ import Modele.Joueur;
 import Modele.Plateau;
 import Modele.Point3DH;
 import Modele.TypeInsecte;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,7 +19,7 @@ public class Fourmi extends Insecte {
     
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
-        LinkedList<Case> result = new LinkedList<>();
+        ArrayList<Case> result = new ArrayList<>();
         LinkedList<Case> toCheck = new LinkedList<>();
         
         result.addAll(plateau.getCasesVoisinesAccessibles(this.getEmplacement(), true));
@@ -47,6 +48,11 @@ public class Fourmi extends Insecte {
     @Override
     public TypeInsecte getType() {
         return TypeInsecte.FOURMI;
+    }
+    
+    @Override
+    public String toString() {
+        return "Fourmi";
     }
 
 }

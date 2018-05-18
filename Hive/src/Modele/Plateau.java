@@ -430,4 +430,9 @@ public class Plateau implements Observable {
         this.observateur.coupJoue(this);
     }
 
+    public void afficherGrille() {
+        for (Case c : this.cases.values()){
+            System.out.println(c.toString());
+        }
+    }
 }
