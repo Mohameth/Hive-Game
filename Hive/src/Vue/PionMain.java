@@ -6,13 +6,19 @@
 package Vue;
 
 import Modele.TypeInsecte;
+import javafx.animation.AnimationTimer;
+import javafx.animation.FadeTransition;
+import javafx.animation.ScaleTransition;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 /**
  *
@@ -23,13 +29,20 @@ public class PionMain extends Piece {
     private int nbPions;
     private Text idTextLab;
     private boolean locked;
+    private BorderPane bp;
 
-    public PionMain(TypeInsecte pion, int nbInsect, boolean white, Text idTextLab, boolean lock) {
+    public PionMain(TypeInsecte pion, int nbInsect, boolean white, Text idTextLab, BorderPane bPane) {
         super(pion, white);
+        bp = bPane;
         nbPions = nbInsect;
         this.idTextLab = idTextLab;
         setOnClicEvent();
-        locked = lock;
+        locked = true;
+    }
+
+    public void cleanBorPane() {
+        //this.bp.getChildren().clear();
+        this.bp.setVisible(false);
     }
 
     public boolean isLocked() {
@@ -37,10 +50,15 @@ public class PionMain extends Piece {
     }
 
     public void setlock() {
+        ColorAdjust colorAdjust = new ColorAdjust();
+        colorAdjust.setSaturation(-1);
+        colorAdjust.setBrightness(-0.2);
+        getImgPion().setEffect(colorAdjust);
         this.locked = true;
     }
 
     public void removelock() {
+        getImgPion().setEffect(null);
         this.locked = false;
     }
 
@@ -50,6 +68,8 @@ public class PionMain extends Piece {
 
         if (nbPions <= 0) {
             idTextLab.setText("X");
+            cleanBorPane();
+
         }
         return nbPions;
     }
@@ -75,7 +95,7 @@ public class PionMain extends Piece {
 
     @Override
     public void affiche() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("NbPions: " + this.nbPions + " Type: " + this.getPionsType() + " Locked: " + this.locked + " IsWhite: " + isWhite());
     }
 
     @Override
@@ -98,6 +118,8 @@ public class PionMain extends Piece {
             public void handle(final MouseEvent mouseEvent) {
                 if (getNbPions() <= 0 || isLocked()) {
                     getImgPion().setCursor(new ImageCursor(new Image("notallowed.png")));
+                } else {
+                    getImgPion().setCursor(Cursor.HAND);
                 }
             }
         });
