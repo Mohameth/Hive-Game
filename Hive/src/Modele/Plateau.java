@@ -443,7 +443,8 @@ public class Plateau implements Observable {
 
     public void afficherGrille() {
         for (Case c : this.cases.values()){
-            System.out.println(c.toString());
+            if (!c.estVide())
+                System.out.println(c.toString());
         }
     }
 }

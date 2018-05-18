@@ -5,6 +5,7 @@
  */
 package IA;
 
+import Modele.Insectes.Insecte;
 import Modele.JoueurHumain;
 import Modele.JoueurIA;
 import Modele.Plateau;
@@ -49,7 +50,19 @@ public class TestIA {
             System.out.println("match NULL");
         }
         
-        plateau.afficherGrille();
+        System.out.println("Pions du J1 :");
+        for (Insecte i : joueur1.getPions()) {
+            if(i.getEmplacement() != null)
+                System.out.println(i.getEmplacement().toString());
+        }
+        
+        System.out.println("Pions de J2 :");
+        for (Insecte i : joueur2.getPions()) {
+            if(i.getEmplacement() != null)
+                System.out.println(i.getEmplacement().toString());
+        }
+        
+        String espace = "         ";
+        
     }
-
 }

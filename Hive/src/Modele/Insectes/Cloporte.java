@@ -41,7 +41,7 @@ public class Cloporte extends Insecte {
     
     @Override
     public String toString() {
-        return "Cloporte";
+        return "Cloporte  ";
     }
     
 }
