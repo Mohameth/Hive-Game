@@ -721,7 +721,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         unselectPiece();
         this.currentSelected = p;
         if (p instanceof PionPlateau) {
-            pionDeplOrigin = new Point3DH(((PionPlateau) p).getX(), ((PionPlateau) p).getY(), ((PionPlateau) p).getZ());
+            this.pionDeplOrigin = new Point3DH(((PionPlateau) p).getX(), ((PionPlateau) p).getY(), ((PionPlateau) p).getZ());
         }
         displayLibre(p);
         p.getImgPion().toFront();
@@ -774,8 +774,14 @@ public class VueTerrain extends Vue implements ObservateurVue {
             newp.snap(hitbox);
             unselectPiece();
             hudToFront();
-            this.pionDepl = newp;
+
             this.controleur.joueurPlaceInsecte(p.getPionsType(), new Point3DH(hitbox.getX(), hitbox.getY(), hitbox.getZ()));
+
+            this.pionDepl = null;
+            this.isDragging = false;
+            clicSurCaseLibre = false;
+            pionDeplOrigin = null;
+
             updateMainJoueur();
         }
     }
@@ -796,10 +802,6 @@ public class VueTerrain extends Vue implements ObservateurVue {
                     //newp.snap(hb);
                     //newp.moveToXY(0, 0);
 
-                });
-                iv.addEventFilter(MouseEvent.MOUSE_RELEASED, (
-                        final MouseEvent mouseEvent) -> {
-                    updateMouseReleasedPiece();
                 });
 
             } else {
@@ -830,7 +832,9 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
                                     iv.addEventFilter(MouseEvent.MOUSE_RELEASED, (
                                             final MouseEvent mouseEvent) -> {
-                                        updateMouseReleasedPiece();
+                                        if (p instanceof PionPlateau) {
+                                            updateMouseReleasedPiece();
+                                        }
                                     });
 
                                     iv.addEventFilter(MouseEvent.MOUSE_ENTERED, (
@@ -867,28 +871,22 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     @Override
     public void updateMouseReleasedPiece() {
-        if ((isDragging && !clicSurCaseLibre)) {
-            System.out.println("Released Clic Drag");
+        if ((isDragging && !clicSurCaseLibre) || clicSurCaseLibre) {
+            System.out.println("Released Clic Drag || clic origin cible");
             removeHint();
-
             if (this.pionDepl != null && pionDeplOrigin != null) {
                 //sauvegarde coordonnée de départ du pion
                 //et les coordonnées cibles
                 this.controleur.deplacementInsecte(pionDeplOrigin, new Point3DH(this.pionDepl.getX(), this.pionDepl.getY(), this.pionDepl.getY()));
-                System.out.println("---------------------------------");
-                pionDepl.affiche();
-                System.out.println("---------------------------------");
+//                System.out.println("---------------------------------");
+//                pionDepl.affiche();
+//                System.out.println("---------------------------------");
             }
+            this.pionDepl = null;
+            this.isDragging = false;
+            clicSurCaseLibre = false;
+            pionDeplOrigin = null;
         }
-
-        if (clicSurCaseLibre) {
-            System.out.println("Clic action joueur");
-        }
-
-        this.pionDepl = null;
-        this.isDragging = false;
-        clicSurCaseLibre = false;
-        pionDeplOrigin = null;
     }
 
     private static final class MouseLocation {
@@ -897,7 +895,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     public ListView<String> getSaveFile() {
-        String path = "C:\\Users\\louch\\IdeaProjects\\Projet-HIVE\\Hive\\rsc\\save";
+        String path = System.getProperty("user.dir").concat("\\save");
         File rep = new File(path);
         ListView<String> listSaveFile = new ListView<>();
         for (String s : rep.list()) {
