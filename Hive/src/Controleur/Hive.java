@@ -66,7 +66,7 @@ public class Hive {
         return true;
     }
 
-    public ArrayList<Case> placementsPossibles() {
+    public ArrayList<Point3DH> placementsPossibles() {
         return this.plateau.casesVidePlacement(this.joueurCourant);
     }
 
