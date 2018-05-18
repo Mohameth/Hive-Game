@@ -48,6 +48,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     private double totZoom;  //zoom actuel du plateau
     private double totMoveBoardX, totMoveBoardY;  //position du plateau
     private ArrayList<BorderPane> hudElems;
+    private ArrayList<Point3DH> zoneLibres;
     private boolean isDragging;
     private boolean clicSurCaseLibre;
     private PionPlateau pionDepl;
@@ -821,6 +822,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
         this.currentSelected = p;
         if (p instanceof PionPlateau) {
             this.pionDeplOrigin = new Point3DH(((PionPlateau) p).getX(), ((PionPlateau) p).getY(), ((PionPlateau) p).getZ());
+        } else {
+            this.zoneLibres = this.controleur.placementsPossibles(); //lorsqu'on clique sur un pionMain affiche les zones libres
         }
         displayLibre(p);
         p.getImgPion().toFront();
@@ -881,6 +884,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
             this.isDragging = false;
             clicSurCaseLibre = false;
             pionDeplOrigin = null;
+            this.zoneLibres = null;
 
         }
     }
@@ -904,57 +908,70 @@ public class VueTerrain extends Vue implements ObservateurVue {
                 });
 
             } else {
-
+                //*******
                 if (this.hintZones.isEmpty()) {
                     for (PionPlateau autrePiece : this.pieceList) {
-                        if (!autrePiece.equals(p)) { //si c'est pas la meme piece
-                            //alors on explore les cercles (hitbox) LIBRE de cette piece et on test la collision
-                            for (PieceHitbox hitbox : autrePiece.getPieceHitboxList()) {
-                                if (hitbox.isLibre()) { //si elle est libre
-                                    double x = hitbox.getPosX();
-                                    double y = hitbox.getPosY();
-                                    ImageView iv = showValidPos(x, y);
+                        //alors on explore les cercles (hitbox) LIBRE de cette piece et on test la collision
+                        for (PieceHitbox hitbox : autrePiece.getPieceHitboxList()) {
+                            if (containsSamePoint(hitbox)) { //si le point est une zone libre
+                                double x = hitbox.getPosX();
+                                double y = hitbox.getPosY();
+                                ImageView iv = showValidPos(x, y);
 
-                                    iv.addEventFilter(MouseEvent.MOUSE_PRESSED, (
-                                            final MouseEvent mouseEvent) -> {
-                                        clicSurCaseLibre = true;
-                                        if (p instanceof PionMain) {  //ajout d'un pion depuis la main avec un plateau non vide
-                                            addPion(p, hitbox);
-                                        } else {  //mise a jour d'un pion deja sur le plateau a une nouvelle position
-                                            p.snap(hitbox);
-                                            unselectPiece();
-                                            hudToFront();
-                                            this.pionDepl = (PionPlateau) p;
-                                        }
+                                iv.addEventFilter(MouseEvent.MOUSE_PRESSED, (
+                                        final MouseEvent mouseEvent) -> {
+                                    clicSurCaseLibre = true;
+                                    if (p instanceof PionMain) {  //ajout d'un pion depuis la main avec un plateau non vide
+                                        addPion(p, hitbox);
+                                    } else {  //mise a jour d'un pion deja sur le plateau a une nouvelle position
+                                        p.snap(hitbox);
+                                        unselectPiece();
+                                        hudToFront();
+                                        this.pionDepl = (PionPlateau) p;
+                                    }
 
-                                    });
+                                });
 
-                                    iv.addEventFilter(MouseEvent.MOUSE_RELEASED, (
-                                            final MouseEvent mouseEvent) -> {
-                                        if (p instanceof PionPlateau) {
-                                            updateMouseReleasedPiece();
-                                        }
-                                    });
+                                iv.addEventFilter(MouseEvent.MOUSE_RELEASED, (
+                                        final MouseEvent mouseEvent) -> {
+                                    if (p instanceof PionPlateau) {
+                                        updateMouseReleasedPiece();
+                                    }
+                                });
 
-                                    iv.addEventFilter(MouseEvent.MOUSE_ENTERED, (
-                                            final MouseEvent mouseEvent) -> {
-                                        setSelected(iv);
-                                    });
+                                iv.addEventFilter(MouseEvent.MOUSE_ENTERED, (
+                                        final MouseEvent mouseEvent) -> {
+                                    setSelected(iv);
+                                });
 
-                                    iv.addEventFilter(MouseEvent.MOUSE_EXITED, (
-                                            final MouseEvent mouseEvent) -> {
-                                        iv.setEffect(null);
-                                    });
-                                }
+                                iv.addEventFilter(MouseEvent.MOUSE_EXITED, (
+                                        final MouseEvent mouseEvent) -> {
+                                    iv.setEffect(null);
+                                });
                             }
                         }
+
                     }
 
                 }
+
+                //******************
             }
             root.getChildren().addAll(hintZones);
         }
 
+    }
+
+    private boolean containsSamePoint(PieceHitbox ph) {
+        if (zoneLibres != null) {
+            for (Point3DH p3d : zoneLibres) {
+                if (ph.equalsCoord(p3d)) {
+                    this.zoneLibres.remove(p3d);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void setSelected(ImageView iv) {
@@ -985,6 +1002,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
             this.isDragging = false;
             clicSurCaseLibre = false;
             pionDeplOrigin = null;
+            this.zoneLibres = null;
             //newTour();
         }
     }

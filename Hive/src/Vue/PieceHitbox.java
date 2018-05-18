@@ -9,6 +9,8 @@
  */
 package Vue;
 
+import Modele.Point3DH;
+
 public class PieceHitbox {
 
     private Piece p;
@@ -64,6 +66,10 @@ public class PieceHitbox {
 
     public boolean isLibre() {
         return libre;
+    }
+
+    public boolean equalsCoord(Point3DH ph) {
+        return (ph.getX() == this.getX() && ph.getY() == this.getY() && ph.getZ() == this.getZ());
     }
 
     public void updateCoordZoom(double zoomFactor) {
