@@ -536,7 +536,9 @@ public class PlateauTest {
         
         System.out.println("test sur une ruche venant d'être créé :");
         expectedj1 = new ArrayList<>();
+        expectedj1.add(new Case(orig));
         expectedj2 = new ArrayList<>();
+        expectedj2.add(new Case(orig));
         resj1 = instance.casesVidePlacement(j1);
         resj2 = instance.casesVidePlacement(j2);
         
