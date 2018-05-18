@@ -156,6 +156,17 @@ public class Plateau implements Observable {
 
         return voisins;
     }
+    
+    /**
+     * Indique si i1 et i2 sont voisins
+     * 
+     * @param i1 insecte i1
+     * @param i2 insecte i2
+     * @return true si i2 est dans le voisinage de i1
+     */
+    public boolean estVoisin(Insecte i1, Insecte i2) {
+        return getCasesVoisinesOccupees(i1.getEmplacement()).contains(i2.getEmplacement());
+    }
 
     /**
      * Donne toute les cases occupées du plateau

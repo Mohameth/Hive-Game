@@ -19,13 +19,11 @@ public class Hive {
 	Joueur joueur1;
         Joueur joueur2;
         Joueur joueurCourant;
-        int nbtours;
 
         
 	public Hive(String[] args) {
 		this.plateau = new Plateau();
                 Vue.initFenetre(args, this);
-                this.nbtours = 0;
 	}
         
         public void setJoueurs(int cas, boolean extension){
@@ -110,9 +108,7 @@ public class Hive {
                     j = this.joueur2;
                 break;
             }
-            if (!j.reinePosee() && this.nbtours == 4)
-                    return false;
-            return true;
+            return j.tousPionsPosables();
         }
         
         public ArrayList<Insecte> mainsInit() {
@@ -121,7 +117,6 @@ public class Hive {
         
         public void reset() {
             this.plateau = new Plateau();
-            this.nbtours = 0;
             this.joueur1 = null;
             this.joueur2 = null;
             this.joueurCourant = null;
@@ -140,7 +135,6 @@ public class Hive {
                 this.joueurCourant = this.joueur2;
             else if (joueurCourant.equals(this.joueur2)) {
                 this.joueurCourant = this.joueur1;
-                this.nbtours++;
             }
         }
 
@@ -148,6 +142,19 @@ public class Hive {
             return joueurCourant;
         }
         
+        
+        public int tourJoueur(int joueur) {
+            Joueur j = null;
+            switch (joueur) {
+                case (1):
+                    j = this.joueur1;
+                break;
+                case (2):
+                    j = this.joueur2;
+                break;
+            }
+            return j.getTourJoueur();
+        }
         
         
 }
