@@ -1,10 +1,14 @@
 package Vue;
 
 import Modele.TypeInsecte;
+import javafx.event.EventHandler;
 import javafx.scene.Cursor;
+import javafx.scene.ImageCursor;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 
@@ -23,11 +27,14 @@ public abstract class Piece implements ObservableVue {
     protected TypeInsecte pionsType;
     protected ImageView imgPion;
     protected boolean white;
+    private boolean locked;
 
     public Piece(TypeInsecte pionType, boolean isWhite) {
         this.pionsType = pionType;
         this.white = isWhite;
         this.imgPion = getImgFromType(pionType);
+        locked = true;
+        setEventLockMouse();
     }
 
     private ImageView getImgFromType(TypeInsecte pion) {
@@ -46,6 +53,36 @@ public abstract class Piece implements ObservableVue {
         imgv.setY(0);
 
         return imgv;
+    }
+
+    private void setEventLockMouse() {
+        this.getImgPion().addEventFilter(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(final MouseEvent mouseEvent) {
+                if (isLocked()) {
+                    getImgPion().setCursor(new ImageCursor(new Image("notallowed.png")));
+                } else {
+                    getImgPion().setCursor(Cursor.HAND);
+                }
+            }
+        });
+    }
+
+    public boolean isLocked() {
+        return this.locked;
+    }
+
+    public void setlock() {
+        ColorAdjust colorAdjust = new ColorAdjust();
+        colorAdjust.setSaturation(-1);
+        colorAdjust.setBrightness(-0.2);
+        getImgPion().setEffect(colorAdjust);
+        this.locked = true;
+    }
+
+    public void removelock() {
+        getImgPion().setEffect(null);
+        this.locked = false;
     }
 
     public String getImgPath(TypeInsecte pion) {

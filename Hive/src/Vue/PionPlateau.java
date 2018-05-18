@@ -79,43 +79,49 @@ public class PionPlateau extends Piece {
         // --- remember initial coordinates of mouse cursor and node
         getImgPion().addEventFilter(MouseEvent.MOUSE_PRESSED, (
                 final MouseEvent mouseEvent) -> {
-            lastMouseLocation.x = mouseEvent.getSceneX();
-            lastMouseLocation.y = mouseEvent.getSceneY();
+            if (!isLocked()) {
+                lastMouseLocation.x = mouseEvent.getSceneX();
+                lastMouseLocation.y = mouseEvent.getSceneY();
 
-            notifyListenersMousePressed(this);
-            setSelected();
-            snapConfirm = false;
-            //affiche();
-            // printVoisin();
+                notifyListenersMousePressed(this);
+                setSelected();
+                snapConfirm = false;
+                //affiche();
+                // printVoisin();
+            }
         }
         );
 
         getImgPion().addEventFilter(MouseEvent.MOUSE_RELEASED, (
                 final MouseEvent mouseEvent) -> {
-            if (!snap) { //retour position origine
-                moveToXY(this.prevImgX, this.prevImgY);
-            } else {
-                updatePrevPos();
-                //Jouer un coup user
-                notifyListenersMouseReleased();
-            }
-            snapConfirm = true;
-            snap = true;
+            if (!isLocked()) {
+                if (!snap) { //retour position origine
+                    moveToXY(this.prevImgX, this.prevImgY);
+                } else {
+                    updatePrevPos();
+                    //Jouer un coup user
+                    notifyListenersMouseReleased();
+                }
+                snapConfirm = true;
+                snap = true;
 
+            }
         }
         );
         // --- Shift node calculated from mouse cursor movement
         getImgPion().addEventFilter(MouseEvent.MOUSE_DRAGGED, (
                 final MouseEvent mouseEvent) -> {
-            double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x;
-            double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y;
+            if (!isLocked()) {
+                double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x;
+                double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y;
 
-            snap = false;
-            moveToXY(mouseEvent.getSceneX() - (sceneWidth / 2), mouseEvent.getSceneY() - (sceneHeight / 2));
-            moveXY(deltaX, deltaY); //si enleve plus de snap
+                snap = false;
+                moveToXY(mouseEvent.getSceneX() - (sceneWidth / 2), mouseEvent.getSceneY() - (sceneHeight / 2));
+                moveXY(deltaX, deltaY); //si enleve plus de snap
 
-            lastMouseLocation.x = mouseEvent.getSceneX();
-            lastMouseLocation.y = mouseEvent.getSceneY();
+                lastMouseLocation.x = mouseEvent.getSceneX();
+                lastMouseLocation.y = mouseEvent.getSceneY();
+            }
         });
     }
 

@@ -54,7 +54,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     private PionPlateau pionDepl;
     private Point3DH pionDeplOrigin;
     private HBox hudCenterPlayer1, hudCenterPlayer2;
-    private ArrayList<PionMain> pionMainPlayer1, pionMainPlayer2;
+    private ArrayList<Piece> pionMainPlayer1, pionMainPlayer2;
 
     private Group root;
     private Stage primaryStage;
@@ -188,6 +188,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
             removeLock(pionMainPlayer1, this.controleur.tousPionsPosables(1));
             System.out.println("lock noir");
             setlock(pionMainPlayer2);
+            setLockPlayerPion(false); //lock les noirs
             System.out.println("----blanc");
         } else {
             System.out.println("joueur noir peut jouer");
@@ -195,21 +196,32 @@ public class VueTerrain extends Vue implements ObservateurVue {
             removeLock(pionMainPlayer2, this.controleur.tousPionsPosables(2));
             System.out.println("lock blanc");
             setlock(pionMainPlayer1);
+            setLockPlayerPion(true); //lock les blancs
             System.out.println("----noir");
         }
     }
 
-    private void removeLock(ArrayList<PionMain> a, boolean toutPion) {
-        for (PionMain pm : a) {
+    private void removeLock(ArrayList<Piece> a, boolean toutPion) {
+        for (Piece pm : a) {
             if (toutPion || (pm.getPionsType() == TypeInsecte.REINE)) {
                 pm.removelock();
             }
         }
     }
 
-    private void setlock(ArrayList<PionMain> a) {
-        for (PionMain pm : a) {
+    private void setlock(ArrayList<Piece> a) {
+        for (Piece pm : a) {
             pm.setlock();
+        }
+    }
+
+    private void setLockPlayerPion(boolean iswhite) {
+        for (Piece p : pieceList) {
+            if (p.isWhite() == iswhite) {
+                p.setlock();
+            } else {
+                p.removelock();
+            }
         }
     }
 
@@ -1003,7 +1015,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
             clicSurCaseLibre = false;
             pionDeplOrigin = null;
             this.zoneLibres = null;
-            //newTour();
+            newTour();
         }
     }
 

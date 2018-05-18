@@ -28,7 +28,6 @@ public class PionMain extends Piece {
 
     private int nbPions;
     private Text idTextLab;
-    private boolean locked;
     private BorderPane bp;
 
     public PionMain(TypeInsecte pion, int nbInsect, boolean white, Text idTextLab, BorderPane bPane) {
@@ -37,29 +36,11 @@ public class PionMain extends Piece {
         nbPions = nbInsect;
         this.idTextLab = idTextLab;
         setOnClicEvent();
-        locked = true;
     }
 
     public void cleanBorPane() {
         //this.bp.getChildren().clear();
         this.bp.setVisible(false);
-    }
-
-    public boolean isLocked() {
-        return this.locked;
-    }
-
-    public void setlock() {
-        ColorAdjust colorAdjust = new ColorAdjust();
-        colorAdjust.setSaturation(-1);
-        colorAdjust.setBrightness(-0.2);
-        getImgPion().setEffect(colorAdjust);
-        this.locked = true;
-    }
-
-    public void removelock() {
-        getImgPion().setEffect(null);
-        this.locked = false;
     }
 
     public int decrNbPion() {
@@ -95,7 +76,7 @@ public class PionMain extends Piece {
 
     @Override
     public void affiche() {
-        System.out.println("NbPions: " + this.nbPions + " Type: " + this.getPionsType() + " Locked: " + this.locked + " IsWhite: " + isWhite());
+        System.out.println("NbPions: " + this.nbPions + " Type: " + this.getPionsType() + " IsWhite: " + isWhite());
     }
 
     @Override
@@ -113,17 +94,16 @@ public class PionMain extends Piece {
             }
         });
 
-        this.getImgPion().addEventFilter(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(final MouseEvent mouseEvent) {
-                if (getNbPions() <= 0 || isLocked()) {
-                    getImgPion().setCursor(new ImageCursor(new Image("notallowed.png")));
-                } else {
-                    getImgPion().setCursor(Cursor.HAND);
-                }
-            }
-        });
-
+//        this.getImgPion().addEventFilter(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
+//            @Override
+//            public void handle(final MouseEvent mouseEvent) {
+//                if (getNbPions() <= 0 || isLocked()) {
+//                    getImgPion().setCursor(new ImageCursor(new Image("notallowed.png")));
+//                } else {
+//                    getImgPion().setCursor(Cursor.HAND);
+//                }
+//            }
+//        });
     }
 
     @Override
