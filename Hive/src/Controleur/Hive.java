@@ -87,8 +87,17 @@ public class Hive {
         }
 
         
-        private ArrayList<Insecte> pionsPosables() {
-            ArrayList<Insecte> mainJoueur = this.joueurCourant.pionsEnMain(); 
+        private ArrayList<Insecte> pionsPosables(int joueur) {
+            ArrayList<Insecte> mainJoueur = null;
+            switch (joueur) {
+                case(1):
+                    mainJoueur = this.joueur1.pionsEnMain();
+                break;
+                case(2):
+                    mainJoueur = this.joueur2.pionsEnMain();
+                break;
+            }
+             
             
             if (this.nbtours == 4) {
                 int i = 0; boolean reinePres = false; Insecte reine = null;
@@ -108,8 +117,8 @@ public class Hive {
             return mainJoueur;
         }
         
-        public HashMap<Insecte, Boolean> mainJoueurCourant() {
-            ArrayList<Insecte> posables = this.pionsPosables();
+        public HashMap<Insecte, Boolean> mainJoueur(int joueur) {
+            ArrayList<Insecte> posables = this.pionsPosables(joueur);
             ArrayList<Insecte> main = this.joueurCourant.pionsEnMain();
             HashMap<Insecte, Boolean> res = new HashMap<>();
 

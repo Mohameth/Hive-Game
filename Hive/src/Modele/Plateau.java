@@ -241,9 +241,9 @@ public class Plateau implements Observable {
         Collection<Case> voisinsC2 = getCasesVoisines(c2, false);
         voisinsC2.remove(c1);
 
-        for (Case v1 : voisinsC1) {
-            if (voisinsC2.contains(v1)) {
-                if (!v1.estVide()) {
+        for (Case voisinCourant : voisinsC1) {
+            if (voisinsC2.contains(voisinCourant)) {//Voisin en commun de c1 et c2
+                if (!voisinCourant.estVide() && voisinCourant.getNbInsectes() >= c1.getNbInsectes()) {
                     nombreCasesAdjacentesNonVide++;
                 }
             }
@@ -283,26 +283,25 @@ public class Plateau implements Observable {
         if (this.rucheVide()) {
             return false;
         }
-
-        Object[] listeCases;
-        //Case c;
+        
         int i = 0;
-        listeCases = this.cases.values().toArray();
+        ArrayList<Case> listeCases = new ArrayList<>(this.cases.values());
         if (ghost == null && moveDest == null) {
             do {
-                moveDest = (Case) listeCases[i];
+                moveDest = listeCases.get(i);
                 i++;
-            } while (i < listeCases.length && (moveDest.estVide()));
+            } while (i < this.cases.values().size() && (moveDest.estVide()));
         }
 
+        //Sauvegarde du ghost et ajout de l'insecte sur moveDest (si moveDest != null)
         Insecte ghostBug = null;
-        if (ghost != null && moveDest != null) {
+        if (ghost != null) {
             ghost = this.getCase(ghost.getCoordonnees());
             ghostBug = ghost.getInsecteOnTop();
             if (ghostBug != null) {
                 try {
                     ghost.removeInsecte();
-                    moveDest.addInsecte(ghostBug);
+                    if (moveDest != null) moveDest.addInsecte(ghostBug);
                 } catch (Exception e) {
                     System.err.println("ERREUR Ruche brisé debut : " + e);
                 }
@@ -326,11 +325,12 @@ public class Plateau implements Observable {
 
             }
         }
-
-        if (ghost != null && moveDest != null) {
+        
+        //Restauration du ghost et de moveDest
+        if (ghost != null) {
             if (ghostBug != null) {
                 try {
-                    moveDest.removeInsecte();
+                    if (moveDest != null) moveDest.removeInsecte();
                     ghost.addInsecte(ghostBug);
                 } catch (Exception e) {
                     System.err.println("ERREUR Ruche brisé fin : " + e);
