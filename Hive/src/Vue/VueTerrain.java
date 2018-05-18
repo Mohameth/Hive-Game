@@ -171,6 +171,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     public void newTour() {
+        unselectPiece();
         updateMainJoueur();
     }
 
@@ -416,10 +417,10 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
         bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             TextField tnom = new TextField("Save");
-            tnom.setStyle("-fx-font-weight: bold;\n" +
-                    "     -fx-font-size: 24px;\n" +
-                    "    -fx-background-color: transparent;\n" +
-                    "    -fx-text-fill : rgb(255,255,255);");
+            tnom.setStyle("-fx-font-weight: bold;\n"
+                    + "     -fx-font-size: 24px;\n"
+                    + "    -fx-background-color: transparent;\n"
+                    + "    -fx-text-fill : rgb(255,255,255);");
             ListView<String> lv = getSaveFile();
             Button load = new Button(getLangStr("save"));
             Button cancel = new Button(getLangStr("cancel"));
@@ -434,7 +435,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
             hbutton.setAlignment(Pos.CENTER);
 
             VBox vLoad = new VBox();
-            vLoad.getChildren().addAll(htextin,lv, hbutton);
+            vLoad.getChildren().addAll(htextin, lv, hbutton);
             vLoad.prefWidthProperty().bind(primaryStage.widthProperty());
             vLoad.prefHeightProperty().bind(primaryStage.heightProperty());
             vLoad.setAlignment(Pos.CENTER);
@@ -508,7 +509,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         });
 
         bSettings.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            VueSettings v = new VueSettings(primaryStage,true,root);
+            VueSettings v = new VueSettings(primaryStage, true, root);
             root.getChildren().add(v.getSetting());
         });
 
@@ -675,7 +676,6 @@ public class VueTerrain extends Vue implements ObservateurVue {
             lastMouseLocation.x = mouseEvent.getSceneX(); //sauvegarde des coordonnées initial de la souris
             lastMouseLocation.y = mouseEvent.getSceneY();
             removeHint();
-            //unselectPiece();
         });
 
         // --- Shift node calculated from mouse cursor movement
