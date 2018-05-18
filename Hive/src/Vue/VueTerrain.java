@@ -1,31 +1,8 @@
 package Vue;
 
-import Modele.Insectes.Araignee;
-import Modele.Insectes.Cloporte;
-import Modele.Insectes.Fourmi;
-import Modele.Insectes.Insecte;
-import Modele.Insectes.Moustique;
-import Modele.Insectes.Reine;
-import Modele.Insectes.Sauterelle;
-import Modele.Insectes.Scarabee;
 import Controleur.Hive;
-import Modele.Insectes.Coccinelle;
+import Modele.Insectes.Insecte;
 import Modele.TypeInsecte;
-import com.sun.javafx.scene.text.HitInfo;
-import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-
-import java.util.Optional;
-import javafx.scene.control.Button;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -44,7 +21,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -56,7 +32,8 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 public class VueTerrain extends Vue implements ObservateurVue {
 
@@ -428,6 +405,11 @@ public class VueTerrain extends Vue implements ObservateurVue {
              getRule();
          });
 
+        bSettings.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            VueSettings v = new VueSettings(primaryStage,true,root);
+            root.getChildren().add(v.getSetting());
+        });
+
         root.getChildren().addAll(menu);
     }
 
@@ -489,7 +471,6 @@ public class VueTerrain extends Vue implements ObservateurVue {
         bgauche.setTop(hb3);
         bgauche.setBottom(vb);
         bgauche.getStylesheets().add("Vue/button.css");
-
         bgauche.setPadding(new Insets(0, 0, 15, 15));
 
         double moveRangeXY = 40;

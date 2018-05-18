@@ -52,7 +52,9 @@ public class Vue extends Application {
         new VueTerrain(primaryStage, controleur, 1);
     }
 
-    protected void SceneSettings(Stage primaryStage){ new VueSettings(primaryStage);}
+    protected void SceneSettings(Stage primaryStage){
+        new VueSettings(primaryStage);
+    }
 
     protected void SceneMulti(Stage primaryStage){ new VueMulti(primaryStage);}
 
