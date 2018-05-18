@@ -87,57 +87,32 @@ public class Hive {
         }
 
         
-        private ArrayList<Insecte> pionsPosables(int joueur) {
-            ArrayList<Insecte> mainJoueur = null;
+        public ArrayList<Insecte> mainJoueur(int joueur) {
+            Joueur j = null;
             switch (joueur) {
                 case(1):
-                    mainJoueur = this.joueur1.pionsEnMain();
+                    j = this.joueur1;
                 break;
                 case(2):
-                    mainJoueur = this.joueur2.pionsEnMain();
+                    j = this.joueur2;
                 break;
             }
-             
-            
-            if (this.nbtours == 4) {
-                int i = 0; boolean reinePres = false; Insecte reine = null;
-                do {
-                    if (mainJoueur.get(i) instanceof Reine) {
-                        reinePres = true;
-                        reine = mainJoueur.get(i);
-                    }
-                } while (i< mainJoueur.size() && !reinePres);
-                
-                if (reinePres) {
-                    ArrayList<Insecte> res = new ArrayList<>();
-                    res.add(reine);
-                    return res;
-                }
-            }
-            return mainJoueur;
+            return j.pionsEnMain();
         }
         
-        public HashMap<Insecte, Boolean> mainJoueur(int joueur) {
-            ArrayList<Insecte> posables = this.pionsPosables(joueur);
-            ArrayList<Insecte> main = this.joueurCourant.pionsEnMain();
-            HashMap<Insecte, Boolean> res = new HashMap<>();
-
-            if (posables.equals(main)) {
-                for (Insecte ins : main) {
-                    res.put(ins, Boolean.TRUE);
-                }
-            } else {
-                for (Insecte ins : main) {
-                    if (posables.contains(ins)) {
-                        res.put(ins, Boolean.TRUE);
-                    } else {
-                        res.put(ins, Boolean.FALSE);
-                    }
-                }
+        public boolean tousPionsPosables(int joueur) {
+            Joueur j = null;
+            switch (joueur) {
+                case (1):
+                    j = this.joueur1;
+                break;
+                case (2):
+                    j = this.joueur2;
+                break;
             }
-                
-            
-            return res;
+            if (!j.reinePosee() && this.nbtours == 4)
+                    return false;
+            return true;
         }
         
         public ArrayList<Insecte> mainsInit() {
@@ -163,8 +138,10 @@ public class Hive {
         private void joueurSuivant() {
             if (joueurCourant.equals(this.joueur1))
                 this.joueurCourant = this.joueur2;
-            else if (joueurCourant.equals(this.joueur2))
+            else if (joueurCourant.equals(this.joueur2)) {
                 this.joueurCourant = this.joueur1;
+                this.nbtours++;
+            }
         }
 
         public Joueur getJoueurCourant() {

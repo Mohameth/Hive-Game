@@ -59,7 +59,7 @@ public abstract class Joueur {
         do {
             reine = this.pions.get(i);
             i++;
-        } while(i < this.pions.size() && (!(reine instanceof Reine)));
+        } while(i < this.pions.size() && (!(reine.getType() != TypeInsecte.REINE)));
         if (reine.getEmplacement() == null)
             return false;
         
