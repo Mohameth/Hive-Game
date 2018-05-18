@@ -4,6 +4,7 @@ import Modele.Insectes.Insecte;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -219,6 +220,10 @@ public class Plateau implements Observable {
                 }
             }
         }
+        HashSet<Point3DH> retraitDoublons = new HashSet<>();
+        retraitDoublons.addAll(res);
+        res.clear();
+        res.addAll(retraitDoublons);
         return res;
     }
 
