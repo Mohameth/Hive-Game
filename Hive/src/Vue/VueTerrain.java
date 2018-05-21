@@ -156,9 +156,9 @@ public class VueTerrain extends Vue implements ObservateurVue {
             for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
                 PionPlateau2 pp2 = entry.getValue();
                 for (ZoneLibre uneZoneLibre : pp2.getZonesLibresListe()) {
-                    //if (containsSamePoint(zoneLibres, uneZoneLibre)) {
+                    if (containsSamePoint(zoneLibres, uneZoneLibre)) {
                         uneZoneLibre.setZoneLibreVisible();
-                    //}
+                    }
                 }
             }
         }
