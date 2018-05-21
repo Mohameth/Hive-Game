@@ -68,8 +68,6 @@ public class Hive {
 
     public ArrayList<Point3DH> deplacementsPossibles(Point3DH insecte) {
         ArrayList<Point3DH> res = new ArrayList<>();
-        if (!this.joueurCourant.reinePosee())
-            return new ArrayList<>();
         if (this.plateau.getCase(insecte).getInsecteOnTop().getJoueur().equals(this.joueurCourant)) {
             ArrayList<Case> cases = (ArrayList) this.plateau.getCase(insecte).getInsecteOnTop().deplacementPossible(plateau);
             for (Case c : cases) {
@@ -78,6 +76,10 @@ public class Hive {
             }
         } 
         return res;
+    }
+    
+    public boolean pionsDeplaceables() {
+        return this.joueurCourant.reinePosee();
     }
     
     public ArrayList<Point3DH> placementsPossibles() {
