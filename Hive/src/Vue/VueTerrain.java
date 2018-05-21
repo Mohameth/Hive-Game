@@ -752,7 +752,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
             PionMain pm;
             Text t;
             int nbPions = entry.getValue().intValue();
-            t = new Text("" + nbPions);
+            t = new Text(nbPions + "⨯");
             boolean iswhite = false;
             if (numplayer == 1) {
                 iswhite = true;
