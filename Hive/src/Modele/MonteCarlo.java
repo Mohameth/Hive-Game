@@ -8,19 +8,19 @@ import Modele.Insectes.Insecte;
 public class MonteCarlo {
 
 	private Noeud racine;
-	private int maxProfondeur;
 	private int maxFils;
+	private int nbNoeuds;
+	private int nbNoeudsMax;
 	
-	public MonteCarlo(Plateau plateau,int nbTours,Noeud racine) {
+	public MonteCarlo(int nbTours,Noeud racine) {
 		
 		this.racine=racine;
-		
+		this.nbNoeuds=0;
+		this.nbNoeudsMax=500000;
 		if(nbTours<=5) {
-			maxProfondeur=4;
-			maxFils=80;
+			this.maxFils=80;
 		}else {
-			maxProfondeur=2;
-			maxFils=40;
+			this.maxFils=40;
 		}
 	}
 	
@@ -108,15 +108,14 @@ public class MonteCarlo {
 				indice=i;
 			}
 		}
-		if(Pere.getListeFils().get(indice).getProfondeur()>maxProfondeur)
-			return null;
+		
 		return Pere.getListeFils().get(indice);
 	}
 	
 	public Noeud selection() {
 		Noeud noeud=racine;
 		
-		while(noeud!=null && !noeud.getListeFils().isEmpty()) {
+		while(!noeud.getListeFils().isEmpty()) {
 			noeud=chosirFils(noeud);
 		}
 		
@@ -194,7 +193,76 @@ public class MonteCarlo {
 	}
 	
 	public boolean simulation(Noeud n) {
-		return false;
+		
+		int count=0;
+		Random r=new Random();
+		boolean b=n.getTourIA();
+		Plateau plateau2=n.getPlateau();
+		ArrayList<Insecte> joueurCourant=new ArrayList<>();
+		ArrayList<Insecte>mainIA2=n.getMainIA();
+		ArrayList<Insecte>mainAdverse2=n.getMainAdverse();
+		ArrayList<Insecte>PlateauIA2=n.getPlateauIA();
+		ArrayList<Insecte>PlateauAdverse2=n.getPlateauAdverse();
+		do {
+			count++;
+			if(b) {
+				joueurCourant.addAll(mainIA2);
+				joueurCourant.addAll(PlateauIA2);
+			}else {
+				joueurCourant.addAll(mainAdverse2);
+				joueurCourant.addAll(PlateauAdverse2);
+			}
+			
+			ArrayList<Case> c;
+			boolean b1=false,b2=false;
+			Insecte i;
+			Case c2=null;
+			
+			do {
+				b1=false;b2=false;
+				i=joueurCourant.get(r.nextInt(joueurCourant.size()));
+				
+				if(i.getEmplacement()==null) {
+					c=plateau2.pointVersCase(plateau2.casesVidePlacement(i.getJoueur()));
+					if(!c.isEmpty()) {
+						c2=c.get(r.nextInt(c.size()));
+						b1=true;
+					}
+				}else {
+					c=(ArrayList<Case>) i.deplacementPossible(plateau2);
+					if(!c.isEmpty()) {
+						c2=c.get(r.nextInt(c.size()));
+						b2=true;
+					}
+				}
+				
+			}while(!b1 && !b2);
+			
+			if(b1) {
+				if(b) {
+					PlateauIA2.add(i);
+					mainIA2.remove(i);
+				}else {
+					PlateauAdverse2.add(i);
+					mainAdverse2.remove(i);
+				}
+				plateau2.ajoutInsecte(i,c2.getCoordonnees());
+			}else {
+				i.deplacement(plateau2,c2.getCoordonnees());
+			}
+			
+			b=!b;
+			
+		}while(!PlateauIA2.get(0).getJoueur().reineBloquee() && !PlateauAdverse2.get(0).getJoueur().reineBloquee() && count<=60);
+		
+		if(count>60)
+			return false;
+			
+		return !b;
+	}
+	
+	public void miseAjour(Noeud n,boolean b) {
+		n.mettreAjour(b);
 	}
 	
 }

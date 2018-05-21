@@ -10,10 +10,12 @@ import java.util.Random;
 
 public class JoueurIA extends Joueur {
 	private int difficulte;
+	private Joueur adverse;
 
-    public JoueurIA(Plateau p, int difficulte, boolean extensions) {
+    public JoueurIA(Plateau p, int difficulte, boolean extensions,Joueur adverse) {
         super(p, extensions);
         this.difficulte = difficulte;
+        this.adverse=adverse;
     }
 
 
