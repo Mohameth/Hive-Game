@@ -17,7 +17,7 @@ import java.util.ArrayList;
  */
 public class IAMinimax extends Joueur {
     Joueur adversaire;
-    int horizon = 3;
+    int horizon = 0;
     public Coup lastCoup = null;
     
     public IAMinimax(Plateau p, boolean extensions) {
@@ -62,7 +62,7 @@ public class IAMinimax extends Joueur {
         ArrayList<Configuration> x = parent.getAllCoupsPossibles();
         System.out.println("Analyse de " + x.size() + " configurations");
         for (Configuration c : x) {
-            newVal = calculJoueurCourant(c, 0);
+            newVal = calculJoueurCourant(c, horizon);
             if (newVal > oldVal) {
                 meilleurConf = c;
                 oldVal = newVal;
@@ -76,9 +76,10 @@ public class IAMinimax extends Joueur {
     public int calculJoueurCourant(Configuration conf, int horizon) {
         if (conf.estFeuille() || horizon == 0) {
             return conf.getEvaluation();
-        } 
+        }
         
         int valeur = Integer.MIN_VALUE;
+        //conf.echangeJoueur();
         for (Configuration confCourante : conf.getAllCoupsPossibles()) {
             valeur = Integer.max(conf.getEvaluation(), calculAdversaire(confCourante, horizon-1));
         }
@@ -92,6 +93,7 @@ public class IAMinimax extends Joueur {
         } 
         
         int valeur = Integer.MAX_VALUE;
+        //conf.echangeJoueur();
         for (Configuration confCourante : conf.getAllCoupsPossibles()) {
             valeur = Integer.min(valeur, calculJoueurCourant(confCourante, horizon-1));
         }

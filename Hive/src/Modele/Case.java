@@ -65,7 +65,8 @@ public class Case implements Serializable{
     }
 
     public void addInsecte(Insecte insecte) throws Exception {
-        if (!this.estVide() && !(insecte instanceof Scarabee)) throw new Exception("Ajout impossible sur case non vide");
+        if (!this.estVide() && !((insecte.getType() == TypeInsecte.SCARABEE) || (insecte.getType() == TypeInsecte.MOUSTIQUE)))
+                throw new Exception("Ajout impossible sur case non vide");
         if (this.insectes.size() == 5) throw new Exception("Ajout impossible -> 5 insectes maximum");
         this.insectes.add(insecte);
         insecte.setEmplacement(this);
