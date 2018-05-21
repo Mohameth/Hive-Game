@@ -6,7 +6,7 @@ import Modele.Joueur;
 import Modele.JoueurHumain;
 import Modele.JoueurIA;
 import Modele.Plateau;
-import Modele.Point3DH;
+import Modele.HexaPoint;
 import Modele.TypeInsecte;
 import Vue.Vue;
 import java.io.File;
@@ -53,7 +53,7 @@ public class Hive implements Serializable {
         this.joueurCourant = this.joueur1;
     }
 
-    public boolean appartient(Point3DH caseCible) { //permet de savoir si l'insecte le plus haut d'une case appartient au joueur dont c'est le tour
+    public boolean appartient(HexaPoint caseCible) { //permet de savoir si l'insecte le plus haut d'une case appartient au joueur dont c'est le tour
         if (plateau.getCase(caseCible).getInsecteOnTop().getJoueur().equals(joueurCourant)) {
             return true;
         }
@@ -61,11 +61,11 @@ public class Hive implements Serializable {
         return false;
     }
 
-    public void selectionInsecte(Point3DH caseCible) { //Je sais plus ce qu'elle fait
+    public void selectionInsecte(HexaPoint caseCible) { //Je sais plus ce qu'elle fait
         plateau.getCase(caseCible).getInsecteOnTop().deplacementPossible(plateau);
     }
 
-    public boolean deplacementInsecte(Point3DH origine, Point3DH cible) {
+    public boolean deplacementInsecte(HexaPoint origine, HexaPoint cible) {
         if (!plateau.getCase(origine).estVide() && appartient(origine)) {
             joueurCourant.coup(plateau.getCase(origine).getInsecteOnTop(), cible);
             this.joueurSuivant();
@@ -73,8 +73,8 @@ public class Hive implements Serializable {
         return true;
     }
 
-    public ArrayList<Point3DH> deplacementsPossibles(Point3DH insecte) { //Pour un insecte défini par son emplacement retourne ses déplacements possibles
-        ArrayList<Point3DH> res = new ArrayList<>();
+    public ArrayList<HexaPoint> deplacementsPossibles(HexaPoint insecte) { //Pour un insecte défini par son emplacement retourne ses déplacements possibles
+        ArrayList<HexaPoint> res = new ArrayList<>();
         if (this.plateau.getCase(insecte).getInsecteOnTop().getJoueur().equals(this.joueurCourant)) {
             ArrayList<Case> cases = (ArrayList) this.plateau.getCase(insecte).getInsecteOnTop().deplacementPossible(plateau);
             for (Case c : cases) {
@@ -90,11 +90,11 @@ public class Hive implements Serializable {
         return this.joueurCourant.reinePosee();
     }
     
-    public ArrayList<Point3DH> placementsPossibles() { //Liste des cases pouvant accueilir un insecte du joueur courant
+    public ArrayList<HexaPoint> placementsPossibles() { //Liste des cases pouvant accueilir un insecte du joueur courant
         return this.plateau.casesVidePlacement(this.joueurCourant);
     }
 
-    public void joueurPlaceInsecte(TypeInsecte insecte, Point3DH cible) { //Placement d'un insecte sur la case cible du plateau par le joueur courant
+    public void joueurPlaceInsecte(TypeInsecte insecte, HexaPoint cible) { //Placement d'un insecte sur la case cible du plateau par le joueur courant
         int i = 0;
         Insecte ins = null;
 

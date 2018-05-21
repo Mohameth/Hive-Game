@@ -9,17 +9,17 @@
  */
 package Vue;
 
-import Modele.Point3DH;
+import Modele.HexaPoint;
 
 public interface ObservateurVue {
 
     public void UpdateAddNewZoneLibre(ZoneLibre zLibre);
 
-    public void UpdateZonLibPosition(Point3DH oldKeyPoint3D, Point3DH newPos3D, ZoneLibre zLibre);
+    public void UpdateZonLibPosition(HexaPoint oldKeyPoint3D, HexaPoint newPos3D, ZoneLibre zLibre);
 
     public void UpdateAddNewPionPlateau(PionPlateau2 pionPlateau);
 
-    public void UpdatePionPosition(Point3DH oldKeyPoint3D, Point3DH newPos3D, PionPlateau2 p);
+    public void UpdatePionPosition(HexaPoint oldKeyPoint3D, HexaPoint newPos3D, PionPlateau2 p);
 
     public void updatePionPateauMove(PionPlateau2 p);
 

@@ -11,20 +11,20 @@ import java.util.Objects;
 public class Case implements Serializable{
 
     private ArrayList<Insecte> insectes;
-    private Point3DH coordonnees;
+    private HexaPoint coordonnees;
 
-    public Case(Point3DH p, Insecte insecte) {
+    public Case(HexaPoint p, Insecte insecte) {
         this.insectes = new ArrayList<>();
         this.insectes.add(insecte);
         this.coordonnees = p;
     }
     
-    public Case(Point3DH p) {
+    public Case(HexaPoint p) {
         this.coordonnees = p;
         this.insectes = new ArrayList<>();
     }
 	
-	public Case clone(Point3DH p,ArrayList<Insecte> EnmainIA,ArrayList<Insecte> EnjeuIA,
+	public Case clone(HexaPoint p,ArrayList<Insecte> EnmainIA,ArrayList<Insecte> EnjeuIA,
     		ArrayList<Insecte> EnmainAdverse,ArrayList<Insecte> EnjeuAdverse,boolean b){
     	Case c=new Case(p);
     	
@@ -105,7 +105,7 @@ public class Case implements Serializable{
         return insectes.size();
     }
 
-    public Point3DH getCoordonnees() {
+    public HexaPoint getCoordonnees() {
         return coordonnees;
     }
 
