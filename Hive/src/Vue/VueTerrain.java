@@ -58,7 +58,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     private double totMoveBoardX, totMoveBoardY;  //position du plateau
     private ArrayList<BorderPane> hudElems;
     private HashMap<TypeInsecte, PionMain> pionMainPlayer1, pionMainPlayer2;
-    private int partieManche = 0;
+    private int numeroPageTuto = 0;
     private Group root;
     private Stage primaryStage;
 
@@ -1262,8 +1262,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     private void getRule() {
         System.out.println("TODO ne pas utiliser de variables GLOBALE !!!!");
-        /*
-        int i = 0;
+
         Label l = new Label(getLangStr("rule"));
         String[] urlImg = new String[20];
         l.setStyle("-fx-font-weight: bold;\n-fx-font-size: 100px;\n-fx-text-fill: white;");
@@ -1272,10 +1271,10 @@ public class VueTerrain extends Vue implements ObservateurVue {
             urlImg[x - 1] = "rules/rule" + x + ".png";
         }
 
-        ImageView img = new ImageView(new Image(urlImg[i]));
+        ImageView img = new ImageView(new Image(urlImg[numeroPageTuto]));
         Button back = new Button(getLangStr("previous"));
         back.setPrefWidth(150);
-        Label nbPage = new Label((i + 1) + "/11");
+        Label nbPage = new Label((numeroPageTuto + 1) + "/11");
         nbPage.setStyle("-fx-font-weight: bold;\n-fx-font-size: 1.1em;\n-fx-text-fill: white;");
         Button next = new Button(getLangStr("next"));
         next.setPrefWidth(150);
@@ -1306,20 +1305,20 @@ public class VueTerrain extends Vue implements ObservateurVue {
         });
 
         root.getChildren().add(v);
-         */
+
     }
-    /*
+
     private Image changeImg(String[] url, boolean next, Label l) {
 
-        int i = 0;
-        if (next && i < 10) {
-            i++;
-        } else if (!next && i > 0) {
-            i--;
+        int numeroPageTuto = 0;
+        if (next && numeroPageTuto < 10) {
+            numeroPageTuto++;
+        } else if (!next && numeroPageTuto > 0) {
+            numeroPageTuto--;
         }
-        l.setText((i + 1) + "/11");
-        return new Image(url[i]);
+        l.setText((numeroPageTuto + 1) + "/11");
+        return new Image(url[numeroPageTuto]);
 
     }
-     */
+
 }
