@@ -18,7 +18,7 @@ public abstract class Insecte {
     
     public abstract TypeInsecte getType();
 	
-	public boolean equals(Insecte i) {
+    public boolean equals(Insecte i) {
     	return getType()==i.getType();
     }
 
