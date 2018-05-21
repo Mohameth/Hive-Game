@@ -17,10 +17,10 @@ import Modele.Plateau;
 public class TestMinimax {
     public static void main(String[] args) {
         Plateau plateau = new Plateau();
-        IAMinimax joueur1 = new IAMinimax(plateau, false);
-        JoueurIA joueur2 = new JoueurIA(plateau, 1, false);
-        //joueur2.setAdversaire(joueur1);
-        joueur1.setAdversaire(joueur2);
+        JoueurIA  joueur1 = new JoueurIA(plateau, 1, false);
+        IAMinimax joueur2 = new IAMinimax(plateau, false);
+        joueur2.setAdversaire(joueur1);
+        //joueur1.setAdversaire(joueur2);
 
         boolean fini = false;
         int coup = 0;

@@ -42,14 +42,6 @@ public class Fourmi extends Insecte {
         
         return result;
     }
-    
-    /*@Override protected Collection<Case> getVoisinsAccessible(Plateau plateau) {
-        Collection<Case> dep = super.getVoisinsAccessible(plateau);
-        
-        
-
-        return dep;
-    }*/
 
     @Override
     public TypeInsecte getType() {
