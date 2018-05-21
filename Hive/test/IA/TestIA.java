@@ -23,6 +23,8 @@ public class TestIA {
         Plateau plateau = new Plateau();
         JoueurIA joueur1 = new JoueurIA(plateau, 1, false);
         JoueurIA joueur2 = new JoueurIA(plateau, 1, false);
+        joueur1.addJoueurAdverse(joueur2);
+        joueur2.addJoueurAdverse(joueur1);
 
         boolean fini = false;
         int coup = 0;
