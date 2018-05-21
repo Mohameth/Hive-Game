@@ -24,7 +24,7 @@ public class Hive {
         Vue.initFenetre(args, this);
     }
 
-    public void setJoueurs(int cas, boolean extension) {
+    public void setJoueurs(int cas, boolean extension) { //Création des joueurs selon le type de partie 
         switch (cas) {
             case 1:
                 this.joueur1 = new JoueurHumain(this.plateau, extension);
@@ -46,7 +46,7 @@ public class Hive {
         this.joueurCourant = this.joueur1;
     }
 
-    public boolean appartient(Point3DH caseCible) {
+    public boolean appartient(Point3DH caseCible) { //permet de savoir si l'insecte le plus haut d'une case appartient au joueur dont c'est le tour
         if (plateau.getCase(caseCible).getInsecteOnTop().getJoueur().equals(joueurCourant)) {
             return true;
         }
@@ -54,7 +54,7 @@ public class Hive {
         return false;
     }
 
-    public void selectionInsecte(Point3DH caseCible) {
+    public void selectionInsecte(Point3DH caseCible) { //Je sais plus ce qu'elle fait
         plateau.getCase(caseCible).getInsecteOnTop().deplacementPossible(plateau);
     }
 
@@ -66,7 +66,7 @@ public class Hive {
         return true;
     }
 
-    public ArrayList<Point3DH> deplacementsPossibles(Point3DH insecte) {
+    public ArrayList<Point3DH> deplacementsPossibles(Point3DH insecte) { //Pour un insecte défini par son emplacement retourne ses déplacements possibles
         ArrayList<Point3DH> res = new ArrayList<>();
         if (this.plateau.getCase(insecte).getInsecteOnTop().getJoueur().equals(this.joueurCourant)) {
             ArrayList<Case> cases = (ArrayList) this.plateau.getCase(insecte).getInsecteOnTop().deplacementPossible(plateau);
@@ -78,15 +78,15 @@ public class Hive {
         return res;
     }
     
-    public boolean pionsDeplaceables() {
+    public boolean pionsDeplaceables() { //Booleen permettant à la vue de savoir si les pions du plateau peuvent se déplacer ou non
         return this.joueurCourant.reinePosee();
     }
     
-    public ArrayList<Point3DH> placementsPossibles() {
+    public ArrayList<Point3DH> placementsPossibles() { //Liste des cases pouvant accueilir un insecte du joueur courant
         return this.plateau.casesVidePlacement(this.joueurCourant);
     }
 
-    public void joueurPlaceInsecte(TypeInsecte insecte, Point3DH cible) {
+    public void joueurPlaceInsecte(TypeInsecte insecte, Point3DH cible) { //Placement d'un insecte sur la case cible du plateau par le joueur courant
         int i = 0;
         Insecte ins = null;
 
@@ -99,7 +99,7 @@ public class Hive {
         this.joueurSuivant();
     }
 
-    public ArrayList<Insecte> mainJoueur(int joueur) {
+    public ArrayList<Insecte> mainJoueur(int joueur) { // Récupère la main du joueur choisi
         Joueur j = null;
         switch (joueur) {
             case (1):
@@ -112,8 +112,8 @@ public class Hive {
         return j.pionsEnMain();
     }
 
-    public boolean tousPionsPosables(int joueur) {
-        Joueur j = null;
+    public boolean tousPionsPosables(int joueur) { //Permet de toujours vérifier la règle qui empêche les joueurs de jouer s'ils
+        Joueur j = null;                           // n'ont pas encore joué leur reine au 4ème tour
         switch (joueur) {
             case (1):
                 j = this.joueur1;
@@ -125,18 +125,18 @@ public class Hive {
         return j.tousPionsPosables();
     }
 
-    public ArrayList<Insecte> mainsInit() {
+    public ArrayList<Insecte> mainsInit() { // Récupération de la main de base, en fonction du choix des joueurs de jouer avec l'extension ou non
         return this.joueur1.pionsEnMain();
     }
 
-    public void reset() {
+    public void reset() { // Quand on veut rejouer on réinitialise entièrement le jeu
         this.plateau = new Plateau();
         this.joueur1 = null;
         this.joueur2 = null;
         this.joueurCourant = null;
     }
 
-    public boolean tourJoueurBlanc() {
+    public boolean tourJoueurBlanc() { //Permet à la vue de savoir à quel joueur peut jouer
         if (this.joueurCourant == this.joueur1) {
             return true;
         }
@@ -144,7 +144,7 @@ public class Hive {
         return false;
     }
 
-    private void joueurSuivant() {
+    private void joueurSuivant() { //Passe au joueur suivant
         if (joueurCourant.equals(this.joueur1)) {
             this.joueurCourant = this.joueur2;
         } else if (joueurCourant.equals(this.joueur2)) {
@@ -156,7 +156,7 @@ public class Hive {
         return joueurCourant;
     }
 
-    public int tourJoueur(int joueur) {
+    public int tourJoueur(int joueur) { //Permet de savoir combien de coups chaque joueur à joué
         Joueur j = null;
         switch (joueur) {
             case (1):
