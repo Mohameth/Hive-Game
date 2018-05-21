@@ -62,7 +62,7 @@ public class Configuration {
 
             for (Insecte i : joueurCourant.getPions()) {
                 if (i.getEmplacement() == null) {
-                    for (Point3DH p : plateau.casesVidePlacement(joueurCourant)) {
+                    for (HexaPoint p : plateau.casesVidePlacement(joueurCourant)) {
                         addFils(true, i, p);
                     }
                 } else {
@@ -89,8 +89,8 @@ public class Configuration {
             newPlateau.ajoutInsecte(cloneInsecte, insecte.getEmplacement().getCoordonnees());
         }
     }
-            
-    private void addFils(boolean modePlacement, Insecte i, Point3DH p) {
+    
+    private void addFils(boolean modePlacement, Insecte i, HexaPoint p) {
         Plateau newPlateau = (Plateau) plateau.clone();
         Joueur newCourant = joueurCourant.clone();
         Joueur newAdversaire = adversaire.clone();
@@ -101,7 +101,7 @@ public class Configuration {
         copiePlateau(newPlateau, newCourant, newAdversaire);
         
         Insecte newInsecte = newCourant.getPions().get(joueurCourant.getPions().indexOf(i));
-        Point3DH origine = null;
+        HexaPoint origine = null;
         int niveau = 1;
         if (modePlacement) newCourant.placementInsecte(newInsecte, p);
         else {

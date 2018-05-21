@@ -9,7 +9,7 @@
  */
 package Vue;
 
-import Modele.Point3DH;
+import Modele.HexaPoint;
 import javafx.geometry.Point3D;
 
 public interface ObservableVue {
@@ -18,11 +18,11 @@ public interface ObservableVue {
 
     public void notifyNewZoneLibre(ZoneLibre zLibre);
 
-    public void notifyUpdateZonLibPosition(Point3DH oldKeyPoint3D, Point3DH newPos3D, ZoneLibre zLibre);
+    public void notifyUpdateZonLibPosition(HexaPoint oldKeyPoint3D, HexaPoint newPos3D, ZoneLibre zLibre);
 
     public void notifyNewPionPlateau(PionPlateau2 pionPlateau);
 
-    public void notifyUpdatePionPosition(Point3DH oldKeyPoint3D, Point3DH newPos3D, PionPlateau2 p);
+    public void notifyUpdatePionPosition(HexaPoint oldKeyPoint3D, HexaPoint newPos3D, PionPlateau2 p);
 
     public void notifyPionPlateauMove(PionPlateau2 pionPlateau);
 
@@ -31,5 +31,9 @@ public interface ObservableVue {
     public void notifyPionPlateauMouseReleased(PionPlateau2 pionPlateau);
 
     public void notifyMousePressedZoneLibreVoisin(ZoneLibre zoneLibre);
+
+    public void notifyPionPlateauAddEnDessous(PionPlateau2 pionPlateau);
+
+    public void notifyPionPlateauRemoveEnDessous(PionPlateau2 pionPlateau);
 
 }

@@ -55,7 +55,7 @@ public class CaseTest {
     public void testEstVide() {
         System.out.println("=============================================");
         System.out.println("TEST estVide : =============================>\n");
-        Case instance = new Case(new Point3DH(0, 0, 0));
+        Case instance = new Case(new HexaPoint(0, 0, 0));
         System.out.println("Test sur une case vide :");
         assertTrue(instance.estVide());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
@@ -93,7 +93,7 @@ public class CaseTest {
         System.out.println("TEST ajout suppretion d'Insecte : ==========>\n");
         JoueurHumain j = new JoueurHumain(new Plateau(),true);
         Reine reine = new Reine(j);
-        Case instance = new Case(new Point3DH(0, 0, 0));
+        Case instance = new Case(new HexaPoint(0, 0, 0));
         try {
             System.out.println("ajout de la reine :");
             instance.addInsecte(reine);
@@ -256,7 +256,7 @@ public class CaseTest {
         Fourmi fourmi = new Fourmi(new JoueurHumain(new Plateau(),true));
         Scarabee scarabee1 = new Scarabee(new JoueurHumain(new Plateau(),true));
         Scarabee scarabee2 = new Scarabee(new JoueurHumain(new Plateau(),true));
-        Case instance = new Case(new Point3DH(0, 0, 0));
+        Case instance = new Case(new HexaPoint(0, 0, 0));
         System.out.println("test sur une case vide (doit lever une exeption) :");
         try {
             instance.insecteBloque(fourmi);
@@ -321,9 +321,9 @@ public class CaseTest {
     public void testEquals() {
         System.out.println("=============================================");
         System.out.println("TEST equals : ==============================>\n");
-        Case instance = new Case(new Point3DH(0, 0, 0));
+        Case instance = new Case(new HexaPoint(0, 0, 0));
         System.out.println("test avec une case ayant les mêmes coordonees :");
-        assertTrue(instance.equals(new Case(new Point3DH(0, 0, 0))));
+        assertTrue(instance.equals(new Case(new HexaPoint(0, 0, 0))));
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         System.out.println("test avec la même case :");
         assertTrue(instance.equals(instance));
@@ -335,7 +335,7 @@ public class CaseTest {
         assertFalse(instance.equals(new Plateau()));
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         System.out.println("test avec une case n'ayant pas les mêmes coordonees :");
-        assertFalse(instance.equals(new Case(new Point3DH(0, 5, 4))));
+        assertFalse(instance.equals(new Case(new HexaPoint(0, 5, 4))));
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
         System.out.println("");

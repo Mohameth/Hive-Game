@@ -66,12 +66,12 @@ public class JoueurTest {
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
         System.out.println("test avec une fourmi posé :");
-        plat.ajoutInsecte(fourmi, new Point3DH(0, 0, 0));
+        plat.ajoutInsecte(fourmi, new HexaPoint(0, 0, 0));
         assertFalse(instance.reinePosee());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
         System.out.println("test avec la reine posé :");
-        plat.ajoutInsecte(reine, new Point3DH(0, -1, 1));
+        plat.ajoutInsecte(reine, new HexaPoint(0, -1, 1));
         assertTrue(instance.reinePosee());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
     }
@@ -137,7 +137,7 @@ public class JoueurTest {
         expected.add(sauterelle1);
         expected.add(sauterelle2);
 
-        plat.ajoutInsecte(reine, new Point3DH(0, 0, 0));
+        plat.ajoutInsecte(reine, new HexaPoint(0, 0, 0));
 
         res = instance.pionsEnMain();
 
@@ -153,9 +153,9 @@ public class JoueurTest {
         expected.add(fourmi3);
         expected.add(sauterelle2);
 
-        plat.ajoutInsecte(scarabee1, new Point3DH(0, 0, 0).voisinBas());
-        plat.ajoutInsecte(scarabee2, new Point3DH(0, 0, 0).voisinDroiteBas());
-        plat.ajoutInsecte(sauterelle1, new Point3DH(0, 0, 0).voisinDroiteHaut());
+        plat.ajoutInsecte(scarabee1, new HexaPoint(0, 0, 0).voisinBas());
+        plat.ajoutInsecte(scarabee2, new HexaPoint(0, 0, 0).voisinDroiteBas());
+        plat.ajoutInsecte(sauterelle1, new HexaPoint(0, 0, 0).voisinDroiteHaut());
 
         res = instance.pionsEnMain();
 
@@ -167,10 +167,10 @@ public class JoueurTest {
 
         expected = new ArrayList<>();
 
-        plat.ajoutInsecte(fourmi1, new Point3DH(0, 0, 0).voisinGaucheHaut());
-        plat.ajoutInsecte(fourmi2, new Point3DH(0, 0, 0).voisinHaut());
-        plat.ajoutInsecte(fourmi3, new Point3DH(0, 0, 0).voisinHaut().voisinHaut());
-        plat.ajoutInsecte(sauterelle2, new Point3DH(0, 0, 0).voisinGaucheBas());
+        plat.ajoutInsecte(fourmi1, new HexaPoint(0, 0, 0).voisinGaucheHaut());
+        plat.ajoutInsecte(fourmi2, new HexaPoint(0, 0, 0).voisinHaut());
+        plat.ajoutInsecte(fourmi3, new HexaPoint(0, 0, 0).voisinHaut().voisinHaut());
+        plat.ajoutInsecte(sauterelle2, new HexaPoint(0, 0, 0).voisinGaucheBas());
 
         res = instance.pionsEnMain();
 
@@ -205,14 +205,14 @@ public class JoueurTest {
         j1.pions.add(scarabee1);
         j1.pions.add(scarabee2);
 
-        plat.ajoutInsecte(reineJ2, new Point3DH(0, 0, 0));
+        plat.ajoutInsecte(reineJ2, new HexaPoint(0, 0, 0));
         
-        plat.ajoutInsecte(reineJ1, new Point3DH(0, 1, -1));
-        plat.ajoutInsecte(fourmi1, new Point3DH(1, 0, -1));
-        plat.ajoutInsecte(fourmi2, new Point3DH(1, -1, 0));
-        plat.ajoutInsecte(fourmi3, new Point3DH(0, -1, 1));
-        plat.ajoutInsecte(scarabee1, new Point3DH(-1, 0, 1));
-        plat.ajoutInsecte(scarabee2, new Point3DH(-1, 1, 0));
+        plat.ajoutInsecte(reineJ1, new HexaPoint(0, 1, -1));
+        plat.ajoutInsecte(fourmi1, new HexaPoint(1, 0, -1));
+        plat.ajoutInsecte(fourmi2, new HexaPoint(1, -1, 0));
+        plat.ajoutInsecte(fourmi3, new HexaPoint(0, -1, 1));
+        plat.ajoutInsecte(scarabee1, new HexaPoint(-1, 0, 1));
+        plat.ajoutInsecte(scarabee2, new HexaPoint(-1, 1, 0));
         
         System.out.println("test reine bloqué :");
         assertTrue(j2.reineBloquee());

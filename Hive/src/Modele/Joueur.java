@@ -47,7 +47,7 @@ public abstract class Joueur implements Cloneable, Serializable {
      * @param cible Case cible du déplacement
      * @return vrai si le coup est jouer faux sinon
      */
-    public abstract boolean coup(Insecte insecte, Point3DH cible); //Joueur connait le plateau -> appelle déplacement sur insecte avec plateau (insect sait où il est)
+    public abstract boolean coup(Insecte insecte, HexaPoint cible); //Joueur connait le plateau -> appelle déplacement sur insecte avec plateau (insect sait où il est)
 
     public Joueur(Plateau p, boolean extensions) {
         this.plateau = p;
@@ -112,7 +112,7 @@ public abstract class Joueur implements Cloneable, Serializable {
      * @param insecte insecte à placer
      * @param caseCible case où placer l'insecte
      */
-    public void placementInsecte(Insecte insecte, Point3DH caseCible) {
+    public void placementInsecte(Insecte insecte, HexaPoint caseCible) {
         try {
             //this.plateau.ajoutInsecte(insecte, caseCible.getCoordonnees());
             this.plateau.ajoutInsecte(insecte, caseCible);

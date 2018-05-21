@@ -50,28 +50,28 @@ public class Point3DHTest {
     public void testVoisin() {
         System.out.println("=============================================");
         System.out.println("Test getVoisin =============================>\n");
-        Point3DH orig = new Point3DH(0, 0, 0);
+        HexaPoint orig = new HexaPoint(0, 0, 0);
 
-        ArrayList<Point3DH> expected = new ArrayList<>();
-        expected.add(new Point3DH(0, -1, 1)); //Bas
-        expected.add(new Point3DH(1, -1, 0)); //Bas droite
-        expected.add(new Point3DH(1, 0, -1)); //Haut droite
-        expected.add(new Point3DH(0, 1, -1)); //Haut
-        expected.add(new Point3DH(-1, 1, 0)); //Haut gauche
-        expected.add(new Point3DH(-1, 0, 1)); //Bas gauche
+        ArrayList<HexaPoint> expected = new ArrayList<>();
+        expected.add(new HexaPoint(0, -1, 1)); //Bas
+        expected.add(new HexaPoint(1, -1, 0)); //Bas droite
+        expected.add(new HexaPoint(1, 0, -1)); //Haut droite
+        expected.add(new HexaPoint(0, 1, -1)); //Haut
+        expected.add(new HexaPoint(-1, 1, 0)); //Haut gauche
+        expected.add(new HexaPoint(-1, 0, 1)); //Bas gauche
 
         System.out.println("test des voisins :");
-        ArrayList<Point3DH> res = (ArrayList<Point3DH>) orig.coordonneesVoisins();
+        ArrayList<HexaPoint> res = (ArrayList<HexaPoint>) orig.coordonneesVoisins();
 
         arrayCorresponds(res, expected);
 
         expected = new ArrayList<>();
-        expected.add(new Point3DH(0, -1, 1)); //Bas
-        expected.add(new Point3DH(1, -1, 0)); //Bas droite
-        expected.add(new Point3DH(1, 0, -1)); //Haut droite
-        expected.add(new Point3DH(0, 1, -1)); //Haut
-        expected.add(new Point3DH(-1, 1, 0)); //Haut gauche
-        expected.add(new Point3DH(-1, 0, 1)); //Bas gauche
+        expected.add(new HexaPoint(0, -1, 1)); //Bas
+        expected.add(new HexaPoint(1, -1, 0)); //Bas droite
+        expected.add(new HexaPoint(1, 0, -1)); //Haut droite
+        expected.add(new HexaPoint(0, 1, -1)); //Haut
+        expected.add(new HexaPoint(-1, 1, 0)); //Haut gauche
+        expected.add(new HexaPoint(-1, 0, 1)); //Bas gauche
         
         res = new ArrayList<>();
         res.add(orig.voisinBas());
@@ -87,9 +87,9 @@ public class Point3DHTest {
         System.out.println("");
     }
 
-    private void arrayCorresponds(ArrayList<Point3DH> result, ArrayList<Point3DH> Expected) {
+    private void arrayCorresponds(ArrayList<HexaPoint> result, ArrayList<HexaPoint> Expected) {
         assertTrue(Expected.size() == result.size());
-        for (Point3DH p : result) {
+        for (HexaPoint p : result) {
             assertTrue(Expected.contains(p));
             Expected.remove(p);
         }

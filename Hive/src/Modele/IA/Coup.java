@@ -6,7 +6,7 @@
 package Modele.IA;
 
 import Modele.Insectes.Insecte;
-import Modele.Point3DH;
+import Modele.HexaPoint;
 
 /**
  *
@@ -15,11 +15,11 @@ import Modele.Point3DH;
 public class Coup {
     private boolean modePlacement;
     private int numDansMain;
-    private Point3DH origine;
+    private HexaPoint origine;
     private int niveauInsecte;
-    private Point3DH cible;
+    private HexaPoint cible;
 
-    public Coup(boolean modePlacement, int numDansMain, Point3DH origine, int niveauInsecte, Point3DH cible) {
+    public Coup(boolean modePlacement, int numDansMain, HexaPoint origine, int niveauInsecte, HexaPoint cible) {
         this.modePlacement = modePlacement;
         this.origine = origine;
         this.niveauInsecte = niveauInsecte;
@@ -35,7 +35,7 @@ public class Coup {
         return numDansMain;
     }
     
-    public Point3DH getOrigine() {
+    public HexaPoint getOrigine() {
         return origine;
     }
     
@@ -43,7 +43,7 @@ public class Coup {
         return niveauInsecte;
     }
 
-    public Point3DH getCible() {
+    public HexaPoint getCible() {
         return cible;
     }
 

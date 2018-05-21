@@ -3,7 +3,7 @@ package Modele.Insectes;
 import Modele.Case;
 import Modele.Joueur;
 import Modele.Plateau;
-import Modele.Point3DH;
+import Modele.HexaPoint;
 import Modele.TypeInsecte;
 import java.util.ArrayList;
 import java.util.Collection;

@@ -2,7 +2,7 @@ package Vue;
 
 import Controleur.Hive;
 import Modele.Insectes.Insecte;
-import Modele.Point3DH;
+import Modele.HexaPoint;
 import Modele.TypeInsecte;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -38,14 +38,16 @@ import javafx.scene.effect.ColorAdjust;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.scene.ImageCursor;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
 import javafx.scene.shape.Circle;
 
 public class VueTerrain extends Vue implements ObservateurVue {
 
     private ArrayList<ZoneLibre> listZoneLibres;
-    private HashMap<Point3DH, PionPlateau2> listPionsPlateau;
+    private HashMap<HexaPoint, PionPlateau2> listPionsPlateau;
     private Hive controleur;
     private PionPlateau2 currentSelected;
     private boolean selectionValidee; //l'utilisateur a fait un mouse release sur le pion
@@ -146,14 +148,26 @@ public class VueTerrain extends Vue implements ObservateurVue {
     public void displayZoneLibre() {
         System.out.println("Display zone libre");
         //updatePosZoneLibre();
-        ArrayList<Point3DH> zoneLibres = this.controleur.placementsPossibles(); //lorsqu'on clique sur un pionMain affiche les zones libres
+        ArrayList<HexaPoint> zoneLibres = new ArrayList<>();
 
-        if (zoneLibres.size() == 1 && zoneLibres.get(0).equals(new Point3DH(0, 0, 0))) {
+        if (currentMainSelected != null && currentSelected != null) {
+            System.out.println("======================NE DOIT JMAIS ARRIVER==============================");
+        }
+
+        if (currentMainSelected != null) {
+            System.out.println("Affiche zone libre pion de la main");
+            zoneLibres = this.controleur.placementsPossibles(); //lorsqu'on clique sur un pionMain affiche les zones libres
+        } else if (currentSelected != null) {
+            System.out.println("Affiche zone libre pion plateau");
+            zoneLibres = this.controleur.deplacementsPossibles(currentSelected.getCoordPion());
+        }
+
+        if (zoneLibres.size() == 1 && zoneLibres.get(0).equals(new HexaPoint(0, 0, 0))) {
             addPremierZoneLibre();
             this.listZoneLibres.get(0).setZoneLibreVisible();
         } else {
             //affiche ceux qu'on a pas trouvé par une boucle:
-            for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+            for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
                 PionPlateau2 pp2 = entry.getValue();
                 for (ZoneLibre uneZoneLibre : pp2.getZonesLibresListe()) {
                     if (containsSamePoint(zoneLibres, uneZoneLibre)) {
@@ -165,9 +179,9 @@ public class VueTerrain extends Vue implements ObservateurVue {
         hudToFront();
     }
 
-    private boolean containsSamePoint(ArrayList<Point3DH> aZL, ZoneLibre zone) {
+    private boolean containsSamePoint(ArrayList<HexaPoint> aZL, ZoneLibre zone) {
         if (aZL != null) {
-            for (Point3DH p3d : aZL) {
+            for (HexaPoint p3d : aZL) {
                 if (zone.getCoordZoneLibre().equals(p3d)) {
                     aZL.remove(p3d);
                     return true;
@@ -181,7 +195,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         hideZoneLibre();
         System.out.println("Update Zone Libre");
         this.listZoneLibres.clear();
-        for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+        for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
             PionPlateau2 pp2 = entry.getValue();
             pp2.updateZoneLibreVoisin();
         }
@@ -216,7 +230,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         //limite le zoom a 0.10 min et 2.5 MAX, ne zoom pas si plateau est vide
         if (totZoomVar > 0.10 && totZoomVar < 2.5 && !listPionsPlateau.isEmpty()) {
 
-            for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+            for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
                 entry.getValue().updateZoomWidthHeight(totZoomVar, this.getWidth(), this.getHeight());
             }
 
@@ -228,7 +242,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     private void moveDeltaBoard(double x, double y) {
-        for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+        for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
             entry.getValue().moveDeltaBoard(x, y);
         }
     }
@@ -259,7 +273,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     private void updateTranslationPiece() {
-        for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+        for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
             entry.getValue().updateZoomWidthHeight(this.totZoom, this.sceneWidth, this.sceneHeight);
         }
     }
@@ -391,15 +405,15 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     @Override
-    public void UpdateZonLibPosition(Point3DH oldKeyPoint3D, Point3DH newPos3D, ZoneLibre zLibre) {
+    public void UpdateZonLibPosition(HexaPoint oldKeyPoint3D, HexaPoint newPos3D, ZoneLibre zLibre) {
         //System.out.println("Maj des zones libres");
         //useless ? avec l'arraylist
     }
 
     public void affichePionPlateauList() {
         System.out.println("--------");
-        for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
-            Point3DH key = entry.getKey();
+        for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+            HexaPoint key = entry.getKey();
             PionPlateau2 pp2 = entry.getValue();
             System.out.println("Key: " + key + " value: ");
             pp2.affiche();
@@ -408,7 +422,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     @Override
-    public void UpdatePionPosition(Point3DH oldKeyPoint3D, Point3DH newPos3D, PionPlateau2 p) {
+    public void UpdatePionPosition(HexaPoint oldKeyPoint3D, HexaPoint newPos3D, PionPlateau2 p) {
         //affichePionPlateauList();
         System.out.println("Maj des pionsPlateau");
         this.listPionsPlateau.remove(oldKeyPoint3D);
@@ -424,7 +438,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
             this.listPionsPlateau.put(oldpp2.getCoordPion(), oldpp2);
             this.getRoot().getChildren().add(oldpp2.getImage());
             //supprime le pion en dessous lors du déplacement
-            p.setPionEnDessous(null);
+            p.removePionEnDessous();
         }
         //gestion des doublons si un pions deja  a cette position le mettre en dessous
         if (this.listPionsPlateau.containsKey(newPos3D)) {
@@ -451,6 +465,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     @Override
     public void updatePionPateauMousePress(PionPlateau2 p) {
+        //ICI on set la selection mais elle n'est pas validé
         p.affiche();
         //il s'agit d'une selection d'un pion du plateau
         if (this.currentSelected == null) {
@@ -478,6 +493,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     @Override
     public void updatePionPateauMouseReleased(PionPlateau2 p) {
+        //ICI on verifie la selection
+
         //on selectionne le pion si dragging = false
         if (p.equals(this.currentSelected) && this.selectionValidee == false) {
             //onclique sur le pion release
@@ -526,6 +543,17 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     }
 
+    @Override
+    public void updatePionPlateauAddEnDessous(PionPlateau2 pionPlateau) {
+        System.out.println("Add en Dessous");
+        //this.getRoot().getChildren().add();
+    }
+
+    @Override
+    public void updatePionPlateauRemoveEnDessous(PionPlateau2 pionPlateau) {
+        //this.getRoot().getChildren().remove();
+    }
+
     private void coupJouer() {
         hideZoneLibre();
         removeSelectedPion();
@@ -534,6 +562,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         System.out.println("Coup Jouer");
     }
 
+    //Main Pion vers plateau
     public void updateMouseReleasedMainJoueur(PionMain pm) {
         System.out.println("Clic sur main joueur");
         removeSelectedPion();
@@ -628,10 +657,10 @@ public class VueTerrain extends Vue implements ObservateurVue {
             }
         }
         //bloquer les pions du meme joueurs sur le plateau quand il y a que la reine a poser
-        if (!toutPion) {
+        //bloque les pions du joueurs en cours tant que la reine n'a pas été joué
+        if (!toutPion || !this.controleur.pionsDeplaceables()) {
             setLockPlayerPion(white, false);
         }
-
     }
 
     //lock les pions des mains des joueurs
@@ -655,7 +684,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     private void setLockPlayerPion(boolean iswhite, boolean unlockOposite) {
-        for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+        for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
             PionPlateau2 pPlat = entry.getValue();
             if (pPlat.isWhite() == iswhite) {
                 pPlat.setLock();
@@ -724,7 +753,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
             PionMain pm;
             Text t;
             int nbPions = entry.getValue().intValue();
-            t = new Text("" + nbPions);
+            t = new Text(nbPions + "⨯");
             boolean iswhite = false;
             if (numplayer == 1) {
                 iswhite = true;
@@ -811,7 +840,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
         bPause.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             getPause();
         });
-
+        
+        bLoad.setTooltip(new Tooltip("Charger une partie"));
         bLoad.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             ListView<String> lv = getSaveFile();
             Button load = new Button(getLangStr("load"));
@@ -837,17 +867,24 @@ public class VueTerrain extends Vue implements ObservateurVue {
                 root.getChildren().removeAll(vLoad);
             });
 
+            load.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
+                this.controleur.load(style);
+                root.getChildren().removeAll(vLoad);
+            });
+
             root.getChildren().addAll(vLoad);
         });
-
+        
+        bSave.setTooltip(new Tooltip("Sauvegarder la partie"));
+        
         bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            TextField tnom = new TextField("Save");
+            TextField tnom = new TextField("file");
             tnom.setStyle("-fx-font-weight: bold;\n"
                     + "     -fx-font-size: 24px;\n"
                     + "    -fx-background-color: transparent;\n"
                     + "    -fx-text-fill : rgb(255,255,255);");
             ListView<String> lv = getSaveFile();
-            Button load = new Button(getLangStr("save"));
+            Button save = new Button(getLangStr("save"));
             Button cancel = new Button(getLangStr("cancel"));
 
             HBox htextin = new HBox(tnom);
@@ -855,7 +892,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
             HBox hbutton = new HBox();
             hbutton.getStylesheets().add("Vue/button.css");
-            hbutton.getChildren().addAll(load, cancel);
+            hbutton.getChildren().addAll(save, cancel);
             hbutton.setSpacing(10);
             hbutton.setAlignment(Pos.CENTER);
 
@@ -878,6 +915,11 @@ public class VueTerrain extends Vue implements ObservateurVue {
             });
 
             cancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
+                root.getChildren().removeAll(vLoad);
+            });
+
+            save.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
+                this.controleur.save(tnom.getText());
                 root.getChildren().removeAll(vLoad);
             });
 
@@ -1093,12 +1135,14 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     public ListView<String> getSaveFile() {
-        String path = System.getProperty("user.dir").concat("\\Hive\\rsc\\save");
+        String path = System.getProperty("user.dir").concat("/rsc/SAVE");
         System.out.println(path);
         File rep = new File(path);
         ListView<String> listSaveFile = new ListView<>();
-        for (String s : rep.list()) {
-            listSaveFile.getItems().add(s);
+        if (rep.length() != 0) {
+            for (String s : rep.list()) {
+                listSaveFile.getItems().add(s);
+            }
         }
         return listSaveFile;
     }

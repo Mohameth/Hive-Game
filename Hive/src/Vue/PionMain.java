@@ -61,7 +61,7 @@ public class PionMain {
 
     public void decrNbPion() {
         nbPions--;
-        idTextLab.setText("" + nbPions);
+        idTextLab.setText(nbPions + "⨯");
 
         if (nbPions <= 0) {
             idTextLab.setText("X");

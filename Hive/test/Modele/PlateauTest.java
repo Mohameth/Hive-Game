@@ -50,7 +50,7 @@ public class PlateauTest {
     public void testGetCase() {
         System.out.println("=============================================");
         System.out.println("Test getCase ===============================>\n");
-        Point3DH point = new Point3DH(0, 0, 0);
+        HexaPoint point = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
         System.out.println("test avec l'origine (cree au debut) :");
         Case expResult = new Case(point);
@@ -58,7 +58,7 @@ public class PlateauTest {
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
         System.out.println("test avec une case éloigner (pas encore crée) :");
-        point = new Point3DH(2, 5, 6);
+        point = new HexaPoint(2, 5, 6);
         assertTrue(instance.getCase(point) == null);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         System.out.println("");
@@ -72,7 +72,7 @@ public class PlateauTest {
     public void testGetCasesVoisines() {
         System.out.println("=============================================");
         System.out.println("Test getCasesVoisines ======================>\n");
-        Point3DH orig = new Point3DH(0, 0, 0);
+        HexaPoint orig = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
         Reine reine = new Reine(new JoueurHumain(instance, true));
         instance.ajoutInsecte(reine, orig);
@@ -143,7 +143,7 @@ public class PlateauTest {
         System.out.println("=============================================");
         System.out.println("Test occupees ==============================>\n");
 
-        Point3DH orig = new Point3DH(0, 0, 0);
+        HexaPoint orig = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
         Reine reine = new Reine(new JoueurHumain(instance, true));
 
@@ -171,17 +171,17 @@ public class PlateauTest {
 
         expected = new ArrayList<>();
         expected.add(new Case(orig));
-        expected.add(new Case(new Point3DH(0, -1, 1)));
-        expected.add(new Case(new Point3DH(0, -2, 2)));
-        expected.add(new Case(new Point3DH(0, -3, 3)));
-        expected.add(new Case(new Point3DH(0, -4, 4)));
-        expected.add(new Case(new Point3DH(0, -5, 5)));
+        expected.add(new Case(new HexaPoint(0, -1, 1)));
+        expected.add(new Case(new HexaPoint(0, -2, 2)));
+        expected.add(new Case(new HexaPoint(0, -3, 3)));
+        expected.add(new Case(new HexaPoint(0, -4, 4)));
+        expected.add(new Case(new HexaPoint(0, -5, 5)));
 
-        instance.ajoutInsecte(reine, new Point3DH(0, -1, 1));
-        instance.ajoutInsecte(reine, new Point3DH(0, -2, 2));
-        instance.ajoutInsecte(reine, new Point3DH(0, -3, 3));
-        instance.ajoutInsecte(reine, new Point3DH(0, -4, 4));
-        instance.ajoutInsecte(reine, new Point3DH(0, -5, 5));
+        instance.ajoutInsecte(reine, new HexaPoint(0, -1, 1));
+        instance.ajoutInsecte(reine, new HexaPoint(0, -2, 2));
+        instance.ajoutInsecte(reine, new HexaPoint(0, -3, 3));
+        instance.ajoutInsecte(reine, new HexaPoint(0, -4, 4));
+        instance.ajoutInsecte(reine, new HexaPoint(0, -5, 5));
 
         res = (ArrayList<Case>) instance.occupees();
 
@@ -199,7 +199,7 @@ public class PlateauTest {
         System.out.println("=============================================");
         System.out.println("Test getCasesVoisinesOccupees ==============>\n");
 
-        Point3DH orig = new Point3DH(0, 0, 0);
+        HexaPoint orig = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
         Reine reine = new Reine(new JoueurHumain(instance, true));
         instance.ajoutInsecte(reine, orig);
@@ -262,7 +262,7 @@ public class PlateauTest {
         System.out.println("=============================================");
         System.out.println("Test gateBetween ===========================>\n");
 
-        Point3DH orig = new Point3DH(0, 0, 0);
+        HexaPoint orig = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
         Reine reine = new Reine(new JoueurHumain(instance, true));
 
@@ -305,7 +305,7 @@ public class PlateauTest {
         System.out.println("=============================================");
         System.out.println("Test rucheBrisee ===========================>\n");
 
-        Point3DH orig = new Point3DH(0, 0, 0);
+        HexaPoint orig = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
         Reine reine = new Reine(new JoueurHumain(instance, true));
 
@@ -400,7 +400,7 @@ public class PlateauTest {
         System.out.println("=============================================");
         System.out.println("Test rucheBrisee2 ===========================>\n");
 
-        Point3DH orig = new Point3DH(0, 0, 0);
+        HexaPoint orig = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
         Reine reine = new Reine(new JoueurHumain(instance, true));
         instance.ajoutCasesVoisines(orig);
@@ -494,7 +494,7 @@ public class PlateauTest {
         System.out.println("=============================================");
         System.out.println("Test rucheVide =============================>\n");
 
-        Point3DH orig = new Point3DH(0, 0, 0);
+        HexaPoint orig = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
         Reine reine = new Reine(new JoueurHumain(instance, true));
 
@@ -516,7 +516,7 @@ public class PlateauTest {
         System.out.println("=============================================");
         System.out.println("Test casesVidePlacement ====================>\n");
 
-        Point3DH orig = new Point3DH(0, 0, 0);
+        HexaPoint orig = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
         JoueurHumain j1 = new JoueurHumain(instance, true);
         JoueurHumain j2 = new JoueurHumain(instance, true);
@@ -525,10 +525,10 @@ public class PlateauTest {
         j1.pions.add(reinej1);
         j2.pions.add(reinej2);
 
-        ArrayList<Point3DH> expectedj1;
-        ArrayList<Point3DH> expectedj2;
-        ArrayList<Point3DH> resj1;
-        ArrayList<Point3DH> resj2;
+        ArrayList<HexaPoint> expectedj1;
+        ArrayList<HexaPoint> expectedj2;
+        ArrayList<HexaPoint> resj1;
+        ArrayList<HexaPoint> resj2;
 
         System.out.println("test sur une ruche venant d'être créé :");
         expectedj1 = new ArrayList<>();
@@ -586,7 +586,7 @@ public class PlateauTest {
         System.out.println("=============================================");
         System.out.println("Test rucheAUnInsecte =======================>\n");
 
-        Point3DH orig = new Point3DH(0, 0, 0);
+        HexaPoint orig = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
         Reine reine = new Reine(new JoueurHumain(instance, true));
 
@@ -612,9 +612,9 @@ public class PlateauTest {
         System.out.println("");
     }
     
-    private void arrayCorrespondsp(ArrayList<Point3DH> result, ArrayList<Point3DH> Expected) {
+    private void arrayCorrespondsp(ArrayList<HexaPoint> result, ArrayList<HexaPoint> Expected) {
         assertTrue(Expected.size() == result.size());
-        for (Point3DH c : result) {
+        for (HexaPoint c : result) {
             assertTrue(Expected.contains(c));
             Expected.remove(c);
         }
