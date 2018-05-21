@@ -100,3 +100,5 @@ Conception
 
 # End of https://www.gitignore.io/api/java,eclipse,netbeans
 
+Hive/rsc/SAVE/file.txt
+Hive/rsc/SAVE/*
