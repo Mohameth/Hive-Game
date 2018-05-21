@@ -17,13 +17,13 @@ public abstract class Insecte implements Cloneable, Serializable {
     private Case emplacement;
 
     public abstract Collection<Case> deplacementPossible(Plateau plateau);
-	public abstract Insecte clone();
-    
+
+    public abstract Insecte clone();
+
     public abstract TypeInsecte getType();
-	
 
     public boolean equalsType(Insecte i) {
-    	return getType()==i.getType();
+        return getType() == i.getType();
     }
 
     public void deplacement(Plateau plat, HexaPoint cible) {
@@ -33,7 +33,7 @@ public abstract class Insecte implements Cloneable, Serializable {
             plat.deleteInsecte(this, this.getEmplacement().getCoordonnees());
             plat.deplaceInsecte(this, cible);
             joueur.incrementeTour();
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.err.println("ERREUR DEPLACEMENT :" + e);
         }
     }
@@ -42,7 +42,7 @@ public abstract class Insecte implements Cloneable, Serializable {
         this.joueur = j;
         this.emplacement = null;
     }
-    
+
     public Joueur getJoueur() {
         return joueur;
     }
@@ -58,9 +58,9 @@ public abstract class Insecte implements Cloneable, Serializable {
     public void setEmplacement(Case emplacement) {
         this.emplacement = emplacement;
     }
-    
+
     public int getNiveau() {
-        return getEmplacement().getInsectes().indexOf(this)+1;
+        return getEmplacement().getInsectes().indexOf(this) + 1;
     }
 
     @Override

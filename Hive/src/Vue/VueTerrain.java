@@ -38,6 +38,7 @@ import javafx.scene.effect.ColorAdjust;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.scene.ImageCursor;
 import javafx.scene.input.MouseButton;
 import javafx.scene.shape.Circle;
@@ -863,18 +864,23 @@ public class VueTerrain extends Vue implements ObservateurVue {
             cancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
                 root.getChildren().removeAll(vLoad);
             });
+            
+            load.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
+                this.controleur.load(style);
+                root.getChildren().removeAll(vLoad);
+            });
 
             root.getChildren().addAll(vLoad);
         });
 
         bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            TextField tnom = new TextField("Save");
+            TextField tnom = new TextField("file");
             tnom.setStyle("-fx-font-weight: bold;\n"
                     + "     -fx-font-size: 24px;\n"
                     + "    -fx-background-color: transparent;\n"
                     + "    -fx-text-fill : rgb(255,255,255);");
             ListView<String> lv = getSaveFile();
-            Button load = new Button(getLangStr("save"));
+            Button save = new Button(getLangStr("save"));
             Button cancel = new Button(getLangStr("cancel"));
 
             HBox htextin = new HBox(tnom);
@@ -882,7 +888,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
             HBox hbutton = new HBox();
             hbutton.getStylesheets().add("Vue/button.css");
-            hbutton.getChildren().addAll(load, cancel);
+            hbutton.getChildren().addAll(save, cancel);
             hbutton.setSpacing(10);
             hbutton.setAlignment(Pos.CENTER);
 
@@ -907,7 +913,12 @@ public class VueTerrain extends Vue implements ObservateurVue {
             cancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
                 root.getChildren().removeAll(vLoad);
             });
-
+            
+            save.addEventHandler(MouseEvent.MOUSE_CLICKED,(MouseEvent e1) -> {
+                this.controleur.save(tnom.getText());
+                root.getChildren().removeAll(vLoad);
+            } );
+            
             root.getChildren().addAll(vLoad);
         });
 
@@ -1120,12 +1131,14 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     public ListView<String> getSaveFile() {
-        String path = System.getProperty("user.dir").concat("\\Hive\\rsc\\save");
+        String path = System.getProperty("user.dir").concat("/rsc/SAVE");
         System.out.println(path);
         File rep = new File(path);
         ListView<String> listSaveFile = new ListView<>();
-        for (String s : rep.list()) {
-            listSaveFile.getItems().add(s);
+        if (rep.length() != 0) {
+            for (String s : rep.list()) {
+                listSaveFile.getItems().add(s);
+            }
         }
         return listSaveFile;
     }

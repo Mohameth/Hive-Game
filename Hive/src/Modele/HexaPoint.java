@@ -5,15 +5,15 @@
  */
 package Modele;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import javafx.geometry.Point3D;
 
 /**
  * la classe décrit un case du plateau selon un syteme de coordonées pour les plateaux en hexagone (voir https://www.redblobgames.com/grids/hexagons/ )
  * @author GRP3
  */
-public class HexaPoint {
+public class HexaPoint implements Serializable {
     
     int x;
     int y;
