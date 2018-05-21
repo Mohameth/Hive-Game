@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+public class Hive implements Serializable {
 
     Plateau plateau;
     Joueur joueur1;
