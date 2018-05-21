@@ -53,11 +53,16 @@ public class Hive implements Serializable {
         this.joueurCourant = this.joueur1;
     }
 
-    public boolean appartient(HexaPoint caseCible) { //permet de savoir si l'insecte le plus haut d'une case appartient au joueur dont c'est le tour
-        if (plateau.getCase(caseCible).getInsecteOnTop().getJoueur().equals(joueurCourant)) {
-            return true;
+    public boolean insecteAppartientJCourant(HexaPoint caseCible) { //permet de savoir si l'insecte le plus haut d'une case appartient au joueur dont c'est le tour
+        Case c = plateau.getCase(caseCible);
+        try {
+            if (c == null)
+                throw new Exception("Case inexistante");
+            if (c.getInsecteOnTop().getJoueur().equals(joueurCourant))
+                return true;
+        } catch (Exception ex) {
+            System.err.println("Erreur appartient : " + ex);
         }
-
         return false;
     }
 
@@ -66,7 +71,7 @@ public class Hive implements Serializable {
     }
 
     public boolean deplacementInsecte(HexaPoint origine, HexaPoint cible) {
-        if (!plateau.getCase(origine).estVide() && appartient(origine)) {
+        if (!plateau.getCase(origine).estVide() && insecteAppartientJCourant(origine)) {
             joueurCourant.coup(plateau.getCase(origine).getInsecteOnTop(), cible);
             this.joueurSuivant();
         }
