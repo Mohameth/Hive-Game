@@ -7,7 +7,6 @@ package Modele.IA;
 
 import Modele.*;
 import Modele.Insectes.Insecte;
-import Modele.Insectes.Reine;
 import java.util.ArrayList;
 import javafx.util.Pair;
 
@@ -68,8 +67,6 @@ public class Configuration {
                     }
                 } else {
                     for (Case c : i.deplacementPossible(plateau)) {
-                        if (c.getCoordonnees().equals(new Point3DH(-3, 1, 2))) 
-                            System.out.println("DACODAC");
                         addFils(false, i, c.getCoordonnees());
                     }
                 }

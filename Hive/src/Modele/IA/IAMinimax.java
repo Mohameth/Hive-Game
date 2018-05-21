@@ -43,15 +43,10 @@ public class IAMinimax extends Joueur {
             System.out.println(i.getClass().getCanonicalName() + " en " + coup.getCible() + " (placement)");
             return true;
         }
-        try {
-            i = plateau.getCase(coup.getOrigine()).getInsectes().get(coup.getNiveauInsecte()-1);
-            i.deplacement(plateau, coup.getCible()); 
-            System.out.println(i.getClass().getCanonicalName() + " en " + coup.getCible());
-        } catch (Exception e) {
-            System.out.println(coup);
-            e.printStackTrace();
-            System.exit(1);
-        }
+        
+        i = plateau.getCase(coup.getOrigine()).getInsectes().get(coup.getNiveauInsecte()-1);
+        i.deplacement(plateau, coup.getCible()); 
+        System.out.println(i.getClass().getCanonicalName() + " en " + coup.getCible());
         lastCoup = coup;
         
        
@@ -73,6 +68,7 @@ public class IAMinimax extends Joueur {
                 oldVal = newVal;
             }
         }
+        System.out.println("Coup évalué à " + meilleurConf.getEvaluation());
         
         return meilleurConf.getCoupJoue();
     }

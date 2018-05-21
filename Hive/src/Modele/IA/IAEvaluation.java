@@ -43,16 +43,16 @@ public class IAEvaluation {
      * @return evaluation courante de la position
      */
     public int getEvaluation() {
+        if (aGagne()) return 1000;
+        if (aPerdu()) return -1000;
+        
         initPiecesValues(myPiecesValues, false);
         initPiecesValues(opponentPiecesValues, true);
         updatePositionValues(myPiecesValues);
         updatePositionValues(opponentPiecesValues);
         
-        int m = getSumEvaluation(myPiecesValues);
-        int h = getSumEvaluation(opponentPiecesValues);
-        return m - h;
-        /*return getSumEvaluation(myPiecesValues) 
-                - getSumEvaluation(opponentPiecesValues);*/
+        return getSumEvaluation(myPiecesValues) 
+                - getSumEvaluation(opponentPiecesValues);
     }
     
     private Boolean insecteBelongsToOpponent(Insecte i) {
@@ -172,9 +172,6 @@ public class IAEvaluation {
                     if (maReineEstEntoure(i)) value -= 50;
                 }
             }
-            
-            if (aGagne())               value += 1000;
-            if (aPerdu())               value -= 1000;
             
             
             /*if (bloqueFourmiAdverse(i)) value += 5;

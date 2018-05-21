@@ -5,6 +5,7 @@
  */
 package Modele;
 
+import Modele.IA.IAEvaluation;
 import Modele.Insectes.*;
 import java.util.ArrayList;
 import org.junit.After;
@@ -178,6 +179,48 @@ public class JoueurTest {
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
         System.out.println("");
+    }
+    
+    @Test
+    public void testReineBloque() {
+        System.out.println("=============================================");
+        System.out.println("Test reineBloque  ==========================>\n");
+
+        Plateau plat = new Plateau();
+        JoueurHumain j1 = new JoueurHumain(plat, true);
+        JoueurHumain j2 = new JoueurHumain(plat, true);
+        Fourmi fourmi1 = (Fourmi) j1.getPions().get(5);
+        Fourmi fourmi2 = (Fourmi) j1.getPions().get(7);
+        Fourmi fourmi3 = (Fourmi) j1.getPions().get(9);
+        Reine reineJ1 = (Reine) j1.getPions().get(0);
+        Reine reineJ2 = (Reine) j2.getPions().get(0);
+        Scarabee scarabee1 = (Scarabee) j1.getPions().get(1);
+        Scarabee scarabee2 = (Scarabee) j1.getPions().get(3);
+        
+        j1.pions.add(fourmi1);
+        j1.pions.add(fourmi2);
+        j1.pions.add(fourmi3);
+        j1.pions.add(reineJ1);
+        j2.pions.add(reineJ2);
+        j1.pions.add(scarabee1);
+        j1.pions.add(scarabee2);
+
+        plat.ajoutInsecte(reineJ2, new Point3DH(0, 0, 0));
+        
+        plat.ajoutInsecte(reineJ1, new Point3DH(0, 1, -1));
+        plat.ajoutInsecte(fourmi1, new Point3DH(1, 0, -1));
+        plat.ajoutInsecte(fourmi2, new Point3DH(1, -1, 0));
+        plat.ajoutInsecte(fourmi3, new Point3DH(0, -1, 1));
+        plat.ajoutInsecte(scarabee1, new Point3DH(-1, 0, 1));
+        plat.ajoutInsecte(scarabee2, new Point3DH(-1, 1, 0));
+        
+        System.out.println("test reine bloqué :");
+        assertTrue(j2.reineBloquee());
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        int eval1 = new IAEvaluation(plat, j1, j2).getEvaluation();
+        int eval2 = new IAEvaluation(plat, j2, j1).getEvaluation();
+        System.out.println("J1: " + eval1 + " J2: " + eval2);
     }
 
     private void arrayCorresponds(ArrayList<Insecte> result, ArrayList<Insecte> Expected) {
