@@ -32,15 +32,15 @@ public class Hive {
                 break;
             case 2:
                 this.joueur1 = new JoueurHumain(this.plateau, extension);
-                this.joueur2 = new JoueurIA(this.plateau, 1, extension); //Easy
+                this.joueur2 = new JoueurIA(this.plateau, 1, extension, joueur1); //Easy
                 break;
             case 3:
                 this.joueur1 = new JoueurHumain(this.plateau, extension);
-                this.joueur2 = new JoueurIA(this.plateau, 2, extension); //Medium
+                this.joueur2 = new JoueurIA(this.plateau, 2, extension, joueur1); //Medium
                 break;
             case 4:
                 this.joueur1 = new JoueurHumain(this.plateau, extension);
-                this.joueur2 = new JoueurIA(this.plateau, 3, extension); //hard
+                this.joueur2 = new JoueurIA(this.plateau, 3, extension, joueur1); //hard
                 break;
         }
         this.joueurCourant = this.joueur1;
@@ -67,13 +67,19 @@ public class Hive {
     }
 
     public ArrayList<Point3DH> deplacementsPossibles(Point3DH insecte) {
-        ArrayList<Case> cases = (ArrayList) this.plateau.getCase(insecte).getInsecteOnTop().deplacementPossible(plateau);
         ArrayList<Point3DH> res = new ArrayList<>();
-        for (Case c : cases) {
-            if (!res.contains(c.getCoordonnees()))
-                res.add(c.getCoordonnees());
-        }
+        if (this.plateau.getCase(insecte).getInsecteOnTop().getJoueur().equals(this.joueurCourant)) {
+            ArrayList<Case> cases = (ArrayList) this.plateau.getCase(insecte).getInsecteOnTop().deplacementPossible(plateau);
+            for (Case c : cases) {
+                if (!res.contains(c.getCoordonnees()))
+                    res.add(c.getCoordonnees());
+            }
+        } 
         return res;
+    }
+    
+    public boolean pionsDeplaceables() {
+        return this.joueurCourant.reinePosee();
     }
     
     public ArrayList<Point3DH> placementsPossibles() {

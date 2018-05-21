@@ -15,6 +15,10 @@ public class Cloporte extends Insecte {
         super(j);
     }
 
+	public Insecte clone() {
+    	return new Cloporte(this.getJoueur());
+    	
+    }
 
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) { //Creer un HASh pour éviter de recalculer tout le temps la liste

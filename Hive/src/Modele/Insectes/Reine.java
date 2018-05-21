@@ -15,6 +15,10 @@ public class Reine extends Insecte {
         super(j);
     }
 
+	public Insecte clone() {
+    	return new Reine(this.getJoueur());
+    	
+    }
 
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {

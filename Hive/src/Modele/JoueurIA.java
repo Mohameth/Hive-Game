@@ -10,13 +10,25 @@ import java.util.Random;
 
 public class JoueurIA extends Joueur {
 	private int difficulte;
+	private Joueur adverse;
+
+    public JoueurIA(Plateau p, int difficulte, boolean extensions,Joueur adverse) {
+        super(p, extensions);
+        this.difficulte = difficulte;
+        this.adverse=adverse;
+    }
+
 
     public JoueurIA(Plateau p, int difficulte, boolean extensions) {
         super(p, extensions);
         this.difficulte = difficulte;
+        this.adverse = null;
     }
 
-
+    public void addJoueurAdverse(Joueur j) {
+        this.adverse = j;
+    }
+    
     @Override
     public boolean coup(Insecte insecte, Point3DH cible) {
     	if(difficulte==1) {

@@ -49,6 +49,25 @@ public class Plateau implements Observable {
     public Case getCase(Point3DH point) {
         return cases.get(point);
     }
+	
+	public Plateau clone(ArrayList<Insecte> EnmainIA,ArrayList<Insecte> EnjeuIA,
+    		ArrayList<Insecte> EnmainAdverse,ArrayList<Insecte> EnjeuAdverse,boolean b) {
+    	Plateau plateau=new Plateau();
+    	plateau.cases=cloneCases(EnmainIA,EnjeuIA,EnmainAdverse,EnjeuAdverse,b);
+    	plateau.nbPionsEnJeu=this.nbPionsEnJeu;
+    	return plateau;
+    }
+    
+    public Map<Point3DH, Case> cloneCases(ArrayList<Insecte> Enmain,ArrayList<Insecte> Enjeu,
+    		ArrayList<Insecte> EnmainAdverse,ArrayList<Insecte> EnjeuAdverse,boolean b){
+    	HashMap<Point3DH, Case>cases2 = new HashMap<>();
+    	
+    	for (Map.Entry<Point3DH, Case> e : cases.entrySet()){
+    		Point3DH p=e.getKey().clone();
+    		cases2.put(p,e.getValue().clone(p,Enmain,Enjeu,EnmainAdverse,EnjeuAdverse,b));
+    	}
+    	return cases2;
+    }
 
     /**
      * crée les cases voisines de la case origine et les ajoutent dans le
@@ -221,6 +240,14 @@ public class Plateau implements Observable {
             }
         }
         return res;
+    }
+    
+    public ArrayList<Case> pointVersCase(ArrayList<Point3DH> p){
+    	ArrayList<Case> c=new ArrayList<>();
+    	for(int i=0;i<p.size();i++) {
+    		c.add(this.getCase(p.get(i)));
+    	}
+    	return c;
     }
 
     /**

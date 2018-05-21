@@ -15,6 +15,10 @@ public class Sauterelle extends Insecte {
         super(j);
     }
 
+	public Insecte clone() {
+    	return new Sauterelle(this.getJoueur());
+    	
+    }
 
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
