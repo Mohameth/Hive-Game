@@ -554,7 +554,7 @@ public class Plateau implements Cloneable, Observable, Serializable {
         for (Insecte insecte : pions) {
             
             clone.add(cloneInsecte);
-        }
+}
         
         return clone;
     }*/
