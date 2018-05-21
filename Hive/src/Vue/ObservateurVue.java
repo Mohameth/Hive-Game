@@ -29,4 +29,8 @@ public interface ObservateurVue {
 
     public void updateMousePressedZoneLibre(ZoneLibre zLibre);
 
+    public void updatePionPlateauAddEnDessous(PionPlateau2 pionPlateau);
+
+    public void updatePionPlateauRemoveEnDessous(PionPlateau2 pionPlateau);
+
 }
