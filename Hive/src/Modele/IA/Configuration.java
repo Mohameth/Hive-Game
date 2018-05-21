@@ -76,15 +76,23 @@ public class Configuration {
         return fils;
     }
     
+    public void echangeJoueur() {
+        Joueur j = joueurCourant;
+        this.joueurCourant = adversaire;
+        this.adversaire = j;
+    }
+    
     private void copiePlateau(Plateau newPlateau, Joueur newCourant, Joueur newAdversaire) {
         for(Insecte insecte : plateau.getInsectes()) {
             Insecte cloneInsecte = null;
-            Joueur j = null;
-            if (insecte.getJoueur().equals(joueurCourant))  j = joueurCourant;
-            else                                            j = adversaire;
-            
-            cloneInsecte = newCourant.getPions().get(j.getPions().indexOf(insecte));
-            cloneInsecte.setJoueur(j);
+            if (insecte.getJoueur().equals(joueurCourant))  {
+                cloneInsecte = newCourant.getPions().get(joueurCourant.getPions().indexOf(insecte));
+                cloneInsecte.setJoueur(joueurCourant);
+            }
+            else {
+                cloneInsecte = newAdversaire.getPions().get(adversaire.getPions().indexOf(insecte));
+                cloneInsecte.setJoueur(adversaire);
+            }
 
             newPlateau.ajoutInsecte(cloneInsecte, insecte.getEmplacement().getCoordonnees());
         }

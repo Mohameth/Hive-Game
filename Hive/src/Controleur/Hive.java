@@ -9,6 +9,7 @@ import Modele.Plateau;
 import Modele.HexaPoint;
 import Modele.TypeInsecte;
 import Vue.Vue;
+import static com.sun.javafx.PlatformUtil.isWindows;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -53,11 +54,16 @@ public class Hive implements Serializable {
         this.joueurCourant = this.joueur1;
     }
 
-    public boolean appartient(HexaPoint caseCible) { //permet de savoir si l'insecte le plus haut d'une case appartient au joueur dont c'est le tour
-        if (plateau.getCase(caseCible).getInsecteOnTop().getJoueur().equals(joueurCourant)) {
-            return true;
+    public boolean insecteAppartientJCourant(HexaPoint caseCible) { //permet de savoir si l'insecte le plus haut d'une case appartient au joueur dont c'est le tour
+        Case c = plateau.getCase(caseCible);
+        try {
+            if (c == null)
+                throw new Exception("Case inexistante");
+            if (c.getInsecteOnTop().getJoueur().equals(joueurCourant))
+                return true;
+        } catch (Exception ex) {
+            System.err.println("Erreur appartient : " + ex);
         }
-
         return false;
     }
 
@@ -66,7 +72,7 @@ public class Hive implements Serializable {
     }
 
     public boolean deplacementInsecte(HexaPoint origine, HexaPoint cible) {
-        if (!plateau.getCase(origine).estVide() && appartient(origine)) {
+        if (!plateau.getCase(origine).estVide() && insecteAppartientJCourant(origine)) {
             joueurCourant.coup(plateau.getCase(origine).getInsecteOnTop(), cible);
             this.joueurSuivant();
         }
@@ -179,7 +185,10 @@ public class Hive implements Serializable {
 
     public boolean save(String name) {
         String path = System.getProperty("user.dir").concat("/rsc/SAVE/");
-        File f = new File(path + name + ".txt");
+        if (isWindows()) {
+            path.replace('/', '\\');
+        }
+        File f = new File(path + name);
         if (!f.exists()) {
             try {
                 f.createNewFile();
@@ -198,7 +207,11 @@ public class Hive implements Serializable {
     }
 
     public boolean load(String name) {
-        File f = new File(name + ".txt");
+        String path = System.getProperty("user.dir").concat("/rsc/SAVE/");
+        if (isWindows()) {
+            path.replace('/', '\\');
+        }
+        File f = new File(path + name);
         if (f.exists()) {
             try {
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));

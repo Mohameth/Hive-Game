@@ -125,7 +125,6 @@ public class Plateau implements Cloneable, Observable, Serializable {
             System.err.println("Erreur ajout : " + ex);
             
             ex.printStackTrace();
-            System.exit(1);
         }
     }
 
@@ -143,7 +142,6 @@ public class Plateau implements Cloneable, Observable, Serializable {
             System.err.println("Erreur ajout : " + ex);
             
             ex.printStackTrace();
-            System.exit(1);
         }
     }
 
@@ -188,7 +186,6 @@ public class Plateau implements Cloneable, Observable, Serializable {
         } catch (Exception ex) {
             System.err.println("Erreur delete : " + ex);
             ex.printStackTrace();
-            System.exit(1);
         }
     }
 
