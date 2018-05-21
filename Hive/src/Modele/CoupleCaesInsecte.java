@@ -21,7 +21,7 @@ public class CoupleCaesInsecte {
 	}
 	
 	public boolean equals(CoupleCaesInsecte e) {
-		return insecte.equals(e.insecte) && c.equals(e.c);
+		return insecte.equalsType(e.insecte) && c.equals(e.c);
 	}
 	
 }

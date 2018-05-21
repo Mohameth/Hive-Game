@@ -83,7 +83,7 @@ public class IAEvaluation {
     }
     
     private Boolean estRecouvert(Insecte i) {
-        return !i.getEmplacement().getInsecteOnTop().equals(i);
+        return !i.getEmplacement().getInsecteOnTop().equalsType(i);
     }
     
     private boolean estImmobilise(Insecte i) {
