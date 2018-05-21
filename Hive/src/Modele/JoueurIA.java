@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
-
 
 public class JoueurIA extends Joueur {
 	private int difficulte;
@@ -44,7 +44,19 @@ public class JoueurIA extends Joueur {
     	boolean b =false;
     	Random r=new Random();
     	Insecte insecte;
-    	
+        boolean bloquee = true;
+        
+    	Iterator<Insecte> it = this.pions.iterator();
+        Insecte i;
+        while (it.hasNext() && bloquee) {
+            i = it.next();
+            if (i.getEmplacement() == null || ! i.deplacementPossible(plateau).isEmpty())
+                bloquee = false;
+        }
+        
+        if (bloquee)
+            return false;
+        
     	do {
     		insecte=this.getPions().get(r.nextInt(this.getPions().size()));
     		if(insecte.getEmplacement()==null) {
@@ -54,7 +66,9 @@ public class JoueurIA extends Joueur {
                             casePlacement.add(this.plateau.getCase(p));
                         }
     			if(!casePlacement.isEmpty()) {
-    				this.plateau.ajoutInsecte(insecte, casePlacement.get(r.nextInt(casePlacement.size())).getCoordonnees());
+                                Point3DH p =  casePlacement.get(r.nextInt(casePlacement.size())).getCoordonnees();
+    				this.plateau.ajoutInsecte(insecte, p);
+                                System.out.println(insecte.getClass() + " en " + p);
     				return true;
     			}
     		}else if(this.reinePosee()){
@@ -63,7 +77,9 @@ public class JoueurIA extends Joueur {
     	}while(!b);
     	
     	ArrayList<Case> deplacement=(ArrayList<Case>) insecte.deplacementPossible(plateau);
-    	insecte.deplacement(plateau,deplacement.get(r.nextInt(deplacement.size())).getCoordonnees());
+        Point3DH p =deplacement.get(r.nextInt(deplacement.size())).getCoordonnees();
+    	insecte.deplacement(plateau, p);
+        System.out.println(insecte.getClass() + " en " + p);
     	
     	return true;
     }

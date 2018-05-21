@@ -10,7 +10,7 @@ package Modele;
  * @author Jeremy
  */
 public enum TypeInsecte {
-        ARAIGNEE(0), CLOPORTE(2), REINE(4), COCCINELLE(8), FOURMI(16), SAUTERELLE(32),
+    ARAIGNEE(0), CLOPORTE(2), REINE(4), COCCINELLE(8), FOURMI(16), SAUTERELLE(32),
     SCARABEE(64), MOUSTIQUE(128);
     
     int contenu;

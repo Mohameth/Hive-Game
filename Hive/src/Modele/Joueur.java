@@ -2,6 +2,7 @@ package Modele;
 
 import Controleur.Hive;
 import Modele.Insectes.*;
+import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,7 +15,7 @@ import java.util.logging.Logger;
  * @see JoueurIA
  * @author GRP3
  */
-public abstract class Joueur {
+public abstract class Joueur implements Cloneable, Serializable {
 
     /**
      * Pions du joueur
@@ -55,7 +56,7 @@ public abstract class Joueur {
         this.tourJoueur = 1;
         this.initInsectes(extensions);
     }
-
+    
     /**
      * Verifie si la reine du joueur est posé
      *
@@ -162,7 +163,40 @@ public abstract class Joueur {
     public int getTourJoueur() {
         return tourJoueur;
     }
-
     
+    public void incrementeTour() {
+        tourJoueur++;
+    }
+
+    public void setPlateau(Plateau plateau) {
+        this.plateau = plateau;
+    }
+    
+    @Override
+    public Joueur clone() {// Copie tous sauf le plateau (utiliser setPlateau)
+        try {
+            Joueur joueur = (Joueur) super.clone();
+            //joueur.dernierDeplacement = this.dernierDeplacement.clone();
+            joueur.pions = cloneList(pions, joueur);
+            joueur.tourJoueur = this.tourJoueur;
+            
+            return joueur;
+        } catch (CloneNotSupportedException e) {
+            System.err.println("ERREUR Clone Joueur : " + e);
+        }
+        
+        return null;
+    }
+    
+    public ArrayList<Insecte> cloneList(ArrayList<Insecte> pions, Joueur j) {
+        ArrayList<Insecte> clone = new ArrayList<>(pions.size());
+        for (Insecte insecte : pions) {
+            Insecte cloneInsecte = insecte.clone();
+            cloneInsecte.setJoueur(j);;
+            clone.add(cloneInsecte);
+        }
+        
+        return clone;
+    }
     
 }

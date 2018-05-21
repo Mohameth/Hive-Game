@@ -24,6 +24,7 @@ public class Fourmi extends Insecte {
     
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
+        if (!this.getJoueur().tousPionsPosables()) return new ArrayList<>();
         ArrayList<Case> result = new ArrayList<>();
         LinkedList<Case> toCheck = new LinkedList<>();
         

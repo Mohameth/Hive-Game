@@ -3,11 +3,12 @@ package Modele;
 import Modele.Insectes.Insecte;
 import Modele.Insectes.Scarabee;
 import java.awt.Point;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
-public class Case {
+public class Case implements Serializable{
 
     private ArrayList<Insecte> insectes;
     private Point3DH coordonnees;
@@ -123,13 +124,13 @@ public class Case {
         return ((Case) obj).getCoordonnees().equals(this.getCoordonnees());
     }
 
-    @Override
+    /*@Override
     public int hashCode() {
         int hash = 3;
         hash = 71 * hash + Objects.hashCode(this.insectes);
         hash = 71 * hash + Objects.hashCode(this.coordonnees);
         return hash;
-    }
+    }*/
     
     public boolean estVoisinHaut(Case c) {
     	return this.getCoordonnees().voisinHaut().equals(c.getCoordonnees());
@@ -159,8 +160,13 @@ public class Case {
     public String toString() {
         String res = "Case[" + coordonnees + ']' + ":\n";
         for (Insecte i : this.insectes) {
-            res += "\t " + i.toString() + "\n";
+            res += "\t " + i + "\n";
         }
         return res;
     }
+
+    public void setInsectes(ArrayList<Insecte> insectes) {
+        this.insectes = insectes;
+    }
+    
 }

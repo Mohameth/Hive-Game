@@ -5,10 +5,13 @@ import Modele.Case;
 import Modele.Plateau;
 import Modele.Point3DH;
 import Modele.TypeInsecte;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public abstract class Insecte {
+public abstract class Insecte implements Cloneable, Serializable {
 
     private Joueur joueur;
     private Case emplacement;
@@ -29,6 +32,7 @@ public abstract class Insecte {
             //plat.getCase(cible).addInsecte(this);
             plat.deleteInsecte(this, this.getEmplacement().getCoordonnees());
             plat.deplaceInsecte(this, cible);
+            joueur.incrementeTour();
         } catch(Exception e) {
             System.err.println("ERREUR DEPLACEMENT :" + e);
         }
@@ -53,6 +57,10 @@ public abstract class Insecte {
 
     public void setEmplacement(Case emplacement) {
         this.emplacement = emplacement;
+    }
+    
+    public int getNiveau() {
+        return getEmplacement().getInsectes().indexOf(this)+1;
     }
 
     @Override
