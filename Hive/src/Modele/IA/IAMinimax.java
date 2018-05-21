@@ -39,14 +39,14 @@ public class IAMinimax extends Joueur {
         
         if (coup.isModePlacement()) {
             i = this.getPions().get(coup.getNumDansMain());
-            this.plateau.ajoutInsecte(i, coup.getCible());
-            System.out.println(i.getClass() + " en " + coup.getCible() + " (placement)");
+            this.placementInsecte(i, coup.getCible());
+            System.out.println(i.getClass().getCanonicalName() + " en " + coup.getCible() + " (placement)");
             return true;
         }
         try {
             i = plateau.getCase(coup.getOrigine()).getInsectes().get(coup.getNiveauInsecte()-1);
             i.deplacement(plateau, coup.getCible()); 
-            System.out.println(i.getClass() + " en " + coup.getCible());
+            System.out.println(i.getClass().getCanonicalName() + " en " + coup.getCible());
         } catch (Exception e) {
             System.out.println(coup);
             e.printStackTrace();
@@ -59,7 +59,7 @@ public class IAMinimax extends Joueur {
     }
     
     public Coup minimax() {
-        Configuration parent = new Configuration(plateau, adversaire, this);
+        Configuration parent = new Configuration(plateau, this, adversaire);
         Configuration meilleurConf = null;
         int oldVal = Integer.MIN_VALUE;
         int newVal;

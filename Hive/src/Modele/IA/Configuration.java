@@ -7,6 +7,7 @@ package Modele.IA;
 
 import Modele.*;
 import Modele.Insectes.Insecte;
+import Modele.Insectes.Reine;
 import java.util.ArrayList;
 import javafx.util.Pair;
 
@@ -61,13 +62,13 @@ public class Configuration {
             fils = new ArrayList<>();
 
             for (Insecte i : joueurCourant.getPions()) {
-                if (joueurCourant.pionsEnMain().contains(i)) {
+                if (i.getEmplacement() == null) {
                     for (Point3DH p : plateau.casesVidePlacement(joueurCourant)) {
                         addFils(true, i, p);
                     }
                 } else {
                     for (Case c : i.deplacementPossible(plateau)) {
-                        if (c.getCoordonnees().equals(new Point3DH(-1, 2, -1))) 
+                        if (c.getCoordonnees().equals(new Point3DH(-3, 1, 2))) 
                             System.out.println("DACODAC");
                         addFils(false, i, c.getCoordonnees());
                     }
@@ -78,14 +79,7 @@ public class Configuration {
         return fils;
     }
     
-    private void addFils(boolean modePlacement, Insecte i, Point3DH p) {
-        Plateau newPlateau = (Plateau) plateau.clone();
-        Joueur newCourant = joueurCourant.clone();
-        Joueur newAdversaire = adversaire.clone();
-        
-        newCourant.setPlateau(newPlateau);
-        newAdversaire.setPlateau(newPlateau);
-        
+    private void copiePlateau(Plateau newPlateau, Joueur newCourant, Joueur newAdversaire) {
         for(Pair<Insecte, Integer> val : plateau.getInsectes()) {
             Insecte insecte = val.getKey();
             int niveau = val.getValue();
@@ -101,17 +95,38 @@ public class Configuration {
             
             newPlateau.ajoutInsecte(cloneInsecte, insecte.getEmplacement().getCoordonnees());
         }
+    }
+    
+    private void addFils(boolean modePlacement, Insecte i, Point3DH p) {
+        Plateau newPlateau = (Plateau) plateau.clone();
+        Joueur newCourant = joueurCourant.clone();
+        Joueur newAdversaire = adversaire.clone();
+        
+        newCourant.setPlateau(newPlateau);
+        newAdversaire.setPlateau(newPlateau);
+        
+        copiePlateau(newPlateau, newCourant, newAdversaire);
+        
         Insecte newInsecte = newCourant.getPions().get(joueurCourant.getPions().indexOf(i));
+        Point3DH origine = null;
+        int niveau = 1;
         if (modePlacement) newCourant.placementInsecte(newInsecte, p);
         else {
-            newPlateau.ajoutInsecte(newInsecte, p);
+            if(newInsecte.getEmplacement() == null) newPlateau.ajoutInsecte(newInsecte, p);
+            else {
+                origine = newInsecte.getEmplacement().getCoordonnees();
+                niveau = newInsecte.getNiveau();
+                newPlateau.deplaceInsecte(newInsecte, p);
+            }
         }
+        if (origine == null) origine = newInsecte.getEmplacement().getCoordonnees();
+        
         fils.add(new Configuration(
                 newPlateau, 
                 newCourant,
                 newAdversaire, 
                 this, 
-                new Coup(modePlacement, joueurCourant.getPions().indexOf(i), newInsecte.getEmplacement().getCoordonnees(), newInsecte.getNiveau(), p)
+                new Coup(modePlacement, joueurCourant.getPions().indexOf(i), origine, niveau, p)
         ));
     }
 

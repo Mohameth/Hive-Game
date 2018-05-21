@@ -128,7 +128,20 @@ public class IAEvaluation {
         if (insecteBelongsToOpponent(i))    reine = maReine;
         else                                reine = reineAdverse;
         
-        return (jeu.estVoisin(i, reine));
+        if (reine == null || reine.getEmplacement() == null) return false;
+        
+        return jeu.estVoisin(reine, i);
+    }
+    
+    private boolean maReineEstEntoure(Insecte i) {
+        //En train de bloquer la reine adverse + 15
+        Insecte reine;
+        if (insecteBelongsToOpponent(i))    reine = reineAdverse;
+        else                                reine = maReine;
+        
+        if (reine == null || reine.getEmplacement() == null) return false;
+        
+        return jeu.estVoisin(reine, i);
     }
     
     private int mobilite(Insecte i) {
@@ -136,11 +149,11 @@ public class IAEvaluation {
     }
     
     private boolean aGagne() {
-        return false;
+        return adversaire.reineBloquee();
     }
     
     private boolean aPerdu() {
-        return false;
+        return joueur.reineBloquee();
     }
     
     private void updatePositionValues(HashMap<Insecte, Integer> piecesValues) {
@@ -153,12 +166,15 @@ public class IAEvaluation {
                     value -= 10;
                     if (estRecouvert(i))    value -= 20;
                 }
-                else value += mobilite(i);
+                else {
+                    value += mobilite(i);
+                    if (entoureReineAdverse(i)) value += 15;
+                    if (maReineEstEntoure(i)) value -= 50;
+                }
             }
             
-            //if (entoureReineAdverse(i)) value += 15;
-            if (aGagne())               value += 100;
-            if (aPerdu())               value -= 100;
+            if (aGagne())               value += 1000;
+            if (aPerdu())               value -= 1000;
             
             
             /*if (bloqueFourmiAdverse(i)) value += 5;

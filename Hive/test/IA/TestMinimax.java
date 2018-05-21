@@ -17,14 +17,14 @@ import Modele.Plateau;
 public class TestMinimax {
     public static void main(String[] args) {
         Plateau plateau = new Plateau();
-        IAMinimax joueur1 = new IAMinimax(plateau, false);
+        JoueurIA joueur1 = new JoueurIA(plateau, 1, false);
         IAMinimax joueur2 = new IAMinimax(plateau, false);
         joueur2.setAdversaire(joueur1);
-        joueur1.setAdversaire(joueur2);
+        //joueur1.setAdversaire(joueur2);
 
         boolean fini = false;
         int coup = 0;
-        while (!fini && coup <= 500) {
+        while (!fini && coup <= 1000) {
             joueur1.coup(null, null);
             System.out.println("J1 à joué ");
             if (joueur1.reineBloquee() || joueur2.reineBloquee()) {
