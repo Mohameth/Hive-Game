@@ -9,13 +9,27 @@
  */
 package Vue;
 
+import Modele.Point3DH;
+import javafx.geometry.Point3D;
+
 public interface ObservableVue {
 
     public void addObserver(ObservateurVue newobserver);
 
-    public void notifyListenersMove(double deltaX, double deltaY, boolean isBoardMove);
+    public void notifyNewZoneLibre(ZoneLibre zLibre);
 
-    public void notifyListenersMousePressed(Piece p);
+    public void notifyUpdateZonLibPosition(Point3DH oldKeyPoint3D, Point3DH newPos3D, ZoneLibre zLibre);
 
-    public void notifyListenersMouseReleased();
+    public void notifyNewPionPlateau(PionPlateau2 pionPlateau);
+
+    public void notifyUpdatePionPosition(Point3DH oldKeyPoint3D, Point3DH newPos3D, PionPlateau2 p);
+
+    public void notifyPionPlateauMove(PionPlateau2 pionPlateau);
+
+    public void notifyPionPlateauMousePressed(PionPlateau2 pionPlateau);
+
+    public void notifyPionPlateauMouseReleased(PionPlateau2 pionPlateau);
+
+    public void notifyMousePressedZoneLibreVoisin(ZoneLibre zoneLibre);
+
 }

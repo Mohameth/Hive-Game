@@ -9,12 +9,24 @@
  */
 package Vue;
 
+import Modele.Point3DH;
+
 public interface ObservateurVue {
 
-    public void updateMove(PionPlateau p, double deltaX, double deltaY, boolean isBoardMove);
+    public void UpdateAddNewZoneLibre(ZoneLibre zLibre);
 
-    public void updateMousePressPiece(Piece p);
+    public void UpdateZonLibPosition(Point3DH oldKeyPoint3D, Point3DH newPos3D, ZoneLibre zLibre);
 
-    public void updateMouseReleasedPiece();
+    public void UpdateAddNewPionPlateau(PionPlateau2 pionPlateau);
+
+    public void UpdatePionPosition(Point3DH oldKeyPoint3D, Point3DH newPos3D, PionPlateau2 p);
+
+    public void updatePionPateauMove(PionPlateau2 p);
+
+    public void updatePionPateauMousePress(PionPlateau2 p);
+
+    public void updatePionPateauMouseReleased(PionPlateau2 p);
+
+    public void updateMousePressedZoneLibre(ZoneLibre zLibre);
 
 }
