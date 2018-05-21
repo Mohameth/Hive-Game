@@ -30,7 +30,7 @@ public class JoueurIA extends Joueur {
     }
     
     @Override
-    public boolean coup(Insecte insecte, Point3DH cible) {
+    public boolean coup(Insecte insecte, HexaPoint cible) {
     	if(difficulte==1) {
     		return coupFacile();
     	}
@@ -60,13 +60,13 @@ public class JoueurIA extends Joueur {
     	do {
     		insecte=this.getPions().get(r.nextInt(this.getPions().size()));
     		if(insecte.getEmplacement()==null) {
-    			ArrayList<Point3DH> coordPlacement = plateau.casesVidePlacement(this);
+    			ArrayList<HexaPoint> coordPlacement = plateau.casesVidePlacement(this);
                         ArrayList<Case> casePlacement = new ArrayList<>();
-                        for (Point3DH p : coordPlacement) {
+                        for (HexaPoint p : coordPlacement) {
                             casePlacement.add(this.plateau.getCase(p));
                         }
     			if(!casePlacement.isEmpty()) {
-                                Point3DH p =  casePlacement.get(r.nextInt(casePlacement.size())).getCoordonnees();
+                                HexaPoint p =  casePlacement.get(r.nextInt(casePlacement.size())).getCoordonnees();
     				this.plateau.ajoutInsecte(insecte, p);
                                 System.out.println(insecte.getClass() + " en " + p);
     				return true;
@@ -77,7 +77,7 @@ public class JoueurIA extends Joueur {
     	}while(!b);
     	
     	ArrayList<Case> deplacement=(ArrayList<Case>) insecte.deplacementPossible(plateau);
-        Point3DH p =deplacement.get(r.nextInt(deplacement.size())).getCoordonnees();
+        HexaPoint p =deplacement.get(r.nextInt(deplacement.size())).getCoordonnees();
     	insecte.deplacement(plateau, p);
         System.out.println(insecte.getClass() + " en " + p);
     	

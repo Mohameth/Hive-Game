@@ -2,7 +2,7 @@ package Vue;
 
 import Controleur.Hive;
 import Modele.Insectes.Insecte;
-import Modele.Point3DH;
+import Modele.HexaPoint;
 import Modele.TypeInsecte;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -46,7 +46,7 @@ import javafx.scene.shape.Circle;
 public class VueTerrain extends Vue implements ObservateurVue {
 
     private ArrayList<ZoneLibre> listZoneLibres;
-    private HashMap<Point3DH, PionPlateau2> listPionsPlateau;
+    private HashMap<HexaPoint, PionPlateau2> listPionsPlateau;
     private Hive controleur;
     private PionPlateau2 currentSelected;
     private boolean selectionValidee; //l'utilisateur a fait un mouse release sur le pion
@@ -147,7 +147,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     public void displayZoneLibre() {
         System.out.println("Display zone libre");
         //updatePosZoneLibre();
-        ArrayList<Point3DH> zoneLibres = new ArrayList<>();
+        ArrayList<HexaPoint> zoneLibres = new ArrayList<>();
 
         if (currentMainSelected != null && currentSelected != null) {
             System.out.println("======================NE DOIT JMAIS ARRIVER==============================");
@@ -161,12 +161,12 @@ public class VueTerrain extends Vue implements ObservateurVue {
             zoneLibres = this.controleur.deplacementsPossibles(currentSelected.getCoordPion());
         }
 
-        if (zoneLibres.size() == 1 && zoneLibres.get(0).equals(new Point3DH(0, 0, 0))) {
+        if (zoneLibres.size() == 1 && zoneLibres.get(0).equals(new HexaPoint(0, 0, 0))) {
             addPremierZoneLibre();
             this.listZoneLibres.get(0).setZoneLibreVisible();
         } else {
             //affiche ceux qu'on a pas trouvé par une boucle:
-            for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+            for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
                 PionPlateau2 pp2 = entry.getValue();
                 for (ZoneLibre uneZoneLibre : pp2.getZonesLibresListe()) {
                     if (containsSamePoint(zoneLibres, uneZoneLibre)) {
@@ -178,9 +178,9 @@ public class VueTerrain extends Vue implements ObservateurVue {
         hudToFront();
     }
 
-    private boolean containsSamePoint(ArrayList<Point3DH> aZL, ZoneLibre zone) {
+    private boolean containsSamePoint(ArrayList<HexaPoint> aZL, ZoneLibre zone) {
         if (aZL != null) {
-            for (Point3DH p3d : aZL) {
+            for (HexaPoint p3d : aZL) {
                 if (zone.getCoordZoneLibre().equals(p3d)) {
                     aZL.remove(p3d);
                     return true;
@@ -194,7 +194,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         hideZoneLibre();
         System.out.println("Update Zone Libre");
         this.listZoneLibres.clear();
-        for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+        for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
             PionPlateau2 pp2 = entry.getValue();
             pp2.updateZoneLibreVoisin();
         }
@@ -229,7 +229,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         //limite le zoom a 0.10 min et 2.5 MAX, ne zoom pas si plateau est vide
         if (totZoomVar > 0.10 && totZoomVar < 2.5 && !listPionsPlateau.isEmpty()) {
 
-            for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+            for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
                 entry.getValue().updateZoomWidthHeight(totZoomVar, this.getWidth(), this.getHeight());
             }
 
@@ -241,7 +241,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     private void moveDeltaBoard(double x, double y) {
-        for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+        for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
             entry.getValue().moveDeltaBoard(x, y);
         }
     }
@@ -272,7 +272,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     private void updateTranslationPiece() {
-        for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+        for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
             entry.getValue().updateZoomWidthHeight(this.totZoom, this.sceneWidth, this.sceneHeight);
         }
     }
@@ -404,15 +404,15 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     @Override
-    public void UpdateZonLibPosition(Point3DH oldKeyPoint3D, Point3DH newPos3D, ZoneLibre zLibre) {
+    public void UpdateZonLibPosition(HexaPoint oldKeyPoint3D, HexaPoint newPos3D, ZoneLibre zLibre) {
         //System.out.println("Maj des zones libres");
         //useless ? avec l'arraylist
     }
 
     public void affichePionPlateauList() {
         System.out.println("--------");
-        for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
-            Point3DH key = entry.getKey();
+        for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+            HexaPoint key = entry.getKey();
             PionPlateau2 pp2 = entry.getValue();
             System.out.println("Key: " + key + " value: ");
             pp2.affiche();
@@ -421,7 +421,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     @Override
-    public void UpdatePionPosition(Point3DH oldKeyPoint3D, Point3DH newPos3D, PionPlateau2 p) {
+    public void UpdatePionPosition(HexaPoint oldKeyPoint3D, HexaPoint newPos3D, PionPlateau2 p) {
         //affichePionPlateauList();
         System.out.println("Maj des pionsPlateau");
         this.listPionsPlateau.remove(oldKeyPoint3D);
@@ -683,7 +683,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     private void setLockPlayerPion(boolean iswhite, boolean unlockOposite) {
-        for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+        for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
             PionPlateau2 pPlat = entry.getValue();
             if (pPlat.isWhite() == iswhite) {
                 pPlat.setLock();

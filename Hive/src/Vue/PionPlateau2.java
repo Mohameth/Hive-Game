@@ -5,7 +5,7 @@
  */
 package Vue;
 
-import Modele.Point3DH;
+import Modele.HexaPoint;
 import Modele.TypeInsecte;
 import java.util.ArrayList;
 import javafx.scene.Cursor;
@@ -26,7 +26,7 @@ public class PionPlateau2 implements ObservableVue {
     private ArrayList<ZoneLibre> zonesLibresListe;
     private PionImgView imagePion;
     private TypeInsecte pionType;
-    private Point3DH coordPion;
+    private HexaPoint coordPion;
     private boolean white;
     private boolean locked;
     private PionPlateau2 pionEnDessous;
@@ -34,7 +34,7 @@ public class PionPlateau2 implements ObservableVue {
     private boolean dragging;
     private ObservateurVue vtObservateur;
 
-    public PionPlateau2(ObservateurVue vtObservateur, TypeInsecte ti, boolean white, Point3DH coodPionPlateau, double imgX, double imgY, double totZoom, double scWidth, double scHeight) {
+    public PionPlateau2(ObservateurVue vtObservateur, TypeInsecte ti, boolean white, HexaPoint coodPionPlateau, double imgX, double imgY, double totZoom, double scWidth, double scHeight) {
         this.zonesLibresListe = new ArrayList<>();
         this.pionType = ti;
         this.pionEnDessous = null;
@@ -87,7 +87,7 @@ public class PionPlateau2 implements ObservableVue {
         return this.pionEnDessous;
     }
 
-    public Point3DH getCoordPion() {
+    public HexaPoint getCoordPion() {
         return coordPion;
     }
 
@@ -105,7 +105,7 @@ public class PionPlateau2 implements ObservableVue {
         imagePion.removeLock();
     }
 
-    public void setPionPosition(Point3DH newCoord, double imgX, double imgY) {
+    public void setPionPosition(HexaPoint newCoord, double imgX, double imgY) {
         //notifier l'observateur avant d'appliquer les changements
         notifyUpdatePionPosition(this.getCoordPion(), newCoord, this);
         this.coordPion = newCoord;
@@ -117,7 +117,7 @@ public class PionPlateau2 implements ObservableVue {
         int i = 0;
         for (ZoneLibre zoneLibre : zonesLibresListe) {
             double result[] = getCenterOfHitbox(i, this.totZoom);
-            Point3DH newCoord = getHitboxCoord(i);
+            HexaPoint newCoord = getHitboxCoord(i);
             //notifier la vueterrain avant de changer les coordonnées uniquement si la position change
 //            if (!newCoord.equals(zoneLibre.getCoordZoneLibre())) {
 //            }
@@ -239,7 +239,7 @@ public class PionPlateau2 implements ObservableVue {
         return this.scHeight;
     }
 
-    private Point3DH getHitboxCoord(int pos) { //en fonction de la position du coin et de la position de la piece sur la grille
+    private HexaPoint getHitboxCoord(int pos) { //en fonction de la position du coin et de la position de la piece sur la grille
         int x = 0;
         int y = 0;
         int z = 0;
@@ -278,7 +278,7 @@ public class PionPlateau2 implements ObservableVue {
                 z = coordZ;
                 break;
         }
-        return new Point3DH(x, y, z);
+        return new HexaPoint(x, y, z);
     }
 
     public double[] getCenterOfHitbox(int pos, double totZoom) {
@@ -388,7 +388,7 @@ public class PionPlateau2 implements ObservableVue {
     }
 
     @Override
-    public void notifyUpdateZonLibPosition(Point3DH oldKeyPoint3D, Point3DH newPos3D, ZoneLibre zLibre) {
+    public void notifyUpdateZonLibPosition(HexaPoint oldKeyPoint3D, HexaPoint newPos3D, ZoneLibre zLibre) {
         this.vtObservateur.UpdateZonLibPosition(oldKeyPoint3D, newPos3D, zLibre);
     }
 
@@ -398,7 +398,7 @@ public class PionPlateau2 implements ObservableVue {
     }
 
     @Override
-    public void notifyUpdatePionPosition(Point3DH oldKeyPoint3D, Point3DH newPos3D, PionPlateau2 p) {
+    public void notifyUpdatePionPosition(HexaPoint oldKeyPoint3D, HexaPoint newPos3D, PionPlateau2 p) {
         this.vtObservateur.UpdatePionPosition(oldKeyPoint3D, newPos3D, p);
     }
 

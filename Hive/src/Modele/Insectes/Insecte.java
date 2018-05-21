@@ -3,7 +3,7 @@ package Modele.Insectes;
 import Modele.Joueur;
 import Modele.Case;
 import Modele.Plateau;
-import Modele.Point3DH;
+import Modele.HexaPoint;
 import Modele.TypeInsecte;
 import java.io.Serializable;
 import java.util.Collection;
@@ -26,7 +26,7 @@ public abstract class Insecte implements Cloneable, Serializable {
         return getType() == i.getType();
     }
 
-    public void deplacement(Plateau plat, Point3DH cible) {
+    public void deplacement(Plateau plat, HexaPoint cible) {
         try {
             //this.getEmplacement().removeInsecte();
             //plat.getCase(cible).addInsecte(this);

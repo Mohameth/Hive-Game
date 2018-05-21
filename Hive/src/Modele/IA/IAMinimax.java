@@ -8,7 +8,7 @@ package Modele.IA;
 import Modele.Insectes.Insecte;
 import Modele.Joueur;
 import Modele.Plateau;
-import Modele.Point3DH;
+import Modele.HexaPoint;
 import java.util.ArrayList;
 
 /**
@@ -33,7 +33,7 @@ public class IAMinimax extends Joueur {
     }
     
     @Override
-    public boolean coup(Insecte insecte, Point3DH cible) {
+    public boolean coup(Insecte insecte, HexaPoint cible) {
         Coup coup = minimax();
         Insecte i;
         

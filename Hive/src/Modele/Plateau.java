@@ -24,9 +24,9 @@ public class Plateau implements Cloneable, Observable, Serializable {
      * ensemble des cases du plateau, évolue de façon dynamique
      *
      * @see Case
-     * @see Point3DH
+     * @see HexaPoint
      */
-    private Map<Point3DH, Case> cases;
+    private Map<HexaPoint, Case> cases;
     private int nbPionsEnJeu;
     private Observateur observateur;
 
@@ -34,8 +34,8 @@ public class Plateau implements Cloneable, Observable, Serializable {
      * construit un plateau avec une seul case en 0,0,0
      */
     public Plateau() {
-        cases = new HashMap<Point3DH, Case>();
-        Point3DH origine = new Point3DH(0, 0, 0);
+        cases = new HashMap<HexaPoint, Case>();
+        HexaPoint origine = new HexaPoint(0, 0, 0);
         cases.put(origine, new Case(origine));
 
         this.nbPionsEnJeu = 0; //Peut-être à remplacer par une méthode
@@ -47,7 +47,7 @@ public class Plateau implements Cloneable, Observable, Serializable {
      * @param point point du plateau
      * @return la case qui se trouve au coordonées du point
      */
-    public Case getCase(Point3DH point) {
+    public Case getCase(HexaPoint point) {
         try {    
             if (!this.cases.containsKey(point))
                 throw new Exception("Case" + point.toString() + "inexistante");
@@ -57,7 +57,7 @@ public class Plateau implements Cloneable, Observable, Serializable {
         return cases.get(point);
     }
 
-    public void setCases(Map<Point3DH, Case> cases) {
+    public void setCases(Map<HexaPoint, Case> cases) {
         this.cases = cases;
     }
 
@@ -69,7 +69,7 @@ public class Plateau implements Cloneable, Observable, Serializable {
      * 
      * @return HashMap<Point3DH, Case> Liste des cases avec comme clé leur position
      */
-    public Map<Point3DH, Case> getCases() {
+    public Map<HexaPoint, Case> getCases() {
         return cases;
     }
 
@@ -91,12 +91,12 @@ public class Plateau implements Cloneable, Observable, Serializable {
         return plateau;
     }
 
-    public Map<Point3DH, Case> cloneCases(ArrayList<Insecte> Enmain, ArrayList<Insecte> Enjeu,
+    public Map<HexaPoint, Case> cloneCases(ArrayList<Insecte> Enmain, ArrayList<Insecte> Enjeu,
             ArrayList<Insecte> EnmainAdverse, ArrayList<Insecte> EnjeuAdverse, boolean b) {
-        HashMap<Point3DH, Case> cases2 = new HashMap<>();
+        HashMap<HexaPoint, Case> cases2 = new HashMap<>();
 
-        for (Map.Entry<Point3DH, Case> e : cases.entrySet()) {
-            Point3DH p = e.getKey().clone();
+        for (Map.Entry<HexaPoint, Case> e : cases.entrySet()) {
+            HexaPoint p = e.getKey().clone();
             cases2.put(p, e.getValue().clone(p, Enmain, Enjeu, EnmainAdverse, EnjeuAdverse, b));
         }
         return cases2;
@@ -108,8 +108,8 @@ public class Plateau implements Cloneable, Observable, Serializable {
      *
      * @param origine case d'origine
      */
-    public void ajoutCasesVoisines(Point3DH origine) {
-        for (Point3DH p : origine.coordonneesVoisins()) {
+    public void ajoutCasesVoisines(HexaPoint origine) {
+        for (HexaPoint p : origine.coordonneesVoisins()) {
             if (!this.cases.containsKey(p)) {
                 this.cases.put(p, new Case(p));
             }
@@ -122,7 +122,7 @@ public class Plateau implements Cloneable, Observable, Serializable {
      * @param insecte insecte à ajouter
      * @param position coordonées de la case où ajouter l'insecte
      */
-    public void ajoutInsecte(Insecte insecte, Point3DH position) {
+    public void ajoutInsecte(Insecte insecte, HexaPoint position) {
         try {
             this.getCase(position).addInsecte(insecte);
             this.nbPionsEnJeu++;
@@ -141,7 +141,7 @@ public class Plateau implements Cloneable, Observable, Serializable {
      * @param insecte insecte à ajouter
      * @param position coordonées de la case où ajouter l'insecte
      */
-    public void deplaceInsecte(Insecte insecte, Point3DH position) {
+    public void deplaceInsecte(Insecte insecte, HexaPoint position) {
         try {
             this.getCase(position).addInsecte(insecte);
             this.ajoutCasesVoisines(position);
@@ -188,7 +188,7 @@ public class Plateau implements Cloneable, Observable, Serializable {
      * @param insecte insecte à supprimer
      * @param position coordonées de la case où suprimer l'insecte
      */
-    public void deleteInsecte(Insecte insecte, Point3DH position) {
+    public void deleteInsecte(Insecte insecte, HexaPoint position) {
         try {
             this.getCase(position).removeInsecte();
         } catch (Exception ex) {
@@ -208,7 +208,7 @@ public class Plateau implements Cloneable, Observable, Serializable {
      */
     public Collection<Case> getCasesVoisines(Case c, boolean exclureCaseOccupee) {
         ArrayList<Case> voisins = new ArrayList<>();
-        for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
+        for (HexaPoint pointCourant : c.getCoordonnees().coordonneesVoisins()) {
             Case voisin = getCase(pointCourant);
             if (voisin != null && (voisin.estVide() || !exclureCaseOccupee)) {
                 voisins.add(voisin); //Case vide
@@ -253,13 +253,13 @@ public class Plateau implements Cloneable, Observable, Serializable {
      * @return liste des cases vide sur les quels le joueur j peut placer un
      * pions
      */
-    public ArrayList<Point3DH> casesVidePlacement(Joueur j) {
-        ArrayList<Point3DH> res = new ArrayList<>();
+    public ArrayList<HexaPoint> casesVidePlacement(Joueur j) {
+        ArrayList<HexaPoint> res = new ArrayList<>();
         if (this.rucheVide()) {
-            res.add(new Point3DH(0, 0, 0));
+            res.add(new HexaPoint(0, 0, 0));
             return res;
         } else if (this.rucheAUnSeulInsecte()) {
-            res.addAll(new Point3DH(0, 0, 0).coordonneesVoisins());
+            res.addAll(new HexaPoint(0, 0, 0).coordonneesVoisins());
             return res;
         }
         Iterator<Case> it = this.cases.values().iterator();
@@ -283,7 +283,7 @@ public class Plateau implements Cloneable, Observable, Serializable {
         return res;
     }
 
-    public ArrayList<Case> pointVersCase(ArrayList<Point3DH> p) {
+    public ArrayList<Case> pointVersCase(ArrayList<HexaPoint> p) {
         ArrayList<Case> c = new ArrayList<>();
         for (int i = 0; i < p.size(); i++) {
             c.add(this.getCase(p.get(i)));
@@ -300,7 +300,7 @@ public class Plateau implements Cloneable, Observable, Serializable {
      */
     public Collection<Case> getCasesVoisinesOccupees(Case c) {
         ArrayList<Case> voisins = new ArrayList<>();
-        for (Point3DH pointCourant : c.getCoordonnees().coordonneesVoisins()) {
+        for (HexaPoint pointCourant : c.getCoordonnees().coordonneesVoisins()) {
             Case voisin = this.getCase(pointCourant);
             if (voisin != null && !voisin.estVide()) {
                 voisins.add(voisin);
@@ -460,7 +460,7 @@ public class Plateau implements Cloneable, Observable, Serializable {
         }
         ArrayList<Case> caseOccupe;
         if (ghost == null) {
-            ghost = this.cases.get(new Point3DH(0, 0, 0));
+            ghost = this.cases.get(new HexaPoint(0, 0, 0));
         }
 
         if (ghost.estVide()) {
@@ -523,7 +523,7 @@ public class Plateau implements Cloneable, Observable, Serializable {
     public Plateau clone() {
         try {
             Plateau p = (Plateau) super.clone();
-            HashMap<Point3DH, Case> h = cloneMap(this.cases);
+            HashMap<HexaPoint, Case> h = cloneMap(this.cases);
             
             p.cases = h;
             return p;
@@ -534,9 +534,9 @@ public class Plateau implements Cloneable, Observable, Serializable {
         return null;
     }
     
-    public static HashMap<Point3DH, Case> cloneMap(Map<Point3DH, Case> cases) {
-        HashMap<Point3DH, Case> clone = new HashMap<>(cases.size());
-        for (Map.Entry<Point3DH, Case> element : cases.entrySet()) {
+    public static HashMap<HexaPoint, Case> cloneMap(Map<HexaPoint, Case> cases) {
+        HashMap<HexaPoint, Case> clone = new HashMap<>(cases.size());
+        for (Map.Entry<HexaPoint, Case> element : cases.entrySet()) {
             Case c = new Case(element.getValue().getCoordonnees());
             //c.setInsectes(cloneList(element.getValue().getInsectes()));
             

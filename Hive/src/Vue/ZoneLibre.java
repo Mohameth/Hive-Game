@@ -5,7 +5,7 @@
  */
 package Vue;
 
-import Modele.Point3DH;
+import Modele.HexaPoint;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -19,7 +19,7 @@ public class ZoneLibre {
     private PionImgView imageZoneLibre;
     private boolean visible;
     private PionPlateau2 pionParent;
-    private Point3DH coordZoneLibre;
+    private HexaPoint coordZoneLibre;
 
     //premiere zone libre
     public ZoneLibre(double totZoom, double width, double height) {
@@ -27,13 +27,13 @@ public class ZoneLibre {
         this.imageZoneLibre.settHoverColor(Color.rgb(0, 255, 0, 0.5));
         setZoneLibreCachee();
         this.pionParent = null;
-        this.coordZoneLibre = new Point3DH(0, 0, 0);
+        this.coordZoneLibre = new HexaPoint(0, 0, 0);
         setMouseEvent();
         //notifier la vueTerrain
     }
 
     //zones libre coté d'un pion
-    public ZoneLibre(PionPlateau2 pionParent, double imgZoneLiX, double imgZoneLiY, Point3DH coordZoneLibre) {
+    public ZoneLibre(PionPlateau2 pionParent, double imgZoneLiX, double imgZoneLiY, HexaPoint coordZoneLibre) {
         this.pionParent = pionParent;
         this.coordZoneLibre = coordZoneLibre;
         this.imageZoneLibre = new PionImgView(null, pionParent.isWhite(), imgZoneLiX, imgZoneLiY, pionParent.getZoom(), pionParent.getWidth(), pionParent.getHeight());
@@ -55,7 +55,7 @@ public class ZoneLibre {
         return imageZoneLibre.getImgPosY();
     }
 
-    public Point3DH getCoordZoneLibre() {
+    public HexaPoint getCoordZoneLibre() {
         return this.coordZoneLibre;
     }
 
@@ -69,7 +69,7 @@ public class ZoneLibre {
         this.imageZoneLibre.setImgInvisible();
     }
 
-    public void updatePosition(Point3DH newCoord, double imgZoneLibreX, double imgZoneLibreY) {
+    public void updatePosition(HexaPoint newCoord, double imgZoneLibreX, double imgZoneLibreY) {
         this.coordZoneLibre = newCoord;
         this.imageZoneLibre.moveToXY(imgZoneLibreX, imgZoneLibreY);
         //this.imageZoneLibre = new PionImgView(null, false, imgZoneLibreX, imgZoneLibreY, pionParent.getZoom(), pionParent.getWidth(), pionParent.getHeight());

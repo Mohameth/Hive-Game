@@ -9,7 +9,7 @@ import Modele.Case;
 import Modele.Joueur;
 import Modele.JoueurHumain;
 import Modele.Plateau;
-import Modele.Point3DH;
+import Modele.HexaPoint;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.After;
@@ -56,7 +56,7 @@ public class InsecteTest {
     public void testDeplacementReine() {
         System.out.println("=============================================");
         System.out.println("Test deplacementReine ======================>\n");
-        Point3DH point = new Point3DH(0, 0, 0);
+        HexaPoint point = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
         Joueur j1 = new JoueurHumain(instance,true);
 
@@ -69,7 +69,7 @@ public class InsecteTest {
         result.addAll(r.deplacementPossible(instance));
 
         System.out.println("test avec tous les voisins libres :");
-        ArrayList<Point3DH> expected = new ArrayList<>();
+        ArrayList<HexaPoint> expected = new ArrayList<>();
 //        expected.add(new Point3DH(0, +1, -1));
 //        expected.add(new Point3DH(+1, 0, -1));
 //        expected.add(new Point3DH(+1, -1, 0));
@@ -82,7 +82,7 @@ public class InsecteTest {
 
         System.out.println("test avec 2 cases occupées et 1 case inaccessible :");
         //TEST GATE
-        ArrayList<Point3DH> expectedWithGate = new ArrayList<>();
+        ArrayList<HexaPoint> expectedWithGate = new ArrayList<>();
         //expectedWithGate.add(new Point3DH(0, +1, -1)); //--> Case occupe
         //expectedWithGate.add(new Point3DH(+1, 0, -1)); //--> Inaccessible (gate)
         //expectedWithGate.add(new Point3DH(+1, -1, 0)); //--> Case occupe
@@ -90,8 +90,8 @@ public class InsecteTest {
         //expectedWithGate.add(new Point3DH(-1, 0, +1));
         //expectedWithGate.add(new Point3DH(-1, +1, 0));
         
-        Case caseOccupe1 = instance.getCase(new Point3DH(0, 1, -1));
-        Case caseOccupe2 = instance.getCase(new Point3DH(1, -1, 0));
+        Case caseOccupe1 = instance.getCase(new HexaPoint(0, 1, -1));
+        Case caseOccupe2 = instance.getCase(new HexaPoint(1, -1, 0));
 
         try {
             Fourmi f1 = new Fourmi(j1); f1 .setEmplacement(caseOccupe1);
@@ -117,7 +117,7 @@ public class InsecteTest {
     public void testDeplacementScarabee() {
         System.out.println("=============================================");
         System.out.println("Test deplacementScarabee ======================>\n");
-        Point3DH point = new Point3DH(0, 0, 0);
+        HexaPoint point = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
         Joueur j1 = new JoueurHumain(instance,true);
         
@@ -128,7 +128,7 @@ public class InsecteTest {
         ArrayList<Case> result = new ArrayList<>();
         result.addAll(s.deplacementPossible(instance));
 
-        ArrayList<Point3DH> expected = new ArrayList<>();
+        ArrayList<HexaPoint> expected = new ArrayList<>();
 //        expected.add(new Point3DH(0, +1, -1));
 //        expected.add(new Point3DH(+1, 0, -1));
 //        expected.add(new Point3DH(+1, -1, 0));
@@ -150,9 +150,9 @@ public class InsecteTest {
         result.addAll(s.deplacementPossible(instance));
 
         arrayCorresponds(result, new ArrayList<>());
-        s.deplacement(instance, new Point3DH(1, -1, 0));
+        s.deplacement(instance, new HexaPoint(1, -1, 0));
 
-        ArrayList<Point3DH> newExpectation = new ArrayList<>();
+        ArrayList<HexaPoint> newExpectation = new ArrayList<>();
 //        newExpectation.add(new Point3DH(0, 0, 0));
 //        newExpectation.add(new Point3DH(1, 0, -1));
 //        newExpectation.add(new Point3DH(2, -1, -1));
@@ -177,14 +177,14 @@ public class InsecteTest {
         Plateau instance = new Plateau();
         Joueur j1 = new JoueurHumain(instance,true);
 
-        Case caseFourmi = instance.getCase(new Point3DH(0, 0, 0));
+        Case caseFourmi = instance.getCase(new HexaPoint(0, 0, 0));
         Fourmi f = new Fourmi(j1);
-        instance.ajoutInsecte(f, new Point3DH(0, 0, 0));
+        instance.ajoutInsecte(f, new HexaPoint(0, 0, 0));
         f.setEmplacement(caseFourmi);
         
         System.out.println("test avec la fourmis seulement :");
 
-        ArrayList<Point3DH> expected = new ArrayList<>();
+        ArrayList<HexaPoint> expected = new ArrayList<>();
 //        expected.add(new Point3DH(0, +1, -1));
 //        expected.add(new Point3DH(+1, 0, -1));
 //        expected.add(new Point3DH(+1, -1, 0));
@@ -195,8 +195,8 @@ public class InsecteTest {
         arrayCorresponds(f.deplacementPossible(instance), expected);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
-        Case caseOccupe1 = instance.getCase(new Point3DH(0, 1, -1));
-        Case caseOccupe2 = instance.getCase(new Point3DH(1, -1, 0));
+        Case caseOccupe1 = instance.getCase(new HexaPoint(0, 1, -1));
+        Case caseOccupe2 = instance.getCase(new HexaPoint(1, -1, 0));
 
         try {
             Scarabee s1 = new Scarabee(j1); s1.setEmplacement(caseOccupe1);
@@ -220,7 +220,7 @@ public class InsecteTest {
     }
     
     private void creeCaseEtPlaceInsecte(Plateau plateau, Insecte insecte, int x, int y, int z) {
-        Point3DH p = new Point3DH(x, y, z);
+        HexaPoint p = new HexaPoint(x, y, z);
         plateau.ajoutInsecte(insecte, p);
         
         insecte.setEmplacement(plateau.getCase(p));
@@ -260,24 +260,24 @@ public class InsecteTest {
         creeCaseEtPlaceInsecte(instance, sauterelleNoire, 1, -1, 0);
         creeCaseEtPlaceInsecte(instance, fourmiNoire, 2, -2, 0);
          
-        ArrayList<Point3DH> expectedFourmi = new ArrayList<>();
-        expectedFourmi.add(new Point3DH(1, 2, -3));
-        expectedFourmi.add(new Point3DH(2, 1, -3));
-        expectedFourmi.add(new Point3DH(3, 0, -3));
-        expectedFourmi.add(new Point3DH(3, -1, -2));
-        expectedFourmi.add(new Point3DH(3, -2, -1));
-        expectedFourmi.add(new Point3DH(3, -3, 0));
-        expectedFourmi.add(new Point3DH(2, -3, 1));
-        expectedFourmi.add(new Point3DH(1, -2, 1));
-        expectedFourmi.add(new Point3DH(0, -2, 2));
-        expectedFourmi.add(new Point3DH(-1, -1, 2));
-        expectedFourmi.add(new Point3DH(-2, -1, 3));
-        expectedFourmi.add(new Point3DH(-3, 0, 3));
-        expectedFourmi.add(new Point3DH(-3, 1, 2));
-        expectedFourmi.add(new Point3DH(-3, 2, 1));
-        expectedFourmi.add(new Point3DH(-2, 2, 0));
-        expectedFourmi.add(new Point3DH(-1, 2, -1));
-        expectedFourmi.add(new Point3DH(0, 2, -2));
+        ArrayList<HexaPoint> expectedFourmi = new ArrayList<>();
+        expectedFourmi.add(new HexaPoint(1, 2, -3));
+        expectedFourmi.add(new HexaPoint(2, 1, -3));
+        expectedFourmi.add(new HexaPoint(3, 0, -3));
+        expectedFourmi.add(new HexaPoint(3, -1, -2));
+        expectedFourmi.add(new HexaPoint(3, -2, -1));
+        expectedFourmi.add(new HexaPoint(3, -3, 0));
+        expectedFourmi.add(new HexaPoint(2, -3, 1));
+        expectedFourmi.add(new HexaPoint(1, -2, 1));
+        expectedFourmi.add(new HexaPoint(0, -2, 2));
+        expectedFourmi.add(new HexaPoint(-1, -1, 2));
+        expectedFourmi.add(new HexaPoint(-2, -1, 3));
+        expectedFourmi.add(new HexaPoint(-3, 0, 3));
+        expectedFourmi.add(new HexaPoint(-3, 1, 2));
+        expectedFourmi.add(new HexaPoint(-3, 2, 1));
+        expectedFourmi.add(new HexaPoint(-2, 2, 0));
+        expectedFourmi.add(new HexaPoint(-1, 2, -1));
+        expectedFourmi.add(new HexaPoint(0, 2, -2));
         
         System.out.println("test deplacement Fourmi blanche sur grosse ruche :");
         arrayCorresponds(fourmiBlanche.deplacementPossible(instance), expectedFourmi);
@@ -287,33 +287,33 @@ public class InsecteTest {
         arrayCorresponds(fourmiNoire.deplacementPossible(instance), expectedFourmi);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
-        ArrayList<Point3DH> expectedReineBlanche = new ArrayList<>();
+        ArrayList<HexaPoint> expectedReineBlanche = new ArrayList<>();
         
         System.out.println("test deplacement Reine blanche sur grosse ruche :");
         arrayCorresponds(reineBlanche.deplacementPossible(instance), expectedReineBlanche);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
-        ArrayList<Point3DH> expectedReineNoire = new ArrayList<>();
-        expectedReineNoire.add(new Point3DH(3, -1, -2));
-        expectedReineNoire.add(new Point3DH(3, -2, -1));
+        ArrayList<HexaPoint> expectedReineNoire = new ArrayList<>();
+        expectedReineNoire.add(new HexaPoint(3, -1, -2));
+        expectedReineNoire.add(new HexaPoint(3, -2, -1));
         
         System.out.println("test deplacement Reine noire sur grosse ruche :");
         arrayCorresponds(reineNoire.deplacementPossible(instance), expectedReineNoire);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
-        ArrayList<Point3DH> expectedScarabeeNoire = new ArrayList<>();
-        expectedScarabeeNoire.add(new Point3DH(0, 0, 0));
-        expectedScarabeeNoire.add(new Point3DH(1, -1, 0));
-        expectedScarabeeNoire.add(new Point3DH(1, -2, 1));
-        expectedScarabeeNoire.add(new Point3DH(-1, 0, 1));
+        ArrayList<HexaPoint> expectedScarabeeNoire = new ArrayList<>();
+        expectedScarabeeNoire.add(new HexaPoint(0, 0, 0));
+        expectedScarabeeNoire.add(new HexaPoint(1, -1, 0));
+        expectedScarabeeNoire.add(new HexaPoint(1, -2, 1));
+        expectedScarabeeNoire.add(new HexaPoint(-1, 0, 1));
         
         System.out.println("test deplacement Scarabee noire sur grosse ruche :");
         arrayCorresponds(scarabeeNoire.deplacementPossible(instance), expectedScarabeeNoire);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
-        ArrayList<Point3DH> expectedAraigneeNoire = new ArrayList<>();
-        expectedAraigneeNoire.add(new Point3DH(3, -1, -2));
-        expectedAraigneeNoire.add(new Point3DH(-2, 2, 0));
+        ArrayList<HexaPoint> expectedAraigneeNoire = new ArrayList<>();
+        expectedAraigneeNoire.add(new HexaPoint(3, -1, -2));
+        expectedAraigneeNoire.add(new HexaPoint(-2, 2, 0));
         
         System.out.println("test deplacement araignée noire sur grosse ruche :");
         arrayCorresponds(araigneeNoire.deplacementPossible(instance), expectedAraigneeNoire);
@@ -323,36 +323,36 @@ public class InsecteTest {
         arrayCorresponds(araigneeBlanche.deplacementPossible(instance), new ArrayList<>());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
-        ArrayList<Point3DH> expectedSauterelleBlanche1 = new ArrayList<>();
-        expectedSauterelleBlanche1.add(new Point3DH(-2, 2, 0));
-        expectedSauterelleBlanche1.add(new Point3DH(0, -2, 2));
-        expectedSauterelleBlanche1.add(new Point3DH(3, -3, 0));
-        expectedSauterelleBlanche1.add(new Point3DH(0, 2, -2));
+        ArrayList<HexaPoint> expectedSauterelleBlanche1 = new ArrayList<>();
+        expectedSauterelleBlanche1.add(new HexaPoint(-2, 2, 0));
+        expectedSauterelleBlanche1.add(new HexaPoint(0, -2, 2));
+        expectedSauterelleBlanche1.add(new HexaPoint(3, -3, 0));
+        expectedSauterelleBlanche1.add(new HexaPoint(0, 2, -2));
         
         System.out.println("test Sauterelle blanche n°1 sur grosse ruche :");
         arrayCorresponds(sauterelleBlanche.deplacementPossible(instance), expectedSauterelleBlanche1);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
-        ArrayList<Point3DH> expectedSauterelleBlanche2 = new ArrayList<>();
-        expectedSauterelleBlanche2.add(new Point3DH(2, -3, 1));
-        expectedSauterelleBlanche2.add(new Point3DH(0, 2, -2));
+        ArrayList<HexaPoint> expectedSauterelleBlanche2 = new ArrayList<>();
+        expectedSauterelleBlanche2.add(new HexaPoint(2, -3, 1));
+        expectedSauterelleBlanche2.add(new HexaPoint(0, 2, -2));
         
         System.out.println("test Sauterelle blanche n°2 sur grosse ruche :");
         arrayCorresponds(sauterelleBlanche2.deplacementPossible(instance), expectedSauterelleBlanche2);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
-        ArrayList<Point3DH> expectedSauterelleBlanche3 = new ArrayList<>();
-        expectedSauterelleBlanche3.add(new Point3DH(-2, 2, 0));
+        ArrayList<HexaPoint> expectedSauterelleBlanche3 = new ArrayList<>();
+        expectedSauterelleBlanche3.add(new HexaPoint(-2, 2, 0));
         
         System.out.println("test Sauterelle blanche n°3 sur grosse ruche :");
         arrayCorresponds(sauterelleBlanche3.deplacementPossible(instance), expectedSauterelleBlanche3);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
-        ArrayList<Point3DH> expectedSauterelleNoire = new ArrayList<>();
-        expectedSauterelleNoire.add(new Point3DH(3, -1, -2));
-        expectedSauterelleNoire.add(new Point3DH(3, -3, 0));
-        expectedSauterelleNoire.add(new Point3DH(-2, 2, 0));
-        expectedSauterelleNoire.add(new Point3DH(-1, -1, 2));
+        ArrayList<HexaPoint> expectedSauterelleNoire = new ArrayList<>();
+        expectedSauterelleNoire.add(new HexaPoint(3, -1, -2));
+        expectedSauterelleNoire.add(new HexaPoint(3, -3, 0));
+        expectedSauterelleNoire.add(new HexaPoint(-2, 2, 0));
+        expectedSauterelleNoire.add(new HexaPoint(-1, -1, 2));
         
         System.out.println("test Sauterelle noire sur grosse ruche :");
         arrayCorresponds(sauterelleNoire.deplacementPossible(instance), expectedSauterelleNoire);
@@ -364,8 +364,8 @@ public class InsecteTest {
         
     }
     
-    private void arrayCorresponds(Collection<Case> result, ArrayList<Point3DH> pointsExpected) {
-        ArrayList<Point3DH> copie = new ArrayList<>(pointsExpected);
+    private void arrayCorresponds(Collection<Case> result, ArrayList<HexaPoint> pointsExpected) {
+        ArrayList<HexaPoint> copie = new ArrayList<>(pointsExpected);
         assertTrue(pointsExpected.size() == result.size());
         for (Case c : result) {
             assertTrue(pointsExpected.contains(c.getCoordonnees()));
