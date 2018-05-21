@@ -3,11 +3,12 @@ package Modele;
 import Modele.Insectes.Insecte;
 import Modele.Insectes.Scarabee;
 import java.awt.Point;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
-public class Case {
+public class Case implements Serializable{
 
     private ArrayList<Insecte> insectes;
     private Point3DH coordonnees;
@@ -21,6 +22,42 @@ public class Case {
     public Case(Point3DH p) {
         this.coordonnees = p;
         this.insectes = new ArrayList<>();
+    }
+	
+	public Case clone(Point3DH p,ArrayList<Insecte> EnmainIA,ArrayList<Insecte> EnjeuIA,
+    		ArrayList<Insecte> EnmainAdverse,ArrayList<Insecte> EnjeuAdverse,boolean b){
+    	Case c=new Case(p);
+    	
+    	for(int i=0;i<insectes.size();i++) {
+    		Insecte in=this.insectes.get(i).clone();
+    		c.insectes.add(in);
+    		in.setEmplacement(c);
+    		
+    		if(b) {
+    			if(in.getEmplacement()==null) {
+        			EnmainIA.add(in);
+        		}else {
+        			EnjeuIA.add(in);
+        		}
+    		}else {
+    			if(in.getEmplacement()==null) {
+    				EnmainAdverse.add(in);
+        		}else {
+        			EnjeuAdverse.add(in);
+        		}
+    		}
+    		
+    	}
+    	return c;
+    }
+    
+    public ArrayList<Insecte> getInsectesClone(){
+    	ArrayList<Insecte> liste=new ArrayList<>();
+    	
+    	for(int i=0;i<this.insectes.size();i++) {
+    		liste.add(this.insectes.get(i).clone());
+    	}
+    	return liste;
     }
 
     public boolean estVide() {

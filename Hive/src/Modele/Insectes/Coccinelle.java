@@ -14,6 +14,10 @@ public class Coccinelle extends Insecte {
         super(j);
     }
 
+	public Insecte clone() {
+    	return new Coccinelle(this.getJoueur());
+    	
+    }
 
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {

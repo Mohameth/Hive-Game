@@ -17,7 +17,10 @@ public class Araignee extends Insecte {
         super(j);
     }
 
-
+	public Insecte clone() {
+    	return new Araignee(this.getJoueur());
+    }
+	
     //@Override
     /*public Collection<Case> deplacementPossible(Plateau plateau) {
     	

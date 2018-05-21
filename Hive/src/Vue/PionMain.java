@@ -15,6 +15,7 @@ import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
@@ -24,16 +25,26 @@ import javafx.util.Duration;
  *
  * @author sylve
  */
-public class PionMain extends Piece {
+public class PionMain {
 
+    private TypeInsecte pionsType;
+    private PionImgView imgPion;
+    private boolean locked;
     private int nbPions;
+    private boolean white;
     private Text idTextLab;
     private BorderPane bp;
+    private VueTerrain vtObserver;
 
-    public PionMain(TypeInsecte pion, int nbInsect, boolean white, Text idTextLab, BorderPane bPane) {
-        super(pion, white);
-        bp = bPane;
-        nbPions = nbInsect;
+    public PionMain(VueTerrain vt, TypeInsecte typeIns, int nbInsect, boolean white, Text idTextLab, BorderPane bPane) {
+        this.white = white;
+        this.vtObserver = vt;
+        this.pionsType = typeIns;
+        this.imgPion = new PionImgView(typeIns, white, 0, 0, 1, 0, 0);
+        this.imgPion.getImage().setFitWidth(this.imgPion.getImage().getFitWidth() / 4.5);
+        this.imgPion.getImage().setFitHeight(this.imgPion.getImage().getFitHeight() / 4.5);
+        this.bp = bPane;
+        this.nbPions = nbInsect;
         this.idTextLab = idTextLab;
         setOnClicEvent();
     }
@@ -43,77 +54,78 @@ public class PionMain extends Piece {
         this.bp.setVisible(false);
     }
 
-    public int decrNbPion() {
+    public void displayBorPane() {
+        //this.bp.getChildren().clear();
+        this.bp.setVisible(true);
+    }
+
+    public void decrNbPion() {
         nbPions--;
         idTextLab.setText("" + nbPions);
 
         if (nbPions <= 0) {
             idTextLab.setText("X");
             cleanBorPane();
-
         }
-        return nbPions;
+    }
+
+    public void setNbPion(int nbPion) {
+        displayBorPane();
+        this.nbPions = nbPion + 1;
+        decrNbPion();
     }
 
     public int getNbPions() {
         return nbPions;
     }
 
-    @Override
-    public void addObserver(ObservateurVue newobserver) {
-        this.obs = newobserver;
+    public boolean isLocked() {
+        return this.locked;
     }
 
-    @Override
-    public void notifyListenersMove(double deltaX, double deltaY, boolean isBoardMove) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void setlock() {
+        this.imgPion.setLock();
+        this.locked = true;
     }
 
-    @Override
-    public void notifyListenersMousePressed(Piece p) {
-        obs.updateMousePressPiece(p);
+    public void removelock() {
+        this.imgPion.removeLock();
+        this.locked = false;
     }
 
-    @Override
+    public boolean isWhite() {
+        return this.white;
+    }
+
+    public void setSelectedEffect() {
+        this.imgPion.setSelectedEffect();
+    }
+
+    public void unSelect() {
+        this.imgPion.unSelect();
+    }
+
+    public TypeInsecte getPionsType() {
+        return pionsType;
+    }
+
     public void affiche() {
-        System.out.println("NbPions: " + this.nbPions + " Type: " + this.getPionsType() + " IsWhite: " + isWhite());
+        System.out.println("NbPions: " + this.nbPions + " Type: " + getPionsType() + " IsWhite: " + isWhite() + " Locked: " + isLocked());
     }
 
-    @Override
+    public ImageView getImage() {
+        return this.imgPion.getImage();
+    }
+
     public void setOnClicEvent() {
-        this.getImgPion().addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(final MouseEvent mouseEvent) {
-                if (getNbPions() > 0 && !isLocked()) {
-                    notifyListenersMousePressed(PionMain.this);
-                    setSelected();
-                } else {
-                    getImgPion().setCursor(new ImageCursor(new Image("notallowed.png")));
 
-                }
+        getImage().addEventFilter(MouseEvent.MOUSE_RELEASED, (
+                final MouseEvent mouseEvent) -> {
+            if (!isLocked()) {
+                this.vtObserver.updateMouseReleasedMainJoueur(this);
             }
-        });
-
-//        this.getImgPion().addEventFilter(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
-//            @Override
-//            public void handle(final MouseEvent mouseEvent) {
-//                if (getNbPions() <= 0 || isLocked()) {
-//                    getImgPion().setCursor(new ImageCursor(new Image("notallowed.png")));
-//                } else {
-//                    getImgPion().setCursor(Cursor.HAND);
-//                }
-//            }
-//        });
-    }
-
-    @Override
-    public void snap(PieceHitbox pm) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void notifyListenersMouseReleased() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+        );
     }
 
 }

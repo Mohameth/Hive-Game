@@ -163,5 +163,8 @@ public class Point3DH {
         return true;
     }
     
+	public Point3DH clone() {
+    	return new Point3DH(this.getX(),this.getY(),this.getZ());
+    }
     
 }

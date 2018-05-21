@@ -13,6 +13,11 @@ public class Moustique extends Insecte {
     public Moustique(Joueur j) {
         super(j);
     }
+	
+	public Insecte clone() {
+    	return new Moustique(this.getJoueur());
+    	
+    }
 
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {

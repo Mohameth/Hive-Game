@@ -1,6 +1,7 @@
 package Modele;
 
 import Modele.Insectes.Insecte;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,7 +19,7 @@ import javafx.util.Pair;
  * @author GRP3
  *
  */
-public class Plateau implements Cloneable, Observable {
+public class Plateau implements Cloneable, Observable, Serializable {
 
     /**
      * ensemble des cases du plateau, évolue de façon dynamique
@@ -49,6 +50,42 @@ public class Plateau implements Cloneable, Observable {
      */
     public Case getCase(Point3DH point) {
         return cases.get(point);
+    }
+
+    public void setCases(Map<Point3DH, Case> cases) {
+        this.cases = cases;
+    }
+
+    public void setNbPionsEnJeu(int nbPionsEnJeu) {
+        this.nbPionsEnJeu = nbPionsEnJeu;
+    }
+
+    public Map<Point3DH, Case> getCases() {
+        return cases;
+    }
+
+    public int getNbPionsEnJeu() {
+        return nbPionsEnJeu;
+    }
+
+    
+    public Plateau clone(ArrayList<Insecte> EnmainIA, ArrayList<Insecte> EnjeuIA,
+            ArrayList<Insecte> EnmainAdverse, ArrayList<Insecte> EnjeuAdverse, boolean b) {
+        Plateau plateau = new Plateau();
+        plateau.cases = cloneCases(EnmainIA, EnjeuIA, EnmainAdverse, EnjeuAdverse, b);
+        plateau.nbPionsEnJeu = this.nbPionsEnJeu;
+        return plateau;
+    }
+
+    public Map<Point3DH, Case> cloneCases(ArrayList<Insecte> Enmain, ArrayList<Insecte> Enjeu,
+            ArrayList<Insecte> EnmainAdverse, ArrayList<Insecte> EnjeuAdverse, boolean b) {
+        HashMap<Point3DH, Case> cases2 = new HashMap<>();
+
+        for (Map.Entry<Point3DH, Case> e : cases.entrySet()) {
+            Point3DH p = e.getKey().clone();
+            cases2.put(p, e.getValue().clone(p, Enmain, Enjeu, EnmainAdverse, EnjeuAdverse, b));
+        }
+        return cases2;
     }
 
     /**
@@ -166,10 +203,10 @@ public class Plateau implements Cloneable, Observable {
 
         return voisins;
     }
-    
+
     /**
      * Indique si i1 et i2 sont voisins
-     * 
+     *
      * @param i1 insecte i1
      * @param i2 insecte i2
      * @return true si i2 est dans le voisinage de i1
@@ -205,10 +242,10 @@ public class Plateau implements Cloneable, Observable {
     public ArrayList<Point3DH> casesVidePlacement(Joueur j) {
         ArrayList<Point3DH> res = new ArrayList<>();
         if (this.rucheVide()) {
-            res.add(new Point3DH(0,0,0));
+            res.add(new Point3DH(0, 0, 0));
             return res;
         } else if (this.rucheAUnSeulInsecte()) {
-            res.addAll(new Point3DH(0,0,0).coordonneesVoisins());
+            res.addAll(new Point3DH(0, 0, 0).coordonneesVoisins());
             return res;
         }
         Iterator<Case> it = this.cases.values().iterator();
@@ -230,6 +267,14 @@ public class Plateau implements Cloneable, Observable {
             }
         }
         return res;
+    }
+
+    public ArrayList<Case> pointVersCase(ArrayList<Point3DH> p) {
+        ArrayList<Case> c = new ArrayList<>();
+        for (int i = 0; i < p.size(); i++) {
+            c.add(this.getCase(p.get(i)));
+        }
+        return c;
     }
 
     /**
@@ -453,9 +498,10 @@ public class Plateau implements Cloneable, Observable {
     }
 
     public void afficherGrille() {
-        for (Case c : this.cases.values()){
-            if (!c.estVide())
+        for (Case c : this.cases.values()) {
+            if (!c.estVide()) {
                 System.out.println(c.toString());
+            }
         }
     }
 

@@ -37,28 +37,28 @@ import java.util.Optional;
 import javafx.scene.effect.ColorAdjust;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.event.EventHandler;
+import javafx.scene.ImageCursor;
+import javafx.scene.input.MouseButton;
+import javafx.scene.shape.Circle;
 
 public class VueTerrain extends Vue implements ObservateurVue {
 
-    private ArrayList<PionPlateau> pieceList;
-    private ArrayList<ImageView> hintZones;
+    private ArrayList<ZoneLibre> listZoneLibres;
+    private HashMap<Point3DH, PionPlateau2> listPionsPlateau;
     private Hive controleur;
-    private Piece currentSelected;
+    private PionPlateau2 currentSelected;
+    private boolean selectionValidee; //l'utilisateur a fait un mouse release sur le pion
+    private boolean currentSelectionIsSnapped; //l'utilisateur a fait un mouse release sur le pion
+    private PionMain currentMainSelected;
     private int sceneWidth, sceneHeight; //taille de la scene
     private double totZoom;  //zoom actuel du plateau
     private double totMoveBoardX, totMoveBoardY;  //position du plateau
     private ArrayList<BorderPane> hudElems;
-    private ArrayList<Point3DH> zoneLibres;
-    private boolean isDragging;
-    private boolean clicSurCaseLibre;
-    private PionPlateau pionDepl;
-    private Point3DH pionDeplOrigin;
-    private HBox hudCenterPlayer1, hudCenterPlayer2;
-    private ArrayList<Piece> pionMainPlayer1, pionMainPlayer2;
-
+    private HashMap<TypeInsecte, PionMain> pionMainPlayer1, pionMainPlayer2;
+    private int partieManche = 0;
     private Group root;
     private Stage primaryStage;
-    private int i = 0;
 
     VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs) {
         boolean fs = primaryStage.isFullScreen();
@@ -68,26 +68,44 @@ public class VueTerrain extends Vue implements ObservateurVue {
         this.controleur = controleur;
         this.controleur.reset();
         this.controleur.setJoueurs(casJoueurs, true);
-        this.isDragging = false;
-        this.clicSurCaseLibre = false;
-        this.hintZones = new ArrayList<>();
-        pionMainPlayer1 = new ArrayList<>();
-        pionMainPlayer2 = new ArrayList<>();
+
+        pionMainPlayer1 = new HashMap<>();
+        pionMainPlayer2 = new HashMap<>();
+        this.listPionsPlateau = new HashMap<>();
+        this.listZoneLibres = new ArrayList<>();
         hudElems = new ArrayList<>();
         this.currentSelected = null; //aucune piece selectionnée
+        this.currentMainSelected = null; //aucune piece selectionnée
         this.sceneWidth = 1280; //taille de base
         this.sceneHeight = 720;
-        this.totZoom = 1;
-        Scene s = new Scene(root, primaryStage.getWidth(), primaryStage.getHeight());
-        demarrer(s);
+        this.totZoom = 0.5;
+        this.selectionValidee = false;
+        this.currentSelectionIsSnapped = false;
 
+        Scene s = new Scene(root, primaryStage.getWidth(), primaryStage.getHeight());
+
+        //creation du plateau
+        Rectangle rect = new Rectangle(0, 0);
+        Image img = new Image("background.jpg");
+        rect.setFill(new ImagePattern(img));
+        root.getChildren().add(rect);  //ajout dans le group
+        makeBoardDraggable(rect);   //si on clique sur le rectangle deplacer les images
+        makeBoardScrollZoom(rect);  //si on zoom scroll sur le plateau (rectangle) appliquer le zoom
+        rect.setCursor(Cursor.MOVE); //Change cursor to crosshair
+        rect.widthProperty().bind(s.widthProperty());
+        rect.heightProperty().bind(s.heightProperty());
         makeSceneResizeEvent(s);//Window resize event
 
         primaryStage.setScene(s);
         primaryStage.setFullScreen(fs);
         primaryStage.show();
 
-        //dessineTemplate();
+        //
+        //place un pion de la main vers le plateau
+//place un pion du plateau vers le plateau
+        //sauvegarde coordonnée de départ du pion
+        //et les coordonnées cibles
+        //this.controleur.deplacementInsecte(pionDeplOrigin, new Point3DH(this.pionDepl.getX(), this.pionDepl.getY(), this.pionDepl.getY()));
         BorderPane p = getHudDroite();
         p.minWidth(150);
         p.setLayoutX(-155);
@@ -99,17 +117,14 @@ public class VueTerrain extends Vue implements ObservateurVue {
         ctrlView.setLayoutY(-320);
         ctrlView.translateYProperty().bind(s.heightProperty());
 
-        /*liste d'insect*/
         ArrayList<Insecte> initInsectes = new ArrayList<>();
 
         initInsectes = this.controleur.mainsInit();
-
         BorderPane playerOne = getHudPlayer(getnbInsect(initInsectes), 1); //initialisation tout les pions possable
+        BorderPane playerTwo = getHudPlayer(getnbInsect(initInsectes), 2);
 
         playerOne.minWidthProperty().bind(s.widthProperty());
         playerOne.maxWidthProperty().bind(s.widthProperty());
-
-        BorderPane playerTwo = getHudPlayer(getnbInsect(initInsectes), 2);
         playerTwo.minWidthProperty().bind(s.widthProperty());
         playerTwo.maxWidthProperty().bind(s.widthProperty());
 
@@ -124,9 +139,410 @@ public class VueTerrain extends Vue implements ObservateurVue {
         //faire au clic passer devant HUD
         hudToFront();
 
-        newTour();
+        //ctrlGame();
+        coupJouer();
     }
 
+    public void displayZoneLibre() {
+        System.out.println("Display zone libre");
+        //updatePosZoneLibre();
+        ArrayList<Point3DH> zoneLibres = this.controleur.placementsPossibles(); //lorsqu'on clique sur un pionMain affiche les zones libres
+
+        if (zoneLibres.size() == 1 && zoneLibres.get(0).equals(new Point3DH(0, 0, 0))) {
+            addPremierZoneLibre();
+            this.listZoneLibres.get(0).setZoneLibreVisible();
+        } else {
+            //affiche ceux qu'on a pas trouvé par une boucle:
+            for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+                PionPlateau2 pp2 = entry.getValue();
+                for (ZoneLibre uneZoneLibre : pp2.getZonesLibresListe()) {
+                    if (containsSamePoint(zoneLibres, uneZoneLibre)) {
+                        uneZoneLibre.setZoneLibreVisible();
+                    }
+                }
+            }
+        }
+        hudToFront();
+    }
+
+    private boolean containsSamePoint(ArrayList<Point3DH> aZL, ZoneLibre zone) {
+        if (aZL != null) {
+            for (Point3DH p3d : aZL) {
+                if (zone.getCoordZoneLibre().equals(p3d)) {
+                    aZL.remove(p3d);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void updatePosZoneLibre() {
+        hideZoneLibre();
+        System.out.println("Update Zone Libre");
+        this.listZoneLibres.clear();
+        for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+            PionPlateau2 pp2 = entry.getValue();
+            pp2.updateZoneLibreVoisin();
+        }
+    }
+
+    public void hideZoneLibre() {
+        for (ZoneLibre zoneLibre : listZoneLibres) {
+            zoneLibre.setZoneLibreCachee();
+        }
+    }
+
+    public void addPremierZoneLibre() {
+        ZoneLibre zl = new ZoneLibre(getZoom(), getWidth(), getHeight()) {
+            @Override
+            public void setMouseEvent() {
+                this.getImage().addEventFilter(MouseEvent.MOUSE_RELEASED, (
+                        final MouseEvent mouseEvent) -> {
+                    //valider le coup au mouse release:
+                    System.out.println("Mon Override premiere zone libre");
+                    updateMousePressedZoneLibre(this);
+                });
+            }
+        };
+        UpdateAddNewZoneLibre(zl);
+    }
+
+    public Group getRoot() {
+        return this.root;
+    }
+
+    private void zoomImage(double totZoomVar) {
+        //limite le zoom a 0.10 min et 2.5 MAX, ne zoom pas si plateau est vide
+        if (totZoomVar > 0.10 && totZoomVar < 2.5 && !listPionsPlateau.isEmpty()) {
+
+            for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+                entry.getValue().updateZoomWidthHeight(totZoomVar, this.getWidth(), this.getHeight());
+            }
+
+            double zoomFactor = totZoomVar / this.totZoom;
+            this.totMoveBoardX *= zoomFactor;
+            this.totMoveBoardY *= zoomFactor;
+            this.totZoom = totZoomVar;
+        }
+    }
+
+    private void moveDeltaBoard(double x, double y) {
+        for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+            entry.getValue().moveDeltaBoard(x, y);
+        }
+    }
+
+    private void makeSceneResizeEvent(Scene scene) {
+        scene.widthProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
+                updateWindowWidth(newSceneWidth);
+            }
+        });
+        scene.heightProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneHeight, Number newSceneHeight) {
+                updateWindowHeight(newSceneHeight);
+            }
+        });
+    }
+
+    private void updateWindowWidth(Number w) {
+        this.sceneWidth = w.intValue();
+        updateTranslationPiece();
+    }
+
+    private void updateWindowHeight(Number h) {
+        this.sceneHeight = h.intValue();
+        updateTranslationPiece();
+    }
+
+    private void updateTranslationPiece() {
+        for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+            entry.getValue().updateZoomWidthHeight(this.totZoom, this.sceneWidth, this.sceneHeight);
+        }
+    }
+
+    private void makeBoardDraggable(Rectangle rect) {
+        MouseLocation lastMouseLocation = new MouseLocation();
+        rect.addEventFilter(MouseEvent.MOUSE_PRESSED, (
+                final MouseEvent mouseEvent) -> {
+            lastMouseLocation.x = mouseEvent.getSceneX(); //sauvegarde des coordonnées initial de la souris
+            lastMouseLocation.y = mouseEvent.getSceneY();
+            //remove selection
+            //removeSelectedPion();
+            //hideZoneLibre();
+        });
+
+        rect.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+                    if (mouseEvent.getClickCount() == 2) {
+                        System.out.println("Double clicked");
+                        removeSelectedPion();
+                    }
+                }
+            }
+        });
+
+        // --- Shift node calculated from mouse cursor movement
+        rect.addEventFilter(MouseEvent.MOUSE_DRAGGED, (
+                final MouseEvent mouseEvent) -> {
+            double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x;
+            double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y;
+            applyBoardMove(deltaX, deltaY);
+            lastMouseLocation.x = mouseEvent.getSceneX();
+            lastMouseLocation.y = mouseEvent.getSceneY();
+        });
+    }
+
+    private void applyBoardMove(double dx, double dy) {
+        moveDeltaBoard(dx, dy);
+        this.totMoveBoardX += dx;
+        this.totMoveBoardY += dy;
+    }
+
+    private void resetView() {
+        moveDeltaBoard(-this.totMoveBoardX, -this.totMoveBoardY);
+        zoomImage(0.5);
+        this.totMoveBoardX = 0;
+        this.totMoveBoardY = 0;
+    }
+
+    private void makeBoardScrollZoom(Rectangle rect) {
+        rect.setOnScroll((ScrollEvent event) -> {
+            applyZoomEvent(event);
+        }
+        );
+    }
+
+    private void removeSelectedPion() {
+        if (this.currentSelected != null) {
+            this.currentSelected.unSelect();
+            this.currentSelected = null;
+        }
+
+        if (this.currentMainSelected != null) {
+            this.currentMainSelected.unSelect();
+            this.currentMainSelected = null;
+        }
+        hideZoneLibre();
+
+    }
+
+    private void makeImageScrollZoom(ImageView iv) {
+        iv.setOnScroll((ScrollEvent event) -> {
+            applyZoomEvent(event);
+        }
+        );
+    }
+
+    private void applyZoomEvent(ScrollEvent event) {
+        double zoomForce = 0.05;
+        double deltaY = event.getDeltaY();
+        if (deltaY < 0) {
+            zoomImage(this.totZoom - zoomForce);
+        } else {
+            zoomImage(this.totZoom + zoomForce);
+
+        }
+    }
+
+    public double getZoom() {
+        return this.totZoom;
+    }
+
+    public double getWidth() {
+        return this.sceneWidth;
+    }
+
+    public double getHeight() {
+        return this.sceneHeight;
+    }
+
+    public void hudToFront() {
+        for (BorderPane p : hudElems) {
+            p.toFront();
+        }
+    }
+
+    @Override
+    public void UpdateAddNewZoneLibre(ZoneLibre zLibre) {
+        this.listZoneLibres.add(zLibre);
+        this.getRoot().getChildren().add(zLibre.getImage());
+        makeImageScrollZoom(zLibre.getImage());
+        System.out.println("Ok new Zone Libre");
+    }
+
+    @Override
+    public void UpdateAddNewPionPlateau(PionPlateau2 pionPlateau) {
+        //gestion des doublons (cases a la meme place)
+        if (this.listPionsPlateau.containsKey(pionPlateau.getCoordPion())) {
+            System.out.println("ADD NEW PION doublons");
+            pionPlateau.setPionEnDessous(this.listPionsPlateau.get(pionPlateau.getCoordPion()));
+            this.getRoot().getChildren().remove(this.listPionsPlateau.get(pionPlateau.getCoordPion()).getImage());
+        }
+        this.listPionsPlateau.put(pionPlateau.getCoordPion(), pionPlateau);
+        this.getRoot().getChildren().add(pionPlateau.getImage()); //ajout de l'image car nouveau pion
+        makeImageScrollZoom(pionPlateau.getImage());
+        System.out.println("Ok new Pion");
+    }
+
+    @Override
+    public void UpdateZonLibPosition(Point3DH oldKeyPoint3D, Point3DH newPos3D, ZoneLibre zLibre) {
+        //System.out.println("Maj des zones libres");
+        //useless ? avec l'arraylist
+    }
+
+    public void affichePionPlateauList() {
+        System.out.println("--------");
+        for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+            Point3DH key = entry.getKey();
+            PionPlateau2 pp2 = entry.getValue();
+            System.out.println("Key: " + key + " value: ");
+            pp2.affiche();
+
+        }
+    }
+
+    @Override
+    public void UpdatePionPosition(Point3DH oldKeyPoint3D, Point3DH newPos3D, PionPlateau2 p) {
+        //affichePionPlateauList();
+        System.out.println("Maj des pionsPlateau");
+        this.listPionsPlateau.remove(oldKeyPoint3D);
+        //gestion des pions en dessous
+
+        if (currentSelected.getPionEnDessous() != null) {
+            System.out.println("Pion en dessous update position");
+            PionPlateau2 oldpp2 = currentSelected.getPionEnDessous();
+            //remettre le pion dans le tableau
+            if (oldKeyPoint3D.equals(oldpp2.getCoordPion())) {
+                System.out.println("Doit etre pareil");
+            }
+            this.listPionsPlateau.put(oldpp2.getCoordPion(), oldpp2);
+            this.getRoot().getChildren().add(oldpp2.getImage());
+            //supprime le pion en dessous lors du déplacement
+            p.setPionEnDessous(null);
+        }
+        //gestion des doublons si un pions deja  a cette position le mettre en dessous
+        if (this.listPionsPlateau.containsKey(newPos3D)) {
+            System.out.println("UPDATE PION doublons");
+            p.setPionEnDessous(this.listPionsPlateau.get(newPos3D));
+            this.getRoot().getChildren().remove(this.listPionsPlateau.get(newPos3D).getImage());
+        }
+        this.listPionsPlateau.put(newPos3D, p);
+
+        // affichePionPlateauList();
+    }
+
+    @Override
+    public void updatePionPateauMove(PionPlateau2 p) {
+        if (p.equals(this.currentSelected)) {
+            //valide la selection commence un drag:
+            this.selectionValidee = true;
+            p.setDragging(true);
+            //p.afficheZoneLibre(false);
+            System.out.println("Selection");
+        }
+        System.out.println("Verif collision Move");
+    }
+
+    @Override
+    public void updatePionPateauMousePress(PionPlateau2 p) {
+        p.affiche();
+        //il s'agit d'une selection d'un pion du plateau
+        if (this.currentSelected == null) {
+            removeSelectedPion();
+            this.currentSelected = p;
+            this.selectionValidee = false;
+            displayZoneLibre();
+            p.setToFront();
+            hudToFront();
+            p.setSelectedEffect();
+        }
+
+        //il s'agit d'une cible = ZoneLibre release
+        if (this.currentSelected != null && !this.currentSelected.equals(p)) {
+            removeSelectedPion();
+            this.currentSelected = p;
+            this.selectionValidee = false;
+            displayZoneLibre();
+            p.setToFront();
+            hudToFront();
+            p.setSelectedEffect();
+        }
+
+    }
+
+    @Override
+    public void updatePionPateauMouseReleased(PionPlateau2 p) {
+        //on selectionne le pion si dragging = false
+        if (p.equals(this.currentSelected) && this.selectionValidee == false) {
+            //onclique sur le pion release
+            this.selectionValidee = true;
+            //System.out.println("Clic Selection");
+        } else if (p.equals(this.currentSelected) && this.selectionValidee == true && p.isDragging()) {
+            //si snap = ok valide le coup
+            //si snap = false on remet a la position d'origine et removeselection
+            System.out.println("Fin drag & drop Verif si snap sinon back origine");
+            if (this.currentSelectionIsSnapped) {
+                System.out.println("Valide le drag and drop");
+            } else {
+                //retourne sur la position d'origine
+                p.goToPrevPos();
+            }
+        }
+
+    }
+
+    @Override
+    public void updateMousePressedZoneLibre(ZoneLibre zLibre) {
+        System.out.println("Presse sur zone libre");
+        //ICI ON JOUE UN COUP
+        //pose un pionPlateau deja sur le plateau sur cette zone
+        if (this.currentSelected != null) {
+            //updateposition
+
+            //mise a jour du tableau avec les points et zones libres
+            System.out.println("Jouer coup plateau -> plateau");
+            this.controleur.deplacementInsecte(currentSelected.getCoordPion(), zLibre.getCoordZoneLibre());
+            this.currentSelected.setPionPosition(zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY());
+            this.currentSelected.validCurrentPosXY();
+        } else if (this.currentMainSelected != null) {    // un pionMain est selectionnée d'un joueur et on créer un pionPlateau sur le plateau au coordonnée zLibre
+            //update add pion, pion ajouté depuis la main
+            System.out.println("Jouer coup main -> plateau");
+            currentMainSelected.affiche();
+            zLibre.affiche();
+            //mise a jour du tableau avec les points et zones libres
+
+            this.controleur.joueurPlaceInsecte(currentMainSelected.getPionsType(), zLibre.getCoordZoneLibre());
+            PionPlateau2 pp2 = new PionPlateau2(this, currentMainSelected.getPionsType(), currentMainSelected.isWhite(), zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY(), this.getZoom(), this.getWidth(), this.getHeight());
+            //pp2.setPionPosition(zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY());
+            pp2.validCurrentPosXY();
+        }
+        coupJouer();
+
+    }
+
+    private void coupJouer() {
+        hideZoneLibre();
+        removeSelectedPion();
+        updateMainJoueur();
+        hudToFront();
+        System.out.println("Coup Jouer");
+    }
+
+    public void updateMouseReleasedMainJoueur(PionMain pm) {
+        System.out.println("Clic sur main joueur");
+        removeSelectedPion();
+        this.currentMainSelected = pm;
+        pm.setSelectedEffect();
+        displayZoneLibre();
+    }
+
+    //ANCIEN CODE
     public HashMap<TypeInsecte, Integer> getnbInsect(ArrayList<Insecte> a) {
         HashMap<TypeInsecte, Integer> m = new HashMap<>();
         for (Insecte insecte : a) {
@@ -142,91 +558,117 @@ public class VueTerrain extends Vue implements ObservateurVue {
         return m;
     }
 
-    public void hudToFront() {
-        for (BorderPane p : hudElems) {
-            p.toFront();
-        }
-    }
-
-    public void demarrer(Scene s) {
-        this.pieceList = new ArrayList<>();
-        this.hintZones = new ArrayList<>();
-        this.currentSelected = null; //aucune piece selectionnée
-        this.sceneWidth = 1280; //taille de base
-        this.sceneHeight = 720;
-        this.totZoom = 1;
-
-        //creation du plateau
-        Rectangle rect = new Rectangle(0, 0);
-        Image img = new Image("background.jpg");
-        rect.setFill(new ImagePattern(img));
-        root.getChildren().add(rect);  //ajout dans le group
-        makeBoardDraggable(rect);   //si on clique sur le rectangle deplacer les images
-        makeBoardScrollZoom(rect);  //si on zoom scroll sur le plateau (rectangle) appliquer le zoom
-        rect.setCursor(Cursor.MOVE); //Change cursor to crosshair
-        rect.widthProperty().bind(s.widthProperty());
-        rect.heightProperty().bind(s.heightProperty());
-        makeSceneResizeEvent(s);//Window resize event
-
-        //addPiece("piontr_black_cloporte.png", root, 0, 0);
-    }
-
-    public void newTour() {
-        unselectPiece();
-        updateMainJoueur();
-    }
-
     public void updateMainJoueur() { //liste d'insect en param
         //joueur 1 = blanc
         //2 = noir
-        ArrayList<Insecte> mainJoueur = new ArrayList<>();
+        System.out.println("Verif des données!!");
+        HashMap<TypeInsecte, Integer> m;
+        //Mise a jour si probleme du texte
+        m = getnbInsect(this.controleur.mainJoueur(1));
+
+        for (Map.Entry<TypeInsecte, PionMain> entry : pionMainPlayer1.entrySet()) {
+            TypeInsecte keyType = entry.getKey();
+            PionMain pMain = entry.getValue();
+            if (m.containsKey(keyType)) {
+                //verifier les données
+                int nbInsects = m.get(keyType);
+                if (pMain.getNbPions() != nbInsects) {
+                    this.pionMainPlayer1.get(keyType).setNbPion(nbInsects);
+                }
+            } else { //si n'est pas present le supprimer
+                pMain.setNbPion(0);
+            }
+
+        }
+
+        m.clear();
+        m = getnbInsect(this.controleur.mainJoueur(2));
+        for (Map.Entry<TypeInsecte, PionMain> entry : pionMainPlayer2.entrySet()) {
+            TypeInsecte keyType = entry.getKey();
+            PionMain pMain = entry.getValue();
+            if (m.containsKey(keyType)) {
+                //verifier les données
+                int nbInsects = m.get(keyType);
+                if (pMain.getNbPions() != nbInsects) {
+                    this.pionMainPlayer2.get(keyType).setNbPion(nbInsects);
+                }
+            } else { //si n'est pas present le supprimer
+                pMain.setNbPion(0);
+            }
+
+        }
+
         System.out.println("----------------------------- NOUVEAU TOUR -----------------------------");
         if (this.controleur.tourJoueurBlanc()) {
-            System.out.println("joueur blanc peut jouer");
-            System.out.println("Tout Pion Possable" + this.controleur.tousPionsPosables(1));
-            setlock(pionMainPlayer1);  //pour griser les pions
-            removeLock(pionMainPlayer1, this.controleur.tousPionsPosables(1));
-            System.out.println("lock noir");
-            setlock(pionMainPlayer2);
-            setLockPlayerPion(false); //lock les noirs
-            System.out.println("----blanc");
+            //setlock(true);  //pour griser les pions
+            setLockPlayerPion(false); //lock les noirs  sur le plateau  et remove les blancs
+            removeLock(true, this.controleur.tousPionsPosables(1));
+            setlock(false);
         } else {
-            System.out.println("joueur noir peut jouer");
-            setlock(pionMainPlayer2); //pour griser les pions
-            removeLock(pionMainPlayer2, this.controleur.tousPionsPosables(2));
-            System.out.println("lock blanc");
-            setlock(pionMainPlayer1);
-            setLockPlayerPion(true); //lock les blancs
-            System.out.println("----noir");
+            //Mise a jour si probleme du texte
+            //setlock(false); //pour griser les pions noir = false
+            setLockPlayerPion(true); //lock les blancs sur le plateau et remove les noirs
+            removeLock(false, this.controleur.tousPionsPosables(2));
+            setlock(true);
         }
     }
 
-    private void removeLock(ArrayList<Piece> a, boolean toutPion) {
-        for (Piece pm : a) {
-            if (toutPion || (pm.getPionsType() == TypeInsecte.REINE)) {
-                pm.removelock();
+    private void removeLock(boolean white, boolean toutPion) {
+        HashMap<TypeInsecte, PionMain> m;
+        if (white) {
+            m = this.pionMainPlayer1;
+        } else {
+            m = this.pionMainPlayer2;
+        }
+        for (Map.Entry<TypeInsecte, PionMain> entry : m.entrySet()) {
+            TypeInsecte type = entry.getKey();
+            PionMain pionMainPlayer = entry.getValue();
+            if (toutPion || type == TypeInsecte.REINE) {
+                pionMainPlayer.removelock();
             }
         }
+        //bloquer les pions du meme joueurs sur le plateau quand il y a que la reine a poser
+        if (!toutPion) {
+            setLockPlayerPion(white, false);
+        }
+
     }
 
-    private void setlock(ArrayList<Piece> a) {
-        for (Piece pm : a) {
-            pm.setlock();
+    //lock les pions des mains des joueurs
+    private void setlock(boolean white) {
+        HashMap<TypeInsecte, PionMain> m;
+        if (white) {
+            m = this.pionMainPlayer1;
+        } else {
+            m = this.pionMainPlayer2;
+        }
+        for (Map.Entry<TypeInsecte, PionMain> entry : m.entrySet()) {
+            TypeInsecte type = entry.getKey();
+            PionMain pionMainPlayer = entry.getValue();
+            pionMainPlayer.setlock();
+
         }
     }
 
     private void setLockPlayerPion(boolean iswhite) {
-        for (Piece p : pieceList) {
-            if (p.isWhite() == iswhite) {
-                p.setlock();
+        setLockPlayerPion(iswhite, true);
+    }
+
+    private void setLockPlayerPion(boolean iswhite, boolean unlockOposite) {
+        for (Map.Entry<Point3DH, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+            PionPlateau2 pPlat = entry.getValue();
+            if (pPlat.isWhite() == iswhite) {
+                pPlat.setLock();
             } else {
-                p.removelock();
+                if (unlockOposite) {
+                    pPlat.removeLock();
+                }
             }
+
         }
     }
 
     private BorderPane getHudPlayer(HashMap<TypeInsecte, Integer> m, int numplayer) {
-
         Button bEdit = new Button();
         bEdit.setGraphic(new ImageView(new Image("icons/pencil.png")));
         bEdit.setStyle("-fx-background-color: Transparent;\n");
@@ -240,15 +682,12 @@ public class VueTerrain extends Vue implements ObservateurVue {
         hName.getChildren().addAll(bEdit, txt1);
         //hName.setStyle("-fx-background-color:#FFFFFF;");
         HBox pointJ1 = new HBox();
-
+        //ajoute les borders panes de chaque pions dans la hbox
         pointJ1.getChildren().addAll(genListPionsMain(m, numplayer));
 
         pointJ1.setAlignment(Pos.CENTER);
+        pointJ1.setPadding(new Insets(5, 0, 5, 0));
 
-        pointJ1.setPadding(
-                new Insets(5, 0, 5, 0));
-
-        //pointJ1.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 3 0 0 0;\n");
         bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             getPupName(txt1);
         });
@@ -258,25 +697,15 @@ public class VueTerrain extends Vue implements ObservateurVue {
         hName.setStyle(style);
 
         pointJ1.setStyle(style);
-
         HBox Space = new HBox();
-
-        Space.setMinWidth(
-                155);
-        Space.setMaxWidth(
-                155);
-        hName.setMinWidth(
-                155);
-        hName.setMaxWidth(
-                155);
+        Space.setMinWidth(155);
+        Space.setMaxWidth(155);
+        hName.setMinWidth(155);
+        hName.setMaxWidth(155);
         BorderPane b = new BorderPane();
-
         b.setLeft(hName);
-
         b.setCenter(pointJ1);
-
         b.setRight(Space);
-
         return b;
     }
 
@@ -295,42 +724,25 @@ public class VueTerrain extends Vue implements ObservateurVue {
             PionMain pm;
             Text t;
             int nbPions = entry.getValue().intValue();
-
             t = new Text("" + nbPions);
-
             boolean iswhite = false;
             if (numplayer == 1) {
                 iswhite = true;
             }
-
-            pm = new PionMain(entry.getKey(), nbPions, iswhite, t, bp);
-
-            pm.addObserver(this);
-            ImageView imgv = pm.getImgPion();
-            imgv.setFitWidth(imgv.getImage().getWidth() / 4.5);
-            imgv.setFitHeight(imgv.getImage().getHeight() / 4.5);
-
+            pm = new PionMain(this, entry.getKey(), nbPions, iswhite, t, bp);
             t.setFont(Font.font("Verdana", FontWeight.BOLD, 10));
             t.setFill(Color.WHITE);
             BorderPane.setAlignment(t, Pos.CENTER);
-            if (numplayer == 2) {
+            if (numplayer == 2) { //position des numeros des pions en haut et en bas en fct du joueur
                 bp.setTop(t);
-                pionMainPlayer2.add(pm);
+                pionMainPlayer2.put(entry.getKey(), pm);
             } else {
                 bp.setBottom(t);
-                pionMainPlayer1.add(pm);
+                pionMainPlayer1.put(entry.getKey(), pm);
             }
-
-            bp.setCenter(imgv);
+            bp.setCenter(pm.getImage());
             bps.add(bp);
         }
-
-        if (numplayer == 2) {
-            hudCenterPlayer2 = pointJ1;
-        } else {
-            hudCenterPlayer1 = pointJ1;
-        }
-
         return bps;
     }
 
@@ -590,7 +1002,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         bgauche.setPadding(new Insets(0, 0, 15, 15));
 
         double moveRangeXY = 40;
-        double ZoomRangePM = 3; //equivaut a 3 zoom
+        double ZoomRangePM = 1; //equivaut a 3 zoom
 
         breset.addEventHandler(MouseEvent.MOUSE_CLICKED,
                 (MouseEvent e) -> {
@@ -600,35 +1012,36 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
         bLeft.addEventHandler(MouseEvent.MOUSE_PRESSED,
                 (MouseEvent e) -> {
-                    applyBoardMove(moveRangeXY, 0);
+                    moveDeltaBoard(moveRangeXY, 0);
+
                 }
         );
         bRight.addEventHandler(MouseEvent.MOUSE_PRESSED,
                 (MouseEvent e) -> {
-                    applyBoardMove(-moveRangeXY, 0);
+                    moveDeltaBoard(-moveRangeXY, 0);
                 }
         );
         bUp.addEventHandler(MouseEvent.MOUSE_PRESSED,
                 (MouseEvent e) -> {
-                    applyBoardMove(0, moveRangeXY);
+                    moveDeltaBoard(0, moveRangeXY);
                 }
         );
         bDown.addEventHandler(MouseEvent.MOUSE_PRESSED,
                 (MouseEvent e) -> {
-                    applyBoardMove(0, -moveRangeXY);
+                    moveDeltaBoard(0, -moveRangeXY);
                 }
         );
         bZoom.addEventHandler(MouseEvent.MOUSE_PRESSED,
                 (MouseEvent e) -> {
                     for (int i = 0; i < ZoomRangePM; i++) {
-                        ZoomFactor(20);
+                        zoomImage(this.totZoom + 0.10);
                     }
                 }
         );
         bDeZoom.addEventHandler(MouseEvent.MOUSE_PRESSED,
                 (MouseEvent e) -> {
                     for (int i = 0; i < ZoomRangePM; i++) {
-                        ZoomFactor(-20);
+                        zoomImage(this.totZoom - 0.10);
                     }
                 }
         );
@@ -636,152 +1049,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
         return bgauche;
     }
 
-    private void makeSceneResizeEvent(Scene scene) {
-        scene.widthProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
-                updateWindowWidth(newSceneWidth);
-            }
-        });
-        scene.heightProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneHeight, Number newSceneHeight) {
-                updateWindowHeight(newSceneHeight);
-            }
-        });
-    }
-
-    private void updateWindowWidth(Number w) {
-        this.sceneWidth = w.intValue();
-        updateTranslationPiece();
-    }
-
-    private void updateWindowHeight(Number h) {
-        this.sceneHeight = h.intValue();
-        //System.out.println(h.intValue());
-        updateTranslationPiece();
-    }
-
-    private void updateTranslationPiece() {
-        for (PionPlateau p : pieceList) {
-            p.setTranslation(sceneWidth, sceneHeight);
-        }
-        removeHint();
-
-    }
-
-    private void unselectPiece() {
-        if (this.currentSelected != null) {
-            this.currentSelected.unSelect();
-            this.currentSelected = null;
-        }
-        removeHint();
-    }
-
-    private void makeBoardDraggable(Rectangle rect) {
-        MouseLocation lastMouseLocation = new MouseLocation();
-        rect.addEventFilter(MouseEvent.MOUSE_PRESSED, (
-                final MouseEvent mouseEvent) -> {
-            lastMouseLocation.x = mouseEvent.getSceneX(); //sauvegarde des coordonnées initial de la souris
-            lastMouseLocation.y = mouseEvent.getSceneY();
-            removeHint();
-            unselectPiece();
-        });
-
-        // --- Shift node calculated from mouse cursor movement
-        rect.addEventFilter(MouseEvent.MOUSE_DRAGGED, (
-                final MouseEvent mouseEvent) -> {
-            double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x;
-            double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y;
-            applyBoardMove(deltaX, deltaY);
-            lastMouseLocation.x = mouseEvent.getSceneX();
-            lastMouseLocation.y = mouseEvent.getSceneY();
-        });
-    }
-
-    private void applyBoardMove(double dx, double dy) {
-        for (PionPlateau p : pieceList) {
-            p.moveXYBoard(dx, dy);
-        }
-        this.totMoveBoardX += dx;
-        this.totMoveBoardY += dy;
-    }
-
-    private void resetView() {
-        for (PionPlateau p : pieceList) {
-            p.moveXYBoard(-this.totMoveBoardX, -this.totMoveBoardY);
-        }
-        while (this.totZoom < 0.99 || this.totZoom > 1.01) {
-            if (totZoom < 1) {
-                ZoomFactor(40);
-            } else {
-                ZoomFactor(-40);
-            }
-        }
-
-        this.totMoveBoardX = 0;
-        this.totMoveBoardY = 0;
-        hudToFront();
-    }
-
-    private void makeBoardScrollZoom(Rectangle rect) {
-        rect.setOnScroll((ScrollEvent event) -> {
-            applyZoomEvent(event);
-        }
-        );
-    }
-
-    private void makePionScrollZoom(PionPlateau p) {
-        makeImageScrollZoom(p.getImgPion());
-    }
-
-    private void makeImageScrollZoom(ImageView iv) {
-        iv.setOnScroll((ScrollEvent event) -> {
-            applyZoomEvent(event);
-        }
-        );
-    }
-
-    private void applyZoomEvent(ScrollEvent event) {
-        double deltaY = event.getDeltaY();
-        ZoomFactor(deltaY);
-        removeHint();
-    }
-
-    private void ZoomFactor(double delta) {
-        removeHint();
-        //bug de mise a jour des positions des hitbox si vide
-        if (!pieceList.isEmpty()) {
-            double zoomFactor = 1.05;
-            if (delta < 0) {
-                zoomFactor = 2.0 - zoomFactor;
-            }
-            for (PionPlateau p : pieceList) {
-                p.zoomFactor(zoomFactor);
-                updateZoom(p, zoomFactor);
-            }
-            this.totZoom *= zoomFactor;
-            this.totMoveBoardX *= zoomFactor;
-            this.totMoveBoardY *= zoomFactor;
-        }
-
-    }
-
-    @Override
-    public void updateMove(PionPlateau p, double deltaX, double deltaY, boolean isBoardMove) { //on deplace un seul pion
-        //DEplacer les cercles hitbox
-        for (PieceHitbox pieceh : p.getPieceHitboxList()) {
-            pieceh.updateCoordMove(deltaX, deltaY);
-        }
-        if (!isBoardMove) {
-            checkCollision(p);
-        } else {
-            this.isDragging = true;
-            this.pionDepl = p;
-            //removeHint();
-        }
-    }
-
+    //toto lors du deplacement verifier collision A activer TODO
+    /*
     public void checkCollision(PionPlateau p) {
         for (PionPlateau autrePiece : pieceList) {
             if (!autrePiece.equals(p)) { //si ce n'est pas la meme piece
@@ -797,12 +1066,6 @@ public class VueTerrain extends Vue implements ObservateurVue {
             }
         }
 
-    }
-
-    public void updateZoom(PionPlateau p, double zoomFactor) {
-        for (PieceHitbox pieceh : p.getPieceHitboxList()) {
-            pieceh.updateCoordZoom(zoomFactor);
-        }
     }
 
     private boolean collisionHitbox(Piece p, PieceHitbox ph) {
@@ -823,202 +1086,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         return (r1 + r2 <= r3);
 
     }
-
-    public void removeHint() {
-        root.getChildren().removeAll(this.hintZones);
-        this.hintZones.clear();
-    }
-
-    public void updateMousePressPiece(Piece p) {
-        unselectPiece();
-        this.currentSelected = p;
-        if (p instanceof PionPlateau) {
-            this.pionDeplOrigin = new Point3DH(((PionPlateau) p).getX(), ((PionPlateau) p).getY(), ((PionPlateau) p).getZ());
-        } else {
-            this.zoneLibres = this.controleur.placementsPossibles(); //lorsqu'on clique sur un pionMain affiche les zones libres
-        }
-        displayLibre(p);
-        p.getImgPion().toFront();
-        hudToFront();
-    }
-
-    public ImageView showValidPos(double x, double y) {
-        Image img = new Image("hint.png");
-        ImageView iv = new ImageView();
-        iv.setImage(img);
-        iv.setCursor(Cursor.HAND);
-        iv.setLayoutX(-(img.getWidth() / 2));
-        iv.setLayoutY(-(img.getHeight() / 2));
-        iv.setTranslateX(sceneWidth / 2);
-        iv.setTranslateY(sceneHeight / 2);
-
-        iv.setX(x);
-        iv.setY(y);
-
-        iv.setScaleX(iv.getScaleX() * totZoom);
-        iv.setScaleY(iv.getScaleY() * totZoom);
-
-        hintZones.add(iv);
-
-        makeImageScrollZoom(iv);
-
-        iv.addEventFilter(MouseEvent.MOUSE_ENTERED, (
-                final MouseEvent mouseEvent) -> {
-            setSelected(iv);
-        });
-
-        iv.addEventFilter(MouseEvent.MOUSE_EXITED, (
-                final MouseEvent mouseEvent) -> {
-            iv.setEffect(null);
-        });
-
-        return iv;
-    }
-
-    public void addPion(Piece p, PieceHitbox hitbox) { //ajoute un pion de la main au plateau
-        if (p.decrNbPion() >= 0) {
-            PionPlateau newp = new PionPlateau(p.getPionsType(), sceneWidth, sceneHeight, 1, p.isWhite());
-
-            newp.addObserver(this);
-            pieceList.add(newp);
-            makePionScrollZoom(newp); //ajouter l'event uniquemet pour les nouveaux pions
-            newp.zoomFactor(this.totZoom);
-            updateZoom(newp, this.totZoom);
-            root.getChildren().add(newp.getImgPion());
-            newp.snap(hitbox);
-            unselectPiece();
-            hudToFront();
-
-            this.controleur.joueurPlaceInsecte(p.getPionsType(), new Point3DH(hitbox.getX(), hitbox.getY(), hitbox.getZ()));
-            newTour();
-
-            this.pionDepl = null;
-            this.isDragging = false;
-            clicSurCaseLibre = false;
-            pionDeplOrigin = null;
-            this.zoneLibres = null;
-
-        }
-    }
-
-    public void displayLibre(Piece p) {
-        // removeHint();
-
-        if (this.hintZones.isEmpty()) {
-            //première piece sur le plateau
-            if (pieceList.isEmpty()) {
-                ImageView iv = showValidPos(0.0, 0.0);
-
-                iv.addEventFilter(MouseEvent.MOUSE_PRESSED, (
-                        final MouseEvent mouseEvent) -> {
-                    clicSurCaseLibre = true;
-                    PieceHitbox hitbox = new PieceHitbox(p, 0);
-                    addPion(p, hitbox); //premier pion du plateau position 0 0
-                    //newp.snap(hb);
-                    //newp.moveToXY(0, 0);
-
-                });
-
-            } else {
-                //*******
-                if (this.hintZones.isEmpty()) {
-                    for (PionPlateau autrePiece : this.pieceList) {
-                        //alors on explore les cercles (hitbox) LIBRE de cette piece et on test la collision
-                        for (PieceHitbox hitbox : autrePiece.getPieceHitboxList()) {
-                            if (containsSamePoint(hitbox)) { //si le point est une zone libre
-                                double x = hitbox.getPosX();
-                                double y = hitbox.getPosY();
-                                ImageView iv = showValidPos(x, y);
-
-                                iv.addEventFilter(MouseEvent.MOUSE_PRESSED, (
-                                        final MouseEvent mouseEvent) -> {
-                                    clicSurCaseLibre = true;
-                                    if (p instanceof PionMain) {  //ajout d'un pion depuis la main avec un plateau non vide
-                                        addPion(p, hitbox);
-                                    } else {  //mise a jour d'un pion deja sur le plateau a une nouvelle position
-                                        p.snap(hitbox);
-                                        unselectPiece();
-                                        hudToFront();
-                                        this.pionDepl = (PionPlateau) p;
-                                    }
-
-                                });
-
-                                iv.addEventFilter(MouseEvent.MOUSE_RELEASED, (
-                                        final MouseEvent mouseEvent) -> {
-                                    if (p instanceof PionPlateau) {
-                                        updateMouseReleasedPiece();
-                                    }
-                                });
-
-                                iv.addEventFilter(MouseEvent.MOUSE_ENTERED, (
-                                        final MouseEvent mouseEvent) -> {
-                                    setSelected(iv);
-                                });
-
-                                iv.addEventFilter(MouseEvent.MOUSE_EXITED, (
-                                        final MouseEvent mouseEvent) -> {
-                                    iv.setEffect(null);
-                                });
-                            }
-                        }
-
-                    }
-
-                }
-
-                //******************
-            }
-            root.getChildren().addAll(hintZones);
-        }
-
-    }
-
-    private boolean containsSamePoint(PieceHitbox ph) {
-        if (zoneLibres != null) {
-            for (Point3DH p3d : zoneLibres) {
-                if (ph.equalsCoord(p3d)) {
-                    this.zoneLibres.remove(p3d);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public void setSelected(ImageView iv) {
-        //DropShadow effect
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setRadius(0.0);
-        dropShadow.setOffsetX(0.0);
-        dropShadow.setOffsetY(0.0);
-        dropShadow.setSpread(0.90);
-        dropShadow.setColor(Color.rgb(0, 255, 0, 0.5));
-        iv.setEffect(dropShadow);
-    }
-
-    @Override
-    public void updateMouseReleasedPiece() {
-        if ((isDragging && !clicSurCaseLibre) || clicSurCaseLibre) {
-            System.out.println("Released Clic Drag || clic origin cible");
-            removeHint();
-            if (this.pionDepl != null && pionDeplOrigin != null) {
-                //sauvegarde coordonnée de départ du pion
-                //et les coordonnées cibles
-                this.controleur.deplacementInsecte(pionDeplOrigin, new Point3DH(this.pionDepl.getX(), this.pionDepl.getY(), this.pionDepl.getY()));
-//                System.out.println("---------------------------------");
-//                pionDepl.affiche();
-//                System.out.println("---------------------------------");
-            }
-            this.pionDepl = null;
-            this.isDragging = false;
-            clicSurCaseLibre = false;
-            pionDeplOrigin = null;
-            this.zoneLibres = null;
-            newTour();
-        }
-    }
-
+     */
     private static final class MouseLocation {
 
         public double x, y;
@@ -1148,6 +1216,9 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     private void getRule() {
+        System.out.println("TODO ne pas utiliser de variables GLOBALE !!!!");
+        /*
+        int i = 0;
         Label l = new Label(getLangStr("rule"));
         String[] urlImg = new String[20];
         l.setStyle("-fx-font-weight: bold;\n-fx-font-size: 100px;\n-fx-text-fill: white;");
@@ -1190,9 +1261,12 @@ public class VueTerrain extends Vue implements ObservateurVue {
         });
 
         root.getChildren().add(v);
+         */
     }
-
+    /*
     private Image changeImg(String[] url, boolean next, Label l) {
+
+        int i = 0;
         if (next && i < 10) {
             i++;
         } else if (!next && i > 0) {
@@ -1200,5 +1274,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         }
         l.setText((i + 1) + "/11");
         return new Image(url[i]);
+
     }
+     */
 }

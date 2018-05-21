@@ -5,19 +5,26 @@ import Modele.Case;
 import Modele.Plateau;
 import Modele.Point3DH;
 import Modele.TypeInsecte;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class Insecte implements Cloneable {
+public abstract class Insecte implements Cloneable, Serializable {
 
     private Joueur joueur;
     private Case emplacement;
 
     public abstract Collection<Case> deplacementPossible(Plateau plateau);
+	public abstract Insecte clone();
     
     public abstract TypeInsecte getType();
+	
+
+    public boolean equalsType(Insecte i) {
+    	return getType()==i.getType();
+    }
 
     public void deplacement(Plateau plat, Point3DH cible) {
         try {
@@ -66,15 +73,5 @@ public abstract class Insecte implements Cloneable {
     @Override
     public String toString() {
         return "Insecte";
-    }
-    
-    public Insecte clone() {
-        try {
-            return (Insecte) super.clone();
-        } catch (CloneNotSupportedException ex) {
-            System.err.println("ERREUR Clonage insecte");
-        }
-        
-        return this;
     }
 }

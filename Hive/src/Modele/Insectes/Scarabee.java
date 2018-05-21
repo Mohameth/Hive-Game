@@ -13,6 +13,10 @@ public class Scarabee extends Insecte {
     public Scarabee(Joueur j) {
         super(j);
     }
+	
+	public Insecte clone() {
+    	return new Scarabee(this.getJoueur());
+    }
     
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {

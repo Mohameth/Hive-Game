@@ -16,6 +16,11 @@ public class Fourmi extends Insecte {
     public Fourmi(Joueur j) {
         super(j);
     }
+	
+	public Insecte clone() {
+    	return new Fourmi(this.getJoueur());
+    	
+    }
     
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
