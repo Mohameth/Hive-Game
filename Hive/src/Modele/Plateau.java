@@ -548,14 +548,4 @@ public class Plateau implements Cloneable, Observable, Serializable {
         
         return resultat;
     }
-    
-    /*public static ArrayList<Insecte> cloneList(ArrayList<Insecte> pions) {
-        ArrayList<Insecte> clone = new ArrayList<>(pions.size());
-        for (Insecte insecte : pions) {
-            
-            clone.add(cloneInsecte);
-}
-        
-        return clone;
-    }*/
 }
