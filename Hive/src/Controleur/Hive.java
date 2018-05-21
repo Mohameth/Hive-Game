@@ -9,6 +9,7 @@ import Modele.Plateau;
 import Modele.HexaPoint;
 import Modele.TypeInsecte;
 import Vue.Vue;
+import static com.sun.javafx.PlatformUtil.isWindows;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -184,7 +185,10 @@ public class Hive implements Serializable {
 
     public boolean save(String name) {
         String path = System.getProperty("user.dir").concat("/rsc/SAVE/");
-        File f = new File(path + name + ".txt");
+        if (isWindows()) {
+            path.replace('/', '\\');
+        }
+        File f = new File(path + name);
         if (!f.exists()) {
             try {
                 f.createNewFile();
@@ -203,7 +207,11 @@ public class Hive implements Serializable {
     }
 
     public boolean load(String name) {
-        File f = new File(name + ".txt");
+        String path = System.getProperty("user.dir").concat("/rsc/SAVE/");
+        if (isWindows()) {
+            path.replace('/', '\\');
+        }
+        File f = new File(path + name);
         if (f.exists()) {
             try {
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));

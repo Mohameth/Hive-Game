@@ -4,6 +4,7 @@ import Controleur.Hive;
 import Modele.Insectes.Insecte;
 import Modele.HexaPoint;
 import Modele.TypeInsecte;
+import static com.sun.javafx.PlatformUtil.isWindows;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -100,6 +101,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
         primaryStage.setScene(s);
         primaryStage.setFullScreen(fs);
+        primaryStage.getIcons().add(new Image("logo.png"));
         primaryStage.show();
 
         //
@@ -753,7 +755,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
             PionMain pm;
             Text t;
             int nbPions = entry.getValue().intValue();
-            t = new Text("" + nbPions);
+            t = new Text(nbPions + "⨯");
             boolean iswhite = false;
             if (numplayer == 1) {
                 iswhite = true;
@@ -840,7 +842,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         bPause.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             getPause();
         });
-        
+
         bLoad.setTooltip(new Tooltip("Charger une partie"));
         bLoad.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             ListView<String> lv = getSaveFile();
@@ -874,9 +876,9 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
             root.getChildren().addAll(vLoad);
         });
-        
+
         bSave.setTooltip(new Tooltip("Sauvegarder la partie"));
-        
+
         bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             TextField tnom = new TextField("file");
             tnom.setStyle("-fx-font-weight: bold;\n"
@@ -1136,6 +1138,9 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     public ListView<String> getSaveFile() {
         String path = System.getProperty("user.dir").concat("/rsc/SAVE");
+        if (isWindows()) {
+            path.replace('/', '\\');
+        }
         System.out.println(path);
         File rep = new File(path);
         ListView<String> listSaveFile = new ListView<>();
