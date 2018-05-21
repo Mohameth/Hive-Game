@@ -58,7 +58,7 @@ public class MonteCarlo {
 				i=joueurCourant.get(r.nextInt(joueurCourant.size()));
 				
 				if(i.getEmplacement()==null) {
-					c=plateau2.casesVidePlacement(i.getJoueur());
+					c=plateau2.pointVersCase(plateau2.casesVidePlacement(i.getJoueur()));;
 					if(!c.isEmpty()) {
 						c2=c.get(r.nextInt(c.size()));
 						b1=true;
@@ -158,7 +158,7 @@ public class MonteCarlo {
 				i=joueurCourant.get(r.nextInt(joueurCourant.size()));
 				
 				if(i.getEmplacement()==null) {
-					c=plateau2.casesVidePlacement(i.getJoueur());
+					c=plateau2.pointVersCase(plateau2.casesVidePlacement(i.getJoueur()));
 					if(!c.isEmpty()) {
 						c2=c.get(r.nextInt(c.size()));
 						b1=true;

@@ -241,6 +241,14 @@ public class Plateau implements Observable {
         }
         return res;
     }
+    
+    public ArrayList<Case> pointVersCase(ArrayList<Point3DH> p){
+    	ArrayList<Case> c=new ArrayList<>();
+    	for(int i=0;i<p.size();i++) {
+    		c.add(this.getCase(p.get(i)));
+    	}
+    	return c;
+    }
 
     /**
      * Donne toute les cases occupées voisine de c
