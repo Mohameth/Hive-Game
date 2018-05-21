@@ -4,6 +4,7 @@ import Controleur.Hive;
 import Modele.Insectes.Insecte;
 import Modele.HexaPoint;
 import Modele.TypeInsecte;
+import static com.sun.javafx.PlatformUtil.isWindows;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -1136,6 +1137,9 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     public ListView<String> getSaveFile() {
         String path = System.getProperty("user.dir").concat("/rsc/SAVE");
+        if (isWindows()) {
+            path.replace('/', '\\');
+        }
         System.out.println(path);
         File rep = new File(path);
         ListView<String> listSaveFile = new ListView<>();
