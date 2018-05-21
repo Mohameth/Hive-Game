@@ -77,9 +77,7 @@ public class Configuration {
     }
     
     private void copiePlateau(Plateau newPlateau, Joueur newCourant, Joueur newAdversaire) {
-        for(Pair<Insecte, Integer> val : plateau.getInsectes()) {
-            Insecte insecte = val.getKey();
-            int niveau = val.getValue();
+        for(Insecte insecte : plateau.getInsectes()) {
             Insecte cloneInsecte = null;
             
             if (insecte.getJoueur().equals(joueurCourant)) {

@@ -490,12 +490,12 @@ public class Plateau implements Cloneable, Observable {
      * 
      * @return les insectes et leurs niveaux sur la case
      */
-    public ArrayList<Pair<Insecte, Integer>> getInsectes() {
-        ArrayList<Pair<Insecte, Integer>> resultat = new ArrayList<>();
+    public ArrayList<Insecte> getInsectes() {
+        ArrayList<Insecte> resultat = new ArrayList<>();
         for (Case c : cases.values()) {
             if (!c.estVide()) {
                 for (Insecte i : c.getInsectes()) {
-                    resultat.add(new Pair<>(i, i.getNiveau()));
+                    resultat.add(i);
                 }
             }
         }
