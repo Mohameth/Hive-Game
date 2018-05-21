@@ -5,10 +5,11 @@ import Modele.Case;
 import Modele.Plateau;
 import Modele.Point3DH;
 import Modele.TypeInsecte;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Objects;
 
-public abstract class Insecte {
+public abstract class Insecte implements Serializable {
 
     private Joueur joueur;
     private Case emplacement;
