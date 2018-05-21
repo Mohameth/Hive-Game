@@ -3,11 +3,12 @@ package Modele;
 import Modele.Insectes.Insecte;
 import Modele.Insectes.Scarabee;
 import java.awt.Point;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
-public class Case {
+public class Case implements Serializable{
 
     private ArrayList<Insecte> insectes;
     private Point3DH coordonnees;

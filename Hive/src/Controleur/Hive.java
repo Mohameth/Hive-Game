@@ -9,10 +9,17 @@ import Modele.Plateau;
 import Modele.Point3DH;
 import Modele.TypeInsecte;
 import Vue.Vue;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Hive {
+public class Hive implements Serializable {
 
     Plateau plateau;
     Joueur joueur1;
@@ -71,17 +78,18 @@ public class Hive {
         if (this.plateau.getCase(insecte).getInsecteOnTop().getJoueur().equals(this.joueurCourant)) {
             ArrayList<Case> cases = (ArrayList) this.plateau.getCase(insecte).getInsecteOnTop().deplacementPossible(plateau);
             for (Case c : cases) {
-                if (!res.contains(c.getCoordonnees()))
+                if (!res.contains(c.getCoordonnees())) {
                     res.add(c.getCoordonnees());
+                }
             }
-        } 
+        }
         return res;
     }
-    
+
     public boolean pionsDeplaceables() {
         return this.joueurCourant.reinePosee();
     }
-    
+
     public ArrayList<Point3DH> placementsPossibles() {
         return this.plateau.casesVidePlacement(this.joueurCourant);
     }
@@ -169,4 +177,48 @@ public class Hive {
         return j.getTourJoueur();
     }
 
+    public boolean save(String name) {
+        File f = new File(name + ".txt");
+        if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
+            oos.writeObject(this);
+            oos.close();
+        } catch (IOException exception) {
+            System.out.println("Erreur lors de l'écriture : " + exception.getMessage());
+        }
+        return true;
+    }
+
+    public boolean load(String name) {
+        File f = new File(name + ".txt");
+        if (f.exists()) {
+            try {
+                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+                Hive h = (Hive) ois.readObject();
+                ois.close();
+                this.reset();
+                this.joueur1 = h.joueur1;
+                this.joueur2 = h.joueur2;
+                this.joueurCourant = h.joueurCourant;
+                
+                this.plateau.setCases(h.plateau.getCases());
+                this.plateau.setNbPionsEnJeu(h.plateau.getNbPionsEnJeu());
+                
+                //TODO : dire à la vue d'afficher le nouveaux plateau
+
+            } catch (ClassNotFoundException exception) {
+                System.out.println("Impossible de lire l'objet : " + exception.getMessage());
+            } catch (IOException exception) {
+                System.out.println("Erreur lors de l'écriture : " + exception.getMessage());
+            }
+        }
+        return true;
+    }
 }

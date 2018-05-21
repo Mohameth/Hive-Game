@@ -2,6 +2,7 @@ package Modele;
 
 import Controleur.Hive;
 import Modele.Insectes.*;
+import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,7 +15,7 @@ import java.util.logging.Logger;
  * @see JoueurIA
  * @author GRP3
  */
-public abstract class Joueur {
+public abstract class Joueur implements Serializable {
 
     /**
      * Pions du joueur
