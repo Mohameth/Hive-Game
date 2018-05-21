@@ -14,8 +14,13 @@ public abstract class Insecte {
     private Case emplacement;
 
     public abstract Collection<Case> deplacementPossible(Plateau plateau);
+	public abstract Insecte clone();
     
     public abstract TypeInsecte getType();
+	
+	public boolean equals(Insecte i) {
+    	return getType()==i.getType();
+    }
 
     public void deplacement(Plateau plat, Point3DH cible) {
         try {
