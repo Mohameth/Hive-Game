@@ -24,6 +24,14 @@ public class MonteCarlo {
 		}
 	}
 	
+	public int getNbNoeuds() {
+		return nbNoeuds;
+	}
+	
+	public int getNbNoeudsMax() {
+		return nbNoeudsMax;
+	}
+	
 	private Noeud chosirFils(Noeud Pere) {
 		
 		if(!Pere.getNbFilsMax()) {
