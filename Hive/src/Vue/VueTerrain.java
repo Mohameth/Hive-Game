@@ -40,6 +40,7 @@ import java.util.Map;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.scene.ImageCursor;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
 import javafx.scene.shape.Circle;
 
@@ -839,7 +840,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
         bPause.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             getPause();
         });
-
+        
+        bLoad.setTooltip(new Tooltip("Charger une partie"));
         bLoad.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             ListView<String> lv = getSaveFile();
             Button load = new Button(getLangStr("load"));
@@ -872,7 +874,9 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
             root.getChildren().addAll(vLoad);
         });
-
+        
+        bSave.setTooltip(new Tooltip("Sauvegarder la partie"));
+        
         bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             TextField tnom = new TextField("file");
             tnom.setStyle("-fx-font-weight: bold;\n"

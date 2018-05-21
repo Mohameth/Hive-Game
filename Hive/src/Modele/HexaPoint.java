@@ -127,7 +127,7 @@ public class HexaPoint implements Serializable {
     
     @Override
     public String toString() {
-        return "Point3DH{" + "X: " + x + ", Y: " + y + ", Z: " + z + '}';
+        return "HexaPoint{" + "X: " + x + ", Y: " + y + ", Z: " + z + '}';
     }
 
     @Override

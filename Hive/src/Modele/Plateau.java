@@ -48,12 +48,6 @@ public class Plateau implements Cloneable, Observable, Serializable {
      * @return la case qui se trouve au coordonées du point
      */
     public Case getCase(HexaPoint point) {
-        try {    
-            if (!this.cases.containsKey(point))
-                throw new Exception("Case" + point.toString() + "inexistante");
-        } catch (Exception ex) {
-            System.err.println("Erreur getCase : " + ex);
-        }
         return cases.get(point);
     }
 
