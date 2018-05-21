@@ -7,7 +7,6 @@ import java.util.Random;
 import java.util.ArrayList;
 import java.util.Random;
 
-
 public class JoueurIA extends Joueur {
 	private int difficulte;
 
@@ -42,7 +41,9 @@ public class JoueurIA extends Joueur {
                             casePlacement.add(this.plateau.getCase(p));
                         }
     			if(!casePlacement.isEmpty()) {
-    				this.plateau.ajoutInsecte(insecte, casePlacement.get(r.nextInt(casePlacement.size())).getCoordonnees());
+                                Point3DH p =  casePlacement.get(r.nextInt(casePlacement.size())).getCoordonnees();
+    				this.plateau.ajoutInsecte(insecte, p);
+                                System.out.println(insecte.getClass() + " en " + p);
     				return true;
     			}
     		}else if(this.reinePosee()){
@@ -51,7 +52,9 @@ public class JoueurIA extends Joueur {
     	}while(!b);
     	
     	ArrayList<Case> deplacement=(ArrayList<Case>) insecte.deplacementPossible(plateau);
-    	insecte.deplacement(plateau,deplacement.get(r.nextInt(deplacement.size())).getCoordonnees());
+        Point3DH p =deplacement.get(r.nextInt(deplacement.size())).getCoordonnees();
+    	insecte.deplacement(plateau, p);
+        System.out.println(insecte.getClass() + " en " + p);
     	
     	return true;
     }

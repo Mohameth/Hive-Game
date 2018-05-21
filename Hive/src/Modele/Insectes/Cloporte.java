@@ -19,6 +19,7 @@ public class Cloporte extends Insecte {
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) { //Creer un HASh pour éviter de recalculer tout le temps la liste
         insectesADeplacer = new HashMap<>();
+        if (!this.getJoueur().tousPionsPosables()) return new ArrayList<>();
         Collection<Case> casesVoisinesLibre = plateau.getCasesVoisinesAccessibles(this.getEmplacement(), true);//Récup. des cases vides accessibles
         
         //Ajout des cases déplacables

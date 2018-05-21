@@ -19,6 +19,7 @@ public class Scarabee extends Insecte {
         /*if(plateau.rucheBrisee2(this.getEmplacement())) {
         	return new ArrayList<>();
         }*/
+        if (!this.getJoueur().tousPionsPosables()) return new ArrayList<>();
         
         return plateau.getCasesVoisinesAccessibles(this.getEmplacement(), false);
 		

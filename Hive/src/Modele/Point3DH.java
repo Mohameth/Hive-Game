@@ -127,7 +127,7 @@ public class Point3DH {
     
     @Override
     public String toString() {
-        return "Point3DH{" + "x=" + x + ", y=" + y + ", z=" + z + '}';
+        return "Point3DH{" + "X: " + x + ", Y: " + y + ", Z: " + z + '}';
     }
 
     @Override

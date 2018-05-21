@@ -7,8 +7,10 @@ import Modele.Point3DH;
 import Modele.TypeInsecte;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public abstract class Insecte {
+public abstract class Insecte implements Cloneable {
 
     private Joueur joueur;
     private Case emplacement;
@@ -23,6 +25,7 @@ public abstract class Insecte {
             //plat.getCase(cible).addInsecte(this);
             plat.deleteInsecte(this, this.getEmplacement().getCoordonnees());
             plat.deplaceInsecte(this, cible);
+            joueur.incrementeTour();
         } catch(Exception e) {
             System.err.println("ERREUR DEPLACEMENT :" + e);
         }
@@ -48,6 +51,10 @@ public abstract class Insecte {
     public void setEmplacement(Case emplacement) {
         this.emplacement = emplacement;
     }
+    
+    public int getNiveau() {
+        return getEmplacement().getInsectes().indexOf(this)+1;
+    }
 
     @Override
     public int hashCode() {
@@ -59,5 +66,15 @@ public abstract class Insecte {
     @Override
     public String toString() {
         return "Insecte";
+    }
+    
+    public Insecte clone() {
+        try {
+            return (Insecte) super.clone();
+        } catch (CloneNotSupportedException ex) {
+            System.err.println("ERREUR Clonage insecte");
+        }
+        
+        return this;
     }
 }

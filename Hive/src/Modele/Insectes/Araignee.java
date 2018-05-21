@@ -115,6 +115,7 @@ public class Araignee extends Insecte {
     
     //@Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
+        if (!this.getJoueur().tousPionsPosables()) return new ArrayList<>();
         ArrayList<Case> res = new ArrayList<>();
         ArrayList<Case> visitees = new ArrayList<>();
         visitees.addAll(plateau.getCasesVoisines(this.getEmplacement(), true));
