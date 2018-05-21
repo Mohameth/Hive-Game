@@ -32,4 +32,8 @@ public interface ObservableVue {
 
     public void notifyMousePressedZoneLibreVoisin(ZoneLibre zoneLibre);
 
+    public void notifyPionPlateauAddEnDessous(PionPlateau2 pionPlateau);
+
+    public void notifyPionPlateauRemoveEnDessous(PionPlateau2 pionPlateau);
+
 }

@@ -45,6 +45,7 @@ public class PionImgView {
         this.imgView = getImgFromType(ti);
         this.hoverColor = Color.GRAY;
         this.visible = true;
+        this.imgType = ti;
         removeLock();
         setImgPosXY(xImg, yImg);
         setCurrentZoom(currentZoom);
@@ -160,7 +161,7 @@ public class PionImgView {
 
     private ImageView getImgFromType(TypeInsecte pion) {
         String m = getImgPath(pion);
-        Image img = new Image("pieces/" + m);
+        Image img = new Image("pieces/" + m + ".png");
         ImageView imgv = new ImageView();
         imgv.setCursor(Cursor.HAND);
 
@@ -193,38 +194,50 @@ public class PionImgView {
         }
 
         if (null == pion) {
-            m = "zoneLibre.png";
+            m = "zoneLibre";
         } else {
             switch (pion) {
                 case ARAIGNEE:
-                    m = "piontr_" + color + "_" + namePiece[0] + ".png";
+                    m = "piontr_" + color + "_" + namePiece[0];
                     break;
                 case COCCINELLE:
-                    m = "piontr_" + color + "_" + namePiece[1] + ".png";
+                    m = "piontr_" + color + "_" + namePiece[1];
                     break;
                 case FOURMI:
-                    m = "piontr_" + color + "_" + namePiece[2] + ".png";
+                    m = "piontr_" + color + "_" + namePiece[2];
                     break;
                 case REINE:
-                    m = "piontr_" + color + "_" + namePiece[3] + ".png";
+                    m = "piontr_" + color + "_" + namePiece[3];
                     break;
                 case SAUTERELLE:
-                    m = "piontr_" + color + "_" + namePiece[4] + ".png";
+                    m = "piontr_" + color + "_" + namePiece[4];
                     break;
                 case SCARABEE:
-                    m = "piontr_" + color + "_" + namePiece[5] + ".png";
+                    m = "piontr_" + color + "_" + namePiece[5];
                     break;
                 case CLOPORTE:
-                    m = "piontr_" + color + "_" + namePiece[6] + ".png";
+                    m = "piontr_" + color + "_" + namePiece[6];
                     break;
                 case MOUSTIQUE:
-                    m = "piontr_" + color + "_" + namePiece[7] + ".png";
+                    m = "piontr_" + color + "_" + namePiece[7];
                     break;
                 default:
                     break;
             }
         }
         return m;
+    }
+
+    public void updateImageDessous(boolean asDessous) {
+        String m = getImgPath(this.imgType);
+        System.out.println("String: " + m);
+        if (asDessous) {
+            Image img = new Image("pieces/" + m + "_dessous.png");
+            this.getImage().setImage(img);
+        } else {
+            Image img = new Image("pieces/" + m + ".png");
+            this.getImage().setImage(img);
+        }
     }
 
     private void setHoverEffect() {

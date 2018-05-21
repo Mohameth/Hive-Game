@@ -14,6 +14,7 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 
 /**
@@ -44,6 +45,7 @@ public class PionPlateau2 implements ObservableVue {
         this.totZoom = totZoom;
         this.scWidth = scWidth;
         this.scHeight = scHeight;
+
         addObserver(vtObservateur);
         removeLock();
 
@@ -71,13 +73,14 @@ public class PionPlateau2 implements ObservableVue {
 
     public void setPionEnDessous(PionPlateau2 pDessous) {
         this.pionEnDessous = pDessous;
-//        Button bt = new Button();
-//        bt.setGraphic(new ImageView(new Image("icons/stack.png")));
-//        bt.setMinSize(32, 32);
-//        System.out.println("========En dessous =============");
-//        bt.setStyle("-fx-background-color: Transparent;\n");
-//        bt.setTranslateX(scWidth);
-//        bt.setTranslateY(scWidth);
+        this.imagePion.updateImageDessous(true);
+        notifyPionPlateauAddEnDessous(this);
+    }
+
+    public void removePionEnDessous() {
+        this.pionEnDessous = null;
+        this.imagePion.updateImageDessous(false);
+        notifyPionPlateauRemoveEnDessous(this);
     }
 
     public PionPlateau2 getPionEnDessous() {
@@ -412,6 +415,16 @@ public class PionPlateau2 implements ObservableVue {
     @Override
     public void notifyPionPlateauMouseReleased(PionPlateau2 pionPlateau) {
         this.vtObservateur.updatePionPateauMouseReleased(pionPlateau);
+    }
+
+    @Override
+    public void notifyPionPlateauAddEnDessous(PionPlateau2 pionPlateau) {
+        this.vtObservateur.updatePionPlateauAddEnDessous(pionPlateau);
+    }
+
+    @Override
+    public void notifyPionPlateauRemoveEnDessous(PionPlateau2 pionPlateau) {
+        this.vtObservateur.updatePionPlateauRemoveEnDessous(pionPlateau);
     }
 
     /**

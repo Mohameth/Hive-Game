@@ -147,7 +147,19 @@ public class VueTerrain extends Vue implements ObservateurVue {
     public void displayZoneLibre() {
         System.out.println("Display zone libre");
         //updatePosZoneLibre();
-        ArrayList<Point3DH> zoneLibres = this.controleur.placementsPossibles(); //lorsqu'on clique sur un pionMain affiche les zones libres
+        ArrayList<Point3DH> zoneLibres = new ArrayList<>();
+
+        if (currentMainSelected != null && currentSelected != null) {
+            System.out.println("======================NE DOIT JMAIS ARRIVER==============================");
+        }
+
+        if (currentMainSelected != null) {
+            System.out.println("Affiche zone libre pion de la main");
+            zoneLibres = this.controleur.placementsPossibles(); //lorsqu'on clique sur un pionMain affiche les zones libres
+        } else if (currentSelected != null) {
+            System.out.println("Affiche zone libre pion plateau");
+            zoneLibres = this.controleur.deplacementsPossibles(currentSelected.getCoordPion());
+        }
 
         if (zoneLibres.size() == 1 && zoneLibres.get(0).equals(new Point3DH(0, 0, 0))) {
             addPremierZoneLibre();
@@ -425,7 +437,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
             this.listPionsPlateau.put(oldpp2.getCoordPion(), oldpp2);
             this.getRoot().getChildren().add(oldpp2.getImage());
             //supprime le pion en dessous lors du déplacement
-            p.setPionEnDessous(null);
+            p.removePionEnDessous();
         }
         //gestion des doublons si un pions deja  a cette position le mettre en dessous
         if (this.listPionsPlateau.containsKey(newPos3D)) {
@@ -452,6 +464,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     @Override
     public void updatePionPateauMousePress(PionPlateau2 p) {
+        //ICI on set la selection mais elle n'est pas validé
         p.affiche();
         //il s'agit d'une selection d'un pion du plateau
         if (this.currentSelected == null) {
@@ -479,6 +492,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     @Override
     public void updatePionPateauMouseReleased(PionPlateau2 p) {
+        //ICI on verifie la selection
+
         //on selectionne le pion si dragging = false
         if (p.equals(this.currentSelected) && this.selectionValidee == false) {
             //onclique sur le pion release
@@ -527,6 +542,17 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     }
 
+    @Override
+    public void updatePionPlateauAddEnDessous(PionPlateau2 pionPlateau) {
+        System.out.println("Add en Dessous");
+        //this.getRoot().getChildren().add();
+    }
+
+    @Override
+    public void updatePionPlateauRemoveEnDessous(PionPlateau2 pionPlateau) {
+        //this.getRoot().getChildren().remove();
+    }
+
     private void coupJouer() {
         hideZoneLibre();
         removeSelectedPion();
@@ -535,6 +561,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         System.out.println("Coup Jouer");
     }
 
+    //Main Pion vers plateau
     public void updateMouseReleasedMainJoueur(PionMain pm) {
         System.out.println("Clic sur main joueur");
         removeSelectedPion();

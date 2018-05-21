@@ -5,7 +5,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -49,6 +48,12 @@ public class Plateau implements Cloneable, Observable, Serializable {
      * @return la case qui se trouve au coordonées du point
      */
     public Case getCase(Point3DH point) {
+        try {    
+            if (!this.cases.containsKey(point))
+                throw new Exception("Case" + point.toString() + "inexistante");
+        } catch (Exception ex) {
+            System.err.println("Erreur getCase : " + ex);
+        }
         return cases.get(point);
     }
 
@@ -60,9 +65,18 @@ public class Plateau implements Cloneable, Observable, Serializable {
         this.nbPionsEnJeu = nbPionsEnJeu;
     }
 
+    /**
+     * 
+     * @return HashMap<Point3DH, Case> Liste des cases avec comme clé leur position
+     */
     public Map<Point3DH, Case> getCases() {
         return cases;
     }
+
+    /**
+     *
+     * @param int noombre de pions en jeu
+     */
 
     public int getNbPionsEnJeu() {
         return nbPionsEnJeu;
