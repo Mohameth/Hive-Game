@@ -40,6 +40,7 @@ import java.util.Map;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.scene.ImageCursor;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
 import javafx.scene.shape.Circle;
 
@@ -656,10 +657,10 @@ public class VueTerrain extends Vue implements ObservateurVue {
             }
         }
         //bloquer les pions du meme joueurs sur le plateau quand il y a que la reine a poser
-        if (!toutPion) {
+        //bloque les pions du joueurs en cours tant que la reine n'a pas été joué
+        if (!toutPion || !this.controleur.pionsDeplaceables()) {
             setLockPlayerPion(white, false);
         }
-
     }
 
     //lock les pions des mains des joueurs
@@ -839,7 +840,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
         bPause.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             getPause();
         });
-
+        
+        bLoad.setTooltip(new Tooltip("Charger une partie"));
         bLoad.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             ListView<String> lv = getSaveFile();
             Button load = new Button(getLangStr("load"));
@@ -864,7 +866,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
             cancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
                 root.getChildren().removeAll(vLoad);
             });
-            
+
             load.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
                 this.controleur.load(style);
                 root.getChildren().removeAll(vLoad);
@@ -872,7 +874,9 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
             root.getChildren().addAll(vLoad);
         });
-
+        
+        bSave.setTooltip(new Tooltip("Sauvegarder la partie"));
+        
         bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             TextField tnom = new TextField("file");
             tnom.setStyle("-fx-font-weight: bold;\n"
@@ -913,12 +917,12 @@ public class VueTerrain extends Vue implements ObservateurVue {
             cancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
                 root.getChildren().removeAll(vLoad);
             });
-            
-            save.addEventHandler(MouseEvent.MOUSE_CLICKED,(MouseEvent e1) -> {
+
+            save.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
                 this.controleur.save(tnom.getText());
                 root.getChildren().removeAll(vLoad);
-            } );
-            
+            });
+
             root.getChildren().addAll(vLoad);
         });
 
