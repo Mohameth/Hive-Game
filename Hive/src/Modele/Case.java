@@ -124,13 +124,13 @@ public class Case implements Serializable{
         return ((Case) obj).getCoordonnees().equals(this.getCoordonnees());
     }
 
-    @Override
+    /*@Override
     public int hashCode() {
         int hash = 3;
         hash = 71 * hash + Objects.hashCode(this.insectes);
         hash = 71 * hash + Objects.hashCode(this.coordonnees);
         return hash;
-    }
+    }*/
     
     public boolean estVoisinHaut(Case c) {
     	return this.getCoordonnees().voisinHaut().equals(c.getCoordonnees());
@@ -160,8 +160,13 @@ public class Case implements Serializable{
     public String toString() {
         String res = "Case[" + coordonnees + ']' + ":\n";
         for (Insecte i : this.insectes) {
-            res += "\t " + i.toString() + "\n";
+            res += "\t " + i + "\n";
         }
         return res;
     }
+
+    public void setInsectes(ArrayList<Insecte> insectes) {
+        this.insectes = insectes;
+    }
+    
 }

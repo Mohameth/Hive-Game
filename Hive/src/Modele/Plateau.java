@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
+import javafx.util.Pair;
 
 /**
  * Plateau décrit l'Etat du plateau de jeu et les actions disponible pour le
@@ -17,7 +18,7 @@ import java.util.Objects;
  * @author GRP3
  *
  */
-public class Plateau implements Observable, Serializable {
+public class Plateau implements Cloneable, Observable, Serializable {
 
     /**
      * ensemble des cases du plateau, évolue de façon dynamique
@@ -119,6 +120,9 @@ public class Plateau implements Observable, Serializable {
             this.ajoutCasesVoisines(position);
         } catch (Exception ex) {
             System.err.println("Erreur ajout : " + ex);
+            
+            ex.printStackTrace();
+            System.exit(1);
         }
     }
 
@@ -134,6 +138,9 @@ public class Plateau implements Observable, Serializable {
             this.ajoutCasesVoisines(position);
         } catch (Exception ex) {
             System.err.println("Erreur ajout : " + ex);
+            
+            ex.printStackTrace();
+            System.exit(1);
         }
     }
 
@@ -177,6 +184,8 @@ public class Plateau implements Observable, Serializable {
             this.getCase(position).removeInsecte();
         } catch (Exception ex) {
             System.err.println("Erreur delete : " + ex);
+            ex.printStackTrace();
+            System.exit(1);
         }
     }
 
@@ -396,6 +405,7 @@ public class Plateau implements Observable, Serializable {
                     }
                 } catch (Exception e) {
                     System.err.println("ERREUR Ruche brisé debut : " + e);
+                    moveDest = null;
                 }
             }
         }
@@ -499,4 +509,58 @@ public class Plateau implements Observable, Serializable {
             }
         }
     }
+
+    @Override
+    public Plateau clone() {
+        try {
+            Plateau p = (Plateau) super.clone();
+            HashMap<Point3DH, Case> h = cloneMap(this.cases);
+            
+            p.cases = h;
+            return p;
+        } catch (CloneNotSupportedException e) {
+            System.err.println("ERREUR Clone plateau : " + e);
+        }
+        
+        return null;
+    }
+    
+    public static HashMap<Point3DH, Case> cloneMap(Map<Point3DH, Case> cases) {
+        HashMap<Point3DH, Case> clone = new HashMap<>(cases.size());
+        for (Map.Entry<Point3DH, Case> element : cases.entrySet()) {
+            Case c = new Case(element.getValue().getCoordonnees());
+            //c.setInsectes(cloneList(element.getValue().getInsectes()));
+            
+            clone.put(element.getKey(), new Case(element.getValue().getCoordonnees()));
+        }
+        
+        return clone;
+    }
+    
+    /**
+     * 
+     * @return les insectes et leurs niveaux sur la case
+     */
+    public ArrayList<Insecte> getInsectes() {
+        ArrayList<Insecte> resultat = new ArrayList<>();
+        for (Case c : cases.values()) {
+            if (!c.estVide()) {
+                for (Insecte i : c.getInsectes()) {
+                    resultat.add(i);
+                }
+            }
+        }
+        
+        return resultat;
+    }
+    
+    /*public static ArrayList<Insecte> cloneList(ArrayList<Insecte> pions) {
+        ArrayList<Insecte> clone = new ArrayList<>(pions.size());
+        for (Insecte insecte : pions) {
+            
+            clone.add(cloneInsecte);
+        }
+        
+        return clone;
+    }*/
 }

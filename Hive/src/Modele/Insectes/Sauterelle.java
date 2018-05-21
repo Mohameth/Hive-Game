@@ -25,6 +25,7 @@ public class Sauterelle extends Insecte {
     	/*if(plateau.rucheBrisee2(this.getEmplacement())) {
         	return new ArrayList<>();
         }*/
+        if (!this.getJoueur().tousPionsPosables()) return new ArrayList<>();
     	ArrayList<Case> caseVoisins=(ArrayList<Case>) plateau.getCasesVoisinesOccupees(this.getEmplacement());
     	ArrayList<Case> casePossibles=new ArrayList<>();
     	
