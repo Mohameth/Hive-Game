@@ -656,10 +656,10 @@ public class VueTerrain extends Vue implements ObservateurVue {
             }
         }
         //bloquer les pions du meme joueurs sur le plateau quand il y a que la reine a poser
-        if (!toutPion) {
+        //bloque les pions du joueurs en cours tant que la reine n'a pas été joué
+        if (!toutPion || !this.controleur.pionsDeplaceables()) {
             setLockPlayerPion(white, false);
         }
-
     }
 
     //lock les pions des mains des joueurs
@@ -864,7 +864,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
             cancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
                 root.getChildren().removeAll(vLoad);
             });
-            
+
             load.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
                 this.controleur.load(style);
                 root.getChildren().removeAll(vLoad);
@@ -913,12 +913,12 @@ public class VueTerrain extends Vue implements ObservateurVue {
             cancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
                 root.getChildren().removeAll(vLoad);
             });
-            
-            save.addEventHandler(MouseEvent.MOUSE_CLICKED,(MouseEvent e1) -> {
+
+            save.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
                 this.controleur.save(tnom.getText());
                 root.getChildren().removeAll(vLoad);
-            } );
-            
+            });
+
             root.getChildren().addAll(vLoad);
         });
 
