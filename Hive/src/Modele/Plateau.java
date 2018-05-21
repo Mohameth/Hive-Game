@@ -48,12 +48,6 @@ public class Plateau implements Cloneable, Observable, Serializable {
      * @return la case qui se trouve au coordonées du point
      */
     public Case getCase(HexaPoint point) {
-        try {    
-            if (!this.cases.containsKey(point))
-                throw new Exception("Case" + point.toString() + "inexistante");
-        } catch (Exception ex) {
-            System.err.println("Erreur getCase : " + ex);
-        }
         return cases.get(point);
     }
 
@@ -562,14 +556,4 @@ public class Plateau implements Cloneable, Observable, Serializable {
         
         return resultat;
     }
-    
-    /*public static ArrayList<Insecte> cloneList(ArrayList<Insecte> pions) {
-        ArrayList<Insecte> clone = new ArrayList<>(pions.size());
-        for (Insecte insecte : pions) {
-            
-            clone.add(cloneInsecte);
-        }
-        
-        return clone;
-    }*/
 }
