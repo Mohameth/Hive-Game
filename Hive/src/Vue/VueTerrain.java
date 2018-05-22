@@ -696,10 +696,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             PionPlateau2 pPlat = entry.getValue();
             if (pPlat.isWhite() == iswhite) {
                 pPlat.setLock();
-            } else {
-                if (unlockOposite) {
-                    pPlat.removeLock();
-                }
+            } else if (unlockOposite) {
+                pPlat.removeLock();
             }
 
         }
@@ -727,10 +725,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         pointJ1.setPadding(new Insets(5, 0, 5, 0));
 
         bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            if(txt1.isEditable())
+            if (txt1.isEditable()) {
                 txt1.setEditable(false);
-            else
+            } else {
                 txt1.setEditable(true);
+            }
         });
 
         String style = "-fx-background-color: rgba(255, 255, 255, 0.2);";
@@ -1158,17 +1157,22 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     public ListView<String> getSaveFile() {
-        String path = System.getProperty("user.dir").concat("/rsc/SAVE");
+        String path;
         if (isWindows()) {
-            path.replace('/', '\\');
+            path = System.getProperty("user.dir").concat("\\rsc\\SAVE");
+        } else {
+            path = System.getProperty("user.dir").concat("/rsc/SAVE/");
         }
         System.out.println(path);
         File rep = new File(path);
+        if (!rep.exists()) {
+            rep.mkdir();
+        }
+
         ListView<String> listSaveFile = new ListView<>();
-        if (rep.length() != 0) {
-            for (String s : rep.list()) {
-                listSaveFile.getItems().add(s);
-            }
+        for (String s : rep.list()) {
+            listSaveFile.getItems().add(s);
+            System.out.println(s);
         }
         return listSaveFile;
     }
