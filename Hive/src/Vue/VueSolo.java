@@ -31,16 +31,18 @@ public class VueSolo extends Vue {
 
         HBox hb = new HBox();
         Label tp = new Label(getLangStr("entername"));
+        tp.setStyle("-fx-font-weight: bold;-fx-font-size: 24px;");
         TextField ta = new TextField(getLangStr("joueur1"));
         ta.setMaxSize(300.0,5.0);
         hb.getChildren().addAll(tp,ta);
         hb.setAlignment(Pos.CENTER);
 
         Button bplay = new Button(getLangStr("jouer"));
-        bplay.setMinSize(300.0,50.0);
+        bplay.setMinSize(200.0,50.0);
 
         VBox vb1 = new VBox();
         Label td = new Label(getLangStr("difficulte"));
+        td.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         final ToggleGroup group = new ToggleGroup();
         RadioButton rEasy = new RadioButton(getLangStr("easy"));
         rEasy.setUserData("easy");
@@ -51,12 +53,12 @@ public class VueSolo extends Vue {
         rEasy.setToggleGroup(group);
         rMedium.setToggleGroup(group);
         rHard.setToggleGroup(group);
-        //rMedium.setSelected(true);
         group.selectToggle(rMedium);
         vb1.getChildren().addAll(td,rEasy,rMedium,rHard);
 
         VBox vb2 = new VBox();
         Label tc = new Label(getLangStr("chColor"));
+        tc.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         final ToggleGroup group2 = new ToggleGroup();
         RadioButton rWhite= new RadioButton(getLangStr("white"));
         RadioButton rBlack = new RadioButton(getLangStr("black"));
@@ -66,7 +68,7 @@ public class VueSolo extends Vue {
         vb2.getChildren().addAll(tc,rWhite,rBlack);
 
         Button bBack = new Button(getLangStr("back"));
-        bBack.setAlignment(Pos.CENTER);
+        bBack.setMinSize(200.0,50.0);
 
         bBack.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             SceneMain(primaryStage);
@@ -91,10 +93,10 @@ public class VueSolo extends Vue {
         });
 
         GridPane g = new GridPane();
-        g.add(bplay,0,0);
-        g.add(vb1,1,0);
-        g.add(bBack,0,1);
-        g.add(vb2,1,1);
+        g.add(bplay,0,1);
+        g.add(vb1,0,0);
+        g.add(bBack,1,1);
+        g.add(vb2,1,0);
         g.setHgap(30.0);
         g.setVgap(25.0);
         g.setAlignment(Pos.CENTER);

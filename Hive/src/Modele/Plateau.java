@@ -539,7 +539,7 @@ public class Plateau implements Cloneable, Observable, Serializable {
     
     /**
      * 
-     * @return les insectes et leurs niveaux sur la case
+     * @return les insectes du plateau
      */
     public ArrayList<Insecte> getInsectes() {
         ArrayList<Insecte> resultat = new ArrayList<>();
