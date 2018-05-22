@@ -1,6 +1,7 @@
 package Modele;
 
 import Modele.Insectes.Insecte;
+import java.util.Observable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,7 +10,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
-import javafx.util.Pair;
 
 /**
  * Plateau décrit l'Etat du plateau de jeu et les actions disponible pour le
@@ -18,7 +18,7 @@ import javafx.util.Pair;
  * @author GRP3
  *
  */
-public class Plateau implements Cloneable, Observable, Serializable {
+public class Plateau extends Observable implements Cloneable, Serializable  {
 
     /**
      * ensemble des cases du plateau, évolue de façon dynamique
@@ -28,8 +28,6 @@ public class Plateau implements Cloneable, Observable, Serializable {
      */
     private Map<HexaPoint, Case> cases;
     private int nbPionsEnJeu;
-    private Observateur observateur;
-
     /**
      * construit un plateau avec une seul case en 0,0,0
      */
@@ -121,6 +119,8 @@ public class Plateau implements Cloneable, Observable, Serializable {
             this.getCase(position).addInsecte(insecte);
             this.nbPionsEnJeu++;
             this.ajoutCasesVoisines(position);
+            setChanged();
+            notifyObservers();
         } catch (Exception ex) {
             System.err.println("Erreur ajout : " + ex);
             
@@ -138,6 +138,8 @@ public class Plateau implements Cloneable, Observable, Serializable {
         try {
             this.getCase(position).addInsecte(insecte);
             this.ajoutCasesVoisines(position);
+            setChanged();
+            notifyObservers();
         } catch (Exception ex) {
             System.err.println("Erreur ajout : " + ex);
             
@@ -183,6 +185,8 @@ public class Plateau implements Cloneable, Observable, Serializable {
     public void deleteInsecte(Insecte insecte, HexaPoint position) {
         try {
             this.getCase(position).removeInsecte();
+            setChanged();
+            notifyObservers();
         } catch (Exception ex) {
             System.err.println("Erreur delete : " + ex);
             ex.printStackTrace();
@@ -492,15 +496,6 @@ public class Plateau implements Cloneable, Observable, Serializable {
         return hash;
     }
 
-    @Override
-    public void addObserver(Observateur newobserver) {
-        this.observateur = newobserver;
-    }
-
-    @Override
-    public void notifyListeners() {
-        this.observateur.coupJoue(this);
-    }
 
     public void afficherGrille() {
         for (Case c : this.cases.values()) {
@@ -553,4 +548,6 @@ public class Plateau implements Cloneable, Observable, Serializable {
         
         return resultat;
     }
+
+
 }

@@ -56,6 +56,7 @@ public class PionPlateau2 implements ObservableVue {
         updateZoneLibreVoisin();
 
         setOnClicEvent();
+        setMouseHoverEvent();
         notifyNewPionPlateau(this);
     }
 
@@ -77,6 +78,15 @@ public class PionPlateau2 implements ObservableVue {
         notifyPionPlateauAddEnDessous(this);
     }
 
+    public ArrayList<PionPlateau2> getDessousList(ArrayList<PionPlateau2> am) {
+        am.add(this);
+        if (getPionEnDessous() != null) {
+            //am.add(getPionEnDessous());
+            am = getPionEnDessous().getDessousList(am);
+        }
+        return am;
+    }
+
     public void removePionEnDessous() {
         this.pionEnDessous = null;
         this.imagePion.updateImageDessous(false);
@@ -84,7 +94,11 @@ public class PionPlateau2 implements ObservableVue {
     }
 
     public PionPlateau2 getPionEnDessous() {
-        return this.pionEnDessous;
+        if (this.pionEnDessous != null) {
+            return this.pionEnDessous;
+        } else {
+            return null;
+        }
     }
 
     public HexaPoint getCoordPion() {
@@ -93,7 +107,7 @@ public class PionPlateau2 implements ObservableVue {
 
     public void setLock() {
         this.locked = true;
-        imagePion.setLock();
+        imagePion.setLockEffect(false);
     }
 
     public boolean isLocked() {
@@ -136,7 +150,7 @@ public class PionPlateau2 implements ObservableVue {
     }
 
     public void affiche() {
-        System.out.println("PionPlateau:" + getCoordPion() + "Image POS X:" + this.getImage().getX() + " Y: " + this.getImage().getY() + "Scene Width:" + scWidth + "Scene Height:" + scHeight + "Dessous:" + (this.pionEnDessous != null));
+        System.out.println("PionPlateau:" + getCoordPion() + "Type:" + this.getPionType() + "Image POS X:" + this.getImage().getX() + " Y: " + this.getImage().getY() + "Scene Width:" + scWidth + "Scene Height:" + scHeight + "Dessous:" + (this.pionEnDessous != null));
         this.imagePion.affiche();
         if (this.pionEnDessous != null) {
             this.pionEnDessous.affiche();
@@ -185,12 +199,34 @@ public class PionPlateau2 implements ObservableVue {
         });
     }
 
+    private void setMouseHoverEvent() {
+        this.getImage().addEventFilter(MouseEvent.MOUSE_ENTERED, (
+                final MouseEvent mouseEvent) -> {
+            if (this.getPionEnDessous() != null) {
+                //notify vueTerrain afficher les cases
+                notifyPionPlateauHoveInDessous(this, mouseEvent);
+            }
+        });
+
+        this.getImage().addEventFilter(MouseEvent.MOUSE_EXITED, (
+                final MouseEvent mouseEvent) -> {
+            if (this.getPionEnDessous() != null) {
+                //notify vueTerrain cacher les cases
+                notifyPionPlateauHoveOutDessous(this);
+            }
+        });
+    }
+
     public void setDragging(boolean isDragging) {
         this.dragging = isDragging;
     }
 
     public boolean isDragging() {
         return dragging;
+    }
+
+    public PionImgView getImgViewPion() {
+        return this.imagePion;
     }
 
     /**
@@ -425,6 +461,16 @@ public class PionPlateau2 implements ObservableVue {
     @Override
     public void notifyPionPlateauRemoveEnDessous(PionPlateau2 pionPlateau) {
         this.vtObservateur.updatePionPlateauRemoveEnDessous(pionPlateau);
+    }
+
+    @Override
+    public void notifyPionPlateauHoveInDessous(PionPlateau2 pionPlateau, MouseEvent me) {
+        this.vtObservateur.updatePionPlateauHoveInDessous(pionPlateau, me);
+    }
+
+    @Override
+    public void notifyPionPlateauHoveOutDessous(PionPlateau2 pp2) {
+        this.vtObservateur.updatePionPlateauHoveOutDessous(pp2);
     }
 
     /**

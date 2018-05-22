@@ -20,16 +20,15 @@ public class Coccinelle extends Insecte {
     }
 
     @Override
-    public Collection<Case> deplacementPossible(Plateau plateau) {
+   public Collection<Case> deplacementPossible(Plateau plateau) {
     	
-    	if(plateau.rucheBrisee2(this.getEmplacement())) {
+    	if(!this.getJoueur().tousPionsPosables()) {
         	return new ArrayList<>();
         }
-        
-        if (!this.getJoueur().tousPionsPosables()) return new ArrayList<>();
     	
     	ArrayList<Case> casePossibles=new ArrayList<>();
     	casePossibles.add(this.getEmplacement());
+    	Case c=this.getEmplacement();
     	
     	for(int i=0;i<2;i++) {
     		ArrayList<Case> casePossibles2=new ArrayList<>();
@@ -38,7 +37,7 @@ public class Coccinelle extends Insecte {
     	    	ArrayList<Case> caseVoisinesOccupees=(ArrayList<Case>) plateau.getCasesVoisinesOccupees(casePossibles.get(j));
 
     	    	for(int z=0;z<caseVoisinesOccupees.size();z++) {
-    	    		if(!casePossibles2.contains(caseVoisinesOccupees.get(z))) {
+    	    		if(!casePossibles2.contains(caseVoisinesOccupees.get(z)) && !caseVoisinesOccupees.get(z).equals(c)) {
     	    			casePossibles2.add(caseVoisinesOccupees.get(z));
     	    		}
     	    	}
@@ -60,7 +59,9 @@ public class Coccinelle extends Insecte {
     	if(casePossibles3.contains(this.getEmplacement())) {
     		casePossibles3.remove(this.getEmplacement());
     	}
-    	
+    	if(!casePossibles3.isEmpty() && plateau.rucheBrisee(this.getEmplacement(),casePossibles3.get(0))) {
+    		return new ArrayList<>();
+    	}
     	return casePossibles3;
     }
 

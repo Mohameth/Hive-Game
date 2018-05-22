@@ -149,7 +149,7 @@ public class InsecteTest {
         result = new ArrayList<>();
         result.addAll(s.deplacementPossible(instance));
 
-        arrayCorresponds(result, new ArrayList<>());
+        arrayCorresponds(result, new ArrayList<HexaPoint>());
         s.deplacement(instance, new HexaPoint(1, -1, 0));
 
         ArrayList<HexaPoint> newExpectation = new ArrayList<>();
@@ -214,6 +214,47 @@ public class InsecteTest {
 
         
         arrayCorresponds(f.deplacementPossible(instance), new ArrayList<>());
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("");
+    }
+    
+    @Test
+    public void testDeplacementSauterelle() {
+        System.out.println("=============================================");
+        System.out.println("Test deplacementSauterelle =================>\n");
+
+        Plateau instance = new Plateau();
+        Joueur j1 = new JoueurHumain(instance,true);
+
+        HexaPoint orig = new HexaPoint(0,0,0);
+        
+        Reine reine = new Reine(j1);
+        Sauterelle sauterelle = new Sauterelle(j1);
+        
+        ArrayList<Case> expected;
+        ArrayList<Case> res;
+        
+        System.out.println("test reine à l'origine et sauterelle au-dessus :");
+        instance.ajoutInsecte(reine, orig);
+        instance.ajoutInsecte(sauterelle, orig.voisinHaut());
+        
+        expected = new ArrayList<>();
+        expected.add(new Case(orig.voisinBas()));
+        
+        res = (ArrayList<Case>) sauterelle.deplacementPossible(instance);
+        
+        arrayCorresponds(res,expected);
+        System.out.println("\u001B[32m" + "\t Passed ✔ \n");
+        
+        System.out.println("test reine à l'origine et sauterelle au-dessus et reine encore au-dessus :");
+        instance.ajoutInsecte(reine, orig.voisinHaut().voisinHaut());
+        expected = new ArrayList<>();
+        
+        
+        res = (ArrayList<Case>) sauterelle.deplacementPossible(instance);
+        
+        arrayCorresponds(res,expected);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
         System.out.println("");
@@ -373,5 +414,15 @@ public class InsecteTest {
         }
 
         assertTrue(copie.isEmpty());
+    }
+    
+    private void arrayCorresponds(ArrayList<Case> result, ArrayList<Case> Expected) {
+        assertTrue(Expected.size() == result.size());
+        for (Case c : result) {
+            assertTrue(Expected.contains(c));
+            Expected.remove(c);
+        }
+
+        assertTrue(Expected.isEmpty());
     }
 }

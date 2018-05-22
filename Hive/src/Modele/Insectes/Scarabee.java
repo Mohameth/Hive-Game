@@ -7,6 +7,7 @@ import Modele.HexaPoint;
 import Modele.TypeInsecte;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 public class Scarabee extends Insecte {
 
@@ -25,12 +26,17 @@ public class Scarabee extends Insecte {
         
         ArrayList<Case> res = new ArrayList<>();
         for (Case c : plateau.getCasesVoisines(this.getEmplacement(), false)) {
-            if (plateau.glissementPossible(this.getEmplacement(), c) || (this.getNiveau() == 1 && !c.estVide())) {
+            if (plateau.glissementPossible(this.getEmplacement(), c) || 
+                    (!plateau.rucheBrisee(this.getEmplacement(), c) && (this.getNiveau() !=1 || c.getNbInsectes() != 0))) {
                 res.add(c);
-            } else if (this.getNiveau() > 1 && !plateau.rucheBrisee(this.getEmplacement(), c) && 
-                        (c.estVide() || this.getNiveau() > c.getNbInsectes())
-                    ) {
-                res.add(c);
+            }
+        }
+        
+        Iterator<Case> it = res.iterator();
+        while (it.hasNext()) {
+            Case cible = it.next();
+            if (plateau.rucheBrisee(this.getEmplacement(), cible)) {
+                it.remove();
             }
         }
         

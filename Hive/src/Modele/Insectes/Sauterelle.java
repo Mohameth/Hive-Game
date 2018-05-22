@@ -50,14 +50,10 @@ public class Sauterelle extends Insecte {
     		}
     	}
     	
-        Iterator<Case> it = casePossibles.iterator();
-        while (it.hasNext()) {
-            Case cible = it.next();
-            if (plateau.rucheBrisee(this.getEmplacement(), cible)) {
-                it.remove();
-            }
-        }
-        
+    	if(!casePossibles.isEmpty() && plateau.rucheBrisee(this.getEmplacement(),casePossibles.get(0))) {
+    		return new ArrayList<>();
+    	}
+    	
     	return casePossibles;
     }
     
