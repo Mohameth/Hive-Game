@@ -1,24 +1,21 @@
 package Vue;
 
 import Controleur.Hive;
-import Modele.Insectes.Insecte;
 import Modele.HexaPoint;
+import Modele.Insectes.Insecte;
 import Modele.TypeInsecte;
-import static com.sun.javafx.PlatformUtil.isWindows;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
-import javafx.scene.effect.DropShadow;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
@@ -34,16 +31,10 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Optional;
-import javafx.scene.effect.ColorAdjust;
 import java.util.HashMap;
 import java.util.Map;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
-import javafx.scene.ImageCursor;
-import javafx.scene.control.Tooltip;
-import javafx.scene.input.MouseButton;
-import javafx.scene.shape.Circle;
+
+import static com.sun.javafx.PlatformUtil.isWindows;
 
 public class VueTerrain extends Vue implements ObservateurVue {
 
@@ -154,6 +145,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
         if (currentMainSelected != null && currentSelected != null) {
             System.out.println("======================NE DOIT JMAIS ARRIVER==============================");
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         if (currentMainSelected != null) {
@@ -556,6 +548,17 @@ public class VueTerrain extends Vue implements ObservateurVue {
         //this.getRoot().getChildren().remove();
     }
 
+    @Override
+    public void updatePionPlateauHoveInDessous(PionPlateau2 pionPlateau) {
+        System.out.println("pioNPlateau IN avec dessous:");
+        pionPlateau.affiche();
+    }
+
+    @Override
+    public void updatePionPlateauHoveOutDessous(PionPlateau2 pionPlateau) {
+        System.out.println("pioNPlateau OUT avec dessous:");
+    }
+
     private void coupJouer() {
         hideZoneLibre();
         removeSelectedPion();
@@ -703,10 +706,11 @@ public class VueTerrain extends Vue implements ObservateurVue {
         Button bEdit = new Button();
         bEdit.setGraphic(new ImageView(new Image("icons/pencil.png")));
         bEdit.setStyle("-fx-background-color: Transparent;\n");
-        Text txt1 = new Text("Nom joueur " + numplayer);
-        //txt1.setFont(FontWeight.BOLD, 70);
+        TextField txt1 = new TextField("Nom joueur " + numplayer);
         txt1.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
-        txt1.setFill(Color.WHITE);
+        txt1.getStylesheets().add("Vue/button.css");
+        txt1.setEditable(false);
+        txt1.setMinWidth(150);
 
         HBox hName = new HBox();
         hName.setAlignment(Pos.CENTER_LEFT);
@@ -720,7 +724,10 @@ public class VueTerrain extends Vue implements ObservateurVue {
         pointJ1.setPadding(new Insets(5, 0, 5, 0));
 
         bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            getPupName(txt1);
+            if(txt1.isEditable())
+                txt1.setEditable(false);
+            else
+                txt1.setEditable(true);
         });
 
         String style = "-fx-background-color: rgba(255, 255, 255, 0.2);";
@@ -1314,7 +1321,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     private Image changeImg(String[] url, boolean next, Label l) {
 
-        int numeroPageTuto = 0;
+        //int numeroPageTuto = 0;
         if (next && numeroPageTuto < 10) {
             numeroPageTuto++;
         } else if (!next && numeroPageTuto > 0) {

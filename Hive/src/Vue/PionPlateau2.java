@@ -56,6 +56,7 @@ public class PionPlateau2 implements ObservableVue {
         updateZoneLibreVoisin();
 
         setOnClicEvent();
+        setMouseHoverEvent();
         notifyNewPionPlateau(this);
     }
 
@@ -93,7 +94,7 @@ public class PionPlateau2 implements ObservableVue {
 
     public void setLock() {
         this.locked = true;
-        imagePion.setLock();
+        imagePion.setLockEffect(false);
     }
 
     public boolean isLocked() {
@@ -136,7 +137,7 @@ public class PionPlateau2 implements ObservableVue {
     }
 
     public void affiche() {
-        System.out.println("PionPlateau:" + getCoordPion() + "Image POS X:" + this.getImage().getX() + " Y: " + this.getImage().getY() + "Scene Width:" + scWidth + "Scene Height:" + scHeight + "Dessous:" + (this.pionEnDessous != null));
+        System.out.println("PionPlateau:" + getCoordPion() + "Type:" + this.getPionType() + "Image POS X:" + this.getImage().getX() + " Y: " + this.getImage().getY() + "Scene Width:" + scWidth + "Scene Height:" + scHeight + "Dessous:" + (this.pionEnDessous != null));
         this.imagePion.affiche();
         if (this.pionEnDessous != null) {
             this.pionEnDessous.affiche();
@@ -181,6 +182,24 @@ public class PionPlateau2 implements ObservableVue {
                 lastMouseLocation.x = mouseEvent.getSceneX();
                 lastMouseLocation.y = mouseEvent.getSceneY();
                 notifyPionPlateauMove(this);
+            }
+        });
+    }
+
+    private void setMouseHoverEvent() {
+        this.getImage().addEventFilter(MouseEvent.MOUSE_ENTERED, (
+                final MouseEvent mouseEvent) -> {
+            if (this.getPionEnDessous() != null) {
+                //notify vueTerrain afficher les cases
+                notifyPionPlateauHoveInDessous(this);
+            }
+        });
+
+        this.getImage().addEventFilter(MouseEvent.MOUSE_EXITED, (
+                final MouseEvent mouseEvent) -> {
+            if (this.getPionEnDessous() != null) {
+                //notify vueTerrain cacher les cases
+                notifyPionPlateauHoveOutDessous(this);
             }
         });
     }
@@ -425,6 +444,16 @@ public class PionPlateau2 implements ObservableVue {
     @Override
     public void notifyPionPlateauRemoveEnDessous(PionPlateau2 pionPlateau) {
         this.vtObservateur.updatePionPlateauRemoveEnDessous(pionPlateau);
+    }
+
+    @Override
+    public void notifyPionPlateauHoveInDessous(PionPlateau2 pionPlateau) {
+        this.vtObservateur.updatePionPlateauHoveInDessous(pionPlateau);
+    }
+
+    @Override
+    public void notifyPionPlateauHoveOutDessous(PionPlateau2 pionPlateau) {
+        this.vtObservateur.updatePionPlateauHoveOutDessous(pionPlateau);
     }
 
     /**
