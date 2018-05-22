@@ -3,7 +3,9 @@ package Vue;
 import Controleur.Hive;
 import Modele.HexaPoint;
 import Modele.Insectes.Insecte;
+import Modele.Plateau;
 import Modele.TypeInsecte;
+import javafx.animation.FadeTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -13,6 +15,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -28,17 +31,12 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static com.sun.javafx.PlatformUtil.isWindows;
-import javafx.animation.FadeTransition;
-import javafx.scene.effect.DropShadow;
-import javafx.util.Duration;
-import javafx.event.EventType;
 
 public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
@@ -794,7 +792,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         pointJ1.setPadding(new Insets(5, 0, 5, 0));
 
         bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            if (txt1.isEditable()) {
+            if (txt1.isEditable())
                 txt1.setEditable(false);
             else {
                 txt1.setEditable(true);
@@ -1382,9 +1380,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     }
 
-    private void setNomJoueur(int numplayer){
-        nomJoueur.get(numplayer-1).setStyle("-fx-text-fill : red");
-        nomJoueur.get(Math.abs(numplayer-2)).setStyle("-fx-text-fill : white");
+    private void setNomJoueur(int numJoueur){
+        nomJoueur.get(numJoueur-1).setStyle("-fx-text-fill : red");
+        nomJoueur.get(Math.abs(numJoueur-2)).setStyle("-fx-text-fill : white");
     }
 
 }
