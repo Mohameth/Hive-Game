@@ -62,8 +62,14 @@ public class PionImgView {
     }
 
     public void setLock() {
+        setLockEffect(true);
+    }
+
+    public void setLockEffect(boolean withEffect) {
         this.lock = true;
-        setlockEffect();
+        if (withEffect) {
+            setlockEffect();
+        }
         setCursorImageHover(new ImageCursor(new Image("notallowed.png")));
     }
 
