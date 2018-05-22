@@ -43,6 +43,10 @@ public class ZoneLibre {
         //notifier la vueTerrain depuis le pion parent
     }
 
+    public boolean asParentNull() {
+        return pionParent == null;
+    }
+
     public ImageView getImage() {
         return imageZoneLibre.getImage();
     }
