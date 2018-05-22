@@ -34,8 +34,11 @@ public class Fourmi extends Insecte {
             Case courante = toCheck.removeLast();
             for (Case c : plateau.getCasesVoisinesAccessibles(courante, true)) {
                 if (!result.contains(c) && plateau.glissementPossible(courante, c)) {
-                    result.add(c);
-                    toCheck.add(c);
+                    ArrayList<Case> casec = (ArrayList<Case>) plateau.getCasesVoisinesOccupees(c);
+                    if (!((casec.contains(this.getEmplacement())) && casec.size()==1)) {
+                        result.add(c);
+                        toCheck.add(c);
+                    }
                 }
             }
         }

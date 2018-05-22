@@ -18,17 +18,25 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 import java.awt.*;
+import java.io.*;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class VueSettings extends Vue {
 
     private static int NB_LIGNE = 3;
     private static int NB_COL = 7;
-    Stage primaryStage;
-    boolean inGame;
-    Group root;
-    GridPane g;
+    private Stage primaryStage;
+    private boolean inGame;
+    private Group root;
+    private GridPane g;
+    private final ToggleGroup group = new ToggleGroup();
+    private TextField nomJ1;
+    private TextField nomJ2;
+    private ComboBox<Point> cb;
+    private ComboBox<String> cb1;
+    private CheckBox chb;
 
     VueSettings(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -36,6 +44,7 @@ public class VueSettings extends Vue {
 
         boolean fs = primaryStage.isFullScreen();
         Scene s = new Scene(getSetting(), primaryStage.getWidth(), primaryStage.getHeight());
+        getConfig();
         s.getStylesheets().add("Vue/button1.css");
         primaryStage.setScene(s);
         primaryStage.setFullScreen(fs);
@@ -92,8 +101,8 @@ public class VueSettings extends Vue {
         t5.setAlignment(Pos.TOP_LEFT);
 
         Text t6 = new Text(getLangStr("wSize"));
-        ComboBox<Point> cb = new ComboBox();
-        cb.getItems().addAll(new Point(1920, 1080), new Point(1600, 900), new Point(1280, 720), new Point(1024, 576));
+        this.cb = new ComboBox();
+        cb.getItems().addAll(new Point(1920, 1080), new Point(1280, 720));
         cb.getSelectionModel().select(cb.getItems().get(0));
         cb.setConverter(new StringConverter<Point>() {
             @Override
@@ -111,7 +120,7 @@ public class VueSettings extends Vue {
         });
 
         Text t7 = new Text(getLangStr("language"));
-        ComboBox<String> cb1 = new ComboBox();
+        cb1 = new ComboBox();
         cb1.getItems().addAll(getLangStr("fr"), getLangStr("en"));
         cb1.getSelectionModel().select(getLangStr("fr"));
 
@@ -119,7 +128,7 @@ public class VueSettings extends Vue {
         hb2.getChildren().addAll(t6, cb);
         hb2.setSpacing(10);
 
-        CheckBox chb = new CheckBox(getLangStr("fullscreen"));
+        chb = new CheckBox(getLangStr("fullscreen"));
         chb.setAlignment(Pos.TOP_CENTER);
 
         HBox hb3 = new HBox();
@@ -138,6 +147,9 @@ public class VueSettings extends Vue {
             }
         });
 
+        bSaveDef.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            setConfig();
+        });
 
         bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             if (chb.isSelected()) {
@@ -151,10 +163,8 @@ public class VueSettings extends Vue {
                 language = "fr";
                 country = "FR";
             } else if (cb1.getValue().equals(getLangStr("en"))) {
-                System.out.println("en");
                 language = "en";
                 country = "US";
-                System.out.println(getLangStr("white"));
             }
             this.currentLocale = new Locale(this.language, this.country);
             this.messages = ResourceBundle.getBundle("MessagesBundle", currentLocale);
@@ -187,16 +197,16 @@ public class VueSettings extends Vue {
         Label t2 = new Label(getLangStr("pname"));
 
         Text t3 = new Text(getLangStr("white"));
-        TextField tf = new TextField();
+        nomJ1 = new TextField();
         Text t4 = new Text(getLangStr("black"));
-        TextField tf1 = new TextField();
+        nomJ2 = new TextField();
 
         HBox hb = new HBox();
-        hb.getChildren().addAll(t3, tf);
+        hb.getChildren().addAll(t3, nomJ1);
         hb.setSpacing(10);
 
         HBox hb1 = new HBox();
-        hb1.getChildren().addAll(t4, tf1);
+        hb1.getChildren().addAll(t4, nomJ2);
         hb1.setSpacing(15);
         hb1.setPadding(new Insets(0, 0, 30, 0));
         hb1.setStyle("-fx-border-color: black; -fx-border-width: 0 0 3 0;");
@@ -215,10 +225,12 @@ public class VueSettings extends Vue {
         t.setFont(Font.font(36));
 
         Text td = new Text(getLangStr("difficulte"));
-        final ToggleGroup group = new ToggleGroup();
         RadioButton rEasy = new RadioButton(getLangStr("easy"));
+        rEasy.setUserData(getLangStr("easy"));
         RadioButton rMedium = new RadioButton(getLangStr("medi"));
+        rMedium.setUserData(getLangStr("medi"));
         RadioButton rHard = new RadioButton(getLangStr("hard"));
+        rHard.setUserData(getLangStr("hard"));
         rEasy.setToggleGroup(group);
         rMedium.setToggleGroup(group);
         rHard.setToggleGroup(group);
@@ -239,5 +251,65 @@ public class VueSettings extends Vue {
         v.setPadding(new Insets(0, 0, 0, 20));
 
         return v;
+    }
+
+    private void setConfig() {
+        Properties prop = new Properties();
+        String propFileName = System.getProperty("user.dir").concat("/Hive/rsc/config.properties");
+        prop.setProperty("difficulteIA",group.getSelectedToggle().getUserData().toString());
+        prop.setProperty("joueurBlanc",nomJ1.getText());
+        prop.setProperty("joueurNoir",nomJ2.getText());
+        prop.setProperty("langue",cb1.getValue());
+        prop.setProperty("tailleFenetre",cb.getValue().x + "x" + cb.getValue().y);
+        if(chb.isSelected())
+            prop.setProperty("fullscreen","true");
+        else
+            prop.setProperty("fullscreen","false");
+        try {
+            prop.store(new FileWriter(propFileName),"");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getConfig() {
+        Properties prop = new Properties();
+        String propFileName = System.getProperty("user.dir").concat("/Hive/rsc/config.properties");
+        InputStream input = null;
+        try {
+            input = new FileInputStream(propFileName);
+            prop.load(input);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+
+        for(Toggle t : group.getToggles()) {
+            if (t.getUserData().equals(prop.getProperty("difficulteIA")))
+                group.selectToggle(t);
+        }
+        if(prop.getProperty("fullscreen").equals("true"))
+            chb.setSelected(true);
+        else
+            chb.setSelected(false);
+        nomJ1.setText(prop.getProperty("joueurBlanc",nomJ1.getText()));
+        nomJ2.setText(prop.getProperty("joueurNoir",nomJ2.getText()));
+        for (String s : cb1.getItems()){
+            if(s.equals(prop.getProperty("langue")))
+                cb1.getSelectionModel().select(s);
+        }
+
+        for(Point p : cb.getItems()){
+            String s = p.x + "x" + p.y;
+            if(s.equals(prop.getProperty("tailleFenetre")))
+                cb.getSelectionModel().select(p);
+        }
+
+        try {
+            input.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
