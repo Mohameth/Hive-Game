@@ -165,6 +165,16 @@ public class Hive implements Serializable {
             this.joueurCourant = this.joueur1;
         }
     }
+    
+    public int JoueurGagnant()  {
+        if (this.joueur1.reineBloquee()) {
+            return 2;
+        } else if (this.joueur2.reineBloquee()) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 
     public Joueur getJoueurCourant() {
         return joueurCourant;
@@ -184,9 +194,11 @@ public class Hive implements Serializable {
     }
 
     public boolean save(String name) {
-        String path = System.getProperty("user.dir").concat("/rsc/SAVE/");
+        String path;
         if (isWindows()) {
-            path.replace('/', '\\');
+            path = System.getProperty("user.dir").concat("\\rsc\\SAVE\\");
+        } else {
+            path = System.getProperty("user.dir").concat("/rsc/SAVE/");
         }
         File f = new File(path + name);
         if (!f.exists()) {
@@ -207,9 +219,11 @@ public class Hive implements Serializable {
     }
 
     public boolean load(String name) {
-        String path = System.getProperty("user.dir").concat("/rsc/SAVE/");
+        String path;
         if (isWindows()) {
-            path.replace('/', '\\');
+            path = System.getProperty("user.dir").concat("\\rsc\\SAVE\\");
+        } else {
+            path = System.getProperty("user.dir").concat("/rsc/SAVE/");
         }
         File f = new File(path + name);
         if (f.exists()) {
@@ -234,5 +248,61 @@ public class Hive implements Serializable {
             }
         }
         return true;
+    }
+    
+    public boolean UndoPossible() {
+        if (this.joueur2 instanceof JoueurIA) {
+            return this.joueur1.UndoPossible();
+        } else {
+            if (this.joueurCourant.equals(this.joueur1)) {
+                return this.joueur2.UndoPossible();
+            } else {
+                return this.joueur1.UndoPossible();
+            }
+        }
+    }
+    
+    public void Undo() {
+        if (this.joueur2 instanceof JoueurIA) {
+            this.joueur2.Undo();
+            this.joueur1.Undo();
+        } else {
+            if (this.joueurCourant.equals(this.joueur1)) {
+                this.joueur2.Undo();
+                this.joueurCourant = this.joueur2;
+            } else {
+                this.joueur1.Undo();
+                this.joueurCourant = this.joueur1;
+            }
+            
+        }
+    }
+    
+    public boolean RedoPossible() {
+        if (this.joueur2 instanceof JoueurIA) {
+            return this.joueur1.RedoPossible();
+        } else {
+            if (this.joueurCourant.equals(this.joueur1)) {
+                return this.joueur2.RedoPossible();
+            } else {
+                return this.joueur1.RedoPossible();
+            }
+        }
+    }
+    
+    public void Redo() {
+         if (this.joueur2 instanceof JoueurIA) {
+            this.joueur1.Redo();
+            this.joueur2.Redo();
+        } else {
+            if (this.joueurCourant.equals(this.joueur1)) {
+                this.joueur2.Redo();
+                this.joueurCourant = this.joueur2;
+            } else {
+                this.joueur1.Redo();
+                this.joueurCourant = this.joueur1;
+            }
+            
+        }
     }
 }

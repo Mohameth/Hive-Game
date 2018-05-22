@@ -36,10 +36,10 @@ public abstract class Joueur implements Cloneable, Serializable {
      *
      * @see Insecte
      */
-    protected Insecte dernierDeplacement;
+    protected Deplacement dernierDeplacement;
 
     protected int tourJoueur;
-    
+
     /**
      * Coup d'un joueur
      *
@@ -56,7 +56,7 @@ public abstract class Joueur implements Cloneable, Serializable {
         this.tourJoueur = 1;
         this.initInsectes(extensions);
     }
-    
+
     /**
      * Verifie si la reine du joueur est posé
      *
@@ -114,9 +114,8 @@ public abstract class Joueur implements Cloneable, Serializable {
      */
     public void placementInsecte(Insecte insecte, HexaPoint caseCible) {
         try {
-            //this.plateau.ajoutInsecte(insecte, caseCible.getCoordonnees());
             this.plateau.ajoutInsecte(insecte, caseCible);
-            this.dernierDeplacement = insecte;
+            this.dernierDeplacement = new Deplacement(insecte, null, caseCible);
             this.tourJoueur++;
         } catch (Exception ex) {
             Logger.getLogger(Joueur.class.getName()).log(Level.SEVERE, null, ex);
@@ -153,17 +152,18 @@ public abstract class Joueur implements Cloneable, Serializable {
         }
 
     }
-    
+
     public boolean tousPionsPosables() {
-        if (!this.reinePosee() && this.tourJoueur == 4)
-                return false;
+        if (!this.reinePosee() && this.tourJoueur == 4) {
+            return false;
+        }
         return true;
     }
 
     public int getTourJoueur() {
         return tourJoueur;
     }
-    
+
     public void incrementeTour() {
         tourJoueur++;
     }
@@ -171,7 +171,7 @@ public abstract class Joueur implements Cloneable, Serializable {
     public void setPlateau(Plateau plateau) {
         this.plateau = plateau;
     }
-    
+
     @Override
     public Joueur clone() {// Copie tous sauf le plateau (utiliser setPlateau)
         try {
@@ -179,15 +179,15 @@ public abstract class Joueur implements Cloneable, Serializable {
             //joueur.dernierDeplacement = this.dernierDeplacement.clone();
             joueur.pions = cloneList(pions, joueur);
             joueur.tourJoueur = this.tourJoueur;
-            
+
             return joueur;
         } catch (CloneNotSupportedException e) {
             System.err.println("ERREUR Clone Joueur : " + e);
         }
-        
+
         return null;
     }
-    
+
     public ArrayList<Insecte> cloneList(ArrayList<Insecte> pions, Joueur j) {
         ArrayList<Insecte> clone = new ArrayList<>(pions.size());
         for (Insecte insecte : pions) {
@@ -195,8 +195,50 @@ public abstract class Joueur implements Cloneable, Serializable {
             cloneInsecte.setJoueur(j);;
             clone.add(cloneInsecte);
         }
-        
+
         return clone;
     }
-    
+
+    public boolean UndoPossible() {
+        if (this.dernierDeplacement == null) {
+            return false;
+        } else if (this.dernierDeplacement.getI().getEmplacement() == null) {
+            return false;
+        } else {
+            return !this.dernierDeplacement.getI().getEmplacement().equals(this.dernierDeplacement.getOrig());
+        }
+    }
+
+    public void Undo() {
+        if (UndoPossible()) {
+            if (this.dernierDeplacement.getOrig() == null) {
+                this.plateau.deleteInsecte(this.dernierDeplacement.getI(), this.dernierDeplacement.getCible());
+                this.dernierDeplacement.getI().setEmplacement(null);
+            } else {
+                this.plateau.deplaceInsecte(this.dernierDeplacement.getI(), this.dernierDeplacement.getCible());
+            }
+            this.tourJoueur--;
+        }
+    }
+
+    public boolean RedoPossible() {
+        if (this.dernierDeplacement == null) {
+            return false;
+        } else if (this.dernierDeplacement.getI().getEmplacement() == null) {
+            return false;
+        } else {
+            return !this.dernierDeplacement.getI().getEmplacement().equals(this.dernierDeplacement.getCible());
+        }
+    }
+
+    public void Redo() {
+        if (RedoPossible()) {
+            if (this.dernierDeplacement.getOrig() == null) {
+                this.plateau.ajoutInsecte(this.dernierDeplacement.getI(), this.dernierDeplacement.getCible());
+            } else {
+                this.plateau.deplaceInsecte(this.dernierDeplacement.getI(), this.dernierDeplacement.getOrig());
+            }
+            this.tourJoueur++;
+        }
+    }
 }

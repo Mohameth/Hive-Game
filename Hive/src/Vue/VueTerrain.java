@@ -1,8 +1,11 @@
 package Vue;
 
+import java.util.Observer;
+import java.util.Observable;
 import Controleur.Hive;
 import Modele.HexaPoint;
 import Modele.Insectes.Insecte;
+import Modele.Plateau;
 import Modele.TypeInsecte;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -38,8 +41,9 @@ import static com.sun.javafx.PlatformUtil.isWindows;
 import javafx.animation.FadeTransition;
 import javafx.scene.effect.DropShadow;
 import javafx.util.Duration;
+import javafx.event.EventType;
 
-public class VueTerrain extends Vue implements ObservateurVue {
+public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     private ArrayList<ZoneLibre> listZoneLibres;
     private HashMap<HexaPoint, PionPlateau2> listPionsPlateau;
@@ -759,10 +763,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
             PionPlateau2 pPlat = entry.getValue();
             if (pPlat.isWhite() == iswhite) {
                 pPlat.setLock();
-            } else {
-                if (unlockOposite) {
-                    pPlat.removeLock();
-                }
+            } else if (unlockOposite) {
+                pPlat.removeLock();
             }
 
         }
@@ -916,7 +918,17 @@ public class VueTerrain extends Vue implements ObservateurVue {
         bPause.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             getPause();
         });
-
+        
+        bUndo.setTooltip(new Tooltip("Anuler le dernier coup"));
+        bUndo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+           this.controleur.Undo();
+        });
+        
+        bRedo.setTooltip(new Tooltip("Rejouer le dernier coup"));
+        bRedo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+           this.controleur.Redo();
+        });
+        
         bLoad.setTooltip(new Tooltip("Charger une partie"));
         bLoad.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             ListView<String> lv = getSaveFile();
@@ -1167,6 +1179,12 @@ public class VueTerrain extends Vue implements ObservateurVue {
         return bgauche;
     }
 
+    @Override
+    public void update(Observable o, Object arg) {
+        Plateau p =  (Plateau) o;
+        reconstructionPlateau(p);
+    }
+
     //toto lors du deplacement verifier collision A activer TODO
     /*
     public void checkCollision(PionPlateau p) {
@@ -1205,23 +1223,33 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     }
      */
+    
+    private void reconstructionPlateau(Plateau p) {
+        
+    }    
+    
     private static final class MouseLocation {
 
         public double x, y;
     }
 
     public ListView<String> getSaveFile() {
-        String path = System.getProperty("user.dir").concat("/rsc/SAVE");
+        String path;
         if (isWindows()) {
-            path.replace('/', '\\');
+            path = System.getProperty("user.dir").concat("\\rsc\\SAVE");
+        } else {
+            path = System.getProperty("user.dir").concat("/rsc/SAVE/");
         }
         System.out.println(path);
         File rep = new File(path);
+        if (!rep.exists()) {
+            rep.mkdir();
+        }
+
         ListView<String> listSaveFile = new ListView<>();
-        if (rep.length() != 0) {
-            for (String s : rep.list()) {
-                listSaveFile.getItems().add(s);
-            }
+        for (String s : rep.list()) {
+            listSaveFile.getItems().add(s);
+            System.out.println(s);
         }
         return listSaveFile;
     }
