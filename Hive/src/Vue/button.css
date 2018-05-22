@@ -39,3 +39,13 @@
     -fx-text-fill: white;
 }
 
+.text-input:editable {
+    -fx-background-color: black;
+}
+
+.text-input:readonly {
+    -fx-background-color: transparent;
+    -fx-font-weight: bold;
+    -fx-text-fill : rgb(255,255,255);
+}
+

@@ -79,13 +79,9 @@ public class VueMenuPrincipal extends Vue {
             getPupExit();
         });
 
-        VBox vb = new VBox();
+        VBox vb = new VBox(solo,jvj,loadGame,tuto,setting,quit);
         vb.setSpacing(20.0);
-        vb.getChildren().add(solo);
-        vb.getChildren().add(jvj);
-        vb.getChildren().add(loadGame);
-        vb.getChildren().add(tuto);
-        vb.getChildren().addAll(setting, quit);
+        vb.setPadding(new Insets(0,0,0,70));
 
         GridPane g = new GridPane();
         for (int column = 0; column < NB_COL; column++) {
@@ -99,7 +95,7 @@ public class VueMenuPrincipal extends Vue {
         g.prefHeightProperty().bind(scene.heightProperty());
         g.prefWidthProperty().bind(scene.widthProperty());
         g.add(bp,0,0,5,1);
-        g.add(vb,4,2,1,5);
+        g.add(vb,0,2,1,5);
         g.setStyle("-fx-background-image: url(background.jpg);");
 
         root.getChildren().addAll(g);
