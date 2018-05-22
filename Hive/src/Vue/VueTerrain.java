@@ -53,10 +53,12 @@ public class VueTerrain extends Vue implements ObservateurVue {
     private int numeroPageTuto = 0;
     private Group root;
     private Stage primaryStage;
+    private ArrayList<TextField> nomJoueur;
 
     VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs) {
         boolean fs = primaryStage.isFullScreen();
         this.primaryStage = primaryStage;
+        this.nomJoueur = new ArrayList<>();
         root = new Group();
 
         this.controleur = controleur;
@@ -626,12 +628,14 @@ public class VueTerrain extends Vue implements ObservateurVue {
             setLockPlayerPion(false); //lock les noirs  sur le plateau  et remove les blancs
             removeLock(true, this.controleur.tousPionsPosables(1));
             setlock(false);
+            setNomJoueur(1);
         } else {
             //Mise a jour si probleme du texte
             //setlock(false); //pour griser les pions noir = false
             setLockPlayerPion(true); //lock les blancs sur le plateau et remove les noirs
             removeLock(false, this.controleur.tousPionsPosables(2));
             setlock(true);
+            setNomJoueur(2);
         }
     }
 
@@ -695,6 +699,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         bEdit.setGraphic(new ImageView(new Image("icons/pencil.png")));
         bEdit.setStyle("-fx-background-color: Transparent;\n");
         TextField txt1 = new TextField("Nom joueur " + numplayer);
+        nomJoueur.add(txt1);
         txt1.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
         txt1.getStylesheets().add("Vue/button.css");
         txt1.setEditable(false);
@@ -714,8 +719,10 @@ public class VueTerrain extends Vue implements ObservateurVue {
         bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             if(txt1.isEditable())
                 txt1.setEditable(false);
-            else
+            else {
                 txt1.setEditable(true);
+                txt1.requestFocus();
+            }
         });
 
         String style = "-fx-background-color: rgba(255, 255, 255, 0.2);";
@@ -1217,51 +1224,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
         root.getChildren().add(v);
     }
 
-    public void getPupName(Text tname) {
-        Label l = new Label(getLangStr("name"));
-        l.setTextFill(Color.WHITE);
-        l.prefWidthProperty().bind(primaryStage.widthProperty());
-        l.setAlignment(Pos.CENTER);
-        l.setPadding(new Insets(10, 0, 0, 0));
-        l.setStyle("-fx-background-color : rgba(0, 0, 0, .5);-fx-font-weight: bold;\n-fx-font-size: 1.1em;\n-fx-text-fill: white;");
-        Button y = new Button("Ok");
-        y.setPrefWidth(150);
-        Button n = new Button(getLangStr("cancel"));
-        n.setPrefWidth(150);
-
-        TextField tf = new TextField(tname.getText());
-        HBox hb1 = new HBox(tf);
-        tf.setMaxWidth(300);
-        hb1.setAlignment(Pos.CENTER);
-        hb1.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
-        hb1.setPadding(new Insets(10, 0, 0, 0));
-
-        HBox h = new HBox(y, n);
-        h.getStylesheets().add("Vue/button.css");
-        h.setSpacing(30);
-        h.setAlignment(Pos.CENTER);
-        h.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
-        h.setPadding(new Insets(20, 0, 10, 0));
-        VBox v = new VBox(l, hb1, h);
-        //v.setSpacing(20);
-        v.prefWidthProperty().bind(this.primaryStage.widthProperty());
-        v.prefHeightProperty().bind(this.primaryStage.heightProperty());
-        v.setAlignment(Pos.CENTER);
-
-        y.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            tname.setText(tf.getText());
-            root.getChildren().remove(v);
-        });
-
-        n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            root.getChildren().remove(v);
-        });
-        root.getChildren().add(v);
-    }
-
     private void getRule() {
-        System.out.println("TODO ne pas utiliser de variables GLOBALE !!!!");
-
         Label l = new Label(getLangStr("rule"));
         String[] urlImg = new String[20];
         l.setStyle("-fx-font-weight: bold;\n-fx-font-size: 100px;\n-fx-text-fill: white;");
@@ -1308,8 +1271,6 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     private Image changeImg(String[] url, boolean next, Label l) {
-
-        //int numeroPageTuto = 0;
         if (next && numeroPageTuto < 10) {
             numeroPageTuto++;
         } else if (!next && numeroPageTuto > 0) {
@@ -1318,6 +1279,11 @@ public class VueTerrain extends Vue implements ObservateurVue {
         l.setText((numeroPageTuto + 1) + "/11");
         return new Image(url[numeroPageTuto]);
 
+    }
+
+    private void setNomJoueur(int numplayer){
+        nomJoueur.get(numplayer-1).setStyle("-fx-text-fill : red");
+        nomJoueur.get(Math.abs(numplayer-2)).setStyle("-fx-text-fill : white");
     }
 
 }
