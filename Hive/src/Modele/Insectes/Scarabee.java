@@ -25,9 +25,11 @@ public class Scarabee extends Insecte {
         
         ArrayList<Case> res = new ArrayList<>();
         for (Case c : plateau.getCasesVoisines(this.getEmplacement(), false)) {
-            if (plateau.glissementPossible(this.getEmplacement(), c)) {
+            if (plateau.glissementPossible(this.getEmplacement(), c) || (this.getNiveau() == 1 && !c.estVide())) {
                 res.add(c);
-            } else if (!c.estVide() && !plateau.rucheBrisee(this.getEmplacement(), c)){
+            } else if (this.getNiveau() > 1 && !plateau.rucheBrisee(this.getEmplacement(), c) && 
+                        (c.estVide() || this.getNiveau() > c.getNbInsectes())
+                    ) {
                 res.add(c);
             }
         }
