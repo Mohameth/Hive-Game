@@ -1,12 +1,11 @@
 package Vue;
 
-import java.util.Observer;
-import java.util.Observable;
 import Controleur.Hive;
 import Modele.HexaPoint;
 import Modele.Insectes.Insecte;
 import Modele.Plateau;
 import Modele.TypeInsecte;
+import javafx.animation.FadeTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -16,6 +15,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -31,17 +31,12 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static com.sun.javafx.PlatformUtil.isWindows;
-import javafx.animation.FadeTransition;
-import javafx.scene.effect.DropShadow;
-import javafx.util.Duration;
-import javafx.event.EventType;
 
 public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
@@ -60,11 +55,13 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private int numeroPageTuto = 0;
     private Group root;
     private Stage primaryStage;
+    private ArrayList<TextField> nomJoueur;
     private VBox listPionEnDessousHover;
 
     VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs) {
         boolean fs = primaryStage.isFullScreen();
         this.primaryStage = primaryStage;
+        this.nomJoueur = new ArrayList<>();
         root = new Group();
 
         this.controleur = controleur;
@@ -612,8 +609,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         listPionEnDessousHover.setVisible(true);
         this.getRoot().getChildren().add(listPionEnDessousHover);
         pionPlateau.getImage().toFront();
-        FadeTransition ft = new FadeTransition(Duration.millis(200), listPionEnDessousHover);
-        ft.setFromValue(0.5);
+        FadeTransition ft = new FadeTransition(Duration.millis(400), listPionEnDessousHover);
+        ft.setFromValue(0.2);
         ft.setToValue(1.0);
         ft.setCycleCount(1);
         ft.setAutoReverse(false);
@@ -708,12 +705,14 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             setLockPlayerPion(false); //lock les noirs  sur le plateau  et remove les blancs
             removeLock(true, this.controleur.tousPionsPosables(1));
             setlock(false);
+            setNomJoueur(1);
         } else {
             //Mise a jour si probleme du texte
             //setlock(false); //pour griser les pions noir = false
             setLockPlayerPion(true); //lock les blancs sur le plateau et remove les noirs
             removeLock(false, this.controleur.tousPionsPosables(2));
             setlock(true);
+            setNomJoueur(2);
         }
     }
 
@@ -775,6 +774,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bEdit.setGraphic(new ImageView(new Image("icons/pencil.png")));
         bEdit.setStyle("-fx-background-color: Transparent;\n");
         TextField txt1 = new TextField("Nom joueur " + numplayer);
+        nomJoueur.add(txt1);
         txt1.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
         txt1.getStylesheets().add("Vue/button.css");
         txt1.setEditable(false);
@@ -792,10 +792,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         pointJ1.setPadding(new Insets(5, 0, 5, 0));
 
         bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            if (txt1.isEditable()) {
+            if (txt1.isEditable())
                 txt1.setEditable(false);
-            } else {
+            else {
                 txt1.setEditable(true);
+                txt1.requestFocus();
             }
         });
 
@@ -918,17 +919,17 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bPause.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             getPause();
         });
-        
+
         bUndo.setTooltip(new Tooltip("Anuler le dernier coup"));
         bUndo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-           this.controleur.Undo();
+            this.controleur.Undo();
         });
-        
+
         bRedo.setTooltip(new Tooltip("Rejouer le dernier coup"));
         bRedo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-           this.controleur.Redo();
+            this.controleur.Redo();
         });
-        
+
         bLoad.setTooltip(new Tooltip("Charger une partie"));
         bLoad.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             ListView<String> lv = getSaveFile();
@@ -1181,7 +1182,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        Plateau p =  (Plateau) o;
+        Plateau p = (Plateau) o;
         reconstructionPlateau(p);
     }
 
@@ -1223,11 +1224,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     }
      */
-    
     private void reconstructionPlateau(Plateau p) {
-        
-    }    
-    
+
+    }
+
     private static final class MouseLocation {
 
         public double x, y;
@@ -1324,51 +1324,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         root.getChildren().add(v);
     }
 
-    public void getPupName(Text tname) {
-        Label l = new Label(getLangStr("name"));
-        l.setTextFill(Color.WHITE);
-        l.prefWidthProperty().bind(primaryStage.widthProperty());
-        l.setAlignment(Pos.CENTER);
-        l.setPadding(new Insets(10, 0, 0, 0));
-        l.setStyle("-fx-background-color : rgba(0, 0, 0, .5);-fx-font-weight: bold;\n-fx-font-size: 1.1em;\n-fx-text-fill: white;");
-        Button y = new Button("Ok");
-        y.setPrefWidth(150);
-        Button n = new Button(getLangStr("cancel"));
-        n.setPrefWidth(150);
-
-        TextField tf = new TextField(tname.getText());
-        HBox hb1 = new HBox(tf);
-        tf.setMaxWidth(300);
-        hb1.setAlignment(Pos.CENTER);
-        hb1.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
-        hb1.setPadding(new Insets(10, 0, 0, 0));
-
-        HBox h = new HBox(y, n);
-        h.getStylesheets().add("Vue/button.css");
-        h.setSpacing(30);
-        h.setAlignment(Pos.CENTER);
-        h.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
-        h.setPadding(new Insets(20, 0, 10, 0));
-        VBox v = new VBox(l, hb1, h);
-        //v.setSpacing(20);
-        v.prefWidthProperty().bind(this.primaryStage.widthProperty());
-        v.prefHeightProperty().bind(this.primaryStage.heightProperty());
-        v.setAlignment(Pos.CENTER);
-
-        y.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            tname.setText(tf.getText());
-            root.getChildren().remove(v);
-        });
-
-        n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            root.getChildren().remove(v);
-        });
-        root.getChildren().add(v);
-    }
-
     private void getRule() {
-        System.out.println("TODO ne pas utiliser de variables GLOBALE !!!!");
-
         Label l = new Label(getLangStr("rule"));
         String[] urlImg = new String[20];
         l.setStyle("-fx-font-weight: bold;\n-fx-font-size: 100px;\n-fx-text-fill: white;");
@@ -1414,8 +1370,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private Image changeImg(String[] url, boolean next, Label l) {
-
-        //int numeroPageTuto = 0;
         if (next && numeroPageTuto < 10) {
             numeroPageTuto++;
         } else if (!next && numeroPageTuto > 0) {
@@ -1424,6 +1378,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         l.setText((numeroPageTuto + 1) + "/11");
         return new Image(url[numeroPageTuto]);
 
+    }
+
+    private void setNomJoueur(int numJoueur){
+        nomJoueur.get(numJoueur-1).setStyle("-fx-text-fill : red");
+        nomJoueur.get(Math.abs(numJoueur-2)).setStyle("-fx-text-fill : white");
     }
 
 }
