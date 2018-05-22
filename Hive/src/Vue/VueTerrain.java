@@ -1,8 +1,11 @@
 package Vue;
 
+import java.util.Observer;
+import java.util.Observable;
 import Controleur.Hive;
 import Modele.HexaPoint;
 import Modele.Insectes.Insecte;
+import Modele.Plateau;
 import Modele.TypeInsecte;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -36,7 +39,7 @@ import java.util.Map;
 
 import static com.sun.javafx.PlatformUtil.isWindows;
 
-public class VueTerrain extends Vue implements ObservateurVue {
+public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     private ArrayList<ZoneLibre> listZoneLibres;
     private HashMap<HexaPoint, PionPlateau2> listPionsPlateau;
@@ -1100,6 +1103,12 @@ public class VueTerrain extends Vue implements ObservateurVue {
         return bgauche;
     }
 
+    @Override
+    public void update(Observable o, Object arg) {
+        Plateau p =  (Plateau) o;
+        reconstructionPlateau(p);
+    }
+
     //toto lors du deplacement verifier collision A activer TODO
     /*
     public void checkCollision(PionPlateau p) {
@@ -1138,6 +1147,11 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
     }
      */
+    
+    private void reconstructionPlateau(Plateau p) {
+        
+    }    
+    
     private static final class MouseLocation {
 
         public double x, y;
