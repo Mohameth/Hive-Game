@@ -272,9 +272,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     private void updateTranslationPiece() {
         //le premier points appliquer aussi les translations
-        System.out.println("Size Zone libre:" + this.listZoneLibres.size());
         if (this.listZoneLibres.size() == 1 && this.listZoneLibres.get(0).asParentNull() && listZoneLibres.get(0).getCoordZoneLibre().equals(new HexaPoint(0, 0, 0))) {
-            System.out.println("update translation");
             listZoneLibres.get(0).updateImageZoomWidthHeight(this.totZoom, this.sceneWidth, this.sceneHeight);
         }
 
@@ -391,11 +389,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         //ajout d'une zone libre
         //si le premier pion et qu'on a un piece alors supprimer le pion 0 0 0
 
-        System.out.println("Remove first 11");
         if (this.listZoneLibres.size() == 1 && this.listZoneLibres.get(0).asParentNull() && listZoneLibres.get(0).getCoordZoneLibre().equals(new HexaPoint(0, 0, 0))) {
             this.getRoot().getChildren().remove(this.listZoneLibres.get(0).getImage());
             this.listZoneLibres.remove(0);
-            System.out.println("Remove first");
         }
         this.listZoneLibres.add(zLibre);
         this.getRoot().getChildren().add(zLibre.getImage());
@@ -792,9 +788,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         pointJ1.setPadding(new Insets(5, 0, 5, 0));
 
         bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            if (txt1.isEditable())
+            if (txt1.isEditable()) {
                 txt1.setEditable(false);
-            else {
+            } else {
                 txt1.setEditable(true);
                 txt1.requestFocus();
             }
@@ -1380,9 +1376,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     }
 
-    private void setNomJoueur(int numJoueur){
-        nomJoueur.get(numJoueur-1).setStyle("-fx-text-fill : red");
-        nomJoueur.get(Math.abs(numJoueur-2)).setStyle("-fx-text-fill : white");
+    private void setNomJoueur(int numJoueur) {
+        nomJoueur.get(numJoueur - 1).setStyle("-fx-text-fill : red");
+        nomJoueur.get(Math.abs(numJoueur - 2)).setStyle("-fx-text-fill : white");
     }
 
 }
