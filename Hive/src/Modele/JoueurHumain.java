@@ -16,6 +16,7 @@ public class JoueurHumain extends Joueur {
     @Override
     public boolean coup(Insecte insecte, HexaPoint cible) {
         if (this.pions.contains(insecte) && insecte.deplacementPossible(plateau).contains(this.plateau.getCase(cible))) {
+            this.dernierDeplacement = new Deplacement(insecte,insecte.getEmplacement().getCoordonnees(),cible);
             insecte.deplacement(plateau, cible);
             this.tourJoueur++;
             return true;

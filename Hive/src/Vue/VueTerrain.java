@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.sun.javafx.PlatformUtil.isWindows;
+import javafx.event.EventType;
 
 public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
@@ -851,7 +852,17 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bPause.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             getPause();
         });
-
+        
+        bUndo.setTooltip(new Tooltip("Anuler le dernier coup"));
+        bUndo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+           this.controleur.Undo();
+        });
+        
+        bRedo.setTooltip(new Tooltip("Rejouer le dernier coup"));
+        bRedo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+           this.controleur.Redo();
+        });
+        
         bLoad.setTooltip(new Tooltip("Charger une partie"));
         bLoad.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             ListView<String> lv = getSaveFile();

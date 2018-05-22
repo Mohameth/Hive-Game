@@ -249,4 +249,60 @@ public class Hive implements Serializable {
         }
         return true;
     }
+    
+    public boolean UndoPossible() {
+        if (this.joueur2 instanceof JoueurIA) {
+            return this.joueur1.UndoPossible();
+        } else {
+            if (this.joueurCourant.equals(this.joueur1)) {
+                return this.joueur2.UndoPossible();
+            } else {
+                return this.joueur1.UndoPossible();
+            }
+        }
+    }
+    
+    public void Undo() {
+        if (this.joueur2 instanceof JoueurIA) {
+            this.joueur2.Undo();
+            this.joueur1.Undo();
+        } else {
+            if (this.joueurCourant.equals(this.joueur1)) {
+                this.joueur2.Undo();
+                this.joueurCourant = this.joueur2;
+            } else {
+                this.joueur1.Undo();
+                this.joueurCourant = this.joueur1;
+            }
+            
+        }
+    }
+    
+    public boolean RedoPossible() {
+        if (this.joueur2 instanceof JoueurIA) {
+            return this.joueur1.RedoPossible();
+        } else {
+            if (this.joueurCourant.equals(this.joueur1)) {
+                return this.joueur2.RedoPossible();
+            } else {
+                return this.joueur1.RedoPossible();
+            }
+        }
+    }
+    
+    public void Redo() {
+         if (this.joueur2 instanceof JoueurIA) {
+            this.joueur1.Redo();
+            this.joueur2.Redo();
+        } else {
+            if (this.joueurCourant.equals(this.joueur1)) {
+                this.joueur2.Redo();
+                this.joueurCourant = this.joueur2;
+            } else {
+                this.joueur1.Redo();
+                this.joueurCourant = this.joueur1;
+            }
+            
+        }
+    }
 }
