@@ -165,6 +165,16 @@ public class Hive implements Serializable {
             this.joueurCourant = this.joueur1;
         }
     }
+    
+    public int JoueurGagnant()  {
+        if (this.joueur1.reineBloquee()) {
+            return 2;
+        } else if (this.joueur2.reineBloquee()) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 
     public Joueur getJoueurCourant() {
         return joueurCourant;
