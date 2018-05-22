@@ -25,7 +25,7 @@ public class Case implements Serializable{
     }
 	
 	public Case clone(HexaPoint p,ArrayList<Insecte> EnmainIA,ArrayList<Insecte> EnjeuIA,
-    		ArrayList<Insecte> EnmainAdverse,ArrayList<Insecte> EnjeuAdverse,boolean b){
+    		ArrayList<Insecte> EnmainAdverse,ArrayList<Insecte> EnjeuAdverse,Joueur IA){
     	Case c=new Case(p);
     	
     	for(int i=0;i<insectes.size();i++) {
@@ -33,7 +33,7 @@ public class Case implements Serializable{
     		c.insectes.add(in);
     		in.setEmplacement(c);
     		
-    		if(b) {
+    		if(IA==in.getJoueur()) {
     			if(in.getEmplacement()==null) {
         			EnmainIA.add(in);
         		}else {

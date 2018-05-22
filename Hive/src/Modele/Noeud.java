@@ -141,4 +141,8 @@ public class Noeud {
 		return false;
 	}
 	
+	public ArrayList<CoupleCaesInsecte> getPossiblilites(){
+		return possibilite;
+	}
+	
 }

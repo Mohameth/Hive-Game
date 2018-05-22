@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import Modele.Insectes.Insecte;
+import Modele.Insectes.Reine;
 
 public class MonteCarlo {
 
@@ -11,16 +12,19 @@ public class MonteCarlo {
 	private int maxFils;
 	private int nbNoeuds;
 	private int nbNoeudsMax;
+	private JoueurIA joueurIA;
 	
-	public MonteCarlo(int nbTours,Noeud racine) {
+	public MonteCarlo(int nbTours,Noeud racine,JoueurIA joueurIA) {
 		
 		this.racine=racine;
 		this.nbNoeuds=0;
-		this.nbNoeudsMax=500000;
+		this.joueurIA=joueurIA;
 		if(nbTours<=5) {
 			this.maxFils=80;
+			this.nbNoeudsMax=518481;
 		}else {
-			this.maxFils=40;
+			this.maxFils=30;
+			this.nbNoeudsMax=837931;
 		}
 	}
 	
@@ -44,7 +48,7 @@ public class MonteCarlo {
 			ArrayList<Insecte>PlateauIA2=new ArrayList<>();
 			ArrayList<Insecte>PlateauAdverse2=new ArrayList<>();
 			
-			plateau2=Pere.getPlateau().clone(mainIA2,PlateauIA2,mainAdverse2,PlateauAdverse2,Pere.getTourIA());
+			plateau2=Pere.getPlateau().clone(mainIA2,PlateauIA2,mainAdverse2,PlateauAdverse2,joueurIA);
 			ArrayList<Insecte> joueurCourant=new ArrayList<>();
 			
 			if(Pere.getTourIA()) {
@@ -78,7 +82,7 @@ public class MonteCarlo {
 						b2=true;
 					}
 				}
-				coupleCaesInsecte=new CoupleCaesInsecte(i,c2);
+				coupleCaesInsecte=new CoupleCaesInsecte(i,c2,i.getEmplacement());
 			}while(!b1 && !b2 && Pere.existePossibilite(coupleCaesInsecte) && count<30);
 			
 			if(count==30 && !b1 && !b2) {
@@ -144,7 +148,7 @@ public class MonteCarlo {
 			ArrayList<Insecte>PlateauIA2=new ArrayList<>();
 			ArrayList<Insecte>PlateauAdverse2=new ArrayList<>();
 			
-			plateau2=noeud.getPlateau().clone(mainIA2,PlateauIA2,mainAdverse2,PlateauAdverse2,noeud.getTourIA());
+			plateau2=noeud.getPlateau().clone(mainIA2,PlateauIA2,mainAdverse2,PlateauAdverse2,joueurIA);
 			ArrayList<Insecte> joueurCourant=new ArrayList<>();
 			
 			if(noeud.getTourIA()) {
@@ -177,7 +181,7 @@ public class MonteCarlo {
 						b2=true;
 					}
 				}
-				coupleCaesInsecte=new CoupleCaesInsecte(i,c2);
+				coupleCaesInsecte=new CoupleCaesInsecte(i,c2,i.getEmplacement());
 			}while(!b1 && !b2);
 			
 			noeud.ajoutPossibilite(coupleCaesInsecte);
@@ -205,12 +209,14 @@ public class MonteCarlo {
 		int count=0;
 		Random r=new Random();
 		boolean b=n.getTourIA();
-		Plateau plateau2=n.getPlateau();
 		ArrayList<Insecte> joueurCourant=new ArrayList<>();
-		ArrayList<Insecte>mainIA2=n.getMainIA();
-		ArrayList<Insecte>mainAdverse2=n.getMainAdverse();
-		ArrayList<Insecte>PlateauIA2=n.getPlateauIA();
-		ArrayList<Insecte>PlateauAdverse2=n.getPlateauAdverse();
+		ArrayList<Insecte>mainIA2=new ArrayList<>();
+		ArrayList<Insecte>mainAdverse2=new ArrayList<>();
+		ArrayList<Insecte>PlateauIA2=new ArrayList<>();
+		ArrayList<Insecte>PlateauAdverse2=new ArrayList<>();
+		Plateau plateau2=n.getPlateau().clone(mainIA2,PlateauIA2,mainAdverse2,PlateauAdverse2,joueurIA);
+		ArrayList<Insecte> in=null;
+		
 		do {
 			count++;
 			if(b) {
@@ -260,8 +266,13 @@ public class MonteCarlo {
 			}
 			
 			b=!b;
+			if(b) {
+				in=PlateauIA2;
+			}else {
+				in=PlateauAdverse2;
+			}
 			
-		}while(!PlateauIA2.get(0).getJoueur().reineBloquee() && !PlateauAdverse2.get(0).getJoueur().reineBloquee() && count<=60);
+		}while(!uneReineBloquee(in,plateau2) && count<=60);
 		
 		if(count>60)
 			return false;
@@ -271,6 +282,18 @@ public class MonteCarlo {
 	
 	public void miseAjour(Noeud n,boolean b) {
 		n.mettreAjour(b);
+	}
+	
+	private boolean uneReineBloquee(ArrayList<Insecte> in2,Plateau plateau) {
+		
+		for(int i=0;i<in2.size();i++) {
+			Insecte in=in2.get(i);
+			int nb=plateau.getCasesVoisinesOccupees(in.getEmplacement()).size();
+			if((in instanceof Reine) && (nb==6)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 }

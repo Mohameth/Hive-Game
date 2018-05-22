@@ -90,6 +90,31 @@ public abstract class Joueur implements Cloneable, Serializable {
             return false;
         }
     }
+	
+	public boolean reinePresqueBloquee() {
+        if (this.reinePosee()) {
+            Insecte reine;
+            int i = 0;
+            do {
+                reine = this.pions.get(i);
+                i++;
+            } while (i < this.pions.size() && ((reine.getType() != TypeInsecte.REINE)));
+
+            return plateau.getCasesVoisinesOccupees(reine.getEmplacement()).size() == 5;
+        } else {
+            return false;
+        }
+    }
+    
+    protected Reine getReine() {
+    	ArrayList<Insecte> liste=this.pionsEnMain();
+    	for(int i=0;i<liste.size();i++) {
+    		if(liste.get(i) instanceof Reine) {
+    			return (Reine) liste.get(i);
+    		}
+    	}
+    	return null;
+    }
 
     /**
      * Donne la liste des pions que le joueur à encore en main
@@ -100,6 +125,16 @@ public abstract class Joueur implements Cloneable, Serializable {
         ArrayList<Insecte> res = new ArrayList<>();
         for (Insecte ins : this.pions) {
             if (ins.getEmplacement() == null) {
+                res.add(ins);
+            }
+        }
+        return res;
+    }
+	
+	public ArrayList<Insecte> pionsEnJeu() {
+        ArrayList<Insecte> res = new ArrayList<>();
+        for (Insecte ins : this.pions) {
+            if (ins.getEmplacement() != null) {
                 res.add(ins);
             }
         }
