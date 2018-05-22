@@ -876,6 +876,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         Button bUndo = new Button();
         Button bRedo = new Button();
         Button bSug = new Button();
+        Button brules = new Button();
 
         bUndo.setGraphic(new ImageView(new Image("icons/icon.png")));
         bUndo.setMinSize(32, 32);
@@ -885,15 +886,23 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         // bRedo.setStyle("-fx-background-color: Transparent;\n");
         bSug.setGraphic(new ImageView(new Image("icons/small-light-bulb.png")));
         bSug.setMinSize(32, 32);
+
+        brules.setGraphic(new ImageView(new Image("icons/book_rules.png")));
+        brules.setMinSize(32, 32);
         // bSug.setStyle("-fx-background-color: Transparent;\n");
 
         HBox hb1 = new HBox();
+        HBox hb2 = new HBox();
         hb1.setAlignment(Pos.BOTTOM_CENTER);
         hb1.setSpacing(10);
         hb1.getChildren().addAll(bUndo, bRedo);
 
+        hb2.setAlignment(Pos.BOTTOM_CENTER);
+        hb2.setSpacing(10);
+        hb2.getChildren().addAll(brules, bSug);
+
         VBox vb1 = new VBox();
-        vb1.getChildren().addAll(hb1, bSug);
+        vb1.getChildren().addAll(hb1, hb2);
         vb1.setSpacing(10);
         //vb1.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 3 0 0 0;\n");
         vb1.setAlignment(Pos.BOTTOM_CENTER);
@@ -924,6 +933,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bRedo.setTooltip(new Tooltip("Rejouer le dernier coup"));
         bRedo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             this.controleur.Redo();
+        });
+
+        brules.setTooltip(new Tooltip("Règles du jeu"));
+        brules.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            getRule();
         });
 
         bLoad.setTooltip(new Tooltip("Charger une partie"));
