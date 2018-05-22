@@ -36,4 +36,8 @@ public interface ObservableVue {
 
     public void notifyPionPlateauRemoveEnDessous(PionPlateau2 pionPlateau);
 
+    public void notifyPionPlateauHoveInDessous(PionPlateau2 pionPlateau);
+
+    public void notifyPionPlateauHoveOutDessous(PionPlateau2 pionPlateau);
+
 }

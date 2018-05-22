@@ -154,6 +154,7 @@ public class VueTerrain extends Vue implements ObservateurVue {
 
         if (currentMainSelected != null && currentSelected != null) {
             System.out.println("======================NE DOIT JMAIS ARRIVER==============================");
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         if (currentMainSelected != null) {
@@ -554,6 +555,17 @@ public class VueTerrain extends Vue implements ObservateurVue {
     @Override
     public void updatePionPlateauRemoveEnDessous(PionPlateau2 pionPlateau) {
         //this.getRoot().getChildren().remove();
+    }
+
+    @Override
+    public void updatePionPlateauHoveInDessous(PionPlateau2 pionPlateau) {
+        System.out.println("pioNPlateau IN avec dessous:");
+        pionPlateau.affiche();
+    }
+
+    @Override
+    public void updatePionPlateauHoveOutDessous(PionPlateau2 pionPlateau) {
+        System.out.println("pioNPlateau OUT avec dessous:");
     }
 
     private void coupJouer() {
