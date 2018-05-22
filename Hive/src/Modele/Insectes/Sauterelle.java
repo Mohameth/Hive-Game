@@ -8,6 +8,7 @@ import Modele.TypeInsecte;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 public class Sauterelle extends Insecte {
 
@@ -49,6 +50,14 @@ public class Sauterelle extends Insecte {
     		}
     	}
     	
+        Iterator<Case> it = casePossibles.iterator();
+        while (it.hasNext()) {
+            Case cible = it.next();
+            if (plateau.rucheBrisee(this.getEmplacement(), cible)) {
+                it.remove();
+            }
+        }
+        
     	return casePossibles;
     }
     
