@@ -38,6 +38,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.sun.javafx.PlatformUtil.isWindows;
+import javafx.animation.FadeTransition;
+import javafx.scene.effect.DropShadow;
+import javafx.util.Duration;
+import javafx.event.EventType;
 
 public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
@@ -56,6 +60,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private int numeroPageTuto = 0;
     private Group root;
     private Stage primaryStage;
+    private VBox listPionEnDessousHover;
 
     VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs) {
         boolean fs = primaryStage.isFullScreen();
@@ -70,6 +75,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         pionMainPlayer2 = new HashMap<>();
         this.listPionsPlateau = new HashMap<>();
         this.listZoneLibres = new ArrayList<>();
+        this.listPionEnDessousHover = new VBox();
         hudElems = new ArrayList<>();
         this.currentSelected = null; //aucune piece selectionnée
         this.currentMainSelected = null; //aucune piece selectionnée
@@ -552,14 +558,75 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     @Override
-    public void updatePionPlateauHoveInDessous(PionPlateau2 pionPlateau) {
+    public void updatePionPlateauHoveInDessous(PionPlateau2 pionPlateau, MouseEvent me) {
         System.out.println("pioNPlateau IN avec dessous:");
-        pionPlateau.affiche();
+        String style = "-fx-background-color: rgba(255, 255, 255, 0.8); -fx-border-radius: 15;";
+
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(4.0);
+        dropShadow.setOffsetX(0.0);
+        dropShadow.setOffsetY(0.0);
+        dropShadow.setSpread(0.90);
+        dropShadow.setColor(Color.WHITE);
+        listPionEnDessousHover.setEffect(dropShadow);
+
+        ArrayList<PionPlateau2> am = new ArrayList<>();
+        am = pionPlateau.getDessousList(am);
+        listPionEnDessousHover.setStyle(style);
+        listPionEnDessousHover.setAlignment(Pos.CENTER);
+        double x = getWidth() / 2 + pionPlateau.getImgViewPion().getImgPosX();
+        double y = getHeight() / 2 + pionPlateau.getImgViewPion().getImgPosY();
+        double currentImgWidth = pionPlateau.getImage().getFitWidth();
+        double currentImgHeight = pionPlateau.getImage().getFitHeight();
+        System.out.println("Current Width: " + currentImgWidth);
+        double currentScaleX = pionPlateau.getImgViewPion().getImage().getScaleX();
+        double currentScaleY = pionPlateau.getImgViewPion().getImage().getScaleY();
+        System.out.println("Current scale: " + currentScaleX);
+
+        //this.imgPion.getImage().setFitWidth(this.imgPion.getImage().getFitWidth() / 4.5);
+        //this.imgPion.getImage().setFitHeight(this.imgPion.getImage().getFitHeight() / 4.5);
+//        listPionEnDessousHover.setMinWidth(20);
+//        listPionEnDessousHover.setMaxWidth(20);
+        System.out.println("Size: " + am.size());
+        double width = 0;
+
+        for (PionPlateau2 pp : am) {
+
+            Image imagePion = new Image("pieces/" + pp.getImgViewPion().getImgPath(pp.getPionType()) + ".png");
+            double w = imagePion.getWidth() * currentScaleX;
+            double h = imagePion.getHeight() * currentScaleY;
+            ImageView img = new ImageView(imagePion);
+
+//            img.setScaleX(currentScaleX);
+//            img.setScaleY(currentScaleY);
+            img.setFitWidth(w);
+            width = w;
+            img.setFitHeight(h);
+
+            listPionEnDessousHover.getChildren().add(img);
+        }
+
+        listPionEnDessousHover.setTranslateX(width / 2 + 5 + x);
+        listPionEnDessousHover.setTranslateY(y);
+
+        listPionEnDessousHover.setVisible(true);
+        this.getRoot().getChildren().add(listPionEnDessousHover);
+        pionPlateau.getImage().toFront();
+        FadeTransition ft = new FadeTransition(Duration.millis(200), listPionEnDessousHover);
+        ft.setFromValue(0.5);
+        ft.setToValue(1.0);
+        ft.setCycleCount(1);
+        ft.setAutoReverse(false);
+        ft.play();
+        hudToFront();
     }
 
     @Override
-    public void updatePionPlateauHoveOutDessous(PionPlateau2 pionPlateau) {
+    public void updatePionPlateauHoveOutDessous(PionPlateau2 pp2) {
         System.out.println("pioNPlateau OUT avec dessous:");
+        this.getRoot().getChildren().remove(listPionEnDessousHover);
+        listPionEnDessousHover.getChildren().clear();
+
     }
 
     private void coupJouer() {
@@ -851,7 +918,17 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bPause.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             getPause();
         });
-
+        
+        bUndo.setTooltip(new Tooltip("Anuler le dernier coup"));
+        bUndo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+           this.controleur.Undo();
+        });
+        
+        bRedo.setTooltip(new Tooltip("Rejouer le dernier coup"));
+        bRedo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+           this.controleur.Redo();
+        });
+        
         bLoad.setTooltip(new Tooltip("Charger une partie"));
         bLoad.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             ListView<String> lv = getSaveFile();
@@ -1319,7 +1396,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         v.getStylesheets().add("Vue/button1.css");
         v.setAlignment(Pos.CENTER);
         v.setSpacing(15);
-
         back.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             img.setImage(changeImg(urlImg, false, nbPage));
         });

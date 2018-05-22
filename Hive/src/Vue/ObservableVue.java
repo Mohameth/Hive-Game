@@ -11,6 +11,7 @@ package Vue;
 
 import Modele.HexaPoint;
 import javafx.geometry.Point3D;
+import javafx.scene.input.MouseEvent;
 
 public interface ObservableVue {
 
@@ -36,8 +37,8 @@ public interface ObservableVue {
 
     public void notifyPionPlateauRemoveEnDessous(PionPlateau2 pionPlateau);
 
-    public void notifyPionPlateauHoveInDessous(PionPlateau2 pionPlateau);
+    public void notifyPionPlateauHoveInDessous(PionPlateau2 pionPlateau, MouseEvent me);
 
-    public void notifyPionPlateauHoveOutDessous(PionPlateau2 pionPlateau);
+    public void notifyPionPlateauHoveOutDessous(PionPlateau2 pp2);
 
 }

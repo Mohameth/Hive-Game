@@ -78,6 +78,15 @@ public class PionPlateau2 implements ObservableVue {
         notifyPionPlateauAddEnDessous(this);
     }
 
+    public ArrayList<PionPlateau2> getDessousList(ArrayList<PionPlateau2> am) {
+        am.add(this);
+        if (getPionEnDessous() != null) {
+            //am.add(getPionEnDessous());
+            am = getPionEnDessous().getDessousList(am);
+        }
+        return am;
+    }
+
     public void removePionEnDessous() {
         this.pionEnDessous = null;
         this.imagePion.updateImageDessous(false);
@@ -85,7 +94,11 @@ public class PionPlateau2 implements ObservableVue {
     }
 
     public PionPlateau2 getPionEnDessous() {
-        return this.pionEnDessous;
+        if (this.pionEnDessous != null) {
+            return this.pionEnDessous;
+        } else {
+            return null;
+        }
     }
 
     public HexaPoint getCoordPion() {
@@ -191,7 +204,7 @@ public class PionPlateau2 implements ObservableVue {
                 final MouseEvent mouseEvent) -> {
             if (this.getPionEnDessous() != null) {
                 //notify vueTerrain afficher les cases
-                notifyPionPlateauHoveInDessous(this);
+                notifyPionPlateauHoveInDessous(this, mouseEvent);
             }
         });
 
@@ -210,6 +223,10 @@ public class PionPlateau2 implements ObservableVue {
 
     public boolean isDragging() {
         return dragging;
+    }
+
+    public PionImgView getImgViewPion() {
+        return this.imagePion;
     }
 
     /**
@@ -447,13 +464,13 @@ public class PionPlateau2 implements ObservableVue {
     }
 
     @Override
-    public void notifyPionPlateauHoveInDessous(PionPlateau2 pionPlateau) {
-        this.vtObservateur.updatePionPlateauHoveInDessous(pionPlateau);
+    public void notifyPionPlateauHoveInDessous(PionPlateau2 pionPlateau, MouseEvent me) {
+        this.vtObservateur.updatePionPlateauHoveInDessous(pionPlateau, me);
     }
 
     @Override
-    public void notifyPionPlateauHoveOutDessous(PionPlateau2 pionPlateau) {
-        this.vtObservateur.updatePionPlateauHoveOutDessous(pionPlateau);
+    public void notifyPionPlateauHoveOutDessous(PionPlateau2 pp2) {
+        this.vtObservateur.updatePionPlateauHoveOutDessous(pp2);
     }
 
     /**

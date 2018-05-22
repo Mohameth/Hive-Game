@@ -78,6 +78,7 @@ public class JoueurIA extends Joueur {
     	
     	ArrayList<Case> deplacement=(ArrayList<Case>) insecte.deplacementPossible(plateau);
         HexaPoint p =deplacement.get(r.nextInt(deplacement.size())).getCoordonnees();
+        this.dernierDeplacement = new Deplacement(insecte,insecte.getEmplacement().getCoordonnees(),p);
     	insecte.deplacement(plateau, p);
         System.out.println(insecte.getClass() + " en " + p);
     	
