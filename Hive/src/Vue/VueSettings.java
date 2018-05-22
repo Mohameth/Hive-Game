@@ -93,7 +93,7 @@ public class VueSettings extends Vue {
 
         Text t6 = new Text(getLangStr("wSize"));
         ComboBox<Point> cb = new ComboBox();
-        cb.getItems().addAll(new Point(1920, 1080), new Point(1280, 720));
+        cb.getItems().addAll(new Point(1920, 1080), new Point(1600, 900), new Point(1280, 720), new Point(1024, 576));
         cb.getSelectionModel().select(cb.getItems().get(0));
         cb.setConverter(new StringConverter<Point>() {
             @Override
