@@ -612,8 +612,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         listPionEnDessousHover.setVisible(true);
         this.getRoot().getChildren().add(listPionEnDessousHover);
         pionPlateau.getImage().toFront();
-        FadeTransition ft = new FadeTransition(Duration.millis(200), listPionEnDessousHover);
-        ft.setFromValue(0.5);
+        FadeTransition ft = new FadeTransition(Duration.millis(400), listPionEnDessousHover);
+        ft.setFromValue(0.2);
         ft.setToValue(1.0);
         ft.setCycleCount(1);
         ft.setAutoReverse(false);
@@ -918,17 +918,17 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bPause.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             getPause();
         });
-        
+
         bUndo.setTooltip(new Tooltip("Anuler le dernier coup"));
         bUndo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-           this.controleur.Undo();
+            this.controleur.Undo();
         });
-        
+
         bRedo.setTooltip(new Tooltip("Rejouer le dernier coup"));
         bRedo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-           this.controleur.Redo();
+            this.controleur.Redo();
         });
-        
+
         bLoad.setTooltip(new Tooltip("Charger une partie"));
         bLoad.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             ListView<String> lv = getSaveFile();
@@ -1181,7 +1181,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        Plateau p =  (Plateau) o;
+        Plateau p = (Plateau) o;
         reconstructionPlateau(p);
     }
 
@@ -1223,11 +1223,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     }
      */
-    
     private void reconstructionPlateau(Plateau p) {
-        
-    }    
-    
+
+    }
+
     private static final class MouseLocation {
 
         public double x, y;
