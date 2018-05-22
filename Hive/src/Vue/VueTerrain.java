@@ -1144,18 +1144,19 @@ public class VueTerrain extends Vue implements ObservateurVue {
     }
 
     public ListView<String> getSaveFile() {
-        String path = System.getProperty("user.dir").concat("/rsc/SAVE");
+        String path;
         if (isWindows()) {
-            path.replace('/', '\\');
+            path = System.getProperty("user.dir").concat("\\rsc\\SAVE");
+        } else {
+            path = System.getProperty("user.dir").concat("/rsc/SAVE/");
         }
         System.out.println(path);
         File rep = new File(path);
         ListView<String> listSaveFile = new ListView<>();
-        if (rep.length() != 0) {
-            for (String s : rep.list()) {
+        for (String s : rep.list()) {
                 listSaveFile.getItems().add(s);
+                System.out.println(s);
             }
-        }
         return listSaveFile;
     }
 
