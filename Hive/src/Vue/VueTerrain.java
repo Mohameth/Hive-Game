@@ -693,10 +693,8 @@ public class VueTerrain extends Vue implements ObservateurVue {
             PionPlateau2 pPlat = entry.getValue();
             if (pPlat.isWhite() == iswhite) {
                 pPlat.setLock();
-            } else {
-                if (unlockOposite) {
-                    pPlat.removeLock();
-                }
+            } else if (unlockOposite) {
+                pPlat.removeLock();
             }
 
         }
@@ -724,10 +722,11 @@ public class VueTerrain extends Vue implements ObservateurVue {
         pointJ1.setPadding(new Insets(5, 0, 5, 0));
 
         bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            if(txt1.isEditable())
+            if (txt1.isEditable()) {
                 txt1.setEditable(false);
-            else
+            } else {
                 txt1.setEditable(true);
+            }
         });
 
         String style = "-fx-background-color: rgba(255, 255, 255, 0.2);";
@@ -1152,11 +1151,15 @@ public class VueTerrain extends Vue implements ObservateurVue {
         }
         System.out.println(path);
         File rep = new File(path);
+        if (!rep.exists()) {
+            rep.mkdir();
+        }
+
         ListView<String> listSaveFile = new ListView<>();
         for (String s : rep.list()) {
-                listSaveFile.getItems().add(s);
-                System.out.println(s);
-            }
+            listSaveFile.getItems().add(s);
+            System.out.println(s);
+        }
         return listSaveFile;
     }
 
