@@ -16,7 +16,7 @@ public class VueMulti extends Vue {
 
     VueMulti(Stage primaryStage){
         boolean fs = primaryStage.isFullScreen();
-        Label t = new Label(getLangStr("multi"));
+        Label t = new Label(getLangStr("deuxjoueur"));
         t.setFont(Font.font(60));
 
         GridPane root = new GridPane();
@@ -29,15 +29,16 @@ public class VueMulti extends Vue {
             root.getRowConstraints().add(new RowConstraints(primaryStage.getHeight(), Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, VPos.TOP, true));
         }
 
-        HBox hb = new HBox();
         Label tp = new Label(getLangStr("white"));
+        tp.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         TextField ta = new TextField(getLangStr("joueur1"));
         ta.setMaxSize(200.0,5.0);
-        hb.getChildren().addAll(tp,ta);
+        HBox hb = new HBox(tp,ta);
         hb.setSpacing(5);
 
         HBox hb1 = new HBox();
         Label tp1 = new Label(getLangStr("black"));
+        tp1.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         TextField ta1 = new TextField(getLangStr("joueur2"));
         ta1.setMaxSize(300.0,5.0);
         hb1.getChildren().addAll(tp1,ta1);
@@ -47,6 +48,7 @@ public class VueMulti extends Vue {
         bplay.setMinSize(200.0,50.0);
 
         Label tc = new Label(getLangStr("pname"));
+        tc.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
 
         VBox vb2 = new VBox();
         vb2.getChildren().addAll(tc,hb,hb1);
@@ -54,6 +56,8 @@ public class VueMulti extends Vue {
 
         Button bBack = new Button(getLangStr("back"));
         bBack.setAlignment(Pos.CENTER_LEFT);
+        bBack.setMinSize(200.0,50.0);
+        bBack.setAlignment(Pos.CENTER);
 
         bBack.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             SceneMain(primaryStage);
@@ -64,9 +68,9 @@ public class VueMulti extends Vue {
         });
 
         GridPane g = new GridPane();
-        g.add(bplay,0,0);
-        g.add(bBack,0,1);
-        g.add(vb2,1,0,1,2);
+        g.add(bplay,0,2);
+        g.add(bBack,1,2);
+        g.add(vb2,0,0,2,2);
         g.setHgap(30.0);
         g.setVgap(25.0);
 

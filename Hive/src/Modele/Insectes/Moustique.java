@@ -7,6 +7,7 @@ import Modele.HexaPoint;
 import Modele.TypeInsecte;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 public class Moustique extends Insecte {
 
@@ -46,6 +47,24 @@ public class Moustique extends Insecte {
     	if(!casePossibles.isEmpty() && plateau.rucheBrisee(this.getEmplacement(),casePossibles.get(0))) {
     		return new ArrayList<>();
     	}
+        
+        Iterator<Case> it = casePossibles.iterator();
+        System.out.println("test ----> V <-----");
+        while (it.hasNext()) {
+            Case possibilite = it.next();
+            System.out.println("test ----> W <-----" + possibilite);
+            for (Case c : plateau.getCasesVoisines(this.getEmplacement(), true)) {
+                System.out.println("test ----> X <-----" + c);
+                if (c.equals(possibilite)) {
+                    System.out.println("test ----> Y <-----" + c);
+                    if (!plateau.glissementPossible(this.getEmplacement(), c)) {
+                        System.out.println("test ----> Z <-----");
+                        it.remove();
+                    }
+                }
+            }
+        }
+        
     	return casePossibles;
     }
     
