@@ -61,7 +61,9 @@ public class VueSolo extends Vue {
         tc.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         final ToggleGroup group2 = new ToggleGroup();
         RadioButton rWhite= new RadioButton(getLangStr("white"));
+        rWhite.setUserData("white");
         RadioButton rBlack = new RadioButton(getLangStr("black"));
+        rBlack.setUserData("black");
         rBlack.setToggleGroup(group2);
         rWhite.setToggleGroup(group2);
         rWhite.setSelected(true);
@@ -87,6 +89,13 @@ public class VueSolo extends Vue {
                     case "hard":
                         difficulte = 4;
                     break;
+                }
+                if (group2.getSelectedToggle() != null) {
+                    switch(group.getSelectedToggle().getUserData().toString()) {
+                        case "black":
+                            difficulte = difficulte+3;
+                        break;
+                    }
                 }
                 SceneTerrain(primaryStage,difficulte,true);
             }
