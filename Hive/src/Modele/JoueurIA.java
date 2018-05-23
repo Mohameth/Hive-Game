@@ -1,11 +1,13 @@
 package Modele;
 
 import Modele.Insectes.Insecte;
+import Modele.Insectes.Reine;
 import java.util.ArrayList;
 import java.util.Random;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
 
 public class JoueurIA extends Joueur {

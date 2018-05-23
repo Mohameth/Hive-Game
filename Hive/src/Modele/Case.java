@@ -157,6 +157,10 @@ public class Case implements Serializable{
     	return this.getCoordonnees().voisinGaucheHaut().equals(c.getCoordonnees());
     }
     
+    public boolean estVoisin(Case c) {
+        return this.getCoordonnees().coordonneesVoisins().contains(c.getCoordonnees());
+    }
+    
     @Override
     public String toString() {
         String res = "Case[" + coordonnees + ']' + ":\n";
