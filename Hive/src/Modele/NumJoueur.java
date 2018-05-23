@@ -23,6 +23,6 @@ public enum NumJoueur {
     }
     
     public boolean estBlanc() {
-        return (this.contenu % 2) == 0;
+        return (this.contenu % 2) != 0;
     }
 }
