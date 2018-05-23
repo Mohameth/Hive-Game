@@ -40,6 +40,10 @@ import java.io.File;
 import java.util.*;
 
 import static com.sun.javafx.PlatformUtil.isWindows;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
@@ -68,7 +72,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         this.nomJoueur = new ArrayList<>();
         this.solo = solo;
         root = new Group();
-        
+
         this.controleur = controleur;
         this.controleur.reset();
         this.controleur.setJoueurs(casJoueurs, true);
@@ -810,13 +814,36 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private BorderPane getHudPlayer(HashMap<TypeInsecte, Integer> m, int numplayer, boolean ia) {
+        Properties prop = new Properties();
+        String propFileName = System.getProperty("user.dir").concat("/rsc/config.properties");
+        InputStream input = null;
+        try {
+            input = new FileInputStream(propFileName);
+            prop.load(input);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+        try {
+            input.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         Button bEdit = new Button();
         bEdit.setGraphic(new ImageView(new Image("icons/pencil.png")));
         bEdit.setStyle("-fx-background-color: Transparent;\n");
         HBox hName = new HBox();
         hName.setAlignment(Pos.CENTER_LEFT);
         bEdit.setTooltip(new Tooltip("Changer de nom"));
-        TextField txt1 = new TextField("joueur " + numplayer);
+        String joueur = "joueur " + numplayer;
+        if (numplayer == 1)
+            joueur = prop.getProperty("joueurBlanc");
+        else
+            joueur = prop.getProperty("joueurNoir");
+        
+        TextField txt1 = new TextField(joueur);
         txt1.setBackground(Background.EMPTY);
         nomJoueur.add(txt1);
         txt1.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
@@ -827,7 +854,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             if (txt1.isEditable()) {
                 txt1.setEditable(false);
                 txt1.setStyle("-fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);");
-                if(this.controleur.tourJoueurBlanc()){
+                if (this.controleur.tourJoueurBlanc()) {
                     setNomJoueur(1);
                 } else {
                     setNomJoueur(2);
@@ -1422,8 +1449,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         retour.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            if(pause)
+            if (pause) {
                 getPause();
+            }
         });
 
         root.getChildren().add(v);
@@ -1446,15 +1474,15 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         nomJoueur.get(Math.abs(numJoueur - 2)).setStyle("-fx-text-fill : white");
     }
 
-    private VBox getTurnPlayer(int numJoueur){
-        TextField tf = (TextField) nomJoueur.get(numJoueur-1);
+    private VBox getTurnPlayer(int numJoueur) {
+        TextField tf = (TextField) nomJoueur.get(numJoueur - 1);
         Label l = new Label("Tour de " + tf.getText());
-        l.setFont(Font.font("",FontWeight.BOLD,50));
+        l.setFont(Font.font("", FontWeight.BOLD, 50));
         l.setTextFill(Color.WHITE);
         Label l1 = new Label("cliquez pour jouer");
         l1.setTextFill(Color.WHITE);
-        l1.setFont(Font.font("",FontWeight.BOLD,30));
-        VBox v = new VBox(l,l1);
+        l1.setFont(Font.font("", FontWeight.BOLD, 30));
+        VBox v = new VBox(l, l1);
         HBox h = new HBox(v);
         h.setAlignment(Pos.CENTER);
         h.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
