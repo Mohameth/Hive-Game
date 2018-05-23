@@ -74,7 +74,7 @@ public class PlateauTest {
         System.out.println("Test getCasesVoisines ======================>\n");
         HexaPoint orig = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
-        Reine reine = new Reine(new JoueurHumain(instance, true));
+        Reine reine = new Reine(new JoueurHumain(instance, true, NumJoueur.JOUEUR1));
         instance.ajoutInsecte(reine, orig);
 
         System.out.println("test avec l'origine, libre ou non :");
@@ -145,7 +145,7 @@ public class PlateauTest {
 
         HexaPoint orig = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
-        Reine reine = new Reine(new JoueurHumain(instance, true));
+        Reine reine = new Reine(new JoueurHumain(instance, true, NumJoueur.JOUEUR1));
 
         System.out.println("test avec aucune case occupees :");
         ArrayList<Case> expected = new ArrayList<>();
@@ -201,7 +201,7 @@ public class PlateauTest {
 
         HexaPoint orig = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
-        Reine reine = new Reine(new JoueurHumain(instance, true));
+        Reine reine = new Reine(new JoueurHumain(instance, true, NumJoueur.JOUEUR1));
         instance.ajoutInsecte(reine, orig);
 
         System.out.println("test avec l'origine, haut et bas occupé :");
@@ -264,7 +264,7 @@ public class PlateauTest {
 
         HexaPoint orig = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
-        Reine reine = new Reine(new JoueurHumain(instance, true));
+        Reine reine = new Reine(new JoueurHumain(instance, true, NumJoueur.JOUEUR1));
 
         instance.ajoutInsecte(reine, orig);
         instance.ajoutInsecte(reine, orig.voisinDroiteBas());
@@ -307,7 +307,7 @@ public class PlateauTest {
 
         HexaPoint orig = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
-        Reine reine = new Reine(new JoueurHumain(instance, true));
+        Reine reine = new Reine(new JoueurHumain(instance, true, NumJoueur.JOUEUR1));
 
         instance.ajoutCasesVoisines(orig);
 
@@ -402,7 +402,7 @@ public class PlateauTest {
 
         HexaPoint orig = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
-        Reine reine = new Reine(new JoueurHumain(instance, true));
+        Reine reine = new Reine(new JoueurHumain(instance, true, NumJoueur.JOUEUR1));
         instance.ajoutCasesVoisines(orig);
         instance.ajoutCasesVoisines(orig.voisinBas());
 
@@ -496,7 +496,7 @@ public class PlateauTest {
 
         HexaPoint orig = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
-        Reine reine = new Reine(new JoueurHumain(instance, true));
+        Reine reine = new Reine(new JoueurHumain(instance, true, NumJoueur.JOUEUR1));
 
         System.out.println("test sur une ruche venant d'être créé :");
         assertTrue(instance.rucheVide());
@@ -518,8 +518,8 @@ public class PlateauTest {
 
         HexaPoint orig = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
-        JoueurHumain j1 = new JoueurHumain(instance, true);
-        JoueurHumain j2 = new JoueurHumain(instance, true);
+        JoueurHumain j1 = new JoueurHumain(instance, true, NumJoueur.JOUEUR1);
+        JoueurHumain j2 = new JoueurHumain(instance, true, NumJoueur.JOUEUR1);
         Reine reinej1 = new Reine(j1);
         Reine reinej2 = new Reine(j2);
         j1.pions.add(reinej1);
@@ -588,7 +588,7 @@ public class PlateauTest {
 
         HexaPoint orig = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
-        Reine reine = new Reine(new JoueurHumain(instance, true));
+        Reine reine = new Reine(new JoueurHumain(instance, true, NumJoueur.JOUEUR1));
 
         System.out.println("test sur une ruche venant d'être créé :");
         assertFalse(instance.rucheAUnSeulInsecte());

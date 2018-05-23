@@ -7,6 +7,7 @@ import Modele.JoueurHumain;
 import Modele.JoueurIA;
 import Modele.Plateau;
 import Modele.HexaPoint;
+import Modele.NumJoueur;
 import Modele.TypeInsecte;
 import Vue.Vue;
 import static com.sun.javafx.PlatformUtil.isWindows;
@@ -36,20 +37,20 @@ public class Hive implements Serializable {
     public void setJoueurs(int cas, boolean extension) { //Création des joueurs selon le type de partie 
         switch (cas) {
             case 1:
-                this.joueur1 = new JoueurHumain(this.plateau, extension);
-                this.joueur2 = new JoueurHumain(this.plateau, extension);
+                this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
+                this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
                 break;
             case 2:
-                this.joueur1 = new JoueurHumain(this.plateau, extension);
-                this.joueur2 = new JoueurIA(this.plateau, 1, extension, joueur1); //Easy
+                this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
+                this.joueur2 = new JoueurIA(this.plateau, 1, extension, NumJoueur.JOUEUR2, joueur1); //Easy
                 break;
             case 3:
-                this.joueur1 = new JoueurHumain(this.plateau, extension);
-                this.joueur2 = new JoueurIA(this.plateau, 2, extension, joueur1); //Medium
+                this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
+                this.joueur2 = new JoueurIA(this.plateau, 2, extension, NumJoueur.JOUEUR2, joueur1); //Medium
                 break;
             case 4:
-                this.joueur1 = new JoueurHumain(this.plateau, extension);
-                this.joueur2 = new JoueurIA(this.plateau, 3, extension, joueur1); //hard
+                this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
+                this.joueur2 = new JoueurIA(this.plateau, 3, extension, NumJoueur.JOUEUR2, joueur1); //hard
                 break;
         }
         this.joueurCourant = this.joueur1;

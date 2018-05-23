@@ -8,6 +8,7 @@ package IA;
 import Modele.Insectes.Insecte;
 import Modele.JoueurHumain;
 import Modele.JoueurIA;
+import Modele.NumJoueur;
 import Modele.Plateau;
 
 /**
@@ -21,8 +22,8 @@ public class TestIA {
      */
     public static void main(String[] args) {
         Plateau plateau = new Plateau();
-        JoueurIA joueur1 = new JoueurIA(plateau, 1, false);
-        JoueurIA joueur2 = new JoueurIA(plateau, 1, false);
+        JoueurIA joueur1 = new JoueurIA(plateau, 1, NumJoueur.JOUEUR1, false);
+        JoueurIA joueur2 = new JoueurIA(plateau, 1, NumJoueur.JOUEUR2, false);
         joueur1.addJoueurAdverse(joueur2);
         joueur2.addJoueurAdverse(joueur1);
 

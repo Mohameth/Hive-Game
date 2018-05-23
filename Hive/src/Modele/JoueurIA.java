@@ -16,14 +16,14 @@ public class JoueurIA extends Joueur {
     private int difficulte;
     private Joueur adverse;
 
-    public JoueurIA(Plateau p, int difficulte, boolean extensions, Joueur adverse) {
-        super(p, extensions);
+    public JoueurIA(Plateau p, int difficulte, boolean extensions, NumJoueur numJoueur, Joueur adverse) {
+        super(p, extensions, numJoueur);
         this.difficulte = difficulte;
         this.adverse = adverse;
     }
 
-    public JoueurIA(Plateau p, int difficulte, boolean extensions) {
-        super(p, extensions);
+    public JoueurIA(Plateau p, int difficulte, NumJoueur numJoueur, boolean extensions) {
+        super(p, extensions, numJoueur);
         this.difficulte = difficulte;
         this.adverse = null;
     }

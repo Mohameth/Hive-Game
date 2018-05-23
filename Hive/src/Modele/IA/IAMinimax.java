@@ -10,6 +10,7 @@ import Modele.Joueur;
 import Modele.Plateau;
 import Modele.HexaPoint;
 import Modele.JoueurIA;
+import Modele.NumJoueur;
 import java.util.ArrayList;
 
 /**
@@ -21,8 +22,8 @@ public class IAMinimax extends Joueur {
     int horizon = 0;
     public Coup lastCoup = null;
     
-    public IAMinimax(Plateau p, boolean extensions) {
-        super(p, extensions);
+    public IAMinimax(Plateau p, boolean extensions, NumJoueur numJoueur) {
+        super(p, extensions, numJoueur);
     }
 
     public void setAdversaire(Joueur adversaire) {
@@ -37,7 +38,7 @@ public class IAMinimax extends Joueur {
     public boolean coup(Insecte insecte, HexaPoint cible) {
         Coup coup = minimax();
         if (coup == null) {
-            JoueurIA iaf = new JoueurIA(this.plateau,1,false,this.adversaire);
+            JoueurIA iaf = new JoueurIA(this.plateau,1,false,NumJoueur.JOUEUR2,this.adversaire);
             iaf.setPions(pions);
             return iaf.coup(insecte, cible);
         }
