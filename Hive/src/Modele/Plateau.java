@@ -119,8 +119,8 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
             this.getCase(position).addInsecte(insecte);
             this.nbPionsEnJeu++;
             this.ajoutCasesVoisines(position);
-            setChanged();
-            notifyObservers();
+            //setChanged();
+            //notifyObservers();
         } catch (Exception ex) {
             System.err.println("Erreur ajout : " + ex);
             
@@ -138,8 +138,8 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
         try {
             this.getCase(position).addInsecte(insecte);
             this.ajoutCasesVoisines(position);
-            setChanged();
-            notifyObservers();
+            //setChanged();
+            //notifyObservers();
         } catch (Exception ex) {
             System.err.println("Erreur ajout : " + ex);
             
@@ -185,8 +185,6 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
     public void deleteInsecte(Insecte insecte, HexaPoint position) {
         try {
             this.getCase(position).removeInsecte();
-            setChanged();
-            notifyObservers();
         } catch (Exception ex) {
             System.err.println("Erreur delete : " + ex);
             ex.printStackTrace();
@@ -549,5 +547,10 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
         return resultat;
     }
 
+    public void notifieVue() {
+        setChanged();
+        notifyObservers();
+
+    }
 
 }
