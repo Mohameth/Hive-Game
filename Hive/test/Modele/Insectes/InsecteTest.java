@@ -151,20 +151,7 @@ public class InsecteTest {
         result.addAll(s.deplacementPossible(instance));
 
         arrayCorresponds(result, new ArrayList<HexaPoint>());
-        s.deplacement(instance, new HexaPoint(1, -1, 0));
-
-        ArrayList<HexaPoint> newExpectation = new ArrayList<>();
-//        newExpectation.add(new Point3DH(0, 0, 0));
-//        newExpectation.add(new Point3DH(1, 0, -1));
-//        newExpectation.add(new Point3DH(2, -1, -1));
-//        newExpectation.add(new Point3DH(2, -2, 0));
-//        newExpectation.add(new Point3DH(1, -2, 1));
-//        newExpectation.add(new Point3DH(0, -1, 1));
-
-        result = new ArrayList<>();
-        result.addAll(s.deplacementPossible(instance));
-
-        arrayCorresponds(result, newExpectation);
+ 
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
         System.out.println("");
