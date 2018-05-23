@@ -65,7 +65,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         this.primaryStage = primaryStage;
         this.nomJoueur = new ArrayList<>();
         root = new Group();
-        
+
         this.controleur = controleur;
         this.controleur.reset();
         this.controleur.setJoueurs(casJoueurs, true);
@@ -1278,12 +1278,12 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         int nbNonCorrect = 0;
         for (Map.Entry<HexaPoint, Case> entry : p.getCases().entrySet()) {
             HexaPoint keyPoint = entry.getKey();
-            java.lang.Object value = entry.getValue();
             if (!listPionsPlateau.containsKey(keyPoint)) {
+                System.out.println("Non correct!");
                 nbNonCorrect++;
             }
         }
-        //regenère le plateau si pas de correspondance.
+        //regenère le plateau si pas de correspondance a 100%.
         //if (nbNonCorrect > 0) {
         if (true) {
 
