@@ -160,6 +160,7 @@ public class Hive implements Serializable {
     }
 
     private void joueurSuivant() { //Passe au joueur suivant
+        this.plateau.notifieVue();
         if (joueurCourant.equals(this.joueur1)) {
             this.joueurCourant = this.joueur2;
             if (this.joueur2 instanceof JoueurIA ) {
