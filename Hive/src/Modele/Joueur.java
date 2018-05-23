@@ -40,6 +40,8 @@ public abstract class Joueur implements Cloneable, Serializable {
 
     protected int tourJoueur;
 
+    
+    protected NumJoueur numJoueur;
     /**
      * Coup d'un joueur
      *
@@ -49,12 +51,13 @@ public abstract class Joueur implements Cloneable, Serializable {
      */
     public abstract boolean coup(Insecte insecte, HexaPoint cible); //Joueur connait le plateau -> appelle déplacement sur insecte avec plateau (insect sait où il est)
 
-    public Joueur(Plateau p, boolean extensions) {
+    public Joueur(Plateau p, boolean extensions, NumJoueur numJoueur) {
         this.plateau = p;
         this.dernierDeplacement = null;
         this.pions = new ArrayList<>(); //On rentrera tous les pions ici
         this.tourJoueur = 1;
         this.initInsectes(extensions);
+        this.numJoueur = numJoueur;
     }
 
     /**
@@ -116,6 +119,10 @@ public abstract class Joueur implements Cloneable, Serializable {
     	return null;
     }
 
+    public NumJoueur getNumJoueur() {
+        return numJoueur;
+    }
+
     /**
      * Donne la liste des pions que le joueur à encore en main
      *
@@ -141,6 +148,11 @@ public abstract class Joueur implements Cloneable, Serializable {
         return res;
     }
 
+    public void setPions(ArrayList<Insecte> pions) {
+        this.pions = pions;
+    }
+
+    
     /**
      * Place un insecte sur la case caseCible
      *
@@ -182,7 +194,7 @@ public abstract class Joueur implements Cloneable, Serializable {
         }
         if (extensions) {
             this.pions.add(new Moustique(this));
-            this.pions.add(new Cloporte(this));
+            //this.pions.add(new Cloporte(this));
             this.pions.add(new Coccinelle(this));
         }
 

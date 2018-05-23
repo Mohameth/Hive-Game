@@ -49,16 +49,11 @@ public class Moustique extends Insecte {
     	}
         
         Iterator<Case> it = casePossibles.iterator();
-        System.out.println("test ----> V <-----");
         while (it.hasNext()) {
             Case possibilite = it.next();
-            System.out.println("test ----> W <-----" + possibilite);
             for (Case c : plateau.getCasesVoisines(this.getEmplacement(), true)) {
-                System.out.println("test ----> X <-----" + c);
                 if (c.equals(possibilite)) {
-                    System.out.println("test ----> Y <-----" + c);
                     if (!plateau.glissementPossible(this.getEmplacement(), c)) {
-                        System.out.println("test ----> Z <-----");
                         it.remove();
                     }
                 }
@@ -92,7 +87,7 @@ public class Moustique extends Insecte {
     	else {
     		return new ArrayList<>();
     	}
-    	
+        
     	insecte2.setEmplacement(this.getEmplacement());
     	return (ArrayList<Case>) insecte2.deplacementPossible(plateau);
     }

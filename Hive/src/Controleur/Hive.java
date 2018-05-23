@@ -7,6 +7,7 @@ import Modele.JoueurHumain;
 import Modele.JoueurIA;
 import Modele.Plateau;
 import Modele.HexaPoint;
+import Modele.NumJoueur;
 import Modele.TypeInsecte;
 import Vue.Vue;
 import static com.sun.javafx.PlatformUtil.isWindows;
@@ -36,20 +37,20 @@ public class Hive implements Serializable {
     public void setJoueurs(int cas, boolean extension) { //Création des joueurs selon le type de partie 
         switch (cas) {
             case 1:
-                this.joueur1 = new JoueurHumain(this.plateau, extension);
-                this.joueur2 = new JoueurHumain(this.plateau, extension);
+                this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
+                this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
                 break;
             case 2:
-                this.joueur1 = new JoueurHumain(this.plateau, extension);
-                this.joueur2 = new JoueurIA(this.plateau, 1, extension, joueur1); //Easy
+                this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
+                this.joueur2 = new JoueurIA(this.plateau, 1, extension, NumJoueur.JOUEUR2, joueur1); //Easy
                 break;
             case 3:
-                this.joueur1 = new JoueurHumain(this.plateau, extension);
-                this.joueur2 = new JoueurIA(this.plateau, 2, extension, joueur1); //Medium
+                this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
+                this.joueur2 = new JoueurIA(this.plateau, 2, extension, NumJoueur.JOUEUR2, joueur1); //Medium
                 break;
             case 4:
-                this.joueur1 = new JoueurHumain(this.plateau, extension);
-                this.joueur2 = new JoueurIA(this.plateau, 3, extension, joueur1); //hard
+                this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
+                this.joueur2 = new JoueurIA(this.plateau, 3, extension, NumJoueur.JOUEUR2, joueur1); //hard
                 break;
         }
         this.joueurCourant = this.joueur1;
@@ -114,26 +115,26 @@ public class Hive implements Serializable {
         this.joueurSuivant();
     }
 
-    public ArrayList<Insecte> mainJoueur(int joueur) { // Récupère la main du joueur choisi
+    public ArrayList<Insecte> mainJoueur(NumJoueur numJoueur) { // Récupère la main du joueur choisi
         Joueur j = null;
-        switch (joueur) {
-            case (1):
+        switch (numJoueur) {
+            case JOUEUR1:
                 j = this.joueur1;
                 break;
-            case (2):
+            case JOUEUR2:
                 j = this.joueur2;
                 break;
         }
         return j.pionsEnMain();
     }
 
-    public boolean tousPionsPosables(int joueur) { //Permet de toujours vérifier la règle qui empêche les joueurs de jouer s'ils
+    public boolean tousPionsPosables(NumJoueur numJoueur) { //Permet de toujours vérifier la règle qui empêche les joueurs de jouer s'ils
         Joueur j = null;                           // n'ont pas encore joué leur reine au 4ème tour
-        switch (joueur) {
-            case (1):
+        switch (numJoueur) {
+            case JOUEUR1:
                 j = this.joueur1;
                 break;
-            case (2):
+            case JOUEUR2:
                 j = this.joueur2;
                 break;
         }
@@ -165,6 +166,7 @@ public class Hive implements Serializable {
             this.joueurCourant = this.joueur2;
             if (this.joueur2 instanceof JoueurIA ) {
                 ((JoueurIA)this.joueurCourant).coup(null, null);
+                this.joueurSuivant();
             }
         } else if (joueurCourant.equals(this.joueur2)) {
             this.joueurCourant = this.joueur1;

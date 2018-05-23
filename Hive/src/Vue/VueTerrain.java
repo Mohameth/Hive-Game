@@ -3,6 +3,7 @@ package Vue;
 import Controleur.Hive;
 import Modele.HexaPoint;
 import Modele.Insectes.Insecte;
+import Modele.NumJoueur;
 import Modele.Plateau;
 import Modele.TypeInsecte;
 import javafx.animation.FadeTransition;
@@ -121,8 +122,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         ArrayList<Insecte> initInsectes = new ArrayList<>();
 
         initInsectes = this.controleur.mainsInit();
-        BorderPane playerOne = getHudPlayer(getnbInsect(initInsectes), 1,true); //initialisation tout les pions possable
-        BorderPane playerTwo = getHudPlayer(getnbInsect(initInsectes), 2,false);
+        BorderPane playerOne = getHudPlayer(getnbInsect(initInsectes), 1); //initialisation tout les pions possable
+        BorderPane playerTwo = getHudPlayer(getnbInsect(initInsectes), 2);
 
         playerOne.minWidthProperty().bind(s.widthProperty());
         playerOne.maxWidthProperty().bind(s.widthProperty());
@@ -702,7 +703,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         //System.out.println("Verif des données!!");
         HashMap<TypeInsecte, Integer> m;
         //Mise a jour si probleme du texte
-        m = getnbInsect(this.controleur.mainJoueur(1));
+        m = getnbInsect(this.controleur.mainJoueur(NumJoueur.JOUEUR1));
 
         for (Map.Entry<TypeInsecte, PionMain> entry : pionMainPlayer1.entrySet()) {
             TypeInsecte keyType = entry.getKey();
@@ -720,7 +721,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         }
 
         m.clear();
-        m = getnbInsect(this.controleur.mainJoueur(2));
+        m = getnbInsect(this.controleur.mainJoueur(NumJoueur.JOUEUR2));
         for (Map.Entry<TypeInsecte, PionMain> entry : pionMainPlayer2.entrySet()) {
             TypeInsecte keyType = entry.getKey();
             PionMain pMain = entry.getValue();
@@ -740,7 +741,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         if (this.controleur.tourJoueurBlanc()) {
             //setlock(true);  //pour griser les pions
             setLockPlayerPion(false); //lock les noirs  sur le plateau  et remove les blancs
-            removeLock(true, this.controleur.tousPionsPosables(1));
+            removeLock(true, this.controleur.tousPionsPosables(NumJoueur.JOUEUR1));
             setlock(false);
             setNomJoueur(1);
             VBox v = getTurnPlayer(1);
@@ -749,7 +750,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             //Mise a jour si probleme du texte
             //setlock(false); //pour griser les pions noir = false
             setLockPlayerPion(true); //lock les blancs sur le plateau et remove les noirs
-            removeLock(false, this.controleur.tousPionsPosables(2));
+            removeLock(false, this.controleur.tousPionsPosables(NumJoueur.JOUEUR2));
             setlock(true);
             setNomJoueur(2);
         }
@@ -814,6 +815,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bEdit.setStyle("-fx-background-color: Transparent;\n");
         HBox hName = new HBox();
         hName.setAlignment(Pos.CENTER_LEFT);
+        bEdit.setTooltip(new Tooltip("Changer de nom"));
         TextField txt1 = new TextField("Nom joueur " + numplayer);
         txt1.setBackground(Background.EMPTY);
         nomJoueur.add(txt1);
@@ -987,6 +989,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             getRule(false);
         });
 
+        bPause.setTooltip(new Tooltip("Afficher le menu"));
         bLoad.setTooltip(new Tooltip("Charger une partie"));
         bLoad.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             ListView<String> lv = getSaveFile();
@@ -1076,7 +1079,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     public void getPause() {
-        Text t = new Text("PAUSE");
+        Text t = new Text("MENU");
         t.setFont(Font.font(60));
         t.setStyle("-fx-fill: white;\n");
         Button bResume = new Button(getLangStr("resume"));

@@ -9,6 +9,8 @@ import Modele.Insectes.Insecte;
 import Modele.Joueur;
 import Modele.Plateau;
 import Modele.HexaPoint;
+import Modele.JoueurIA;
+import Modele.NumJoueur;
 import java.util.ArrayList;
 
 /**
@@ -20,8 +22,8 @@ public class IAMinimax extends Joueur {
     int horizon = 0;
     public Coup lastCoup = null;
     
-    public IAMinimax(Plateau p, boolean extensions) {
-        super(p, extensions);
+    public IAMinimax(Plateau p, boolean extensions, NumJoueur numJoueur) {
+        super(p, extensions, numJoueur);
     }
 
     public void setAdversaire(Joueur adversaire) {
@@ -35,6 +37,11 @@ public class IAMinimax extends Joueur {
     @Override
     public boolean coup(Insecte insecte, HexaPoint cible) {
         Coup coup = minimax();
+        if (coup == null) {
+            JoueurIA iaf = new JoueurIA(this.plateau,1,false,NumJoueur.JOUEUR2,this.adversaire);
+            iaf.setPions(pions);
+            return iaf.coup(insecte, cible);
+        }
         Insecte i;
         
         if (coup.isModePlacement()) {
@@ -68,9 +75,14 @@ public class IAMinimax extends Joueur {
                 oldVal = newVal;
             }
         }
+        if (meilleurConf != null) {
         System.out.println("Coup évalué à " + meilleurConf.getEvaluation());
         
         return meilleurConf.getCoupJoue();
+        } else {
+            System.out.println("aucune conf : Jeu aleatoire");
+            return null;
+        }
     }
     
     public int calculJoueurCourant(Configuration conf, int horizon) {

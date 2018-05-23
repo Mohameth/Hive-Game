@@ -62,7 +62,7 @@ public class CaseTest {
 
         System.out.println("ajout d'un insecte :");
         try {
-            instance.addInsecte(new Reine(new JoueurHumain(new Plateau(),true)));
+            instance.addInsecte(new Reine(new JoueurHumain(new Plateau(),true, NumJoueur.JOUEUR1)));
             System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         } catch (Exception ex) {
             fail("exception anormal");
@@ -91,7 +91,7 @@ public class CaseTest {
     public void testAddRemInsecte() {
         System.out.println("=============================================");
         System.out.println("TEST ajout suppretion d'Insecte : ==========>\n");
-        JoueurHumain j = new JoueurHumain(new Plateau(),true);
+        JoueurHumain j = new JoueurHumain(new Plateau(),true, NumJoueur.JOUEUR1);
         Reine reine = new Reine(j);
         Case instance = new Case(new HexaPoint(0, 0, 0));
         try {
@@ -253,9 +253,9 @@ public class CaseTest {
     public void testInsecteBloque() {
         System.out.println("=============================================");
         System.out.println("TEST insecteBloque : =======================>\n");
-        Fourmi fourmi = new Fourmi(new JoueurHumain(new Plateau(),true));
-        Scarabee scarabee1 = new Scarabee(new JoueurHumain(new Plateau(),true));
-        Scarabee scarabee2 = new Scarabee(new JoueurHumain(new Plateau(),true));
+        Fourmi fourmi = new Fourmi(new JoueurHumain(new Plateau(),true, NumJoueur.JOUEUR1));
+        Scarabee scarabee1 = new Scarabee(new JoueurHumain(new Plateau(),true, NumJoueur.JOUEUR1));
+        Scarabee scarabee2 = new Scarabee(new JoueurHumain(new Plateau(),true, NumJoueur.JOUEUR1));
         Case instance = new Case(new HexaPoint(0, 0, 0));
         System.out.println("test sur une case vide (doit lever une exeption) :");
         try {

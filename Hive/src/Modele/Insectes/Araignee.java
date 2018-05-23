@@ -9,7 +9,10 @@ import Modele.TypeInsecte;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Araignee extends Insecte {
 	
@@ -26,23 +29,36 @@ public class Araignee extends Insecte {
         if (!this.getJoueur().tousPionsPosables()) return new ArrayList<>();
         ArrayList<Case> res = new ArrayList<>();
         ArrayList<Case> visitees = new ArrayList<>();
-        visitees.addAll(plateau.getCasesVoisines(this.getEmplacement(), true));
-        deplacementPossibleWorker(plateau, plateau.getCasesVoisinesAccessibles(this.getEmplacement(), true), 1, res, visitees);
+        Collection<Case> init = plateau.getCasesVoisinesAccessibles(this.getEmplacement(), true);
+        Case caseInit = this.getEmplacement();
+        
+        visitees.add(this.getEmplacement());
+        for (Case c : init) {
+            this.deplacement(plateau, c.getCoordonnees());
+            deplacementWorker(plateau, c, visitees, res, 1);
+            this.deplacement(plateau, caseInit.getCoordonnees());
+        }
+        
+        Collection<Case> voisins = plateau.getCasesVoisines(this.getEmplacement(), true);
+        Iterator<Case> it = res.iterator();
+        while (it.hasNext()) {
+            Case c = it.next();
+            if (voisins.contains(c)) it.remove();
+        }
+        
         return res;
     }
         
-        
-    private void deplacementPossibleWorker(Plateau p, Collection<Case> departs, int dist, ArrayList<Case> res, ArrayList<Case> visitees) {
+    private void deplacementWorker(Plateau p, Case courante, Collection<Case> visitees, Collection<Case> res, int dist) {
         if (dist > 4) return;
-        visitees.addAll(departs);
-        for (Case c : departs) {
-            if (dist == 3) res.addAll(departs);
-            else if (dist < 3) {
-                Collection<Case> aVisite = p.getCasesVoisinesAccessibles(c, true);
-                aVisite.removeAll(visitees);
-                deplacementPossibleWorker(p, aVisite, dist+1, res, visitees);
+        if (dist == 3) res.add(courante);
+        
+        for (Case c : p.getCasesVoisinesAccessibles(courante, true)) {
+            if (!visitees.contains(c)) {
+                deplacementWorker(p, c, visitees, res, dist+1);
             }
         }
+        visitees.add(courante);
     }
 
     @Override

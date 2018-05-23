@@ -53,7 +53,7 @@ public class JoueurTest {
         System.out.println("Test reinePosee  ===========================>\n");
 
         Plateau plat = new Plateau();
-        JoueurHumain instance = new JoueurHumain(plat, true);
+        JoueurHumain instance = new JoueurHumain(plat, true, NumJoueur.JOUEUR1);
         Fourmi fourmi = new Fourmi(instance);
         Reine reine = new Reine(instance);
 
@@ -87,7 +87,7 @@ public class JoueurTest {
         System.out.println("Pions en Mains : 2xScarabee 3xFourmis 1xReine 2xSauterelle\n");
 
         Plateau plat = new Plateau();
-        JoueurHumain instance = new JoueurHumain(plat, true);
+        JoueurHumain instance = new JoueurHumain(plat, true, NumJoueur.JOUEUR1);
         Fourmi fourmi1 = new Fourmi(instance);
         Fourmi fourmi2 = new Fourmi(instance);
         Fourmi fourmi3 = new Fourmi(instance);
@@ -187,8 +187,8 @@ public class JoueurTest {
         System.out.println("Test reineBloque  ==========================>\n");
 
         Plateau plat = new Plateau();
-        JoueurHumain j1 = new JoueurHumain(plat, true);
-        JoueurHumain j2 = new JoueurHumain(plat, true);
+        JoueurHumain j1 = new JoueurHumain(plat, true, NumJoueur.JOUEUR1);
+        JoueurHumain j2 = new JoueurHumain(plat, true, NumJoueur.JOUEUR1);
         Fourmi fourmi1 = (Fourmi) j1.getPions().get(5);
         Fourmi fourmi2 = (Fourmi) j1.getPions().get(7);
         Fourmi fourmi3 = (Fourmi) j1.getPions().get(9);
