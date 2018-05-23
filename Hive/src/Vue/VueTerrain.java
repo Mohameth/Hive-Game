@@ -1,6 +1,7 @@
 package Vue;
 
 import Controleur.Hive;
+import Modele.Case;
 import Modele.HexaPoint;
 import Modele.Insectes.Insecte;
 import Modele.Plateau;
@@ -1272,7 +1273,36 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
      */
     private void reconstructionPlateau(Plateau p) {
+        System.out.println("RECONSTRUCTION PLATEAUUU");
+        int nbNonCorrect = 0;
+        for (Map.Entry<HexaPoint, Case> entry : p.getCases().entrySet()) {
+            HexaPoint keyPoint = entry.getKey();
+            java.lang.Object value = entry.getValue();
+            if (!listPionsPlateau.containsKey(keyPoint)) {
+                nbNonCorrect++;
+            }
+        }
+        //regenère le plateau si pas de correspondance.
+        //if (nbNonCorrect > 0) {
+        if (true) {
 
+            for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+                PionPlateau2 value = entry.getValue();
+                this.getRoot().getChildren().remove(value.getImage());
+            }
+
+            this.listPionsPlateau.clear();
+            this.listZoneLibres.clear();
+            removeSelectedPion();
+            /*
+            for (Map.Entry<HexaPoint, Case> entry : p.getCases().entrySet()) {
+                HexaPoint keyPoint = entry.getKey();
+                java.lang.Object value = entry.getValue();
+                if (!listPionsPlateau.containsKey(keyPoint)) {
+                    nbNonCorrect++;
+                }
+            }*/
+        }
     }
 
     private static final class MouseLocation {
