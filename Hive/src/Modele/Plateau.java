@@ -417,6 +417,7 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
                 } catch (Exception e) {
                     System.err.println("ERREUR Ruche brisé debut : " + e);
                     moveDest = null;
+                    return true;
                 }
             }
         }
