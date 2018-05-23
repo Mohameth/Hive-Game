@@ -43,7 +43,7 @@ public class Araignee extends Insecte {
         Iterator<Case> it = res.iterator();
         while (it.hasNext()) {
             Case c = it.next();
-            if (voisins.contains(c)) it.remove();
+            if (voisins.contains(c) || plateau.rucheBrisee(this.getEmplacement(), c)) it.remove();
         }
         
         return res;
