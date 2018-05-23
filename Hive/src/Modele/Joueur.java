@@ -141,6 +141,11 @@ public abstract class Joueur implements Cloneable, Serializable {
         return res;
     }
 
+    public void setPions(ArrayList<Insecte> pions) {
+        this.pions = pions;
+    }
+
+    
     /**
      * Place un insecte sur la case caseCible
      *
@@ -182,7 +187,7 @@ public abstract class Joueur implements Cloneable, Serializable {
         }
         if (extensions) {
             this.pions.add(new Moustique(this));
-            this.pions.add(new Cloporte(this));
+            //this.pions.add(new Cloporte(this));
             this.pions.add(new Coccinelle(this));
         }
 

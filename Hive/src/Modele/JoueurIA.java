@@ -1,5 +1,6 @@
 package Modele;
 
+import Modele.IA.Coup;
 import Modele.Insectes.Insecte;
 import Modele.Insectes.Reine;
 import java.util.ArrayList;
@@ -104,7 +105,7 @@ public class JoueurIA extends Joueur {
 
         return true;
     }
-
+    
     private boolean coupNormal() {
         boolean b = false;
         Random r = new Random();
