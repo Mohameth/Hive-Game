@@ -56,7 +56,7 @@ public class IAMinimax extends Joueur {
         System.out.println(i.getClass().getCanonicalName() + " en " + coup.getCible());
         lastCoup = coup;
         
-       
+        this.tourJoueur++;
         return true;
     }
     
@@ -67,11 +67,13 @@ public class IAMinimax extends Joueur {
         int newVal;
         
         ArrayList<Configuration> x = parent.getAllCoupsPossibles();
+        ArrayList<Integer> test = new ArrayList<>();
         System.out.println("Analyse de " + x.size() + " configurations");
         for (Configuration c : x) {
             newVal = calculJoueurCourant(c, horizon);
             if (newVal > oldVal) {
                 meilleurConf = c;
+                System.out.print(oldVal + " /\\ ");
                 oldVal = newVal;
             }
         }

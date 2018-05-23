@@ -72,7 +72,9 @@ public class Configuration {
                 }
             }
         }
-        
+        if (fils.size() == 0) {
+            System.err.println("ERRRRRRRRRRRRRRRRRRRREEEUUUUUUUUUUUURRR");
+        }
         return fils;
     }
     

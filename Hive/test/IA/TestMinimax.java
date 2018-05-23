@@ -41,15 +41,17 @@ public class TestMinimax {
         }
         
         System.out.println("partie fini en " + coup);
-        if (joueur1.reineBloquee()) {
-            System.out.println("J2 à gagné");
+        if (joueur1.reineBloquee() && joueur2.reineBloquee()) {
+            System.out.println("Partie nulle, les deux reines sont bloqués");
+        }else if (joueur1.reineBloquee()) {
+            System.out.println("J2 a gagné");
         } else if (joueur2.reineBloquee()){
-            System.out.println("J1 à gagné");
+            System.out.println("J1 a gagné");
         } else {
             System.out.println("match NULL");
         }
         
-        System.out.println("Pions du J1 :");
+        /*System.out.println("Pions du J1 :");
         for (Insecte i : joueur1.getPions()) {
             if(i.getEmplacement() != null)
                 System.out.println(i.getEmplacement());
@@ -59,7 +61,7 @@ public class TestMinimax {
         for (Insecte i : joueur2.getPions()) {
             if(i.getEmplacement() != null)
                 System.out.println(i.getEmplacement());
-        }
+        }*/
         
     }
 }
