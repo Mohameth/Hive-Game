@@ -79,21 +79,19 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
     }
 
     
-    public Plateau clone(ArrayList<Insecte> EnmainIA, ArrayList<Insecte> EnjeuIA,
-            ArrayList<Insecte> EnmainAdverse, ArrayList<Insecte> EnjeuAdverse,Joueur j) {
+    public Plateau clone(ArrayList<Insecte> EnjeuIA,ArrayList<Insecte> EnjeuAdverse,Joueur j) {
         Plateau plateau = new Plateau();
-        plateau.cases = cloneCases(EnmainIA, EnjeuIA, EnmainAdverse, EnjeuAdverse,j);
+        plateau.cases = cloneCases(EnjeuIA,EnjeuAdverse,j);
         plateau.nbPionsEnJeu = this.nbPionsEnJeu;
         return plateau;
     }
 
-    public Map<HexaPoint, Case> cloneCases(ArrayList<Insecte> Enmain, ArrayList<Insecte> Enjeu,
-            ArrayList<Insecte> EnmainAdverse, ArrayList<Insecte> EnjeuAdverse,Joueur j) {
+    public Map<HexaPoint, Case> cloneCases(ArrayList<Insecte> Enjeu,ArrayList<Insecte> EnjeuAdverse,Joueur j) {
         HashMap<HexaPoint, Case> cases2 = new HashMap<>();
 
         for (Map.Entry<HexaPoint, Case> e : cases.entrySet()) {
             HexaPoint p = e.getKey().clone();
-            cases2.put(p, e.getValue().clone(p, Enmain, Enjeu, EnmainAdverse, EnjeuAdverse,j));
+            cases2.put(p, e.getValue().clone(p,Enjeu,EnjeuAdverse,j));
         }
         return cases2;
     }
