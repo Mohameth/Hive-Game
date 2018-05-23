@@ -37,6 +37,8 @@ import java.io.File;
 import java.util.*;
 
 import static com.sun.javafx.PlatformUtil.isWindows;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.shape.Circle;
 
 public class VueTerrain extends Vue implements ObservateurVue, Observer {
@@ -664,8 +666,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private void coupJouer() {
         hideZoneLibre();
         removeSelectedPion();
-        updateMainJoueur();
         reconstructionPlateau(this.pModel);
+        updateMainJoueur();
         hudToFront();
         System.out.println("Coup Jouer");
     }
@@ -1282,26 +1284,47 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
      */
     private void reconstructionPlateau(Plateau p) {
+
+        //recherche d'une case non vide
+//        if (p != null) {
+//
+//            System.out.println("\n\n- - -AFFICHE LIST VU - - -");
+//            for (Case c : vu) {
+//                System.out.println(c);
+//            }
+//
+//            System.out.println("\n\n- - -AFFICHE LISTCASEPROCHECPROCHE - - -");
+//            for (Case c : listCaseProcheEnProche) {
+//                System.out.println(c);
+//            }
+//            System.out.println("- - - - - - - -\n\n");
+//            System.out.println("- - - - - - - -\n\n");
+//            System.out.println("- - - - - - - -\n\n");
+//            System.out.println("- - - - - - - -\n\n");
+//            System.out.println("- - - - - - - -\n\n");
+//            System.out.println("- - - - - - - -\n\n");
+//            System.out.println("- - - - - - - -\n\n");
+//
+//        }
         System.out.println("RECONSTRUCTION PLATEAUUU");
         int nbNonCorrect = 0;
-        Case casenonVide = null;
+
         if (p != null) {
             for (Map.Entry<HexaPoint, Case> entry : p.getCases().entrySet()) {
                 HexaPoint keyPoint = entry.getKey();
                 Case c = entry.getValue();
                 if (!c.estVide() && !listPionsPlateau.containsKey(keyPoint)) {
-                    System.out.println("Non correct! " + keyPoint);
+                    System.out.println("Le pion: manque " + keyPoint);
                     nbNonCorrect++;
                 } else if (!c.estVide() && listPionsPlateau.containsKey(keyPoint)) {
-                    System.out.println("correct!" + keyPoint);
+                    //System.out.println("correct!" + keyPoint);
                 }
-                if (!c.estVide() && casenonVide != null) {
-                    casenonVide = c;
-                }
+
             }
             //regenère le plateau si pas de correspondance a 100%.
-            //if (nbNonCorrect > 0) {
-            if (true) {
+            if (nbNonCorrect > 0) {
+                System.out.println("Reconstruction du plateau du au pion qui manque");
+                //if (true) {
                 //supprimer les pions du plateau:
                 for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
                     PionPlateau2 value = entry.getValue();
@@ -1317,78 +1340,146 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 //si on a pas déja traité ce point dans le plateau
                 //traiter uniqmeent les cases avec des pions
                 int nbPionsPose = 0;
+                System.out.println("Start regen: Boucle sur toutes les cases");
 
-                if (!casenonVide.estVide()) {
+                //copy here
+                Case casenonVide2 = null;
+                for (Map.Entry<HexaPoint, Case> entry : p.getCases().entrySet()) {
+                    Case casenonVide = entry.getValue();
+                    if (!casenonVide.estVide()) {
+                        casenonVide2 = casenonVide;
+                        break;
+                    }
+                }
 
-                    if (!listPionsPlateau.containsKey(casenonVide.getCoordonnees())) {
-                        if (casenonVide.getNbInsectes() == 1) {
-                            Insecte ins = casenonVide.getInsectes().get(0);
-                            //ins.getJoueur().
-                            boolean isWhite = true;
-                            //place le tous premier pion a la position 0 0 du plateau qui va permettre de generer les autres pions.
-                            PionPlateau2 pp2;
-                            if (nbPionsPose == 0) {
-                                pp2 = new PionPlateau2(this, ins.getType(), isWhite, casenonVide.getCoordonnees(), 0, 0, this.getZoom(), this.getWidth(), this.getHeight());
-                            } else {
-                                double resImgXY[] = getImgZoneLibreEgal(casenonVide.getCoordonnees(), false);
-                                pp2 = new PionPlateau2(this, ins.getType(), isWhite, casenonVide.getCoordonnees(), resImgXY[0], resImgXY[1], this.getZoom(), this.getWidth(), this.getHeight());
-                            }
-                            pp2.validCurrentPosXY();
-                        } else if (casenonVide.getNbInsectes() > 1) {
-                            //ajoute le premier de la pile directement
-                            Insecte ins = casenonVide.getInsectes().get(0);
-                            //ins.getJoueur().
-                            boolean isWhite = true;
+                //Algorithme de parcours en largeur
+                ArrayList<Case> listCaseProcheEnProche = new ArrayList<>();
+                ArrayList<Case> vu = new ArrayList<>();
+                LinkedList<Case> f = new LinkedList<>();
+                f.push(casenonVide2);
+                vu.add(casenonVide2);
+                while (!f.isEmpty()) {
+                    System.out.println("SIZE:" + f.size());
+                    Case tmp = f.pollFirst();
+                    listCaseProcheEnProche.add(tmp);
 
-                            PionPlateau2 pp2;
-                            if (nbPionsPose == 0) {
-                                //place le tous premier pion a la position 0 0 du plateau qui va permettre de generer les autres pions.
-                                pp2 = new PionPlateau2(this, ins.getType(), isWhite, casenonVide.getCoordonnees(), 0, 0, this.getZoom(), this.getWidth(), this.getHeight());
-                            } else {
-                                double resImgXY[] = getImgZoneLibreEgal(casenonVide.getCoordonnees(), true);
-                                pp2 = new PionPlateau2(this, ins.getType(), isWhite, casenonVide.getCoordonnees(), resImgXY[0], resImgXY[1], this.getZoom(), this.getWidth(), this.getHeight());
-                            }
-                            pp2.validCurrentPosXY();
-
-                            for (Insecte insecte : casenonVide.getInsectes()) {
-                                if (insecte != ins) { //traiter les autres
-                                    //if (insecte.getJoueur().get == )
-                                    boolean isWhite2 = true;
-                                    //place le pion random.
-                                    PionPlateau2 ppTemp2 = new PionPlateau2(this, insecte.getType(), isWhite2, new HexaPoint(-47, -47, -47), -999, -999, this.getZoom(), this.getWidth(), this.getHeight());
-                                    pp2.validCurrentPosXY();
-                                    //le deplace sur la bonne position (empilement)
-                                    double resImgXY[] = getImgZoneLibreEgal(casenonVide.getCoordonnees(), true);
-                                    ppTemp2.setPionPosition(casenonVide.getCoordonnees(), resImgXY[0], resImgXY[1]);
-                                    ppTemp2.validCurrentPosXY();
-                                }
-                            }
+                    System.out.println("Après SIZE:" + f.size());
+                    System.out.println("CASE TMP:" + tmp);
+                    for (Case caseVoisine : p.getCasesVoisinesOccupees(tmp)) {
+                        if (!vu.contains(caseVoisine)) {
+                            f.push(caseVoisine);
+                            vu.add(caseVoisine);
                         }
                     }
-                    nbPionsPose++;
+                }
+
+                for (Case casenonVide : listCaseProcheEnProche) {
+                    HexaPoint caseCoordonnee = casenonVide.getCoordonnees();
+//                    Case casenonVide = entry.getValue();
+
+                    if (!casenonVide.estVide()) {
+
+                        if (!listPionsPlateau.containsKey(caseCoordonnee)) {
+                            System.out.println("NEW POINT ------");
+                            if (casenonVide.getNbInsectes() == 1) {
+                                System.out.println("Nb insecte 1");
+                                Insecte ins = casenonVide.getInsectes().get(0);
+                                boolean isWhite = true;
+                                if (ins.getJoueur().getNumJoueur() == NumJoueur.JOUEUR2) {
+                                    isWhite = false;
+                                }
+                                //place le tous premier pion a la position 0 0 du plateau qui va permettre de generer les autres pions.
+                                PionPlateau2 pp2;
+                                if (nbPionsPose == 0) {
+                                    System.out.println("Point unique" + caseCoordonnee + " Type: " + ins.getType());
+                                    pp2 = new PionPlateau2(this, ins.getType(), isWhite, caseCoordonnee, 0, 0, this.getZoom(), this.getWidth(), this.getHeight());
+                                } else {
+                                    System.out.println("Point unique a une pos:" + caseCoordonnee + "Type: " + ins.getType());
+                                    double resImgXY[] = getImgZoneLibreEgal(caseCoordonnee);
+                                    pp2 = new PionPlateau2(this, ins.getType(), isWhite, caseCoordonnee, resImgXY[0], resImgXY[1], this.getZoom(), this.getWidth(), this.getHeight());
+                                }
+                                pp2.validCurrentPosXY();
+                                nbPionsPose++;
+                            } else if (casenonVide.getNbInsectes() > 1) {
+                                //ajoute le premier de la pile directement
+                                Insecte ins = casenonVide.getInsectes().get(0);
+                                boolean isWhite = true;
+                                if (ins.getJoueur().getNumJoueur() == NumJoueur.JOUEUR2) {
+                                    isWhite = false;
+                                }
+
+                                PionPlateau2 pp2;
+                                if (nbPionsPose == 0) {
+                                    System.out.println("Point multiple " + caseCoordonnee + " Type: " + ins.getType());
+                                    //place le tous premier pion a la position 0 0 du plateau qui va permettre de generer les autres pions.
+                                    pp2 = new PionPlateau2(this, ins.getType(), isWhite, caseCoordonnee, 0, 0, this.getZoom(), this.getWidth(), this.getHeight());
+                                } else {
+                                    System.out.println("Point multiple: " + caseCoordonnee + "Type: " + ins.getType());
+                                    double resImgXY[] = getImgZoneLibreEgal(caseCoordonnee);
+                                    pp2 = new PionPlateau2(this, ins.getType(), isWhite, caseCoordonnee, resImgXY[0], resImgXY[1], this.getZoom(), this.getWidth(), this.getHeight());
+                                }
+                                pp2.validCurrentPosXY();
+                                nbPionsPose++;
+                                //traite les autres pions au dessus
+                                for (Insecte insecte : casenonVide.getInsectes()) {
+                                    if (insecte != ins) { //traiter les autres
+                                        boolean isWhite2 = true;
+                                        if (insecte.getJoueur().getNumJoueur() == NumJoueur.JOUEUR2) {
+                                            isWhite2 = false;
+                                        }
+                                        //place le pion random.
+                                        PionPlateau2 ppTemp2 = new PionPlateau2(this, insecte.getType(), isWhite2, new HexaPoint(-47, -47, -47), -999, -999, this.getZoom(), this.getWidth(), this.getHeight());
+                                        pp2.validCurrentPosXY();
+                                        //le deplace sur la bonne position (empilement)
+                                        System.out.println("add pion sur: " + caseCoordonnee + "Type: " + insecte.getType());
+                                        double resImgXY[] = getImgZoneLibreEgal(caseCoordonnee);
+                                        ppTemp2.setPionPosition(caseCoordonnee, resImgXY[0], resImgXY[1]);
+                                        ppTemp2.validCurrentPosXY();
+                                        nbPionsPose++;
+                                    }
+                                }
+                            }
+                        } else {
+                            System.out.println("Cette case a déja été traité: " + casenonVide);
+                        }
+                        //nbPionsPose++; //ne correspond pas exactement au nombre de pions posé le mettre dans la boucle for
+                    }
                 }
 
                 ///*********** END BOUCLE
             } else {
                 System.out.println("Vue 100% de correspondance avec le model!");
             }
+            resetView();
         }
     }
 
-    private double[] getImgZoneLibreEgal(HexaPoint pt, boolean asMultiple) {
+    private void afficheZoneLibre() {
+        for (ZoneLibre listZoneLibre : listZoneLibres) {
+            listZoneLibre.affiche();
+        }
+    }
+
+    private double[] getImgZoneLibreEgal(HexaPoint pt) {
+        //afficheZoneLibre();
         //recherche une zone libre avec les memes coordonnées pour trouver la position de l'image
-        if (asMultiple) {
+        System.out.println("Cherche le point:" + pt);
+        removeSelectedPion();
+
+        if (this.listPionsPlateau.containsKey(pt)) {
             double x = this.listPionsPlateau.get(pt).getImgViewPion().getImgPosX();
             double y = this.listPionsPlateau.get(pt).getImgViewPion().getImgPosY();
+            System.out.println("Zone trouvé");
             return new double[]{x, y};
         } else {
             //recherche dans les zones libres un pion au meme coordonnée
             for (ZoneLibre zLibre : listZoneLibres) {
                 if (zLibre.getCoordZoneLibre().equals(pt)) {
+                    System.out.println("Zone trouvé");
                     return new double[]{zLibre.getImgPosX(), zLibre.getImgPosY()};
                 }
             }
-            throw new UnsupportedOperationException("Il existe toujours une case libre");
+            throw new UnsupportedOperationException("Il existe toujours une case libre generation plateau");
         }
     }
 
