@@ -807,6 +807,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         Button bEdit = new Button();
         bEdit.setGraphic(new ImageView(new Image("icons/pencil.png")));
         bEdit.setStyle("-fx-background-color: Transparent;\n");
+        bEdit.setTooltip(new Tooltip("Changer de nom"));
         TextField txt1 = new TextField("Nom joueur " + numplayer);
         nomJoueur.add(txt1);
         txt1.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
@@ -895,7 +896,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bPause.setGraphic(new ImageView(new Image("icons/pause.png")));
         bPause.setMinSize(100, 100);
         // bPause.setStyle("-fx-background-color: Transparent;\n");
-
+        
         Button bSave = new Button();
         Button bLoad = new Button();
 
@@ -978,6 +979,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             getRule();
         });
 
+        bPause.setTooltip(new Tooltip("Afficher le menu"));
         bLoad.setTooltip(new Tooltip("Charger une partie"));
         bLoad.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             ListView<String> lv = getSaveFile();
@@ -1067,7 +1069,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     public void getPause() {
-        Text t = new Text("PAUSE");
+        Text t = new Text("MENU");
         t.setFont(Font.font(60));
         t.setStyle("-fx-fill: white;\n");
         Button bResume = new Button(getLangStr("resume"));
