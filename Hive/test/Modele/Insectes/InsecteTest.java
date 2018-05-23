@@ -10,6 +10,7 @@ import Modele.Joueur;
 import Modele.JoueurHumain;
 import Modele.Plateau;
 import Modele.HexaPoint;
+import Modele.NumJoueur;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.After;
@@ -58,7 +59,7 @@ public class InsecteTest {
         System.out.println("Test deplacementReine ======================>\n");
         HexaPoint point = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
-        Joueur j1 = new JoueurHumain(instance,true);
+        Joueur j1 = new JoueurHumain(instance,true,NumJoueur.JOUEUR1);
 
         Case caseReine = instance.getCase(point);
         Reine r = new Reine(j1);
@@ -119,7 +120,7 @@ public class InsecteTest {
         System.out.println("Test deplacementScarabee ======================>\n");
         HexaPoint point = new HexaPoint(0, 0, 0);
         Plateau instance = new Plateau();
-        Joueur j1 = new JoueurHumain(instance,true);
+        Joueur j1 = new JoueurHumain(instance,true,NumJoueur.JOUEUR1);
         
         Scarabee s = new Scarabee(j1);
         instance.ajoutInsecte(s, point);
@@ -175,7 +176,7 @@ public class InsecteTest {
         System.out.println("Test deplacementFourmi ======================>\n");
 
         Plateau instance = new Plateau();
-        Joueur j1 = new JoueurHumain(instance,true);
+        Joueur j1 = new JoueurHumain(instance,true,NumJoueur.JOUEUR1);
 
         Case caseFourmi = instance.getCase(new HexaPoint(0, 0, 0));
         Fourmi f = new Fourmi(j1);
@@ -225,7 +226,7 @@ public class InsecteTest {
         System.out.println("Test deplacementSauterelle =================>\n");
 
         Plateau instance = new Plateau();
-        Joueur j1 = new JoueurHumain(instance,true);
+        Joueur j1 = new JoueurHumain(instance,true,NumJoueur.JOUEUR1);
 
         HexaPoint orig = new HexaPoint(0,0,0);
         
@@ -273,8 +274,8 @@ public class InsecteTest {
         System.out.println("Test deplacementGrooseRuche ======================>\n");
 
         Plateau instance = new Plateau();
-        Joueur j1 = new JoueurHumain(instance,true);
-        Joueur j2 = new JoueurHumain(instance,true);
+        Joueur j1 = new JoueurHumain(instance,true,NumJoueur.JOUEUR1);
+        Joueur j2 = new JoueurHumain(instance,true,NumJoueur.JOUEUR1);
 
         Sauterelle sauterelleBlanche = new Sauterelle(j1);
         Fourmi fourmiBlanche = new Fourmi(j1);
