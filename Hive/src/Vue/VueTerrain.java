@@ -64,10 +64,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         this.primaryStage = primaryStage;
         this.nomJoueur = new ArrayList<>();
         root = new Group();
-
+        
         this.controleur = controleur;
         this.controleur.reset();
         this.controleur.setJoueurs(casJoueurs, true);
+        this.controleur.addObserverPlateau(this);
 
         pionMainPlayer1 = new HashMap<>();
         pionMainPlayer2 = new HashMap<>();
