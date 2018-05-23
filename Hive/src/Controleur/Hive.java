@@ -19,6 +19,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Observer;
 
 public class Hive implements Serializable {
 
@@ -159,10 +160,12 @@ public class Hive implements Serializable {
     }
 
     private void joueurSuivant() { //Passe au joueur suivant
+        this.plateau.notifieVue();
         if (joueurCourant.equals(this.joueur1)) {
             this.joueurCourant = this.joueur2;
             if (this.joueur2 instanceof JoueurIA ) {
                 ((JoueurIA)this.joueurCourant).coup(null, null);
+                this.joueurSuivant();
             }
         } else if (joueurCourant.equals(this.joueur2)) {
             this.joueurCourant = this.joueur1;
@@ -307,5 +310,9 @@ public class Hive implements Serializable {
             }
             
         }
+    }
+    
+    public void addObserverPlateau(Observer o) {
+        this.plateau.addObserver(o);
     }
 }

@@ -28,6 +28,10 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
      */
     private Map<HexaPoint, Case> cases;
     private int nbPionsEnJeu;
+    private HexaPoint dernierCoupOrigine;
+    private HexaPoint dernierCoupCible;
+    private TypeInsecte typePlacement;
+    
     /**
      * construit un plateau avec une seul case en 0,0,0
      */
@@ -76,20 +80,20 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
 
     
     public Plateau clone(ArrayList<Insecte> EnmainIA, ArrayList<Insecte> EnjeuIA,
-            ArrayList<Insecte> EnmainAdverse, ArrayList<Insecte> EnjeuAdverse, boolean b) {
+            ArrayList<Insecte> EnmainAdverse, ArrayList<Insecte> EnjeuAdverse,Joueur j) {
         Plateau plateau = new Plateau();
-        plateau.cases = cloneCases(EnmainIA, EnjeuIA, EnmainAdverse, EnjeuAdverse, b);
+        plateau.cases = cloneCases(EnmainIA, EnjeuIA, EnmainAdverse, EnjeuAdverse,j);
         plateau.nbPionsEnJeu = this.nbPionsEnJeu;
         return plateau;
     }
 
     public Map<HexaPoint, Case> cloneCases(ArrayList<Insecte> Enmain, ArrayList<Insecte> Enjeu,
-            ArrayList<Insecte> EnmainAdverse, ArrayList<Insecte> EnjeuAdverse, boolean b) {
+            ArrayList<Insecte> EnmainAdverse, ArrayList<Insecte> EnjeuAdverse,Joueur j) {
         HashMap<HexaPoint, Case> cases2 = new HashMap<>();
 
         for (Map.Entry<HexaPoint, Case> e : cases.entrySet()) {
             HexaPoint p = e.getKey().clone();
-            cases2.put(p, e.getValue().clone(p, Enmain, Enjeu, EnmainAdverse, EnjeuAdverse, b));
+            cases2.put(p, e.getValue().clone(p, Enmain, Enjeu, EnmainAdverse, EnjeuAdverse,j));
         }
         return cases2;
     }
@@ -116,11 +120,14 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
      */
     public void ajoutInsecte(Insecte insecte, HexaPoint position) {
         try {
+            this.dernierCoupCible = position;
+            this.typePlacement = insecte.getType();
+            this.dernierCoupOrigine = null;
             this.getCase(position).addInsecte(insecte);
             this.nbPionsEnJeu++;
             this.ajoutCasesVoisines(position);
-            setChanged();
-            notifyObservers();
+            //setChanged();
+            //notifyObservers();
         } catch (Exception ex) {
             System.err.println("Erreur ajout : " + ex);
             
@@ -136,10 +143,12 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
      */
     public void deplaceInsecte(Insecte insecte, HexaPoint position) {
         try {
+            this.dernierCoupOrigine = insecte.getEmplacement().getCoordonnees();
+            this.dernierCoupCible = position;
+            this.typePlacement = null;
             this.getCase(position).addInsecte(insecte);
             this.ajoutCasesVoisines(position);
-            setChanged();
-            notifyObservers();
+
         } catch (Exception ex) {
             System.err.println("Erreur ajout : " + ex);
             
@@ -185,8 +194,6 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
     public void deleteInsecte(Insecte insecte, HexaPoint position) {
         try {
             this.getCase(position).removeInsecte();
-            setChanged();
-            notifyObservers();
         } catch (Exception ex) {
             System.err.println("Erreur delete : " + ex);
             ex.printStackTrace();
@@ -549,5 +556,23 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
         return resultat;
     }
 
+    public void notifieVue() {
+        setChanged();
+        notifyObservers();
+    }
+
+    public HexaPoint getDernierCoupOrigine() {
+        return dernierCoupOrigine;
+    }
+
+    public HexaPoint getDernierCoupCible() {
+        return dernierCoupCible;
+    }
+
+    public TypeInsecte getTypePlacement() {
+        return typePlacement;
+    }
+    
+    
 
 }

@@ -36,6 +36,7 @@ public class Noeud {
 		this.mainAdverse=mainAdverse;
 		this.PlateauIA=PlateauIA;
 		this.PlateauAdverse=PlateauAdverse;
+                this.Fils = new ArrayList<>();
 	}
 	
 	public Noeud(Noeud Pere,Plateau plateau,ArrayList<Insecte>mainIA,ArrayList<Insecte>mainAdverse
@@ -53,6 +54,7 @@ public class Noeud {
 		this.mainAdverse=mainAdverse;
 		this.PlateauIA=PlateauIA;
 		this.PlateauAdverse=PlateauAdverse;
+                this.Fils = new ArrayList<>();
 	}
 	
 	public int getNi() {
@@ -139,6 +141,10 @@ public class Noeud {
 			}
 		}
 		return false;
+	}
+	
+	public ArrayList<CoupleCaesInsecte> getPossiblilites(){
+		return possibilite;
 	}
 	
 }

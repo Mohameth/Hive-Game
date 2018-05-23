@@ -21,9 +21,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -37,6 +35,7 @@ import java.io.File;
 import java.util.*;
 
 import static com.sun.javafx.PlatformUtil.isWindows;
+import javafx.scene.shape.Circle;
 
 public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
@@ -63,10 +62,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         this.primaryStage = primaryStage;
         this.nomJoueur = new ArrayList<>();
         root = new Group();
-
+        
         this.controleur = controleur;
         this.controleur.reset();
         this.controleur.setJoueurs(casJoueurs, true);
+        this.controleur.addObserverPlateau(this);
 
         pionMainPlayer1 = new HashMap<>();
         pionMainPlayer2 = new HashMap<>();
@@ -272,9 +272,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     private void updateTranslationPiece() {
         //le premier points appliquer aussi les translations
-        System.out.println("Size Zone libre:" + this.listZoneLibres.size());
         if (this.listZoneLibres.size() == 1 && this.listZoneLibres.get(0).asParentNull() && listZoneLibres.get(0).getCoordZoneLibre().equals(new HexaPoint(0, 0, 0))) {
-            System.out.println("update translation");
             listZoneLibres.get(0).updateImageZoomWidthHeight(this.totZoom, this.sceneWidth, this.sceneHeight);
         }
 
@@ -323,10 +321,46 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void resetView() {
-        moveDeltaBoard(-this.totMoveBoardX, -this.totMoveBoardY);
-        zoomImage(0.5);
+        double centrePlateau[] = getCentreDuPlateau();
+        moveDeltaBoard(-centrePlateau[0], -centrePlateau[1]);
+        //moveDeltaBoard(- this.totMoveBoardX,- this.totMoveBoardY);
+
+        zoomImage(0.3);
         this.totMoveBoardX = 0;
         this.totMoveBoardY = 0;
+    }
+
+    private double[] getCentreDuPlateau() {
+        double minX = Double.MAX_VALUE;
+        double minY = Double.MAX_VALUE;
+        double maxX = -Double.MAX_VALUE;
+        double maxY = -Double.MAX_VALUE;
+        double tmpx = 0, tmpy = 0;
+        boolean asPion = false;
+        for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+            asPion = true;
+            PionPlateau2 pp2 = entry.getValue();
+            tmpx = pp2.getImgViewPion().getImgPosX();
+            tmpy = pp2.getImgViewPion().getImgPosY();
+            if (tmpx < minX) {
+                minX = tmpx;
+            }
+            if (tmpx > maxX) {
+                maxX = tmpx;
+            }
+            if (tmpy < minY) {
+                minY = tmpy;
+            }
+            if (tmpy > maxY) {
+                maxY = tmpy;
+            }
+        }
+
+        if (!asPion) {
+            return new double[]{0, 0};
+        } else {
+            return new double[]{(minX + maxX) / 2, (minY + maxY) / 2};
+        }
     }
 
     private void makeBoardScrollZoom(Rectangle rect) {
@@ -391,11 +425,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         //ajout d'une zone libre
         //si le premier pion et qu'on a un piece alors supprimer le pion 0 0 0
 
-        System.out.println("Remove first 11");
         if (this.listZoneLibres.size() == 1 && this.listZoneLibres.get(0).asParentNull() && listZoneLibres.get(0).getCoordZoneLibre().equals(new HexaPoint(0, 0, 0))) {
             this.getRoot().getChildren().remove(this.listZoneLibres.get(0).getImage());
             this.listZoneLibres.remove(0);
-            System.out.println("Remove first");
         }
         this.listZoneLibres.add(zLibre);
         this.getRoot().getChildren().add(zLibre.getImage());
@@ -706,6 +738,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             removeLock(true, this.controleur.tousPionsPosables(1));
             setlock(false);
             setNomJoueur(1);
+            VBox v = getTurnPlayer();
+            root.getChildren().add(v);
         } else {
             //Mise a jour si probleme du texte
             //setlock(false); //pour griser les pions noir = false
@@ -773,10 +807,12 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         Button bEdit = new Button();
         bEdit.setGraphic(new ImageView(new Image("icons/pencil.png")));
         bEdit.setStyle("-fx-background-color: Transparent;\n");
+        bEdit.setTooltip(new Tooltip("Changer de nom"));
         TextField txt1 = new TextField("Nom joueur " + numplayer);
+        //txt1.setStyle("-fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);");
+        txt1.setBackground(Background.EMPTY);
         nomJoueur.add(txt1);
         txt1.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
-        txt1.getStylesheets().add("Vue/button.css");
         txt1.setEditable(false);
         txt1.setMinWidth(150);
 
@@ -792,10 +828,12 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         pointJ1.setPadding(new Insets(5, 0, 5, 0));
 
         bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            if (txt1.isEditable())
+            if (txt1.isEditable()) {
                 txt1.setEditable(false);
-            else {
+                txt1.setStyle("-fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);");
+            } else {
                 txt1.setEditable(true);
+                txt1.setStyle("-fx-text-fill:rgb(0,0,0);-fx-background-color: white;");
                 txt1.requestFocus();
             }
         });
@@ -861,7 +899,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bPause.setGraphic(new ImageView(new Image("icons/pause.png")));
         bPause.setMinSize(100, 100);
         // bPause.setStyle("-fx-background-color: Transparent;\n");
-
+        
         Button bSave = new Button();
         Button bLoad = new Button();
 
@@ -880,6 +918,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         Button bUndo = new Button();
         Button bRedo = new Button();
         Button bSug = new Button();
+        Button brules = new Button();
 
         bUndo.setGraphic(new ImageView(new Image("icons/icon.png")));
         bUndo.setMinSize(32, 32);
@@ -889,15 +928,23 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         // bRedo.setStyle("-fx-background-color: Transparent;\n");
         bSug.setGraphic(new ImageView(new Image("icons/small-light-bulb.png")));
         bSug.setMinSize(32, 32);
+
+        brules.setGraphic(new ImageView(new Image("icons/book_rules.png")));
+        brules.setMinSize(32, 32);
         // bSug.setStyle("-fx-background-color: Transparent;\n");
 
         HBox hb1 = new HBox();
+        HBox hb2 = new HBox();
         hb1.setAlignment(Pos.BOTTOM_CENTER);
         hb1.setSpacing(10);
         hb1.getChildren().addAll(bUndo, bRedo);
 
+        hb2.setAlignment(Pos.BOTTOM_CENTER);
+        hb2.setSpacing(10);
+        hb2.getChildren().addAll(brules, bSug);
+
         VBox vb1 = new VBox();
-        vb1.getChildren().addAll(hb1, bSug);
+        vb1.getChildren().addAll(hb1, hb2);
         vb1.setSpacing(10);
         //vb1.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 3 0 0 0;\n");
         vb1.setAlignment(Pos.BOTTOM_CENTER);
@@ -930,6 +977,12 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             this.controleur.Redo();
         });
 
+        brules.setTooltip(new Tooltip("Règles du jeu"));
+        brules.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            getRule(false);
+        });
+
+        bPause.setTooltip(new Tooltip("Afficher le menu"));
         bLoad.setTooltip(new Tooltip("Charger une partie"));
         bLoad.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             ListView<String> lv = getSaveFile();
@@ -1019,7 +1072,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     public void getPause() {
-        Text t = new Text("PAUSE");
+        Text t = new Text("MENU");
         t.setFont(Font.font(60));
         t.setStyle("-fx-fill: white;\n");
         Button bResume = new Button(getLangStr("resume"));
@@ -1061,7 +1114,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         bRules.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().removeAll(menu);
-            getRule();
+            getRule(true);
         });
 
         bSettings.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
@@ -1324,7 +1377,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         root.getChildren().add(v);
     }
 
-    private void getRule() {
+    private void getRule(boolean pause) {
         Label l = new Label(getLangStr("rule"));
         String[] urlImg = new String[20];
         l.setStyle("-fx-font-weight: bold;\n-fx-font-size: 100px;\n-fx-text-fill: white;");
@@ -1362,7 +1415,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         retour.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            getPause();
+            if(pause)
+                getPause();
         });
 
         root.getChildren().add(v);
@@ -1380,9 +1434,28 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     }
 
-    private void setNomJoueur(int numJoueur){
-        nomJoueur.get(numJoueur-1).setStyle("-fx-text-fill : red");
-        nomJoueur.get(Math.abs(numJoueur-2)).setStyle("-fx-text-fill : white");
+    private void setNomJoueur(int numJoueur) {
+        nomJoueur.get(numJoueur - 1).setStyle("-fx-text-fill : red");
+        nomJoueur.get(Math.abs(numJoueur - 2)).setStyle("-fx-text-fill : white");
+    }
+
+    private VBox getTurnPlayer(){
+        Label l = new Label("Tour de ...");
+        l.setFont(Font.font("",FontWeight.BOLD,60));
+        l.setTextFill(Color.WHITE);
+        Label l1 = new Label("cliquer pour jouer");
+        l1.setTextFill(Color.WHITE);
+        l1.setFont(Font.font("",FontWeight.BOLD,30));
+        VBox v = new VBox(l,l1);
+        HBox h = new HBox(v);
+        h.setAlignment(Pos.CENTER);
+        h.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
+        VBox v1 = new VBox(h);
+        v1.prefWidthProperty().bind(primaryStage.widthProperty());
+        v1.prefHeightProperty().bind(primaryStage.heightProperty());
+        v1.setAlignment(Pos.CENTER);
+
+        return v1;
     }
 
 }
