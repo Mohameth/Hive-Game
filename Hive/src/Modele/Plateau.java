@@ -518,6 +518,7 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
             HashMap<HexaPoint, Case> h = cloneMap(this.cases);
             
             p.cases = h;
+            p.nbPionsEnJeu = 0; //On va les rajouter juste après
             return p;
         } catch (CloneNotSupportedException e) {
             System.err.println("ERREUR Clone plateau : " + e);

@@ -82,9 +82,7 @@ public class JoueurIA extends Joueur {
         }
         this.tourJoueur++;
         do {
-            do {
-                insecte = this.getPions().get(r.nextInt(this.getPions().size()));
-            } while (insecte instanceof Reine);
+            insecte = this.getPions().get(r.nextInt(this.getPions().size()));
             if (insecte.getEmplacement() == null) {
                 ArrayList<HexaPoint> coordPlacement = plateau.casesVidePlacement(this);
                 ArrayList<Case> casePlacement = new ArrayList<>();
@@ -175,8 +173,9 @@ public class JoueurIA extends Joueur {
         Random ra = new Random();
         ArrayList<Case> cases = plateau.pointVersCase(plateau.casesVidePlacement(this));
         HexaPoint c = cases.get(ra.nextInt(cases.size())).getCoordonnees();
+                    
         this.dernierDeplacement = new Deplacement(r, null, c);
-        r.deplacement(plateau,c );
+        this.plateau.ajoutInsecte(r, c);
     }
 
     private boolean coupGagnant() {

@@ -7,6 +7,7 @@ import Modele.JoueurHumain;
 import Modele.JoueurIA;
 import Modele.Plateau;
 import Modele.HexaPoint;
+import Modele.IA.IAMinimax;
 import Modele.NumJoueur;
 import Modele.TypeInsecte;
 import Vue.Vue;
@@ -47,7 +48,7 @@ public class Hive implements Serializable {
                     break;
                 case 3:
                     this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
-                    this.joueur2 = new JoueurIA(this.plateau, 2, extension, NumJoueur.IAMOYEN2, joueur1); //Medium
+                    this.joueur2 = new IAMinimax(this.plateau, extension, NumJoueur.IAMOYEN2, joueur1); //Medium
                     break;
                 case 4:
                     this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
@@ -189,6 +190,10 @@ public class Hive implements Serializable {
             this.joueurCourant = this.joueur2;
             if (this.joueur2 instanceof JoueurIA ) {
                 ((JoueurIA)this.joueurCourant).coup(null, null);
+                this.joueurSuivant();
+            }
+            if (this.joueur2 instanceof IAMinimax ) {
+                ((IAMinimax)this.joueurCourant).coup(null, null);
                 this.joueurSuivant();
             }
         } else if (joueurCourant.equals(this.joueur2)) {

@@ -23,14 +23,12 @@ public class Configuration {
     Configuration parent;
     private ArrayList<Configuration> fils = null;
     boolean dejaEvalue = false;
-    private int evaluation;
+    private Integer evaluation = null;
     private Coup coupJoue;
 
     private Configuration(Plateau plateau, Joueur joueurCourant, Joueur adversaire, Configuration parent, Coup coupJoue) {
         this.plateau = plateau;
-        this.plateauOrigine = plateau;
         this.joueurCourant = joueurCourant;
-        this.joueurCourantOrigine = joueurCourant;
         this.adversaire = adversaire;
         this.parent = parent;
         this.coupJoue = coupJoue;
@@ -38,7 +36,9 @@ public class Configuration {
 
     public Configuration(Plateau plateau, Joueur joueurCourant, Joueur adversaire) {
         this.plateau = plateau;
+        this.plateauOrigine = plateau;
         this.joueurCourant = joueurCourant;
+        this.joueurCourantOrigine = joueurCourant;
         this.adversaire = adversaire;
     }
     
@@ -75,6 +75,7 @@ public class Configuration {
         if (fils.size() == 0) {
             System.err.println("ERRRRRRRRRRRRRRRRRRRREEEUUUUUUUUUUUURRR");
         }
+        
         return fils;
     }
     
@@ -115,13 +116,11 @@ public class Configuration {
         int niveau = 1;
         if (modePlacement) newCourant.placementInsecte(newInsecte, p);
         else {
-            if(newInsecte.getEmplacement() == null) newPlateau.ajoutInsecte(newInsecte, p);
-            else {
-                origine = newInsecte.getEmplacement().getCoordonnees();
-                niveau = newInsecte.getNiveau();
-                newPlateau.deplaceInsecte(newInsecte, p);
-            }
+            origine = newInsecte.getEmplacement().getCoordonnees();
+            niveau = newInsecte.getNiveau();
+            newPlateau.deplaceInsecte(newInsecte, p);
         }
+        
         if (origine == null) origine = newInsecte.getEmplacement().getCoordonnees();
         
         fils.add(new Configuration(
