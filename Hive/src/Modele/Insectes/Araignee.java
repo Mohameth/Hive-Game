@@ -55,7 +55,9 @@ public class Araignee extends Insecte {
         
         for (Case c : p.getCasesVoisinesAccessibles(courante, true)) {
             if (!visitees.contains(c)) {
+                this.deplacement(p, c.getCoordonnees());
                 deplacementWorker(p, c, visitees, res, dist+1);
+                this.deplacement(p, courante.getCoordonnees());
             }
         }
         visitees.add(courante);
