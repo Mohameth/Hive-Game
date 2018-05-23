@@ -113,7 +113,6 @@ public class VueSolo extends Vue {
                         difficulte = 4;
                         break;
                 }
-<<<<<<< HEAD
                 if (group2.getSelectedToggle() != null) {
                     switch(group.getSelectedToggle().getUserData().toString()) {
                         case "black":
@@ -122,9 +121,6 @@ public class VueSolo extends Vue {
                     }
                 }
                 SceneTerrain(primaryStage,difficulte,true);
-=======
-                SceneTerrain(primaryStage, difficulte, true);
->>>>>>> 612d321fb75964bce4fbfd2abff798ce174e6554
             }
         });
 
