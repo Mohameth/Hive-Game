@@ -35,7 +35,7 @@ public class Hive implements Serializable {
     }
 
     public void setJoueurs(int cas, boolean extension) { //Création des joueurs selon le type de partie 
-        if (cas < 5) {
+        if (cas > 0 && cas < 5) {
             switch (cas) {
                 case 1:
                     this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
@@ -54,7 +54,7 @@ public class Hive implements Serializable {
                     this.joueur2 = new JoueurIA(this.plateau, 3, extension, NumJoueur.IADIFFICILE2, joueur1); //hard
                     break;
             }
-        } else {
+        } else if (cas < 8) {
             switch (cas) {
                 case 5:
                     this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.IAFACILE1);
@@ -68,6 +68,12 @@ public class Hive implements Serializable {
                     this.joueur1 = new JoueurIA(this.plateau, 2, extension, NumJoueur.IADIFFICILE1, joueur1); //Medium                    
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
                 break;
+            }
+        } else {
+            try {
+                throw new Exception("Mauvaise difficulte");
+            } catch (Exception ex) {
+                System.err.println("ERREUR setJoueurs : " + ex);
             }
         }
         this.joueurCourant = this.joueur1;

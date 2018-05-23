@@ -64,11 +64,11 @@ public class VueSolo extends Vue {
         td.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         final ToggleGroup group = new ToggleGroup();
         RadioButton rEasy = new RadioButton(getLangStr("easy"));
-        rEasy.setUserData(getLangStr("easy"));
+        rEasy.setUserData("easy");
         RadioButton rMedium = new RadioButton(getLangStr("medi"));
-        rMedium.setUserData(getLangStr("medi"));
+        rMedium.setUserData("medium");
         RadioButton rHard = new RadioButton(getLangStr("hard"));
-        rHard.setUserData(getLangStr("hard"));
+        rHard.setUserData("hard");
         rEasy.setToggleGroup(group);
         rMedium.setToggleGroup(group);
         rHard.setToggleGroup(group);
