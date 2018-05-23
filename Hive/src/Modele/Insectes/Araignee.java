@@ -26,7 +26,7 @@ public class Araignee extends Insecte {
         
     //@Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
-        if (!this.getJoueur().tousPionsPosables()) return new ArrayList<>();
+        if (!this.getJoueur().tousPionsPosables() || !this.getEmplacement().getInsecteOnTop().equals(this)) return new ArrayList<>();
         ArrayList<Case> res = new ArrayList<>();
         ArrayList<Case> visitees = new ArrayList<>();
         Collection<Case> init = plateau.getCasesVoisinesAccessibles(this.getEmplacement(), true);
@@ -43,7 +43,7 @@ public class Araignee extends Insecte {
         Iterator<Case> it = res.iterator();
         while (it.hasNext()) {
             Case c = it.next();
-            if (voisins.contains(c)) it.remove();
+            if (voisins.contains(c) || plateau.rucheBrisee(this.getEmplacement(), c)) it.remove();
         }
         
         return res;
@@ -55,7 +55,9 @@ public class Araignee extends Insecte {
         
         for (Case c : p.getCasesVoisinesAccessibles(courante, true)) {
             if (!visitees.contains(c)) {
+                this.deplacement(p, c.getCoordonnees());
                 deplacementWorker(p, c, visitees, res, dist+1);
+                this.deplacement(p, courante.getCoordonnees());
             }
         }
         visitees.add(courante);

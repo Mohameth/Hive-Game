@@ -24,7 +24,7 @@ public class Fourmi extends Insecte {
     
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
-        if (!this.getJoueur().tousPionsPosables()) return new ArrayList<>();
+        if (!this.getJoueur().tousPionsPosables() || !this.getEmplacement().getInsecteOnTop().equals(this)) return new ArrayList<>();
         ArrayList<Case> result = new ArrayList<>();
         LinkedList<Case> toCheck = new LinkedList<>();
         
@@ -33,7 +33,7 @@ public class Fourmi extends Insecte {
         while (!toCheck.isEmpty()) {
             Case courante = toCheck.removeLast();
             for (Case c : plateau.getCasesVoisinesAccessibles(courante, true)) {
-                if (!result.contains(c) && plateau.glissementPossible(courante, c)) {
+                if (!result.contains(c)) {
                     ArrayList<Case> casec = (ArrayList<Case>) plateau.getCasesVoisinesOccupees(c);
                     if (!((casec.contains(this.getEmplacement())) && casec.size()==1)) {
                         result.add(c);

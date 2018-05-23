@@ -226,7 +226,8 @@ public abstract class Joueur implements Cloneable, Serializable {
             //joueur.dernierDeplacement = this.dernierDeplacement.clone();
             joueur.pions = cloneList(pions, joueur);
             joueur.tourJoueur = this.tourJoueur;
-
+            joueur.numJoueur = this.numJoueur;
+            
             return joueur;
         } catch (CloneNotSupportedException e) {
             System.err.println("ERREUR Clone Joueur : " + e);

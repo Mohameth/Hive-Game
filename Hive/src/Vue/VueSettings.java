@@ -43,7 +43,7 @@ public class VueSettings extends Vue {
         this.inGame = false;
 
         boolean fs = primaryStage.isFullScreen();
-        Scene s = new Scene(getSetting(), primaryStage.getWidth(), primaryStage.getHeight());
+        Scene s = new Scene(getAllSetting(), primaryStage.getWidth(), primaryStage.getHeight());
         getConfig();
         s.getStylesheets().add("Vue/button1.css");
         primaryStage.setScene(s);
@@ -57,7 +57,7 @@ public class VueSettings extends Vue {
         this.primaryStage = primaryStage;
     }
 
-    public GridPane getSetting(){
+    public GridPane getSetting(boolean solo){
         g = new GridPane();
 
         for (int column = 0; column < NB_COL; column++) {
@@ -69,12 +69,44 @@ public class VueSettings extends Vue {
         }
 
         g.getRowConstraints().get(1).setMinHeight((primaryStage.getHeight() / NB_LIGNE) / 2);
-        VBox solo = getSolo();
-        VBox multi = getMulti();
+        if(solo){
+            VBox soloH = getSolo();
+            g.add(soloH, 2, 0, 3, 1);
+        } else {
+            VBox multi = getMulti();
+            g.add(multi, 2, 0, 3, 1);
+        }
+
         GridPane all = getAll();
-        g.add(solo, 2, 0, 3, 1);
-        g.add(all, 2, 2, 3, 1);
+        g.add(all, 2, 1, 3, 2);
+
+        g.prefHeightProperty().bind(primaryStage.heightProperty());
+        g.prefWidthProperty().bind(primaryStage.widthProperty());
+        g.setStyle("-fx-background-image: url(background.jpg);");
+        g.getStylesheets().add("Vue/button1.css");
+
+        return g;
+    }
+
+    private GridPane getAllSetting() {
+        g = new GridPane();
+
+        for (int column = 0; column < NB_COL; column++) {
+            g.getColumnConstraints().add(new ColumnConstraints(primaryStage.getWidth() / NB_COL, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, HPos.LEFT, true));
+        }
+
+        for (int row = 0; row < NB_LIGNE; row++) {
+            g.getRowConstraints().add(new RowConstraints(primaryStage.getHeight() / NB_LIGNE, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, VPos.TOP, true));
+        }
+
+        g.getRowConstraints().get(1).setMinHeight((primaryStage.getHeight() / NB_LIGNE) / 2);
+        VBox soloH = getSolo();
+        g.add(soloH, 2, 0, 3, 1);
+        VBox multi = getMulti();
         g.add(multi, 2, 1, 3, 1);
+
+        GridPane all = getAll();
+        g.add(all, 2, 2, 3, 1);
 
         g.prefHeightProperty().bind(primaryStage.heightProperty());
         g.prefWidthProperty().bind(primaryStage.widthProperty());
@@ -255,7 +287,7 @@ public class VueSettings extends Vue {
 
     private void setConfig() {
         Properties prop = new Properties();
-        String propFileName = System.getProperty("user.dir").concat("/Hive/rsc/config.properties");
+        String propFileName = System.getProperty("user.dir").concat("/rsc/config.properties");
         prop.setProperty("difficulteIA",group.getSelectedToggle().getUserData().toString());
         prop.setProperty("joueurBlanc",nomJ1.getText());
         prop.setProperty("joueurNoir",nomJ2.getText());
@@ -274,7 +306,7 @@ public class VueSettings extends Vue {
 
     private void getConfig() {
         Properties prop = new Properties();
-        String propFileName = System.getProperty("user.dir").concat("/Hive/rsc/config.properties");
+        String propFileName = System.getProperty("user.dir").concat("/rsc/config.properties");
         InputStream input = null;
         try {
             input = new FileInputStream(propFileName);

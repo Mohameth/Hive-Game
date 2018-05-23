@@ -10,7 +10,7 @@ package Modele;
  * @author Jeremy
  */
 public enum NumJoueur {
-    JOUEUR1(1), JOUEUR2(2);
+    JOUEUR1(1), JOUEUR2(2), IAFACILE1(3), IAFACILE2(4), IAMOYEN1(5), IAMOYEN2(6), IADIFFICILE1(7), IADIFFICILE2(8);
     
     int contenu;
     
@@ -18,4 +18,11 @@ public enum NumJoueur {
         contenu = i;
     }
 
+    public int getContenu() {
+        return contenu;
+    }
+    
+    public boolean isBlanc() {
+        return (this.contenu % 2) == 0;
+    }
 }

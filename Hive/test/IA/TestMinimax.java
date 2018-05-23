@@ -19,7 +19,7 @@ public class TestMinimax {
     public static void main(String[] args) {
         Plateau plateau = new Plateau();
         JoueurIA  joueur1 = new JoueurIA(plateau, 1, NumJoueur.JOUEUR1, false);
-        IAMinimax joueur2 = new IAMinimax(plateau, false, NumJoueur.JOUEUR1);
+        IAMinimax joueur2 = new IAMinimax(plateau, false, NumJoueur.JOUEUR2);
         joueur2.setAdversaire(joueur1);
         //joueur1.setAdversaire(joueur2);
 

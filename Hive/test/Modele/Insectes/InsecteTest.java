@@ -151,20 +151,7 @@ public class InsecteTest {
         result.addAll(s.deplacementPossible(instance));
 
         arrayCorresponds(result, new ArrayList<HexaPoint>());
-        s.deplacement(instance, new HexaPoint(1, -1, 0));
-
-        ArrayList<HexaPoint> newExpectation = new ArrayList<>();
-//        newExpectation.add(new Point3DH(0, 0, 0));
-//        newExpectation.add(new Point3DH(1, 0, -1));
-//        newExpectation.add(new Point3DH(2, -1, -1));
-//        newExpectation.add(new Point3DH(2, -2, 0));
-//        newExpectation.add(new Point3DH(1, -2, 1));
-//        newExpectation.add(new Point3DH(0, -1, 1));
-
-        result = new ArrayList<>();
-        result.addAll(s.deplacementPossible(instance));
-
-        arrayCorresponds(result, newExpectation);
+ 
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
         System.out.println("");
@@ -325,6 +312,23 @@ public class InsecteTest {
         arrayCorresponds(fourmiBlanche.deplacementPossible(instance), expectedFourmi);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
+        expectedFourmi = new ArrayList<>();
+        expectedFourmi.add(new HexaPoint(1, 2, -3));
+        expectedFourmi.add(new HexaPoint(2, 1, -3));
+        expectedFourmi.add(new HexaPoint(3, 0, -3));
+        expectedFourmi.add(new HexaPoint(3, -1, -2));
+        expectedFourmi.add(new HexaPoint(3, -2, -1));
+        expectedFourmi.add(new HexaPoint(1, -2, 1));
+        expectedFourmi.add(new HexaPoint(0, -2, 2));
+        expectedFourmi.add(new HexaPoint(-1, -1, 2));
+        expectedFourmi.add(new HexaPoint(-2, -1, 3));
+        expectedFourmi.add(new HexaPoint(-3, 0, 3));
+        expectedFourmi.add(new HexaPoint(-3, 1, 2));
+        expectedFourmi.add(new HexaPoint(-3, 2, 1));
+        expectedFourmi.add(new HexaPoint(-2, 2, 0));
+        expectedFourmi.add(new HexaPoint(-1, 2, -1));
+        expectedFourmi.add(new HexaPoint(0, 2, -2));
+        
         System.out.println("test deplacement Fourmi noire sur grosse ruche :");
         arrayCorresponds(fourmiNoire.deplacementPossible(instance), expectedFourmi);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
@@ -358,7 +362,8 @@ public class InsecteTest {
         expectedAraigneeNoire.add(new HexaPoint(-2, 2, 0));
         
         System.out.println("test deplacement araignée noire sur grosse ruche :");
-        arrayCorresponds(araigneeNoire.deplacementPossible(instance), expectedAraigneeNoire);
+        ArrayList<Case> res = (ArrayList<Case>) araigneeNoire.deplacementPossible(instance);
+        arrayCorresponds(res, expectedAraigneeNoire);
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         
         System.out.println("test deplacement araignée blanche sur grosse ruche :");

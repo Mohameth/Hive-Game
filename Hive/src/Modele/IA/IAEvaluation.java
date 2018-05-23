@@ -62,7 +62,7 @@ public class IAEvaluation {
     }
 
     private Boolean insecteBelongsToOpponent(Insecte i) {
-        return !i.getJoueur().equals(joueur);
+        return !(i.getJoueur().getNumJoueur() == joueur.getNumJoueur());
     }
 
     private void initPiecesValues(HashMap<Insecte, Integer> piecesValues, Boolean opponent) {
@@ -181,9 +181,9 @@ public class IAEvaluation {
         while (it.hasNext()) {
             Insecte i = it.next();
             Integer value = piecesValues.get(i);
-            if (value == null) {
+            /*if (value == null) {
                 value = 0;
-            }
+            }*/
             if (estDansLaMain(i)) {
                 value = 0;
             } else if (estImmobilise(i)) {

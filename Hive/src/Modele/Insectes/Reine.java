@@ -23,9 +23,9 @@ public class Reine extends Insecte {
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
         
-    	/*if(plateau.rucheBrisee2(this.getEmplacement())) {
+    	if(!this.getEmplacement().getInsecteOnTop().equals(this)) {
         	return new ArrayList<>();
-        }*/
+        }
         return plateau.getCasesVoisinesAccessibles(this.getEmplacement(), true);
     }
     	/*ArrayList<Case> casePossibles=(ArrayList<Case>) plateau.getCasesVoisines(this.getEmplacement(),true);

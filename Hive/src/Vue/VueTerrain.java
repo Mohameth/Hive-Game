@@ -15,6 +15,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
@@ -23,7 +24,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -40,6 +44,10 @@ import static com.sun.javafx.PlatformUtil.isWindows;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.shape.Circle;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
@@ -58,14 +66,16 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private int numeroPageTuto = 0;
     private Group root;
     private Stage primaryStage;
-    private ArrayList<TextField> nomJoueur;
+    private ArrayList<Node> nomJoueur;
     private VBox listPionEnDessousHover;
     private Plateau pModel;
+    private boolean solo;
 
-    VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs) {
+    VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs, boolean solo) {
         boolean fs = primaryStage.isFullScreen();
         this.primaryStage = primaryStage;
         this.nomJoueur = new ArrayList<>();
+        this.solo = solo;
         root = new Group();
 
         this.controleur = controleur;
@@ -122,8 +132,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         ArrayList<Insecte> initInsectes = new ArrayList<>();
 
         initInsectes = this.controleur.mainsInit();
-        BorderPane playerOne = getHudPlayer(getnbInsect(initInsectes), 1); //initialisation tout les pions possable
-        BorderPane playerTwo = getHudPlayer(getnbInsect(initInsectes), 2);
+        BorderPane playerOne = getHudPlayer(getnbInsect(initInsectes), 1, true); //initialisation tout les pions possable
+        BorderPane playerTwo = getHudPlayer(getnbInsect(initInsectes), 2, false);
 
         playerOne.minWidthProperty().bind(s.widthProperty());
         playerOne.maxWidthProperty().bind(s.widthProperty());
@@ -809,40 +819,64 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         }
     }
 
-    private BorderPane getHudPlayer(HashMap<TypeInsecte, Integer> m, int numplayer) {
+    private BorderPane getHudPlayer(HashMap<TypeInsecte, Integer> m, int numplayer, boolean ia) {
+        Properties prop = new Properties();
+        String propFileName = System.getProperty("user.dir").concat("/rsc/config.properties");
+        InputStream input = null;
+        try {
+            input = new FileInputStream(propFileName);
+            prop.load(input);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+        try {
+            input.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         Button bEdit = new Button();
         bEdit.setGraphic(new ImageView(new Image("icons/pencil.png")));
         bEdit.setStyle("-fx-background-color: Transparent;\n");
+        HBox hName = new HBox();
+        hName.setAlignment(Pos.CENTER_LEFT);
         bEdit.setTooltip(new Tooltip("Changer de nom"));
-        TextField txt1 = new TextField("Nom joueur " + numplayer);
-        //txt1.setStyle("-fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);");
+        String joueur = "joueur " + numplayer;
+        if (numplayer == 1)
+            joueur = prop.getProperty("joueurBlanc");
+        else
+            joueur = prop.getProperty("joueurNoir");
+        
+        TextField txt1 = new TextField(joueur);
         txt1.setBackground(Background.EMPTY);
         nomJoueur.add(txt1);
         txt1.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
         txt1.setEditable(false);
         txt1.setMinWidth(150);
-
-        HBox hName = new HBox();
-        hName.setAlignment(Pos.CENTER_LEFT);
         hName.getChildren().addAll(bEdit, txt1);
-        //hName.setStyle("-fx-background-color:#FFFFFF;");
-        HBox pointJ1 = new HBox();
-        //ajoute les borders panes de chaque pions dans la hbox
-        pointJ1.getChildren().addAll(genListPionsMain(m, numplayer));
-
-        pointJ1.setAlignment(Pos.CENTER);
-        pointJ1.setPadding(new Insets(5, 0, 5, 0));
-
         bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             if (txt1.isEditable()) {
                 txt1.setEditable(false);
                 txt1.setStyle("-fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);");
+                if (this.controleur.tourJoueurBlanc()) {
+                    setNomJoueur(1);
+                } else {
+                    setNomJoueur(2);
+                }
             } else {
                 txt1.setEditable(true);
                 txt1.setStyle("-fx-text-fill:rgb(0,0,0);-fx-background-color: white;");
                 txt1.requestFocus();
             }
         });
+        HBox pointJ1 = new HBox();
+        //ajoute les borders panes de chaque pions dans la hbox
+        pointJ1.getChildren().addAll(genListPionsMain(m, numplayer));
+
+        pointJ1.setAlignment(Pos.CENTER);
+        pointJ1.setPadding(new Insets(5, 0, 5, 0));
 
         String style = "-fx-background-color: rgba(255, 255, 255, 0.2);";
 
@@ -1125,7 +1159,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         bSettings.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             VueSettings v = new VueSettings(primaryStage, true, root);
-            root.getChildren().add(v.getSetting());
+            root.getChildren().add(v.getSetting(solo));
         });
 
         root.getChildren().addAll(menu);
@@ -1642,11 +1676,12 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         nomJoueur.get(Math.abs(numJoueur - 2)).setStyle("-fx-text-fill : white");
     }
 
-    private VBox getTurnPlayer() {
-        Label l = new Label("Tour de ...");
-        l.setFont(Font.font("", FontWeight.BOLD, 60));
+    private VBox getTurnPlayer(int numJoueur) {
+        TextField tf = (TextField) nomJoueur.get(numJoueur - 1);
+        Label l = new Label("Tour de " + tf.getText());
+        l.setFont(Font.font("", FontWeight.BOLD, 50));
         l.setTextFill(Color.WHITE);
-        Label l1 = new Label("cliquer pour jouer");
+        Label l1 = new Label("cliquez pour jouer");
         l1.setTextFill(Color.WHITE);
         l1.setFont(Font.font("", FontWeight.BOLD, 30));
         VBox v = new VBox(l, l1);
@@ -1657,6 +1692,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         v1.prefWidthProperty().bind(primaryStage.widthProperty());
         v1.prefHeightProperty().bind(primaryStage.heightProperty());
         v1.setAlignment(Pos.CENTER);
+
+        v1.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            root.getChildren().remove(v1);
+        });
 
         return v1;
     }

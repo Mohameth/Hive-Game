@@ -35,23 +35,40 @@ public class Hive implements Serializable {
     }
 
     public void setJoueurs(int cas, boolean extension) { //Création des joueurs selon le type de partie 
-        switch (cas) {
-            case 1:
-                this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
-                this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
+        if (cas < 5) {
+            switch (cas) {
+                case 1:
+                    this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
+                    this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
+                    break;
+                case 2:
+                    this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
+                    this.joueur2 = new JoueurIA(this.plateau, 1, extension, NumJoueur.IAFACILE2, joueur1); //Easy
+                    break;
+                case 3:
+                    this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
+                    this.joueur2 = new JoueurIA(this.plateau, 2, extension, NumJoueur.IAMOYEN2, joueur1); //Medium
+                    break;
+                case 4:
+                    this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
+                    this.joueur2 = new JoueurIA(this.plateau, 3, extension, NumJoueur.IADIFFICILE2, joueur1); //hard
+                    break;
+            }
+        } else {
+            switch (cas) {
+                case 5:
+                    this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.IAFACILE1);
+                    this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
                 break;
-            case 2:
-                this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
-                this.joueur2 = new JoueurIA(this.plateau, 1, extension, NumJoueur.JOUEUR2, joueur1); //Easy
+                case 6:
+                    this.joueur1 = new JoueurIA(this.plateau, 1, extension, NumJoueur.IAMOYEN1, joueur1); //Easy
+                    this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
                 break;
-            case 3:
-                this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
-                this.joueur2 = new JoueurIA(this.plateau, 2, extension, NumJoueur.JOUEUR2, joueur1); //Medium
+                case 7:
+                    this.joueur1 = new JoueurIA(this.plateau, 2, extension, NumJoueur.IADIFFICILE1, joueur1); //Medium                    
+                    this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
                 break;
-            case 4:
-                this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
-                this.joueur2 = new JoueurIA(this.plateau, 3, extension, NumJoueur.JOUEUR2, joueur1); //hard
-                break;
+            }
         }
         this.joueurCourant = this.joueur1;
     }
