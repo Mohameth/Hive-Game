@@ -21,9 +21,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -702,6 +700,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             removeLock(true, this.controleur.tousPionsPosables(1));
             setlock(false);
             setNomJoueur(1);
+            VBox v = getTurnPlayer();
+            root.getChildren().add(v);
         } else {
             //Mise a jour si probleme du texte
             //setlock(false); //pour griser les pions noir = false
@@ -770,9 +770,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bEdit.setGraphic(new ImageView(new Image("icons/pencil.png")));
         bEdit.setStyle("-fx-background-color: Transparent;\n");
         TextField txt1 = new TextField("Nom joueur " + numplayer);
+        //txt1.setStyle("-fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);");
+        txt1.setBackground(Background.EMPTY);
         nomJoueur.add(txt1);
         txt1.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
-        txt1.getStylesheets().add("Vue/button.css");
         txt1.setEditable(false);
         txt1.setMinWidth(150);
 
@@ -790,8 +791,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             if (txt1.isEditable()) {
                 txt1.setEditable(false);
+                txt1.setStyle("-fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);");
             } else {
                 txt1.setEditable(true);
+                txt1.setStyle("-fx-text-fill:rgb(0,0,0);-fx-background-color: white;");
                 txt1.requestFocus();
             }
         });
@@ -937,7 +940,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         brules.setTooltip(new Tooltip("Règles du jeu"));
         brules.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            getRule();
+            getRule(false);
         });
 
         bLoad.setTooltip(new Tooltip("Charger une partie"));
@@ -1071,7 +1074,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         bRules.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().removeAll(menu);
-            getRule();
+            getRule(true);
         });
 
         bSettings.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
@@ -1334,7 +1337,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         root.getChildren().add(v);
     }
 
-    private void getRule() {
+    private void getRule(boolean pause) {
         Label l = new Label(getLangStr("rule"));
         String[] urlImg = new String[20];
         l.setStyle("-fx-font-weight: bold;\n-fx-font-size: 100px;\n-fx-text-fill: white;");
@@ -1372,7 +1375,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         retour.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            getPause();
+            if(pause)
+                getPause();
         });
 
         root.getChildren().add(v);
@@ -1393,6 +1397,25 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private void setNomJoueur(int numJoueur) {
         nomJoueur.get(numJoueur - 1).setStyle("-fx-text-fill : red");
         nomJoueur.get(Math.abs(numJoueur - 2)).setStyle("-fx-text-fill : white");
+    }
+
+    private VBox getTurnPlayer(){
+        Label l = new Label("Tour de ...");
+        l.setFont(Font.font("",FontWeight.BOLD,60));
+        l.setTextFill(Color.WHITE);
+        Label l1 = new Label("cliquer pour jouer");
+        l1.setTextFill(Color.WHITE);
+        l1.setFont(Font.font("",FontWeight.BOLD,30));
+        VBox v = new VBox(l,l1);
+        HBox h = new HBox(v);
+        h.setAlignment(Pos.CENTER);
+        h.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
+        VBox v1 = new VBox(h);
+        v1.prefWidthProperty().bind(primaryStage.widthProperty());
+        v1.prefHeightProperty().bind(primaryStage.heightProperty());
+        v1.setAlignment(Pos.CENTER);
+
+        return v1;
     }
 
 }
