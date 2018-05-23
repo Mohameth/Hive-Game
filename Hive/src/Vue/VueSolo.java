@@ -88,7 +88,7 @@ public class VueSolo extends Vue {
                         difficulte = 4;
                     break;
                 }
-                SceneTerrain(primaryStage,difficulte);
+                SceneTerrain(primaryStage,difficulte,true);
             }
         });
 
