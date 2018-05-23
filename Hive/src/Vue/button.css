@@ -40,7 +40,8 @@
 }
 
 .text-input:editable {
-    -fx-background-color: black;
+    -fx-text-fill:rgb(0,0,0);
+    -fx-font-weight: bold;
 }
 
 .text-input:readonly {
