@@ -22,7 +22,7 @@ public enum NumJoueur {
         return contenu;
     }
     
-    public boolean isBlanc() {
+    public boolean estBlanc() {
         return (this.contenu % 2) == 0;
     }
 }
