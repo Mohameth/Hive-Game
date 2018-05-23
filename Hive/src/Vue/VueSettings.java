@@ -287,7 +287,7 @@ public class VueSettings extends Vue {
 
     private void setConfig() {
         Properties prop = new Properties();
-        String propFileName = System.getProperty("user.dir").concat("/Hive/rsc/config.properties");
+        String propFileName = System.getProperty("user.dir").concat("/rsc/config.properties");
         prop.setProperty("difficulteIA",group.getSelectedToggle().getUserData().toString());
         prop.setProperty("joueurBlanc",nomJ1.getText());
         prop.setProperty("joueurNoir",nomJ2.getText());
@@ -306,7 +306,7 @@ public class VueSettings extends Vue {
 
     private void getConfig() {
         Properties prop = new Properties();
-        String propFileName = System.getProperty("user.dir").concat("/Hive/rsc/config.properties");
+        String propFileName = System.getProperty("user.dir").concat("/rsc/config.properties");
         InputStream input = null;
         try {
             input = new FileInputStream(propFileName);
