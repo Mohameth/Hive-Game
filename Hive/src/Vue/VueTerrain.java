@@ -816,7 +816,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         HBox hName = new HBox();
         hName.setAlignment(Pos.CENTER_LEFT);
         bEdit.setTooltip(new Tooltip("Changer de nom"));
-        TextField txt1 = new TextField("Nom joueur " + numplayer);
+        TextField txt1 = new TextField("joueur " + numplayer);
         txt1.setBackground(Background.EMPTY);
         nomJoueur.add(txt1);
         txt1.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
