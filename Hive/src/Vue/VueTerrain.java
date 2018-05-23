@@ -1436,6 +1436,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                                         //le deplace sur la bonne position (empilement)
                                         //System.out.println("add pion sur: " + caseCoordonnee + "Type: " + insecte.getType());
                                         double resImgXY[] = getImgZoneLibreEgal(caseCoordonnee);
+                                        currentSelected = ppTemp2;
                                         ppTemp2.setPionPosition(caseCoordonnee, resImgXY[0], resImgXY[1]);
                                         ppTemp2.validCurrentPosXY();
                                         nbPionsPose++;
