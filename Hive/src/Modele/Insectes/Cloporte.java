@@ -27,13 +27,13 @@ public class Cloporte extends Insecte {
         Collection<Case> casesVoisinesLibre = plateau.getCasesVoisinesAccessibles(this.getEmplacement(), true);//Récup. des cases vides accessibles
         
         //Ajout des cases déplacables
-        for (Case c : plateau.getCasesVoisinesOccupees(this.getEmplacement())) {
+        /*for (Case c : plateau.getCasesVoisinesOccupees(this.getEmplacement())) {
             for (Case r : casesVoisinesLibre) {
                 if (plateau.glissementPossible(c, this.getEmplacement()) && plateau.glissementPossible(this.getEmplacement(), r)) {
                     insectesADeplacer.put(c.getInsecteOnTop(), r);
                 }
             }
-        }
+        }*/
         
         return casesVoisinesLibre;
     }
