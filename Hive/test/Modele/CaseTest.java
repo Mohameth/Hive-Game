@@ -113,7 +113,7 @@ public class CaseTest {
             System.out.println("\u001B[31m" + "\t Failed ✖\n");
             fail("aucune exeption levé");
         } catch (Exception e) {
-            assert (e.getMessage().equals("Ajout impossible sur case non vide"));
+            assert (e.getMessage().equals("Ajout impossible sur case non vide \n"+instance.getInsecteOnTop()+ " sur " + instance + " \n"));
             System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         }
 
