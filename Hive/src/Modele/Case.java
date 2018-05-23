@@ -24,8 +24,7 @@ public class Case implements Serializable{
         this.insectes = new ArrayList<>();
     }
 	
-	public Case clone(HexaPoint p,ArrayList<Insecte> EnmainIA,ArrayList<Insecte> EnjeuIA,
-    		ArrayList<Insecte> EnmainAdverse,ArrayList<Insecte> EnjeuAdverse,Joueur IA){
+	public Case clone(HexaPoint p,ArrayList<Insecte> EnjeuIA,ArrayList<Insecte> EnjeuAdverse,Joueur IA){
     	Case c=new Case(p);
     	
     	for(int i=0;i<insectes.size();i++) {
@@ -34,17 +33,9 @@ public class Case implements Serializable{
     		in.setEmplacement(c);
     		
     		if(IA==in.getJoueur()) {
-    			if(in.getEmplacement()==null) {
-        			EnmainIA.add(in);
-        		}else {
         			EnjeuIA.add(in);
-        		}
     		}else {
-    			if(in.getEmplacement()==null) {
-    				EnmainAdverse.add(in);
-        		}else {
         			EnjeuAdverse.add(in);
-        		}
     		}
     		
     	}
@@ -66,7 +57,7 @@ public class Case implements Serializable{
 
     public void addInsecte(Insecte insecte) throws Exception {
         if (!this.estVide() && !((insecte.getType() == TypeInsecte.SCARABEE) || (insecte.getType() == TypeInsecte.MOUSTIQUE)))
-                throw new Exception("Ajout impossible sur case non vide");
+                throw new Exception("Ajout impossible sur case non vide \n"+this.getInsecteOnTop()+ " sur " + this + " \n");
         if (this.insectes.size() == 7) throw new Exception("Ajout impossible -> 7 insectes maximum");
         this.insectes.add(insecte);
         insecte.setEmplacement(this);
