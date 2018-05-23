@@ -31,14 +31,21 @@ public class JoueurIA extends Joueur {
         this.adverse = j;
     }
 
+    public Joueur getAdverse() {
+        return adverse;
+    }
+
+    
     @Override
     public boolean coup(Insecte insecte, HexaPoint cible) {
         if (difficulte == 1) {
             return coupFacile();
         } else if (difficulte == 2) {
             return coupNormal();
+        } else {
+            return coupDifficile();
         }
-        return coupDifficile();
+        
     }
 
     private boolean coupFacile() {
@@ -191,7 +198,7 @@ public class JoueurIA extends Joueur {
 
         return new CoupleCaesInsecte(getCase2(pere.getPlateau(), c2).getInsecteOnTop(),
                 getCase2(pere.getPlateau(), c), null);
-
+        
     }
 
     private Case getCase2(Plateau p1, Case c) {
