@@ -1388,7 +1388,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                                 //Un seul insecte
                                 Insecte ins = casenonVide.getInsectes().get(0);
                                 boolean isWhite = true;
-                                if (ins.getJoueur().getNumJoueur() == NumJoueur.JOUEUR2) {
+                                if (!ins.getJoueur().getNumJoueur().estBlanc()) {
                                     isWhite = false;
                                 }
                                 //place le tous premier pion a la position 0 0 du plateau qui va permettre de generer les autres pions.
@@ -1407,7 +1407,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                                 //ajoute le premier de la pile directement
                                 Insecte ins = casenonVide.getInsectes().get(0);
                                 boolean isWhite = true;
-                                if (ins.getJoueur().getNumJoueur() == NumJoueur.JOUEUR2) {
+                                if (!ins.getJoueur().getNumJoueur().estBlanc()) {
                                     isWhite = false;
                                 }
 
@@ -1427,8 +1427,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                                 for (Insecte insecte : casenonVide.getInsectes()) {
                                     if (insecte != ins) { //traiter les autres
                                         boolean isWhite2 = true;
-                                        //insecte.getJoueur().getNumJoueur().estBlanc()
-                                        if (insecte.getJoueur().getNumJoueur() == NumJoueur.JOUEUR2) {
+                                        if (!insecte.getJoueur().getNumJoueur().estBlanc()) {
                                             isWhite2 = false;
                                         }
                                         //place le pion random.
