@@ -59,6 +59,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private Stage primaryStage;
     private ArrayList<TextField> nomJoueur;
     private VBox listPionEnDessousHover;
+    private Plateau pModel;
 
     VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs) {
         boolean fs = primaryStage.isFullScreen();
@@ -70,6 +71,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         this.controleur.reset();
         this.controleur.setJoueurs(casJoueurs, true);
         this.controleur.addObserverPlateau(this);
+        this.pModel = null;
 
         pionMainPlayer1 = new HashMap<>();
         pionMainPlayer2 = new HashMap<>();
@@ -664,6 +666,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         hideZoneLibre();
         removeSelectedPion();
         updateMainJoueur();
+        reconstructionPlateau(this.pModel);
         hudToFront();
         System.out.println("Coup Jouer");
     }
@@ -1232,7 +1235,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     @Override
     public void update(Observable o, Object arg) {
         Plateau p = (Plateau) o;
-        reconstructionPlateau(p);
+        this.pModel = p;
     }
 
     //toto lors du deplacement verifier collision A activer TODO
@@ -1276,26 +1279,29 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private void reconstructionPlateau(Plateau p) {
         System.out.println("RECONSTRUCTION PLATEAUUU");
         int nbNonCorrect = 0;
-        for (Map.Entry<HexaPoint, Case> entry : p.getCases().entrySet()) {
-            HexaPoint keyPoint = entry.getKey();
-            if (!listPionsPlateau.containsKey(keyPoint)) {
-                System.out.println("Non correct!");
-                nbNonCorrect++;
+        if (p != null) {
+            for (Map.Entry<HexaPoint, Case> entry : p.getCases().entrySet()) {
+                HexaPoint keyPoint = entry.getKey();
+                Case c = entry.getValue();
+                if (!c.estVide() && !listPionsPlateau.containsKey(keyPoint)) {
+                    System.out.println("Non correct! " + keyPoint);
+                    nbNonCorrect++;
+                } else if (!c.estVide() && listPionsPlateau.containsKey(keyPoint)) {
+                    System.out.println("correct!" + keyPoint);
+                }
             }
-        }
-        //regenère le plateau si pas de correspondance a 100%.
-        //if (nbNonCorrect > 0) {
-        if (true) {
+            //regenère le plateau si pas de correspondance a 100%.
+            if (nbNonCorrect > 0) {
+                //supprimer les pions du plateau:
+                for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+                    PionPlateau2 value = entry.getValue();
+                    this.getRoot().getChildren().remove(value.getImage());
+                }
 
-            for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
-                PionPlateau2 value = entry.getValue();
-                this.getRoot().getChildren().remove(value.getImage());
-            }
-
-            this.listPionsPlateau.clear();
-            this.listZoneLibres.clear();
-            removeSelectedPion();
-            /*
+                this.listPionsPlateau.clear();
+                this.listZoneLibres.clear();
+                removeSelectedPion();
+                /*
             for (Map.Entry<HexaPoint, Case> entry : p.getCases().entrySet()) {
                 HexaPoint keyPoint = entry.getKey();
                 java.lang.Object value = entry.getValue();
@@ -1303,6 +1309,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                     nbNonCorrect++;
                 }
             }*/
+            } else {
+                System.out.println("Vue 100% de correspondance avec le model!");
+            }
         }
     }
 
