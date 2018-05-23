@@ -119,6 +119,10 @@ public abstract class Joueur implements Cloneable, Serializable {
     	return null;
     }
 
+    public NumJoueur getNumJoueur() {
+        return numJoueur;
+    }
+
     /**
      * Donne la liste des pions que le joueur à encore en main
      *

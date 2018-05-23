@@ -115,26 +115,26 @@ public class Hive implements Serializable {
         this.joueurSuivant();
     }
 
-    public ArrayList<Insecte> mainJoueur(int joueur) { // Récupère la main du joueur choisi
+    public ArrayList<Insecte> mainJoueur(NumJoueur numJoueur) { // Récupère la main du joueur choisi
         Joueur j = null;
-        switch (joueur) {
-            case (1):
+        switch (numJoueur) {
+            case JOUEUR1:
                 j = this.joueur1;
                 break;
-            case (2):
+            case JOUEUR2:
                 j = this.joueur2;
                 break;
         }
         return j.pionsEnMain();
     }
 
-    public boolean tousPionsPosables(int joueur) { //Permet de toujours vérifier la règle qui empêche les joueurs de jouer s'ils
+    public boolean tousPionsPosables(NumJoueur numJoueur) { //Permet de toujours vérifier la règle qui empêche les joueurs de jouer s'ils
         Joueur j = null;                           // n'ont pas encore joué leur reine au 4ème tour
-        switch (joueur) {
-            case (1):
+        switch (numJoueur) {
+            case JOUEUR1:
                 j = this.joueur1;
                 break;
-            case (2):
+            case JOUEUR2:
                 j = this.joueur2;
                 break;
         }
