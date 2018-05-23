@@ -59,6 +59,7 @@ public class JoueurIA extends Joueur {
     private boolean coupFacile() {
         
         if (this.reineBloquee()) {
+            this.tourJoueur++;
             return false;
         }
 
@@ -77,16 +78,20 @@ public class JoueurIA extends Joueur {
         }
 
         if (bloquee) {
+            this.tourJoueur++;
             return false;
         }
 
         if (!this.tousPionsPosables()) {
+            this.tourJoueur++;
             jouerReine();
             return true;
         }
-
+        this.tourJoueur++;
         do {
-            insecte = this.getPions().get(r.nextInt(this.getPions().size()));
+            do {
+                insecte = this.getPions().get(r.nextInt(this.getPions().size()));
+            } while (insecte instanceof Reine);
             if (insecte.getEmplacement() == null) {
                 ArrayList<HexaPoint> coordPlacement = plateau.casesVidePlacement(this);
                 ArrayList<Case> casePlacement = new ArrayList<>();
@@ -111,7 +116,7 @@ public class JoueurIA extends Joueur {
         this.attente();
         insecte.deplacement(plateau, p);
         System.out.println(insecte.getClass() + " en " + p);
-
+        
         return true;
     }
     
@@ -169,7 +174,8 @@ public class JoueurIA extends Joueur {
             this.dernierDeplacement = new Deplacement(coupleCaesInsecte.getInsecte(), coupleCaesInsecte.getInsecte().getEmplacement().getCoordonnees(), coupleCaesInsecte.getCase().getCoordonnees());
             coupleCaesInsecte.getInsecte().deplacement(noeud.getPlateau(), coupleCaesInsecte.getCase().getCoordonnees());
         }
-
+        
+        this.tourJoueur++;
         return true;
     }
 
