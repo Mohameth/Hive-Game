@@ -49,7 +49,7 @@ public class Vue extends Application {
     }
 
     protected void SceneTerrain(Stage primaryStage, int casJoueur){
-        new VueTerrain(primaryStage, controleur, 1);
+        new VueTerrain(primaryStage, controleur, casJoueur);
     }
 
     protected void SceneSettings(Stage primaryStage){

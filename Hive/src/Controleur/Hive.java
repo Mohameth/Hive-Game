@@ -19,6 +19,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Observer;
 
 public class Hive implements Serializable {
 
@@ -307,5 +308,9 @@ public class Hive implements Serializable {
             }
             
         }
+    }
+    
+    public void addObserverPlateau(Observer o) {
+        this.plateau.addObserver(o);
     }
 }
