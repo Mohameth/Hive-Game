@@ -35,6 +35,7 @@ import java.io.File;
 import java.util.*;
 
 import static com.sun.javafx.PlatformUtil.isWindows;
+import javafx.scene.shape.Circle;
 
 public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
@@ -61,10 +62,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         this.primaryStage = primaryStage;
         this.nomJoueur = new ArrayList<>();
         root = new Group();
-
+        
         this.controleur = controleur;
         this.controleur.reset();
         this.controleur.setJoueurs(casJoueurs, true);
+        this.controleur.addObserverPlateau(this);
 
         pionMainPlayer1 = new HashMap<>();
         pionMainPlayer2 = new HashMap<>();
@@ -319,10 +321,46 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void resetView() {
-        moveDeltaBoard(-this.totMoveBoardX, -this.totMoveBoardY);
-        zoomImage(0.5);
+        double centrePlateau[] = getCentreDuPlateau();
+        moveDeltaBoard(-centrePlateau[0], -centrePlateau[1]);
+        //moveDeltaBoard(- this.totMoveBoardX,- this.totMoveBoardY);
+
+        zoomImage(0.3);
         this.totMoveBoardX = 0;
         this.totMoveBoardY = 0;
+    }
+
+    private double[] getCentreDuPlateau() {
+        double minX = Double.MAX_VALUE;
+        double minY = Double.MAX_VALUE;
+        double maxX = -Double.MAX_VALUE;
+        double maxY = -Double.MAX_VALUE;
+        double tmpx = 0, tmpy = 0;
+        boolean asPion = false;
+        for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+            asPion = true;
+            PionPlateau2 pp2 = entry.getValue();
+            tmpx = pp2.getImgViewPion().getImgPosX();
+            tmpy = pp2.getImgViewPion().getImgPosY();
+            if (tmpx < minX) {
+                minX = tmpx;
+            }
+            if (tmpx > maxX) {
+                maxX = tmpx;
+            }
+            if (tmpy < minY) {
+                minY = tmpy;
+            }
+            if (tmpy > maxY) {
+                maxY = tmpy;
+            }
+        }
+
+        if (!asPion) {
+            return new double[]{0, 0};
+        } else {
+            return new double[]{(minX + maxX) / 2, (minY + maxY) / 2};
+        }
     }
 
     private void makeBoardScrollZoom(Rectangle rect) {

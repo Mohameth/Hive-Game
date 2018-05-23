@@ -6,7 +6,6 @@
 package IA;
 
 import Modele.Insectes.Insecte;
-import Modele.JoueurHumain;
 import Modele.JoueurIA;
 import Modele.Plateau;
 
@@ -14,15 +13,14 @@ import Modele.Plateau;
  *
  * @author GRP3
  */
-public class TestIA {
-
-    /**
+public class TestIAD {
+     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         Plateau plateau = new Plateau();
         JoueurIA joueur1 = new JoueurIA(plateau, 1, false);
-        JoueurIA joueur2 = new JoueurIA(plateau, 1, false);
+        JoueurIA joueur2 = new JoueurIA(plateau, 3, false);
         joueur1.addJoueurAdverse(joueur2);
         joueur2.addJoueurAdverse(joueur1);
 
