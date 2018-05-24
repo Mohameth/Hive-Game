@@ -19,11 +19,11 @@ public class Reine extends Insecte {
     	return new Reine(this.getJoueur());
     	
     }
-
+    
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
         
-    	if(!this.getEmplacement().getInsecteOnTop().equals(this)) {
+    	if(this.getEmplacement().getNbInsectes() != 1) {
         	return new ArrayList<>();
         }
         return plateau.getCasesVoisinesAccessibles(this.getEmplacement(), true);

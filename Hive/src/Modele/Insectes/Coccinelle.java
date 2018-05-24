@@ -22,7 +22,7 @@ public class Coccinelle extends Insecte {
     @Override
    public Collection<Case> deplacementPossible(Plateau plateau) {
     	
-    	if(!this.getJoueur().tousPionsPosables() || !this.getEmplacement().getInsecteOnTop().equals(this)) {
+    	if(!this.getJoueur().tousPionsPosables() || this.getEmplacement().getNbInsectes() != 1) {
         	return new ArrayList<>();
         }
     	

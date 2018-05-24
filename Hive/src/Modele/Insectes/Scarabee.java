@@ -22,7 +22,8 @@ public class Scarabee extends Insecte {
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
         
-        if (!this.getJoueur().tousPionsPosables() || !this.getEmplacement().getInsecteOnTop().equals(this)) return new ArrayList<>();
+        if (!this.getJoueur().tousPionsPosables() || (this.getEmplacement().getNbInsectes() != 1 && 
+                !this.getEmplacement().getInsecteOnTop().equals(this))) return new ArrayList<>();
         
         ArrayList<Case> res = new ArrayList<>();
         for (Case c : plateau.getCasesVoisines(this.getEmplacement(), false)) {
