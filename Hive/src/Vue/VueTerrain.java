@@ -1051,8 +1051,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             });
 
             load.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
-                this.controleur.load(style);
+                this.controleur.load(lv.getSelectionModel().getSelectedItem());
                 root.getChildren().removeAll(vLoad);
+                this.reconstructionPlateau(pModel);
             });
 
             root.getChildren().addAll(vLoad);

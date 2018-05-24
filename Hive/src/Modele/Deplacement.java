@@ -6,12 +6,13 @@
 package Modele;
 
 import Modele.Insectes.Insecte;
+import java.io.Serializable;
 
 /**
  *
  * @author GRP3
  */
-public class Deplacement {
+public class Deplacement implements Serializable {
     private Insecte i;
     private HexaPoint orig;
     private HexaPoint cible;

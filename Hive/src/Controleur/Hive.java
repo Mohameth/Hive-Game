@@ -29,6 +29,7 @@ public class Hive implements Serializable {
     Joueur joueur1;
     Joueur joueur2;
     Joueur joueurCourant;
+    transient Observer o;
 
     public Hive(String[] args) {
         this.plateau = new Plateau();
@@ -60,15 +61,15 @@ public class Hive implements Serializable {
                 case 5:
                     this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.IAFACILE1);
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
-                break;
+                    break;
                 case 6:
                     this.joueur1 = new JoueurIA(this.plateau, 1, extension, NumJoueur.IAMOYEN1, joueur1); //Easy
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
-                break;
+                    break;
                 case 7:
                     this.joueur1 = new JoueurIA(this.plateau, 2, extension, NumJoueur.IADIFFICILE1, joueur1); //Medium                    
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
-                break;
+                    break;
             }
         } else {
             try {
@@ -83,10 +84,12 @@ public class Hive implements Serializable {
     public boolean insecteAppartientJCourant(HexaPoint caseCible) { //permet de savoir si l'insecte le plus haut d'une case appartient au joueur dont c'est le tour
         Case c = plateau.getCase(caseCible);
         try {
-            if (c == null)
+            if (c == null) {
                 throw new Exception("Case inexistante");
-            if (c.getInsecteOnTop().getJoueur().equals(joueurCourant))
+            }
+            if (c.getInsecteOnTop().getJoueur().equals(joueurCourant)) {
                 return true;
+            }
         } catch (Exception ex) {
             System.err.println("Erreur appartient : " + ex);
         }
@@ -121,7 +124,7 @@ public class Hive implements Serializable {
     public boolean pionsDeplaceables() { //Booleen permettant à la vue de savoir si les pions du plateau peuvent se déplacer ou non
         return this.joueurCourant.reinePosee();
     }
-    
+
     public ArrayList<HexaPoint> placementsPossibles() { //Liste des cases pouvant accueilir un insecte du joueur courant
         return this.plateau.casesVidePlacement(this.joueurCourant);
     }
@@ -188,20 +191,20 @@ public class Hive implements Serializable {
         this.plateau.notifieVue();
         if (joueurCourant.equals(this.joueur1)) {
             this.joueurCourant = this.joueur2;
-            if (this.joueur2 instanceof JoueurIA ) {
-                ((JoueurIA)this.joueurCourant).coup(null, null);
+            if (this.joueur2 instanceof JoueurIA) {
+                ((JoueurIA) this.joueurCourant).coup(null, null);
                 this.joueurSuivant();
             }
-            if (this.joueur2 instanceof IAMinimax ) {
-                ((IAMinimax)this.joueurCourant).coup(null, null);
+            if (this.joueur2 instanceof IAMinimax) {
+                ((IAMinimax) this.joueurCourant).coup(null, null);
                 this.joueurSuivant();
             }
         } else if (joueurCourant.equals(this.joueur2)) {
             this.joueurCourant = this.joueur1;
         }
     }
-    
-    public int JoueurGagnant()  {
+
+    public int JoueurGagnant() {
         if (this.joueur1.reineBloquee()) {
             return 2;
         } else if (this.joueur2.reineBloquee()) {
@@ -263,18 +266,25 @@ public class Hive implements Serializable {
         File f = new File(path + name);
         if (f.exists()) {
             try {
+                System.out.println("load");
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
                 Hive h = (Hive) ois.readObject();
                 ois.close();
-                this.reset();
+                //this.reset();
                 this.joueur1 = h.joueur1;
                 this.joueur2 = h.joueur2;
                 this.joueurCourant = h.joueurCourant;
-                
+                //this.plateau = h.plateau;
                 this.plateau.setCases(h.plateau.getCases());
                 this.plateau.setNbPionsEnJeu(h.plateau.getNbPionsEnJeu());
+                this.joueur1.setPlateau(plateau);
+                this.joueur2.setPlateau(plateau);
+                this.joueurCourant.setPlateau(plateau);
+
+                //this.addObserverPlateau(o);
+
+                this.plateau.notifieVue();
                 
-                //TODO : dire à la vue d'afficher le nouveaux plateau
 
             } catch (ClassNotFoundException exception) {
                 System.out.println("Impossible de lire l'objet : " + exception.getMessage());
@@ -284,64 +294,55 @@ public class Hive implements Serializable {
         }
         return true;
     }
-    
+
     public boolean UndoPossible() {
         if (this.joueur2 instanceof JoueurIA) {
             return this.joueur1.UndoPossible();
+        } else if (this.joueurCourant.equals(this.joueur1)) {
+            return this.joueur2.UndoPossible();
         } else {
-            if (this.joueurCourant.equals(this.joueur1)) {
-                return this.joueur2.UndoPossible();
-            } else {
-                return this.joueur1.UndoPossible();
-            }
+            return this.joueur1.UndoPossible();
         }
     }
-    
+
     public void Undo() {
         if (this.joueur2 instanceof JoueurIA) {
             this.joueur2.Undo();
             this.joueur1.Undo();
+        } else if (this.joueurCourant.equals(this.joueur1)) {
+            this.joueur2.Undo();
+            this.joueurCourant = this.joueur2;
         } else {
-            if (this.joueurCourant.equals(this.joueur1)) {
-                this.joueur2.Undo();
-                this.joueurCourant = this.joueur2;
-            } else {
-                this.joueur1.Undo();
-                this.joueurCourant = this.joueur1;
-            }
-            
+            this.joueur1.Undo();
+            this.joueurCourant = this.joueur1;
         }
     }
-    
+
     public boolean RedoPossible() {
         if (this.joueur2 instanceof JoueurIA) {
             return this.joueur1.RedoPossible();
+        } else if (this.joueurCourant.equals(this.joueur1)) {
+            return this.joueur2.RedoPossible();
         } else {
-            if (this.joueurCourant.equals(this.joueur1)) {
-                return this.joueur2.RedoPossible();
-            } else {
-                return this.joueur1.RedoPossible();
-            }
+            return this.joueur1.RedoPossible();
         }
     }
-    
+
     public void Redo() {
-         if (this.joueur2 instanceof JoueurIA) {
+        if (this.joueur2 instanceof JoueurIA) {
             this.joueur1.Redo();
             this.joueur2.Redo();
+        } else if (this.joueurCourant.equals(this.joueur1)) {
+            this.joueur2.Redo();
+            this.joueurCourant = this.joueur2;
         } else {
-            if (this.joueurCourant.equals(this.joueur1)) {
-                this.joueur2.Redo();
-                this.joueurCourant = this.joueur2;
-            } else {
-                this.joueur1.Redo();
-                this.joueurCourant = this.joueur1;
-            }
-            
+            this.joueur1.Redo();
+            this.joueurCourant = this.joueur1;
         }
     }
-    
+
     public void addObserverPlateau(Observer o) {
+        this.o = o;
         this.plateau.addObserver(o);
     }
 }

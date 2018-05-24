@@ -71,7 +71,7 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
 
     /**
      *
-     * @param int noombre de pions en jeu
+     * @return int noombre de pions en jeu
      */
 
     public int getNbPionsEnJeu() {
