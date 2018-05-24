@@ -6,7 +6,7 @@
 package Vue;
 
 import Modele.HexaPoint;
-import Modele.TypeInsecte;
+import Modele.Insectes.TypeInsecte;
 import java.util.ArrayList;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;

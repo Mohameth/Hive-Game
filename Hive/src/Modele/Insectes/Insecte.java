@@ -1,10 +1,9 @@
 package Modele.Insectes;
 
-import Modele.Joueur;
+import Modele.Joueurs.Joueur;
 import Modele.Case;
 import Modele.Plateau;
 import Modele.HexaPoint;
-import Modele.TypeInsecte;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Objects;

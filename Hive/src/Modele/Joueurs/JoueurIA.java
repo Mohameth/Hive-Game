@@ -1,8 +1,14 @@
-package Modele;
+package Modele.Joueurs;
 
+import Modele.Case;
+import Modele.CoupleCaesInsecte;
+import Modele.Deplacement;
+import Modele.HexaPoint;
+import Modele.Joueurs.Joueur;
 import Modele.IA.Coup;
 import Modele.Insectes.Insecte;
 import Modele.Insectes.Reine;
+import Modele.Plateau;
 import java.util.ArrayList;
 import java.util.Random;
 

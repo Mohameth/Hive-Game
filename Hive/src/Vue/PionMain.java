@@ -5,7 +5,7 @@
  */
 package Vue;
 
-import Modele.TypeInsecte;
+import Modele.Insectes.TypeInsecte;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;

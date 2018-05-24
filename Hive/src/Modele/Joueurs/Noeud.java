@@ -1,8 +1,10 @@
-package Modele;
+package Modele.Joueurs;
 
+import Modele.CoupleCaesInsecte;
 import java.util.ArrayList;
 
 import Modele.Insectes.Insecte;
+import Modele.Plateau;
 
 public class Noeud {
 

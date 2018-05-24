@@ -5,7 +5,7 @@
  */
 package Vue;
 
-import Modele.TypeInsecte;
+import Modele.Insectes.TypeInsecte;
 import com.sun.javafx.geom.BaseBounds;
 import com.sun.javafx.geom.transform.BaseTransform;
 import com.sun.javafx.jmx.MXNodeAlgorithm;

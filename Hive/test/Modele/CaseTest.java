@@ -5,6 +5,8 @@
  */
 package Modele;
 
+import Modele.Joueurs.NumJoueur;
+import Modele.Joueurs.JoueurHumain;
 import Modele.Insectes.Fourmi;
 import Modele.Insectes.Insecte;
 import Modele.Insectes.Moustique;
