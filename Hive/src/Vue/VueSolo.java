@@ -1,10 +1,5 @@
 package Vue;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -16,13 +11,19 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 public class VueSolo extends Vue {
 
     private static int NB_COL = 7;
 
     VueSolo(Stage primaryStage) {
         Properties prop = new Properties();
-        String propFileName = System.getProperty("user.dir").concat("/rsc/config.properties");
+        String propFileName = System.getProperty("user.dir").concat("/Hive/rsc/config.properties");
         InputStream input = null;
         try {
             input = new FileInputStream(propFileName);
