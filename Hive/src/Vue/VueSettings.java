@@ -181,6 +181,27 @@ public class VueSettings extends Vue {
 
         bSaveDef.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             setConfig();
+            if (chb.isSelected()) {
+                primaryStage.setFullScreen(true);
+            } else {
+                primaryStage.setFullScreen(false);
+                primaryStage.setWidth(cb.getValue().x);
+                primaryStage.setHeight(cb.getValue().y);
+            }
+            if (cb1.getValue().equals(getLangStr("fr"))) {
+                language = "fr";
+                country = "FR";
+            } else if (cb1.getValue().equals(getLangStr("en"))) {
+                language = "en";
+                country = "US";
+            }
+            this.currentLocale = new Locale(this.language, this.country);
+            this.messages = ResourceBundle.getBundle("MessagesBundle", currentLocale);
+            if(!inGame)
+                SceneMain(primaryStage);
+            else {
+                root.getChildren().remove(g);
+            }
         });
 
         bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
@@ -200,7 +221,7 @@ public class VueSettings extends Vue {
             }
             this.currentLocale = new Locale(this.language, this.country);
             this.messages = ResourceBundle.getBundle("MessagesBundle", currentLocale);
-            SceneSettings(primaryStage);
+            root.getChildren().remove(g);
         });
 
         HBox hb5 = new HBox();
@@ -218,6 +239,7 @@ public class VueSettings extends Vue {
 
         gAll.setPadding(new Insets(0, 20.0, 0, 20.0));
         gAll.setStyle("-fx-background-color : rgba(255, 255, 255, .7);-fx-border-color: black; -fx-border-width: 0 3 0 3;");
+        getConfig();
 
         return gAll;
     }
@@ -288,9 +310,12 @@ public class VueSettings extends Vue {
     private void setConfig() {
         Properties prop = new Properties();
         String propFileName = System.getProperty("user.dir").concat("/Hive/rsc/config.properties");
-        prop.setProperty("difficulteIA",group.getSelectedToggle().getUserData().toString());
-        prop.setProperty("joueurBlanc",nomJ1.getText());
-        prop.setProperty("joueurNoir",nomJ2.getText());
+        if(group.getSelectedToggle() != null)
+            prop.setProperty("difficulteIA",group.getSelectedToggle().getUserData().toString());
+        if(nomJ2 != null && nomJ1 != null){
+            prop.setProperty("joueurBlanc",nomJ1.getText());
+            prop.setProperty("joueurNoir",nomJ2.getText());
+        }
         prop.setProperty("langue",cb1.getValue());
         prop.setProperty("tailleFenetre",cb.getValue().x + "x" + cb.getValue().y);
         if(chb.isSelected())
@@ -316,17 +341,21 @@ public class VueSettings extends Vue {
         } catch (IOException e) {
             e.getMessage();
         }
-
-        for(Toggle t : group.getToggles()) {
-            if (t.getUserData().equals(prop.getProperty("difficulteIA")))
-                group.selectToggle(t);
+        if(!group.getToggles().isEmpty()) {
+            for (Toggle t : group.getToggles()) {
+                if (t.getUserData().equals(prop.getProperty("difficulteIA")))
+                    group.selectToggle(t);
+            }
         }
         if(prop.getProperty("fullscreen").equals("true"))
             chb.setSelected(true);
         else
             chb.setSelected(false);
-        nomJ1.setText(prop.getProperty("joueurBlanc",nomJ1.getText()));
-        nomJ2.setText(prop.getProperty("joueurNoir",nomJ2.getText()));
+        if(nomJ1 != null && nomJ2 != null){
+            nomJ1.setText(prop.getProperty("joueurBlanc",nomJ1.getText()));
+            nomJ2.setText(prop.getProperty("joueurNoir",nomJ2.getText()));
+        }
+
         for (String s : cb1.getItems()){
             if(s.equals(prop.getProperty("langue")))
                 cb1.getSelectionModel().select(s);

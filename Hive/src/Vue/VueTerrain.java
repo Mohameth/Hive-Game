@@ -122,8 +122,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         ArrayList<Insecte> initInsectes = new ArrayList<>();
 
         initInsectes = this.controleur.mainsInit();
-        BorderPane playerOne = getHudPlayer(getnbInsect(initInsectes), 1); //initialisation tout les pions possable
-        BorderPane playerTwo = getHudPlayer(getnbInsect(initInsectes), 2);
+        BorderPane playerOne = getHudPlayer(getnbInsect(initInsectes), 1,true); //initialisation tout les pions possable
+        BorderPane playerTwo = getHudPlayer(getnbInsect(initInsectes), 2,false);
 
         playerOne.minWidthProperty().bind(s.widthProperty());
         playerOne.maxWidthProperty().bind(s.widthProperty());
@@ -753,6 +753,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             removeLock(false, this.controleur.tousPionsPosables(NumJoueur.JOUEUR2));
             setlock(true);
             setNomJoueur(2);
+            VBox v = getTurnPlayer(2);
+            root.getChildren().add(v);
         }
     }
 
@@ -816,28 +818,45 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         HBox hName = new HBox();
         hName.setAlignment(Pos.CENTER_LEFT);
         bEdit.setTooltip(new Tooltip("Changer de nom"));
-        TextField txt1 = new TextField("Nom joueur " + numplayer);
-        txt1.setBackground(Background.EMPTY);
-        nomJoueur.add(txt1);
-        txt1.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
-        txt1.setEditable(false);
-        txt1.setMinWidth(150);
-        hName.getChildren().addAll(bEdit, txt1);
-        bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            if (txt1.isEditable()) {
-                txt1.setEditable(false);
-                txt1.setStyle("-fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);");
-                if(this.controleur.tourJoueurBlanc()){
-                    setNomJoueur(1);
+        if(!ia) {
+            TextField txt1 = new TextField("Nom joueur " + numplayer);
+            txt1.setBackground(Background.EMPTY);
+            nomJoueur.add(txt1);
+            txt1.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
+            txt1.setEditable(false);
+            txt1.setMinWidth(150);
+            hName.getChildren().addAll(bEdit, txt1);
+            bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+                if (txt1.isEditable()) {
+                    txt1.setEditable(false);
+                    txt1.setStyle("-fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);");
+                    if (this.controleur.tourJoueurBlanc()) {
+                        setNomJoueur(1);
+                    } else {
+                        setNomJoueur(2);
+                    }
                 } else {
-                    setNomJoueur(2);
+                    txt1.setEditable(true);
+                    txt1.setStyle("-fx-text-fill:rgb(0,0,0);-fx-background-color: white;");
+                    txt1.requestFocus();
                 }
-            } else {
-                txt1.setEditable(true);
-                txt1.setStyle("-fx-text-fill:rgb(0,0,0);-fx-background-color: white;");
-                txt1.requestFocus();
-            }
-        });
+            });
+        } else {
+            ComboBox<String> cb = new ComboBox<>();
+            cb.getItems().addAll(getLangStr("easy"),getLangStr("medi"),getLangStr("hard"));
+            cb.getSelectionModel().select(0);
+            cb.setDisable(true);
+            cb.getStylesheets().add("Vue/combo.css");
+            nomJoueur.add(cb);
+            hName.getChildren().addAll(bEdit, cb);
+            bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+                if(cb.isDisable()){
+                    cb.setDisable(false);
+                } else {
+                    cb.setDisable(true);
+                }
+            });
+        }
         HBox pointJ1 = new HBox();
         //ajoute les borders panes de chaque pions dans la hbox
         pointJ1.getChildren().addAll(genListPionsMain(m, numplayer));
@@ -1442,13 +1461,28 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void setNomJoueur(int numJoueur) {
-        nomJoueur.get(numJoueur - 1).setStyle("-fx-text-fill : red");
-        nomJoueur.get(Math.abs(numJoueur - 2)).setStyle("-fx-text-fill : white");
+        if(nomJoueur.get(numJoueur - 1) instanceof ComboBox){
+            ((ComboBox) nomJoueur.get(numJoueur - 1)).getStylesheets().remove("Vue/combo.css");
+            ((ComboBox) nomJoueur.get(numJoueur - 1)).getStylesheets().add("Vue/combo1.css");
+            nomJoueur.get(Math.abs(numJoueur - 2)).setStyle("-fx-text-fill : white");
+        } else {
+            ((ComboBox) nomJoueur.get(Math.abs(numJoueur - 2))).getStylesheets().remove("Vue/combo1.css");
+            ((ComboBox) nomJoueur.get(Math.abs(numJoueur - 2))).getStylesheets().add("Vue/combo.css");
+            nomJoueur.get(numJoueur - 1).setStyle("-fx-text-fill : red");
+        }
+
     }
 
     private VBox getTurnPlayer(int numJoueur){
-        TextField tf = (TextField) nomJoueur.get(numJoueur-1);
-        Label l = new Label("Tour de " + tf.getText());
+        Node tf;
+        Label l;
+        if(nomJoueur.get(numJoueur-1) instanceof TextField) {
+            tf = (TextField) nomJoueur.get(numJoueur - 1);
+            l = new Label("Tour de " + ((TextField) tf).getText());
+        }else {
+            tf = (ComboBox) nomJoueur.get(numJoueur - 1);
+            l = new Label("Tour de " + ((ComboBox)tf).getValue());
+        }
         l.setFont(Font.font("",FontWeight.BOLD,50));
         l.setTextFill(Color.WHITE);
         Label l1 = new Label("cliquez pour jouer");
