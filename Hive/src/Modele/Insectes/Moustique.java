@@ -23,7 +23,7 @@ public class Moustique extends Insecte {
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
         
-        if (!this.getJoueur().tousPionsPosables() || !this.getEmplacement().getInsecteOnTop().equals(this)) return new ArrayList<>();
+        if (!this.getJoueur().tousPionsPosables() || this.getEmplacement().getInsecteOnTop()!=this) return new ArrayList<>();
     	
     	if(this.getEmplacement().getInsectes().size()>1) {
         	return plateau.getCasesVoisines(this.getEmplacement(), false);
@@ -48,17 +48,18 @@ public class Moustique extends Insecte {
     		return new ArrayList<>();
     	}
         
-        Iterator<Case> it = casePossibles.iterator();
+        /*Iterator<Case> it = casePossibles.iterator();
         while (it.hasNext()) {
             Case possibilite = it.next();
             for (Case c : plateau.getCasesVoisines(this.getEmplacement(), true)) {
                 if (c.equals(possibilite)) {
-                    if (!plateau.glissementPossible(this.getEmplacement(), c)) {
+                    if (!plateau.rucheBrisee(this.getEmplacement(), c)) {
                         it.remove();
+                        System.out.println("Case supprimé");
                     }
                 }
             }
-        }
+        }*/
         
     	return casePossibles;
     }
