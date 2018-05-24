@@ -5,8 +5,12 @@
  */
 package Modele.Joueurs.ThreadCoups;
 
+import Modele.CoupleCaesInsecte;
+import Modele.Deplacement;
 import Modele.Joueurs.Joueur;
 import Modele.Joueurs.JoueurIA;
+import Modele.Joueurs.MonteCarlo;
+import Modele.Joueurs.Noeud;
 import Modele.Plateau;
 
 /**
@@ -23,7 +27,53 @@ public class CoupDifficile extends AbstractCoup{
         
     @Override
     protected boolean coup() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (this.joueur.reineBloquee()) {
+            return false;
+        }
+
+        if (!this.joueur.tousPionsPosables()) {
+            jouerReine();
+            return true;
+        }
+
+        if (this.coupGagnant()) {
+            return true;
+        }
+
+        Noeud noeud = new Noeud(plateau, this.joueur.pionsEnMain(), adverse.pionsEnMain(), this.joueur.pionsEnJeu(), adverse.pionsEnJeu());
+        MonteCarlo monteCarlo = new MonteCarlo(this.joueur.getTourJoueur(), noeud, this.joueur);
+
+        do {
+            Noeud noeud2 = monteCarlo.selection();
+            noeud2 = monteCarlo.Expansion(noeud2);
+            boolean b = monteCarlo.simulation(noeud2);
+            monteCarlo.miseAjour(noeud2, b);
+        } while (monteCarlo.getNbNoeuds() < monteCarlo.getNbNoeudsMax());
+
+        double max = 0.0;
+        int indice = 0;
+
+        for (int i = 0; i < noeud.getNbFils(); i++) {
+            Noeud fils = noeud.getListeFils().get(i);
+            if (max < fils.getUSB()) {
+                max = fils.getUSB();
+                indice = i;
+            }
+        }
+
+        CoupleCaesInsecte coupleCaesInsecte = getCouple(noeud, noeud.getListeFils().get(indice),
+                noeud.getPossiblilites().get(indice).getInsecte(), noeud.getPossiblilites().get(indice).getCase(),
+                noeud.getPossiblilites().get(indice).getAncienneCase());
+        if (coupleCaesInsecte.getInsecte().getEmplacement() == null) {
+            this.joueur.setDernierDeplacement(new Deplacement(coupleCaesInsecte.getInsecte(), null, coupleCaesInsecte.getCase().getCoordonnees()));
+            noeud.getPlateau().ajoutInsecte(coupleCaesInsecte.getInsecte(), coupleCaesInsecte.getCase().getCoordonnees());
+        } else {
+            this.joueur.setDernierDeplacement(new Deplacement(coupleCaesInsecte.getInsecte(), coupleCaesInsecte.getInsecte().getEmplacement().getCoordonnees(), coupleCaesInsecte.getCase().getCoordonnees()));
+            coupleCaesInsecte.getInsecte().deplacement(noeud.getPlateau(), coupleCaesInsecte.getCase().getCoordonnees());
+        }
+        
+        this.joueur.incrementeTour();
+        return true;
     }
     
 }

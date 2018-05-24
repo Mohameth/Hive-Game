@@ -32,7 +32,7 @@ public class CoupFacile extends AbstractCoup {
     @Override
     protected boolean coup() {
         if (this.joueur.reineBloquee()) {
-            this.joueur.incrementeTour();
+            this.attente();
             return false;
         }
 
@@ -51,16 +51,15 @@ public class CoupFacile extends AbstractCoup {
         }
 
         if (bloquee) {
-            this.joueur.incrementeTour();
+            this.attente();
             return false;
         }
 
         if (!this.joueur.tousPionsPosables()) {
-            this.joueur.incrementeTour();
             this.jouerReine();
+            this.attente();
             return true;
         }
-        this.joueur.incrementeTour();
         do {
             insecte = this.joueur.getPions().get(r.nextInt(this.joueur.getPions().size()));
             if (insecte.getEmplacement() == null) {
@@ -71,8 +70,9 @@ public class CoupFacile extends AbstractCoup {
                 }
                 if (!casePlacement.isEmpty()) {
                     HexaPoint p = casePlacement.get(r.nextInt(casePlacement.size())).getCoordonnees();
-                    this.plateau.ajoutInsecte(insecte, p);
+                    this.joueur.coupChoisi(insecte, p, true);
                     System.out.println(insecte.getClass() + " en " + p);
+                    this.attente();
                     return true;
                 }
             } else if (this.joueur.reinePosee()) {
@@ -83,9 +83,9 @@ public class CoupFacile extends AbstractCoup {
         ArrayList<Case> deplacement = (ArrayList<Case>) insecte.deplacementPossible(plateau);
         HexaPoint p = deplacement.get(r.nextInt(deplacement.size())).getCoordonnees();
         this.joueur.setDernierDeplacement(new Deplacement(insecte, insecte.getEmplacement().getCoordonnees(), p));
-        insecte.deplacement(plateau, p);
+        this.joueur.coupChoisi(insecte, p, false);
         System.out.println(insecte.getClass() + " en " + p);
-        
+        this.attente();
         return true;    
     }
     

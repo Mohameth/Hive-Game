@@ -5,9 +5,11 @@
  */
 package Modele.Joueurs.ThreadCoups;
 
+import Modele.Insectes.Insecte;
 import Modele.Joueurs.Joueur;
 import Modele.Joueurs.JoueurIA;
 import Modele.Plateau;
+import java.util.Random;
 
 /**
  *
@@ -22,7 +24,11 @@ public class CoupMoyen extends AbstractCoup{
     
     @Override
     protected boolean coup() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        boolean b = false;
+        Random r = new Random();
+        Insecte insecte;
+
+        return false;
     }
     
 }
