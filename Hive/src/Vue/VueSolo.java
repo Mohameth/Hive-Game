@@ -174,7 +174,7 @@ public class VueSolo extends Vue {
         s.getStylesheets().add("Vue/button.css");
         root.prefHeightProperty().bind(s.heightProperty());
         root.prefWidthProperty().bind(s.widthProperty());
-        root.setStyle("-fx-background-image: url(backPions.jpg); -fx-background-size: cover;");
+        root.setStyle("-fx-background-image: url(backPions2.jpg); -fx-background-size: cover;");
         primaryStage.setScene(s);
         primaryStage.setFullScreen(fs);
         primaryStage.show();
