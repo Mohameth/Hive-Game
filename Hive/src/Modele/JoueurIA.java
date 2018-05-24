@@ -10,16 +10,22 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class JoueurIA extends Joueur {
 
     private int difficulte;
     private Joueur adverse;
+    private long tempsDebut;
+    private long tempsFin;
 
     public JoueurIA(Plateau p, int difficulte, boolean extensions, NumJoueur numJoueur, Joueur adverse) {
         super(p, extensions, numJoueur);
         this.difficulte = difficulte;
         this.adverse = adverse;
+        this.resetTemps();
     }
 
     public JoueurIA(Plateau p, int difficulte, NumJoueur numJoueur, boolean extensions) {
@@ -39,6 +45,7 @@ public class JoueurIA extends Joueur {
     
     @Override
     public boolean coup(Insecte insecte, HexaPoint cible) {
+        this.tempsDebut = System.nanoTime();
         if (difficulte == 1) {
             return coupFacile();
         } else if (difficulte == 2) {
@@ -50,8 +57,9 @@ public class JoueurIA extends Joueur {
     }
 
     private boolean coupFacile() {
-
+        
         if (this.reineBloquee()) {
+            this.tourJoueur++;
             return false;
         }
 
@@ -70,14 +78,16 @@ public class JoueurIA extends Joueur {
         }
 
         if (bloquee) {
+            this.tourJoueur++;
             return false;
         }
 
         if (!this.tousPionsPosables()) {
+            this.tourJoueur++;
             jouerReine();
             return true;
         }
-
+        this.tourJoueur++;
         do {
             insecte = this.getPions().get(r.nextInt(this.getPions().size()));
             if (insecte.getEmplacement() == null) {
@@ -88,6 +98,7 @@ public class JoueurIA extends Joueur {
                 }
                 if (!casePlacement.isEmpty()) {
                     HexaPoint p = casePlacement.get(r.nextInt(casePlacement.size())).getCoordonnees();
+                    this.attente();
                     this.plateau.ajoutInsecte(insecte, p);
                     System.out.println(insecte.getClass() + " en " + p);
                     return true;
@@ -100,9 +111,10 @@ public class JoueurIA extends Joueur {
         ArrayList<Case> deplacement = (ArrayList<Case>) insecte.deplacementPossible(plateau);
         HexaPoint p = deplacement.get(r.nextInt(deplacement.size())).getCoordonnees();
         this.dernierDeplacement = new Deplacement(insecte, insecte.getEmplacement().getCoordonnees(), p);
+        this.attente();
         insecte.deplacement(plateau, p);
         System.out.println(insecte.getClass() + " en " + p);
-
+        
         return true;
     }
     
@@ -160,7 +172,8 @@ public class JoueurIA extends Joueur {
             this.dernierDeplacement = new Deplacement(coupleCaesInsecte.getInsecte(), coupleCaesInsecte.getInsecte().getEmplacement().getCoordonnees(), coupleCaesInsecte.getCase().getCoordonnees());
             coupleCaesInsecte.getInsecte().deplacement(noeud.getPlateau(), coupleCaesInsecte.getCase().getCoordonnees());
         }
-
+        
+        this.tourJoueur++;
         return true;
     }
 
@@ -169,7 +182,10 @@ public class JoueurIA extends Joueur {
         Random ra = new Random();
         ArrayList<Case> cases = plateau.pointVersCase(plateau.casesVidePlacement(this));
         HexaPoint c = cases.get(ra.nextInt(cases.size())).getCoordonnees();
+                    
         this.dernierDeplacement = new Deplacement(r, null, c);
+        this.plateau.ajoutInsecte(r, c);
+        this.attente();
         r.deplacement(plateau,c );
     }
 
@@ -221,4 +237,21 @@ public class JoueurIA extends Joueur {
         return null;
     }
 
+    private void resetTemps() {
+        this.tempsDebut = 0;
+        this.tempsFin = 0;
+    }
+    
+    
+    private void attente() {
+        this.tempsFin = System.nanoTime();
+        if ((this.tempsFin - this.tempsDebut) < 2000000000) {
+            try {
+                TimeUnit.NANOSECONDS.sleep(2000000000 - (this.tempsFin - this.tempsDebut));
+                this.resetTemps();
+            } catch (InterruptedException ex) {
+                System.err.println("ERREUR attente IA : " + ex);
+            }
+        }
+    }
 }

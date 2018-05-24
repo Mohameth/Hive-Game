@@ -21,10 +21,10 @@ public class MonteCarlo {
         this.joueurIA = joueurIA;
         if (nbTours <= 5) {
             this.maxFils = 80;
-            this.nbNoeudsMax = 518481;
+            this.nbNoeudsMax = 6481;
         } else {
             this.maxFils = 30;
-            this.nbNoeudsMax = 837931;
+            this.nbNoeudsMax = 27931;
         }
     }
 
@@ -43,12 +43,12 @@ public class MonteCarlo {
             CoupleCaesInsecte coupleCaesInsecte;
 
             Plateau plateau2;
-            ArrayList<Insecte> mainIA2 = new ArrayList<>();
-            ArrayList<Insecte> mainAdverse2 = new ArrayList<>();
+            ArrayList<Insecte> mainIA2 =cloneInsecte(Pere.getMainIA());
+            ArrayList<Insecte> mainAdverse2 =cloneInsecte(Pere.getMainAdverse());
             ArrayList<Insecte> PlateauIA2 = new ArrayList<>();
             ArrayList<Insecte> PlateauAdverse2 = new ArrayList<>();
 
-            plateau2 = Pere.getPlateau().clone(mainIA2, PlateauIA2, mainAdverse2, PlateauAdverse2, joueurIA);
+            plateau2 = Pere.getPlateau().clone(PlateauIA2,PlateauAdverse2,joueurIA);
             ArrayList<Insecte> joueurCourant = new ArrayList<>();
 
             if (Pere.getTourIA()) {
@@ -109,6 +109,7 @@ public class MonteCarlo {
                 if (Pere.getNbFils() == this.maxFils) {
                     Pere.setNbFilsMax();
                 }
+                System.out.println("fils cree");
                 return fils;
             }
         }
@@ -122,7 +123,7 @@ public class MonteCarlo {
                 indice = i;
             }
         }
-
+        
         return Pere.getListeFils().get(indice);
     }
 
@@ -145,15 +146,13 @@ public class MonteCarlo {
         CoupleCaesInsecte coupleCaesInsecte;
 
         Plateau plateau2;
-        ArrayList<Insecte> mainIA2 = new ArrayList<>();
-        ArrayList<Insecte> mainAdverse2 = new ArrayList<>();
+        ArrayList<Insecte> mainIA2 =cloneInsecte(noeud.getMainIA());
+        ArrayList<Insecte> mainAdverse2 =cloneInsecte(noeud.getMainAdverse());
         ArrayList<Insecte> PlateauIA2 = new ArrayList<>();
         ArrayList<Insecte> PlateauAdverse2 = new ArrayList<>();
 
-        plateau2 = noeud.getPlateau().clone(mainIA2, PlateauIA2, mainAdverse2, PlateauAdverse2, joueurIA);
+        plateau2 = noeud.getPlateau().clone(PlateauIA2, PlateauAdverse2, joueurIA);
         ArrayList<Insecte> joueurCourant = new ArrayList<>();
-        mainIA2.addAll(this.joueurIA.pionsEnMain());
-        mainAdverse2.addAll(this.joueurIA.getAdverse().pionsEnMain());
         
         if (noeud.getTourIA()) {
             joueurCourant.addAll(mainIA2);
@@ -215,15 +214,13 @@ public class MonteCarlo {
         Random r = new Random();
         boolean b = n.getTourIA();
         ArrayList<Insecte> joueurCourant = new ArrayList<>();
-        ArrayList<Insecte> mainIA2 = new ArrayList<>();
-        ArrayList<Insecte> mainAdverse2 = new ArrayList<>();
+        ArrayList<Insecte> mainIA2 =cloneInsecte(n.getMainIA());
+        ArrayList<Insecte> mainAdverse2 =cloneInsecte(n.getMainAdverse());
         ArrayList<Insecte> PlateauIA2 = new ArrayList<>();
         ArrayList<Insecte> PlateauAdverse2 = new ArrayList<>();
-        Plateau plateau2 = n.getPlateau().clone(mainIA2, PlateauIA2, mainAdverse2, PlateauAdverse2, joueurIA);
-        mainIA2.addAll(this.joueurIA.pionsEnMain());
-        mainAdverse2.addAll(this.joueurIA.getAdverse().pionsEnMain());
+        Plateau plateau2 = n.getPlateau().clone(PlateauIA2,PlateauAdverse2,joueurIA);
         ArrayList<Insecte> in = null;
-
+        
         do {
             count++;
             if (b) {
@@ -240,8 +237,6 @@ public class MonteCarlo {
             Case c2 = null;
 
             do {
-                b1 = false;
-                b2 = false;
                 int res = r.nextInt(joueurCourant.size());
                 i = joueurCourant.get(res);
 
@@ -258,7 +253,6 @@ public class MonteCarlo {
                         b2 = true;
                     }
                 }
-
             } while (!b1 && !b2);
 
             if (b1) {
@@ -280,8 +274,8 @@ public class MonteCarlo {
             } else {
                 in = PlateauAdverse2;
             }
-
-        } while (!uneReineBloquee(in, plateau2) && count <= 60);
+            System.out.println(count);
+        } while (!uneReineBloquee(in, plateau2) && count<=60);
 
         if (count > 60) {
             return false;
@@ -304,6 +298,15 @@ public class MonteCarlo {
             }
         }
         return false;
+    }
+    
+    private ArrayList<Insecte> cloneInsecte(ArrayList<Insecte> insecte){
+    	ArrayList<Insecte> in=new ArrayList<>();
+    	for(int i=0;i<insecte.size();i++) {
+    		Insecte ii=insecte.get(i).clone();
+    		in.add(ii);
+    	}
+    	return in;
     }
 
 }

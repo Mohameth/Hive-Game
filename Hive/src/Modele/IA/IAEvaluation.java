@@ -6,9 +6,11 @@
 package Modele.IA;
 
 import Modele.Case;
+import Modele.Insectes.Fourmi;
 import Modele.Insectes.Insecte;
 import Modele.Joueur;
 import Modele.Plateau;
+import Modele.TypeInsecte;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -55,14 +57,14 @@ public class IAEvaluation {
         initPiecesValues(myPiecesValues, false);
         initPiecesValues(opponentPiecesValues, true);
         updatePositionValues(myPiecesValues);
-        updatePositionValues(opponentPiecesValues);
+        //updatePositionValues(opponentPiecesValues);
 
-        return getSumEvaluation(myPiecesValues)
-                - getSumEvaluation(opponentPiecesValues);
+        return getSumEvaluation(myPiecesValues);
+               // - getSumEvaluation(opponentPiecesValues);
     }
 
     private Boolean insecteBelongsToOpponent(Insecte i) {
-        return !i.getJoueur().equals(joueur);
+        return !(i.getJoueur().getNumJoueur() == joueur.getNumJoueur());
     }
 
     private void initPiecesValues(HashMap<Insecte, Integer> piecesValues, Boolean opponent) {
@@ -124,6 +126,9 @@ public class IAEvaluation {
     }
 
     private boolean estImmobilise(Insecte i) {
+        if (i.getType() == TypeInsecte.FOURMI && i.deplacementPossible(jeu).isEmpty()) {
+            //System.out.println("\ntest");
+        }
         return i.deplacementPossible(jeu).isEmpty();
     }
 
@@ -139,11 +144,11 @@ public class IAEvaluation {
         } else {
             reine = reineAdverse;
         }
-
+        
         if (reine == null || reine.getEmplacement() == null) {
             return false;
         }
-
+        
         return jeu.estVoisin(reine, i);
     }
 
@@ -159,7 +164,7 @@ public class IAEvaluation {
         if (reine == null || reine.getEmplacement() == null) {
             return false;
         }
-
+        
         return jeu.estVoisin(reine, i);
     }
 
@@ -181,24 +186,19 @@ public class IAEvaluation {
         while (it.hasNext()) {
             Insecte i = it.next();
             Integer value = piecesValues.get(i);
-            if (value == null) {
-                value = 0;
-            }
+            
             if (estDansLaMain(i)) {
                 value = 0;
-            } else if (estImmobilise(i)) {
-                value -= 10;
-                if (estRecouvert(i)) {
-                    value -= 20;
-                }
+            } else if (estRecouvert(i)) {
+                value -= 20;
             } else {
                 value += mobilite(i);
                 if (entoureReineAdverse(i)) {
-                    value += 15;
+                    value += 100;
                 }
-                if (maReineEstEntoure(i)) {
+                /*if (maReineEstEntoure(i)) {
                     value -= 50;
-                }
+                }*/ //--> BUG
             }
 
             /*if (bloqueFourmiAdverse(i)) value += 5;

@@ -7,6 +7,7 @@ package Modele;
 
 import Modele.Insectes.Fourmi;
 import Modele.Insectes.Insecte;
+import Modele.Insectes.Moustique;
 import Modele.Insectes.Reine;
 import Modele.Insectes.Scarabee;
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class CaseTest {
 
         System.out.println("ajout d'un insecte :");
         try {
-            instance.addInsecte(new Reine(new JoueurHumain(new Plateau(),true, NumJoueur.JOUEUR1)));
+            instance.addInsecte(new Reine(new JoueurHumain(new Plateau(), true, NumJoueur.JOUEUR1)));
             System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         } catch (Exception ex) {
             fail("exception anormal");
@@ -91,7 +92,7 @@ public class CaseTest {
     public void testAddRemInsecte() {
         System.out.println("=============================================");
         System.out.println("TEST ajout suppretion d'Insecte : ==========>\n");
-        JoueurHumain j = new JoueurHumain(new Plateau(),true, NumJoueur.JOUEUR1);
+        JoueurHumain j = new JoueurHumain(new Plateau(), true, NumJoueur.JOUEUR1);
         Reine reine = new Reine(j);
         Case instance = new Case(new HexaPoint(0, 0, 0));
         try {
@@ -112,7 +113,7 @@ public class CaseTest {
             System.out.println("\u001B[31m" + "\t Failed ✖\n");
             fail("aucune exeption levé");
         } catch (Exception e) {
-            assert (e.getMessage().equals("Ajout impossible sur case non vide"));
+            assert (e.getMessage().equals("Ajout impossible sur case non vide \n"+instance.getInsecteOnTop()+ " sur " + instance + " \n"));
             System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         }
 
@@ -167,6 +168,8 @@ public class CaseTest {
         li.add(new Scarabee(j));
         li.add(new Scarabee(j));
         li.add(new Scarabee(j));
+        li.add(new Moustique(j));
+        li.add(new Moustique(j));
 
         try {
             System.out.println("ajout de 5 insectes sur la même case (1 fourmi,4 scarabee) :");
@@ -188,21 +191,25 @@ public class CaseTest {
         }
 
         try {
-            System.out.println("ajout d'un 6e insecte (doit echouer) :");
+            System.out.println("ajout d'un 8e insecte (doit echouer) :");
             instance.addInsecte(li.get(5));
+            instance.addInsecte(li.get(6));
+            instance.addInsecte(li.get(7));
             System.out.println("\u001B[31m" + "\t Failed ✖\n");
         } catch (Exception e) {
-            assert (e.getMessage().equals("Ajout impossible -> 5 insectes maximum"));
+            assert (e.getMessage().equals("Ajout impossible -> 7 insectes maximum"));
             System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         }
 
         System.out.println("test getInsectOnTop :");
-        assertEquals(li.get(4), instance.getInsecteOnTop());
+        assertEquals(li.get(6), instance.getInsecteOnTop());
         System.out.println("\u001B[32m" + "\t Passed ✔ \n");
 
         try {
             System.out.println("supression des insectes :");
 
+            instance.removeInsecte();
+            instance.removeInsecte();
             instance.removeInsecte();
 
             assertEquals(li.get(0), instance.getInsectes().get(0));
@@ -253,9 +260,9 @@ public class CaseTest {
     public void testInsecteBloque() {
         System.out.println("=============================================");
         System.out.println("TEST insecteBloque : =======================>\n");
-        Fourmi fourmi = new Fourmi(new JoueurHumain(new Plateau(),true, NumJoueur.JOUEUR1));
-        Scarabee scarabee1 = new Scarabee(new JoueurHumain(new Plateau(),true, NumJoueur.JOUEUR1));
-        Scarabee scarabee2 = new Scarabee(new JoueurHumain(new Plateau(),true, NumJoueur.JOUEUR1));
+        Fourmi fourmi = new Fourmi(new JoueurHumain(new Plateau(), true, NumJoueur.JOUEUR1));
+        Scarabee scarabee1 = new Scarabee(new JoueurHumain(new Plateau(), true, NumJoueur.JOUEUR1));
+        Scarabee scarabee2 = new Scarabee(new JoueurHumain(new Plateau(), true, NumJoueur.JOUEUR1));
         Case instance = new Case(new HexaPoint(0, 0, 0));
         System.out.println("test sur une case vide (doit lever une exeption) :");
         try {
@@ -290,27 +297,27 @@ public class CaseTest {
             instance.addInsecte(scarabee1);
             assertFalse(instance.insecteBloque(scarabee1));
             System.out.println("\u001B[32m" + "\t Passed ✔ \n");
-            
+
             System.out.println("test avec la fourmis alors que le scarabee est au dessus :");
             assertTrue(instance.insecteBloque(fourmi));
             System.out.println("\u001B[32m" + "\t Passed ✔ \n");
-            
+
             System.out.println("test avec un 2eme scarabee au dessus du premier et de la fourmis :");
             instance.addInsecte(scarabee2);
             assertFalse(instance.insecteBloque(scarabee2));
             System.out.println("\u001B[32m" + "\t Passed ✔ \n");
-            
+
             System.out.println("test sur le 1er scarabee :");
             assertTrue(instance.insecteBloque(scarabee1));
             System.out.println("\u001B[32m" + "\t Passed ✔ \n");
-            
+
             System.out.println("test sur la fourmis");
             assertTrue(instance.insecteBloque(fourmi));
             System.out.println("\u001B[32m" + "\t Passed ✔ \n");
         } catch (Exception e) {
             fail("exception anormal");
         }
-        
+
         System.out.println("");
     }
 

@@ -236,7 +236,6 @@ public class PionImgView {
 
     public void updateImageDessous(boolean asDessous) {
         String m = getImgPath(this.imgType);
-        System.out.println("String: " + m);
         if (asDessous) {
             Image img = new Image("pieces/" + m + "_dessous.png");
             this.getImage().setImage(img);

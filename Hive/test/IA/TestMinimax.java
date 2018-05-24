@@ -19,9 +19,7 @@ public class TestMinimax {
     public static void main(String[] args) {
         Plateau plateau = new Plateau();
         JoueurIA  joueur1 = new JoueurIA(plateau, 1, NumJoueur.JOUEUR1, false);
-        IAMinimax joueur2 = new IAMinimax(plateau, false, NumJoueur.JOUEUR1);
-        joueur2.setAdversaire(joueur1);
-        //joueur1.setAdversaire(joueur2);
+        IAMinimax joueur2 = new IAMinimax(plateau, false, NumJoueur.JOUEUR2, joueur1);
 
         boolean fini = false;
         int coup = 0;
@@ -41,15 +39,17 @@ public class TestMinimax {
         }
         
         System.out.println("partie fini en " + coup);
-        if (joueur1.reineBloquee()) {
-            System.out.println("J2 à gagné");
+        if (joueur1.reineBloquee() && joueur2.reineBloquee()) {
+            System.out.println("Partie nulle, les deux reines sont bloqués");
+        }else if (joueur1.reineBloquee()) {
+            System.out.println("J2 a gagné");
         } else if (joueur2.reineBloquee()){
-            System.out.println("J1 à gagné");
+            System.out.println("J1 a gagné");
         } else {
             System.out.println("match NULL");
         }
         
-        System.out.println("Pions du J1 :");
+        /*System.out.println("Pions du J1 :");
         for (Insecte i : joueur1.getPions()) {
             if(i.getEmplacement() != null)
                 System.out.println(i.getEmplacement());
@@ -59,7 +59,7 @@ public class TestMinimax {
         for (Insecte i : joueur2.getPions()) {
             if(i.getEmplacement() != null)
                 System.out.println(i.getEmplacement());
-        }
+        }*/
         
     }
 }

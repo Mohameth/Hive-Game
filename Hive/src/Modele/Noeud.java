@@ -23,8 +23,8 @@ public class Noeud {
 	
 	public Noeud(Plateau plateau,ArrayList<Insecte>mainIA,ArrayList<Insecte>mainAdverse
 			,ArrayList<Insecte>PlateauIA,ArrayList<Insecte>PlateauAdverse) {
-		this.ni=0;
-		this.ti=0;
+		this.ni=1;
+		this.ti=1;
 		this.nbFils=0;
 		this.nbFilsMax=false;
 		this.profondeur=0;

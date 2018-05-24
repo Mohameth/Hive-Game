@@ -85,7 +85,7 @@ public class ZoneLibre {
     }
 
     public void affiche() {
-        System.out.println("Zone Libre X: " + getCoordZoneLibre().getX() + " Y:" + getCoordZoneLibre().getY() + " Z:" + getCoordZoneLibre().getZ() + " \t IMGX: " + getImgPosX() + " IMGY: " + getImgPosY());
+        System.out.println("Zone Libre XYZ: " + getCoordZoneLibre().getX() + ", " + getCoordZoneLibre().getY() + ", " + getCoordZoneLibre().getZ() + " \t IMGX: " + getImgPosX() + " IMGY: " + getImgPosY());
     }
 
     public void setMouseEvent() {

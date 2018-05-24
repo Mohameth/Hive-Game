@@ -22,8 +22,9 @@ public class IAMinimax extends Joueur {
     int horizon = 0;
     public Coup lastCoup = null;
     
-    public IAMinimax(Plateau p, boolean extensions, NumJoueur numJoueur) {
+    public IAMinimax(Plateau p, boolean extensions, NumJoueur numJoueur, Joueur adversaire) {
         super(p, extensions, numJoueur);
+        this.adversaire = adversaire;
     }
 
     public void setAdversaire(Joueur adversaire) {
@@ -56,7 +57,7 @@ public class IAMinimax extends Joueur {
         System.out.println(i.getClass().getCanonicalName() + " en " + coup.getCible());
         lastCoup = coup;
         
-       
+        this.tourJoueur++;
         return true;
     }
     
@@ -76,9 +77,8 @@ public class IAMinimax extends Joueur {
             }
         }
         if (meilleurConf != null) {
-        System.out.println("Coup évalué à " + meilleurConf.getEvaluation());
-        
-        return meilleurConf.getCoupJoue();
+            System.out.println("Coup évalué à " + meilleurConf.getEvaluation());
+            return meilleurConf.getCoupJoue();
         } else {
             System.out.println("aucune conf : Jeu aleatoire");
             return null;
@@ -91,7 +91,6 @@ public class IAMinimax extends Joueur {
         }
         
         int valeur = Integer.MIN_VALUE;
-        //conf.echangeJoueur();
         for (Configuration confCourante : conf.getAllCoupsPossibles()) {
             valeur = Integer.max(conf.getEvaluation(), calculAdversaire(confCourante, horizon-1));
         }
@@ -109,6 +108,7 @@ public class IAMinimax extends Joueur {
         for (Configuration confCourante : conf.getAllCoupsPossibles()) {
             valeur = Integer.min(valeur, calculJoueurCourant(confCourante, horizon-1));
         }
+        //conf.echangeJoueur();
         
         return valeur;
     }
