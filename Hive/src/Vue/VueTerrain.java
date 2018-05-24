@@ -1011,11 +1011,13 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bUndo.setTooltip(new Tooltip("Anuler le dernier coup"));
         bUndo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             this.controleur.Undo();
+            this.reconstructionPlateau(pModel);
         });
 
         bRedo.setTooltip(new Tooltip("Rejouer le dernier coup"));
         bRedo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             this.controleur.Redo();
+            this.reconstructionPlateau(pModel);
         });
 
         brules.setTooltip(new Tooltip("Règles du jeu"));

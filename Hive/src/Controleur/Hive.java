@@ -270,21 +270,19 @@ public class Hive implements Serializable {
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
                 Hive h = (Hive) ois.readObject();
                 ois.close();
-                //this.reset();
+                this.reset();
                 this.joueur1 = h.joueur1;
                 this.joueur2 = h.joueur2;
                 this.joueurCourant = h.joueurCourant;
-                //this.plateau = h.plateau;
-                this.plateau.setCases(h.plateau.getCases());
-                this.plateau.setNbPionsEnJeu(h.plateau.getNbPionsEnJeu());
+                this.plateau = h.plateau;
+                //this.plateau.setCases(h.plateau.getCases());
+                //this.plateau.setNbPionsEnJeu(h.plateau.getNbPionsEnJeu());
+                this.addObserverPlateau(o);
                 this.joueur1.setPlateau(plateau);
                 this.joueur2.setPlateau(plateau);
                 this.joueurCourant.setPlateau(plateau);
 
-                //this.addObserverPlateau(o);
-
                 this.plateau.notifieVue();
-                
 
             } catch (ClassNotFoundException exception) {
                 System.out.println("Impossible de lire l'objet : " + exception.getMessage());
@@ -306,15 +304,18 @@ public class Hive implements Serializable {
     }
 
     public void Undo() {
-        if (this.joueur2 instanceof JoueurIA) {
-            this.joueur2.Undo();
-            this.joueur1.Undo();
-        } else if (this.joueurCourant.equals(this.joueur1)) {
-            this.joueur2.Undo();
-            this.joueurCourant = this.joueur2;
-        } else {
-            this.joueur1.Undo();
-            this.joueurCourant = this.joueur1;
+        if (UndoPossible()) {
+            if (this.joueur2 instanceof JoueurIA) {
+                this.joueur2.Undo();
+                this.joueur1.Undo();
+            } else if (this.joueurCourant.equals(this.joueur1)) {
+                this.joueur2.Undo();
+                this.joueurCourant = this.joueur2;
+            } else {
+                this.joueur1.Undo();
+                this.joueurCourant = this.joueur1;
+            }
+            this.plateau.notifieVue();
         }
     }
 
@@ -329,15 +330,18 @@ public class Hive implements Serializable {
     }
 
     public void Redo() {
-        if (this.joueur2 instanceof JoueurIA) {
-            this.joueur1.Redo();
-            this.joueur2.Redo();
-        } else if (this.joueurCourant.equals(this.joueur1)) {
-            this.joueur2.Redo();
-            this.joueurCourant = this.joueur2;
-        } else {
-            this.joueur1.Redo();
-            this.joueurCourant = this.joueur1;
+        if (RedoPossible()) {
+            if (this.joueur2 instanceof JoueurIA) {
+                this.joueur1.Redo();
+                this.joueur2.Redo();
+            } else if (this.joueurCourant.equals(this.joueur1)) {
+                this.joueur2.Redo();
+                this.joueurCourant = this.joueur2;
+            } else {
+                this.joueur1.Redo();
+                this.joueurCourant = this.joueur1;
+            }
+            this.plateau.notifieVue();
         }
     }
 

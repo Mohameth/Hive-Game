@@ -263,7 +263,8 @@ public abstract class Joueur implements Cloneable, Serializable {
                 this.plateau.deleteInsecte(this.dernierDeplacement.getI(), this.dernierDeplacement.getCible());
                 this.dernierDeplacement.getI().setEmplacement(null);
             } else {
-                this.plateau.deplaceInsecte(this.dernierDeplacement.getI(), this.dernierDeplacement.getCible());
+                this.plateau.deleteInsecte(this.dernierDeplacement.getI(), this.dernierDeplacement.getCible());
+                this.plateau.deplaceInsecte(this.dernierDeplacement.getI(), this.dernierDeplacement.getOrig());
             }
             this.tourJoueur--;
         }
@@ -284,7 +285,8 @@ public abstract class Joueur implements Cloneable, Serializable {
             if (this.dernierDeplacement.getOrig() == null) {
                 this.plateau.ajoutInsecte(this.dernierDeplacement.getI(), this.dernierDeplacement.getCible());
             } else {
-                this.plateau.deplaceInsecte(this.dernierDeplacement.getI(), this.dernierDeplacement.getOrig());
+                this.plateau.deleteInsecte(this.dernierDeplacement.getI(), this.dernierDeplacement.getOrig());
+                this.plateau.deplaceInsecte(this.dernierDeplacement.getI(), this.dernierDeplacement.getCible());
             }
             this.tourJoueur++;
         }
