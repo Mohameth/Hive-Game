@@ -739,6 +739,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         //System.out.println("----------------------------- NOUVEAU TOUR -----------------------------");
         if (this.controleur.tourJoueurBlanc()) {
+            System.out.println("ICI JOUEUER BLACNC");
             //setlock(true);  //pour griser les pions
             setLockPlayerPion(false); //lock les noirs  sur le plateau  et remove les blancs
             removeLock(true, this.controleur.tousPionsPosables(NumJoueur.JOUEUR1));
@@ -747,14 +748,15 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             //VBox v = getTurnPlayer(1);
             //root.getChildren().add(v);
         } else {
+            System.out.println("ICI JOUEUER NOIRRRR");
             //Mise a jour si probleme du texte
             //setlock(false); //pour griser les pions noir = false
             setLockPlayerPion(true); //lock les blancs sur le plateau et remove les noirs
             removeLock(false, this.controleur.tousPionsPosables(NumJoueur.JOUEUR2));
             setlock(true);
             setNomJoueur(2);
-            VBox v = getTurnPlayer(2);
-            root.getChildren().add(v);
+//            VBox v = getTurnPlayer(2);
+//            root.getChildren().add(v);
         }
     }
 
@@ -1334,6 +1336,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         int nbNonCorrect = 0;
 
         if (p != null) {
+            //verfie que le model correspond a la vue
+            System.out.println("Model==vue");
             for (Map.Entry<HexaPoint, Case> entry : p.getCases().entrySet()) {
                 HexaPoint keyPoint = entry.getKey();
                 Case c = entry.getValue();
@@ -1345,6 +1349,40 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 }
 
             }
+            
+            if (nbNonCorrect==0){
+                System.out.println("vue==model");
+                //verfie que la vue correspond au model (cas ou la vue possède plus de pions que le model)
+                for (Map.Entry<HexaPoint, PionPlateau2> entrySet : listPionsPlateau.entrySet()) {
+                        HexaPoint hexap = entrySet.getKey();
+                        PionPlateau2 pp2 = entrySet.getValue();
+                        //
+                        if (pp2.getPionEnDessous()!=null){
+                            ArrayList<PionPlateau2>  listPiondessous = new ArrayList<>();
+                            listPiondessous = pp2.getDessousList(listPiondessous);
+                            ArrayList<Insecte> pionsModel = p.getCase(pp2.getCoordPion()).getInsectes();
+
+                            for (PionPlateau2 piondessous : listPiondessous) {
+                                boolean trouve = false;
+                                for(Insecte ins : pionsModel){
+                                    if (ins.getType() == piondessous.getPionType() && ins.getJoueur().getNumJoueur().estBlanc() == piondessous.isWhite()){
+                                        trouve = true;
+                                    }
+                                }
+                                if (!trouve){
+                                    nbNonCorrect++;
+                                }
+                            }
+
+                        }else{
+                            if (!p.getCases().containsKey(pp2.getCoordPion()) || p.getCase(pp2.getCoordPion()).getInsectes().size()!=1 || p.getCase(pp2.getCoordPion()).getInsecteOnTop().getType()!=pp2.getPionType() ){
+                                nbNonCorrect++;
+                            }
+                        }
+                    }
+            }
+            
+            
             //regenère le plateau si pas de correspondance a 100%.
             if (nbNonCorrect > 0) {
                 //if (true) {
@@ -1463,6 +1501,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
                 ///*********** END BOUCLE
                 resetView();
+                updateMainJoueur();
+                hudToFront();
             } else {
                 System.out.println("100% de correspondance!");
             }
