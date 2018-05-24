@@ -191,17 +191,16 @@ public class Hive implements Serializable {
         this.plateau.notifieVue();
         if (joueurCourant.equals(this.joueur1)) {
             this.joueurCourant = this.joueur2;
-            if (this.joueur2 instanceof JoueurIA) {
-                ((JoueurIA) this.joueurCourant).coup(null, null);
-                this.joueurSuivant();
-            }
-            if (this.joueur2 instanceof IAMinimax) {
-                ((IAMinimax) this.joueurCourant).coup(null, null);
-                this.joueurSuivant();
-            }
         } else if (joueurCourant.equals(this.joueur2)) {
             this.joueurCourant = this.joueur1;
         }
+        
+        if (!this.joueurCourant.getNumJoueur().estHumain()) {
+                ((JoueurIA) this.joueurCourant).coup(null, null);
+                this.joueurSuivant();
+        }
+
+
     }
 
     public int JoueurGagnant() {

@@ -5,7 +5,7 @@ import Modele.CoupleCaesInsecte;
 import Modele.Deplacement;
 import Modele.HexaPoint;
 import Modele.Joueurs.Joueur;
-import Modele.IA.Coup;
+import Modele.Joueurs.ThreadCoups.*;
 import Modele.Insectes.Insecte;
 import Modele.Insectes.Reine;
 import Modele.Plateau;
@@ -24,14 +24,13 @@ public class JoueurIA extends Joueur {
 
     private int difficulte;
     private Joueur adverse;
-    private long tempsDebut;
-    private long tempsFin;
+    private AbstractCoup threadCoup;
 
     public JoueurIA(Plateau p, int difficulte, boolean extensions, NumJoueur numJoueur, Joueur adverse) {
         super(p, extensions, numJoueur);
         this.difficulte = difficulte;
         this.adverse = adverse;
-        this.resetTemps();
+        this.setThreadCoup();
     }
 
     public JoueurIA(Plateau p, int difficulte, NumJoueur numJoueur, boolean extensions) {
@@ -51,7 +50,6 @@ public class JoueurIA extends Joueur {
     
     @Override
     public boolean coup(Insecte insecte, HexaPoint cible) {
-        this.tempsDebut = System.nanoTime();
         if (difficulte == 1) {
             return coupFacile();
         } else if (difficulte == 2) {
@@ -104,7 +102,6 @@ public class JoueurIA extends Joueur {
                 }
                 if (!casePlacement.isEmpty()) {
                     HexaPoint p = casePlacement.get(r.nextInt(casePlacement.size())).getCoordonnees();
-                    this.attente();
                     this.plateau.ajoutInsecte(insecte, p);
                     System.out.println(insecte.getClass() + " en " + p);
                     return true;
@@ -117,7 +114,6 @@ public class JoueurIA extends Joueur {
         ArrayList<Case> deplacement = (ArrayList<Case>) insecte.deplacementPossible(plateau);
         HexaPoint p = deplacement.get(r.nextInt(deplacement.size())).getCoordonnees();
         this.dernierDeplacement = new Deplacement(insecte, insecte.getEmplacement().getCoordonnees(), p);
-        this.attente();
         insecte.deplacement(plateau, p);
         System.out.println(insecte.getClass() + " en " + p);
         
@@ -183,17 +179,6 @@ public class JoueurIA extends Joueur {
         return true;
     }
 
-    private void jouerReine() {
-        Reine r = getReine();
-        Random ra = new Random();
-        ArrayList<Case> cases = plateau.pointVersCase(plateau.casesVidePlacement(this));
-        HexaPoint c = cases.get(ra.nextInt(cases.size())).getCoordonnees();
-                    
-        this.dernierDeplacement = new Deplacement(r, null, c);
-        this.plateau.ajoutInsecte(r, c);
-        this.attente();
-        r.deplacement(plateau,c );
-    }
 
     private boolean coupGagnant() {
         if (!adverse.reinePresqueBloquee()) {
@@ -243,21 +228,19 @@ public class JoueurIA extends Joueur {
         return null;
     }
 
-    private void resetTemps() {
-        this.tempsDebut = 0;
-        this.tempsFin = 0;
-    }
-    
-    
-    private void attente() {
-        this.tempsFin = System.nanoTime();
-        if ((this.tempsFin - this.tempsDebut) < 2000000000) {
-            try {
-                TimeUnit.NANOSECONDS.sleep(2000000000 - (this.tempsFin - this.tempsDebut));
-                this.resetTemps();
-            } catch (InterruptedException ex) {
-                System.err.println("ERREUR attente IA : " + ex);
-            }
+
+
+    private void setThreadCoup() {
+        switch(this.difficulte) {
+            case 1:
+                this.threadCoup = new CoupFacile(this.plateau, this, this.adverse);
+            break;
+            case 2:
+                this.threadCoup = new CoupMoyen(this.plateau, this, this.adverse);
+            break;
+            case 3:
+                this.threadCoup = new CoupDifficile(this.plateau, this, this.adverse);
+            break;
         }
     }
 }

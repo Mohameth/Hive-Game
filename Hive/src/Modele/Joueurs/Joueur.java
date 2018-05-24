@@ -113,7 +113,7 @@ public abstract class Joueur implements Cloneable, Serializable {
         }
     }
     
-    protected Reine getReine() {
+    public Reine getReine() {
     	ArrayList<Insecte> liste=this.pionsEnMain();
     	for(int i=0;i<liste.size();i++) {
     		if(liste.get(i) instanceof Reine) {
@@ -240,6 +240,16 @@ public abstract class Joueur implements Cloneable, Serializable {
         return null;
     }
 
+    public Deplacement getDernierDeplacement() {
+        return dernierDeplacement;
+    }
+
+    public void setDernierDeplacement(Deplacement dernierDeplacement) {
+        this.dernierDeplacement = dernierDeplacement;
+    }
+
+    
+    
     public ArrayList<Insecte> cloneList(ArrayList<Insecte> pions, Joueur j) {
         ArrayList<Insecte> clone = new ArrayList<>(pions.size());
         for (Insecte insecte : pions) {

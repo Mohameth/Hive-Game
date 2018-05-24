@@ -25,4 +25,8 @@ public enum NumJoueur {
     public boolean estBlanc() {
         return (this.contenu % 2) != 0;
     }
+
+    public boolean estHumain() {
+        return this.contenu < 3;
+    }
 }
