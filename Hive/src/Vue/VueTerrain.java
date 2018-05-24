@@ -1,5 +1,7 @@
 package Vue;
 
+import Modele.Insectes.TypeInsecte;
+import Modele.Joueurs.NumJoueur;
 import Controleur.Hive;
 import Modele.*;
 import Modele.Insectes.Insecte;

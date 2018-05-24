@@ -1,7 +1,11 @@
-package Modele;
+package Modele.Joueurs;
 
 import Controleur.Hive;
+import Modele.Deplacement;
+import Modele.HexaPoint;
 import Modele.Insectes.*;
+import Modele.Plateau;
+import Modele.Insectes.TypeInsecte;
 import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Level;

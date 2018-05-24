@@ -1,10 +1,9 @@
 package Modele.Insectes;
 
 import Modele.Case;
-import Modele.Joueur;
+import Modele.Joueurs.Joueur;
 import Modele.Plateau;
 import Modele.HexaPoint;
-import Modele.TypeInsecte;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;

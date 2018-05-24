@@ -3,9 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Modele;
+package Modele.Joueurs;
 
+import Modele.Case;
+import Modele.HexaPoint;
+import Modele.Joueurs.NumJoueur;
+import Modele.Joueurs.JoueurHumain;
 import Modele.Insectes.*;
+import Modele.Plateau;
 import java.util.ArrayList;
 import org.junit.After;
 import org.junit.AfterClass;

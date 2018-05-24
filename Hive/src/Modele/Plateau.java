@@ -1,5 +1,7 @@
 package Modele;
 
+import Modele.Insectes.TypeInsecte;
+import Modele.Joueurs.Joueur;
 import Modele.Insectes.Insecte;
 import java.util.Observable;
 import java.io.Serializable;
