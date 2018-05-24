@@ -746,8 +746,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             removeLock(true, this.controleur.tousPionsPosables(NumJoueur.JOUEUR1));
             setlock(false);
             setNomJoueur(1);
-            VBox v = getTurnPlayer(1);
-            root.getChildren().add(v);
+            //VBox v = getTurnPlayer(1);
+            //root.getChildren().add(v);
         } else {
             //Mise a jour si probleme du texte
             //setlock(false); //pour griser les pions noir = false
@@ -1464,10 +1464,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 }
 
                 ///*********** END BOUCLE
+                resetView();
             } else {
                 System.out.println("100% de correspondance!");
             }
-            resetView();
+            
         }
     }
 
