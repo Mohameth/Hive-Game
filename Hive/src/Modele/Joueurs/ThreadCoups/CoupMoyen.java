@@ -45,13 +45,13 @@ public class CoupMoyen extends AbstractCoup{
         if (coup.isModePlacement()) {
             i = joueur.getPions().get(coup.getNumDansMain());
             joueur.placementInsecte(i, coup.getCible());
-            System.out.println(i.getClass().getCanonicalName() + " en " + coup.getCible() + " (placement)");
+            System.out.println(i.getClass().getName() + " en " + coup.getCible() + " (placement)");
             return true;
         }
         
         i = plateau.getCase(coup.getOrigine()).getInsectes().get(coup.getNiveauInsecte()-1);
         i.deplacement(plateau, coup.getCible()); 
-        System.out.println(i.getClass().getCanonicalName() + " en " + coup.getCible());
+        System.out.println(i.getClass().getName() + " en " + coup.getCible());
         lastCoup = coup;
               
         //joueur.

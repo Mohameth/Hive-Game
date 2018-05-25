@@ -46,18 +46,17 @@ public class Moustique extends Insecte {
     		return new ArrayList<>();
     	}
         
-        /*Iterator<Case> it = casePossibles.iterator();
+        Iterator<Case> it = casePossibles.iterator();
         while (it.hasNext()) {
             Case possibilite = it.next();
             for (Case c : plateau.getCasesVoisines(this.getEmplacement(), true)) {
                 if (c.equals(possibilite)) {
-                    if (!plateau.rucheBrisee(this.getEmplacement(), c)) {
+                    if (plateau.rucheBrisee(this.getEmplacement(), c)) {
                         it.remove();
-                        System.out.println("Case supprimé");
                     }
                 }
             }
-        }*/
+        }
         
     	return casePossibles;
     }
