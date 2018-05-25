@@ -21,7 +21,7 @@ import java.util.Random;
  * @author firmyn
  */
 public class CoupMoyen extends AbstractCoup{
-    int horizon = 0;
+    int horizon = 1;
     public Coup lastCoup = null;
     
     public CoupMoyen(Plateau plateau, JoueurIA joueur, Joueur adverse) {
