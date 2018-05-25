@@ -239,6 +239,17 @@ public class Hive implements Serializable {
         return j.getTourJoueur();
     }
 
+    
+    public Joueur getJoueur(int j) {
+        switch(j) {
+            case 1:
+                return this.joueur1;
+            case 2:
+                return this.joueur2;
+        }
+        return null;
+    }
+
     public boolean save(String name) {
         String path;
         if (isWindows()) {
