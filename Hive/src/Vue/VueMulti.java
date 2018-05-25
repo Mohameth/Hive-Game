@@ -24,7 +24,7 @@ public class VueMulti extends Vue {
 
     VueMulti(Stage primaryStage) {
         Properties prop = new Properties();
-        String propFileName = System.getProperty("user.dir").concat("/Hive/rsc/config.properties");
+        String propFileName = System.getProperty("user.dir").concat("/rsc/config.properties");
         InputStream input = null;
         try {
             input = new FileInputStream(propFileName);

@@ -40,13 +40,12 @@ import java.io.*;
 import java.util.*;
 
 import static com.sun.javafx.PlatformUtil.isWindows;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.scene.shape.Circle;
+import java.awt.event.ActionListener;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Timer;
+import javafx.animation.AnimationTimer;
 
 public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
@@ -59,7 +58,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private PionMain currentMainSelected;
     private int sceneWidth, sceneHeight; //taille de la scene
     private double totZoom;  //zoom actuel du plateau
-    private double totMoveBoardX, totMoveBoardY;  //position du plateau
     private ArrayList<BorderPane> hudElems;
     private HashMap<TypeInsecte, PionMain> pionMainPlayer1, pionMainPlayer2;
     private int numeroPageTuto = 0;
@@ -72,6 +70,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     ArrayList<HexaPoint> zoneLibresCollision;
     private Button bUndo;
     private Button bRedo;
+    private long iaCanPlay = -1;
 
     VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs, boolean solo) {
         boolean fs = primaryStage.isFullScreen();
@@ -253,10 +252,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
                 entry.getValue().updateZoomWidthHeight(totZoomVar, this.getWidth(), this.getHeight());
             }
-
-            double zoomFactor = totZoomVar / this.totZoom;
-            this.totMoveBoardX *= zoomFactor;
-            this.totMoveBoardY *= zoomFactor;
             this.totZoom = totZoomVar;
         }
     }
@@ -338,18 +333,13 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     private void applyBoardMove(double dx, double dy) {
         moveDeltaBoard(dx, dy);
-        this.totMoveBoardX += dx;
-        this.totMoveBoardY += dy;
     }
 
     private void resetView() {
         double centrePlateau[] = getCentreDuPlateau();
         moveDeltaBoard(-centrePlateau[0], -centrePlateau[1]);
-        //moveDeltaBoard(- this.totMoveBoardX,- this.totMoveBoardY);
 
         zoomImage(0.3);
-        this.totMoveBoardX = 0;
-        this.totMoveBoardY = 0;
     }
 
     private double[] getCentreDuPlateau() {
@@ -612,7 +602,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             pp2.validCurrentPosXY();
         }
         coupJoue();
-
     }
 
     @Override
@@ -690,7 +679,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private void coupJoue() {
         hideZoneLibre();
         removeSelectedPion();
-        reconstructionPlateau(this.pModel);
         updateMainJoueur();
         hudToFront();
         System.out.println("Coup Joué");
@@ -763,23 +751,29 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         }
 
         //System.out.println("----------------------------- NOUVEAU TOUR -----------------------------");
-        if (this.controleur.tourJoueurBlanc()) {
+        if (this.controleur.tourJoueurBlanc() && this.controleur.getJoueur(NumJoueur.JOUEUR1).getNumJoueur().estHumain()) {
             //setlock(true);  //pour griser les pions
             setLockPlayerPion(false); //lock les noirs  sur le plateau  et remove les blancs
             removeLock(true, this.controleur.tousPionsPosables(NumJoueur.JOUEUR1));
             setlock(false);
             setNomJoueur(1);
-            //VBox v = getTurnPlayer(1);
-            //root.getChildren().add(v);
-        } else {
+        } else if (!this.controleur.tourJoueurBlanc() && this.controleur.getJoueur(NumJoueur.JOUEUR2).getNumJoueur().estHumain()) {
             //Mise a jour si probleme du texte
             //setlock(false); //pour griser les pions noir = false
             setLockPlayerPion(true); //lock les blancs sur le plateau et remove les noirs
             removeLock(false, this.controleur.tousPionsPosables(NumJoueur.JOUEUR2));
             setlock(true);
             setNomJoueur(2);
-//            VBox v = getTurnPlayer(2);
-//            root.getChildren().add(v);
+        }
+
+        //si une ia qui joue bloquer les deux main et les pions du plateau empécher l'humain d'interragir
+        if (this.controleur.tourJoueurBlanc() && !this.controleur.getJoueur(NumJoueur.JOUEUR1).getNumJoueur().estHumain() || !this.controleur.tourJoueurBlanc() && !this.controleur.getJoueur(NumJoueur.JOUEUR2).getNumJoueur().estHumain()) {
+            //locklesMain des joueurs noir et blancs
+            System.out.println("IA JOUE UPDATE MAIN --- lock les joueurs");
+            setlock(true);
+            setlock(false);
+            setLockPlayerPion(true, false);
+            setLockPlayerPion(false, false);
         }
     }
 
@@ -838,7 +832,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     private BorderPane getHudPlayer(HashMap<TypeInsecte, Integer> m, int numplayer, boolean ia) {
         Properties prop = new Properties();
-        String propFileName = System.getProperty("user.dir").concat("/Hive/rsc/config.properties");
+        String propFileName = System.getProperty("user.dir").concat("/rsc/config.properties");
         InputStream input = null;
         try {
             input = new FileInputStream(propFileName);
@@ -907,10 +901,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 } else {
                     cb.setDisable(true);
                     int dif = 1;
-                    if(cb.getValue().equals(getLangStr("medi")))
+                    if (cb.getValue().equals(getLangStr("medi"))) {
                         dif = 2;
-                    else if(cb.getValue().equals(getLangStr("hard")))
+                    } else if (cb.getValue().equals(getLangStr("hard"))) {
                         dif = 3;
+                    }
                     ((JoueurIA) this.controleur.joueur2).setDifficulte(dif);
                 }
             });
@@ -1328,19 +1323,29 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        long tempsRestant = (long) arg;
-        if (tempsRestant > 0) {
-            System.out.println("YESSSSSSSSSSS I'M A FUCKING ROBOT AND TIME REMAINS");
-            try {
-                TimeUnit.NANOSECONDS.sleep(tempsRestant);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(VueTerrain.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
-            System.out.println("NO TIME REMAINING");
-        }
         Plateau p = (Plateau) o;
         this.pModel = p;
+        long tempsRestant = (long) arg;
+
+        //si >0 alors c'est une ia
+        if (tempsRestant > 0) {
+            this.iaCanPlay = tempsRestant;
+            updateMainJoueur();
+            System.out.println("IA IS THINKING...");
+        } else {
+            this.iaCanPlay = -1;
+            System.out.println("PLAYER a JOUé");
+            updateMainJoueur();
+            hudToFront();
+        }
+
+    }
+
+    public void iaCanPlay(long temps) {
+        if (iaCanPlay > 0 && (temps > iaCanPlay)) {
+            iaCanPlay = -1;
+            reconstructionPlateau(this.pModel);
+        }
     }
 
     //toto lors du deplacement verifier collision A activer TODO
@@ -1767,7 +1772,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             ((ComboBox) nomJoueur.get(numJoueur - 1)).getStylesheets().remove("Vue/combo.css");
             ((ComboBox) nomJoueur.get(numJoueur - 1)).getStylesheets().add("Vue/combo1.css");
             nomJoueur.get(Math.abs(numJoueur - 2)).setStyle("-fx-text-fill : white");
-        } else if(nomJoueur.get(Math.abs(numJoueur - 2)) instanceof ComboBox){
+        } else if (nomJoueur.get(Math.abs(numJoueur - 2)) instanceof ComboBox) {
             ((ComboBox) nomJoueur.get(Math.abs(numJoueur - 2))).getStylesheets().remove("Vue/combo1.css");
             ((ComboBox) nomJoueur.get(Math.abs(numJoueur - 2))).getStylesheets().add("Vue/combo.css");
             nomJoueur.get(numJoueur - 1).setStyle("-fx-text-fill : red");

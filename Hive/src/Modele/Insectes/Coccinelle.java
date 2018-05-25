@@ -6,6 +6,7 @@ import Modele.Plateau;
 import Modele.HexaPoint;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 public class Coccinelle extends Insecte {
 
@@ -61,6 +62,15 @@ public class Coccinelle extends Insecte {
     	if(!casePossibles3.isEmpty() && plateau.rucheBrisee(this.getEmplacement(),casePossibles3.get(0))) {
     		return new ArrayList<>();
     	}
+        
+        Iterator<Case> it = casePossibles3.iterator();
+        while (it.hasNext()) {
+            Case possibilite = it.next();
+            if (plateau.rucheBrisee(this.getEmplacement(), possibilite)) {
+                it.remove();
+            }
+        }
+        
     	return casePossibles3;
     }
 
