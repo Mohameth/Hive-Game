@@ -239,14 +239,10 @@ public class Hive implements Serializable {
     }
 
     
-    public Joueur getJoueur(int j) {
-        switch(j) {
-            case 1:
-                return this.joueur1;
-            case 2:
-                return this.joueur2;
-        }
-        return null;
+    public Joueur getJoueur(NumJoueur j) {
+        if (j.estBlanc())
+            return this.joueur1;
+        return this.joueur2;
     }
 
     public boolean save(String name) {
