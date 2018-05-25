@@ -685,6 +685,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private void coupJoue() {
         hideZoneLibre();
         removeSelectedPion();
+        updateMainJoueur();
         hudToFront();
         System.out.println("Coup Joué");
     }
@@ -756,23 +757,29 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         }
 
         //System.out.println("----------------------------- NOUVEAU TOUR -----------------------------");
-        if (this.controleur.tourJoueurBlanc()) {
+        if (this.controleur.tourJoueurBlanc() && this.controleur.getJoueur(1).getNumJoueur().estHumain()) {
             //setlock(true);  //pour griser les pions
             setLockPlayerPion(false); //lock les noirs  sur le plateau  et remove les blancs
             removeLock(true, this.controleur.tousPionsPosables(NumJoueur.JOUEUR1));
             setlock(false);
             setNomJoueur(1);
-            //VBox v = getTurnPlayer(1);
-            //root.getChildren().add(v);
-        } else {
+        } else if (!this.controleur.tourJoueurBlanc() && this.controleur.getJoueur(2).getNumJoueur().estHumain()) {
             //Mise a jour si probleme du texte
             //setlock(false); //pour griser les pions noir = false
             setLockPlayerPion(true); //lock les blancs sur le plateau et remove les noirs
             removeLock(false, this.controleur.tousPionsPosables(NumJoueur.JOUEUR2));
             setlock(true);
             setNomJoueur(2);
-//            VBox v = getTurnPlayer(2);
-//            root.getChildren().add(v);
+        }
+
+        //si une ia qui joue bloquer les deux main et les pions du plateau empécher l'humain d'interragir
+        if (this.controleur.tourJoueurBlanc() && !this.controleur.getJoueur(1).getNumJoueur().estHumain() || !this.controleur.tourJoueurBlanc() && !this.controleur.getJoueur(2).getNumJoueur().estHumain()) {
+            //locklesMain des joueurs noir et blancs
+            System.out.println("IA JOUE UPDATE MAIN --- lock les joueurs");
+            setlock(true);
+            setlock(false);
+            setLockPlayerPion(true, false);
+            setLockPlayerPion(false, false);
         }
     }
 
@@ -1318,17 +1325,16 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         this.pModel = p;
         long tempsRestant = (long) arg;
 
-        //reconstructionPlateau(this.pModel);
-        updateMainJoueur();
-
         //si >0 alors c'est une ia
         if (tempsRestant > 0) {
-            //coupJoue(); //coup joué de l'humain
             this.iaCanPlay = tempsRestant;
+            updateMainJoueur();
             System.out.println("IA IS THINKING...");
         } else {
             this.iaCanPlay = -1;
-            System.out.println("PLAYER JOUE");
+            System.out.println("PLAYER a JOUé");
+            updateMainJoueur();
+            hudToFront();
         }
 
     }
