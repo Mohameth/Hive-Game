@@ -27,7 +27,6 @@ public class Moustique extends Insecte {
     	if(this.getEmplacement().getInsectes().size()>1) {
         	return plateau.getCasesVoisines(this.getEmplacement(), false);
         }
-    	
     	ArrayList<Case> caseVoisinesOccupees=(ArrayList<Case>) plateau.getCasesVoisinesOccupees(this.getEmplacement());
     	ArrayList<Case> casePossibles=new ArrayList<>();
     	

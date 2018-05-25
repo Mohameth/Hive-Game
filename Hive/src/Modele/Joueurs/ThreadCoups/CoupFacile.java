@@ -32,7 +32,6 @@ public class CoupFacile extends AbstractCoup {
     @Override
     protected boolean coup() {
         if (this.joueur.reineBloquee()) {
-            this.attente();
             return false;
         }
 
@@ -51,13 +50,11 @@ public class CoupFacile extends AbstractCoup {
         }
 
         if (bloquee) {
-            this.attente();
             return false;
         }
 
         if (!this.joueur.tousPionsPosables()) {
             this.jouerReine();
-            this.attente();
             return true;
         }
         do {
@@ -72,7 +69,6 @@ public class CoupFacile extends AbstractCoup {
                     HexaPoint p = casePlacement.get(r.nextInt(casePlacement.size())).getCoordonnees();
                     this.joueur.coupChoisi(insecte, p, true);
                     System.out.println(insecte.getClass() + " en " + p);
-                    this.attente();
                     return true;
                 }
             } else if (this.joueur.reinePosee()) {
@@ -85,7 +81,6 @@ public class CoupFacile extends AbstractCoup {
         this.joueur.setDernierDeplacement(new Deplacement(insecte, insecte.getEmplacement().getCoordonnees(), p));
         this.joueur.coupChoisi(insecte, p, false);
         System.out.println(insecte.getClass() + " en " + p);
-        this.attente();
         return true;    
     }
     

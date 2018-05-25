@@ -558,9 +558,9 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
         return resultat;
     }
 
-    public void notifieVue() {
+    public void notifieVue(long tempsRestant) {
         setChanged();
-        notifyObservers();
+        notifyObservers(tempsRestant);
     }
 
     public HexaPoint getDernierCoupOrigine() {
