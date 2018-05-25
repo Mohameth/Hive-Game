@@ -39,13 +39,12 @@ import java.io.*;
 import java.util.*;
 
 import static com.sun.javafx.PlatformUtil.isWindows;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.scene.shape.Circle;
+import java.awt.event.ActionListener;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Timer;
+import javafx.animation.AnimationTimer;
 
 public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
@@ -58,7 +57,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private PionMain currentMainSelected;
     private int sceneWidth, sceneHeight; //taille de la scene
     private double totZoom;  //zoom actuel du plateau
-    private double totMoveBoardX, totMoveBoardY;  //position du plateau
     private ArrayList<BorderPane> hudElems;
     private HashMap<TypeInsecte, PionMain> pionMainPlayer1, pionMainPlayer2;
     private int numeroPageTuto = 0;
@@ -71,6 +69,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     ArrayList<HexaPoint> zoneLibresCollision;
     private Button bUndo;
     private Button bRedo;
+    private long iaCanPlay = -1;
 
     VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs, boolean solo) {
         boolean fs = primaryStage.isFullScreen();
@@ -153,7 +152,14 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         //faire au clic passer devant HUD
         hudToFront();
 
-        //ctrlGame();
+        AnimationTimer anim = new AnimationTimer() {
+            @Override
+            public void handle(long temps) {
+                iaCanPlay(temps);
+            }
+        };
+        anim.start();
+
         coupJoue();
     }
 
@@ -252,10 +258,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
                 entry.getValue().updateZoomWidthHeight(totZoomVar, this.getWidth(), this.getHeight());
             }
-
-            double zoomFactor = totZoomVar / this.totZoom;
-            this.totMoveBoardX *= zoomFactor;
-            this.totMoveBoardY *= zoomFactor;
             this.totZoom = totZoomVar;
         }
     }
@@ -337,18 +339,13 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     private void applyBoardMove(double dx, double dy) {
         moveDeltaBoard(dx, dy);
-        this.totMoveBoardX += dx;
-        this.totMoveBoardY += dy;
     }
 
     private void resetView() {
         double centrePlateau[] = getCentreDuPlateau();
         moveDeltaBoard(-centrePlateau[0], -centrePlateau[1]);
-        //moveDeltaBoard(- this.totMoveBoardX,- this.totMoveBoardY);
 
         zoomImage(0.3);
-        this.totMoveBoardX = 0;
-        this.totMoveBoardY = 0;
     }
 
     private double[] getCentreDuPlateau() {
@@ -689,7 +686,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private void coupJoue() {
         hideZoneLibre();
         removeSelectedPion();
-        reconstructionPlateau(this.pModel);
+        //reconstructionPlateau(this.pModel);
         updateMainJoueur();
         hudToFront();
         System.out.println("Coup Joué");
@@ -1320,19 +1317,26 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        long tempsRestant = (long) arg;
-        if (tempsRestant > 0) {
-            System.out.println("YESSSSSSSSSSS I'M A FUCKING ROBOT AND TIME REMAINS");
-            try {
-                TimeUnit.NANOSECONDS.sleep(tempsRestant);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(VueTerrain.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
-            System.out.println("NO TIME REMAINING");
-        }
         Plateau p = (Plateau) o;
         this.pModel = p;
+
+        long tempsRestant = (long) arg;
+
+        //si >0 alors c'est une ia
+        if (tempsRestant > 0) {
+            this.iaCanPlay = tempsRestant;
+        } else {
+            this.iaCanPlay = -1;
+        }
+
+    }
+
+    public void iaCanPlay(long temps) {
+        if (iaCanPlay > 0 && (temps > iaCanPlay)) {
+            iaCanPlay = -1;
+            System.out.println("IA A JOUER");
+            reconstructionPlateau(this.pModel);
+        }
     }
 
     //toto lors du deplacement verifier collision A activer TODO
