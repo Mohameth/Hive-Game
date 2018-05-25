@@ -273,6 +273,7 @@ public abstract class Joueur implements Cloneable, Serializable {
             if (this.dernierDeplacement.getOrig() == null) {
                 this.plateau.deleteInsecte(this.dernierDeplacement.getI(), this.dernierDeplacement.getCible());
                 this.dernierDeplacement.getI().setEmplacement(null);
+                this.plateau.setNbPionsEnJeu(this.plateau.getNbPionsEnJeu()-1);
             } else {
                 this.plateau.deleteInsecte(this.dernierDeplacement.getI(), this.dernierDeplacement.getCible());
                 this.plateau.deplaceInsecte(this.dernierDeplacement.getI(), this.dernierDeplacement.getOrig());
