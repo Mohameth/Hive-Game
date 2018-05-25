@@ -682,16 +682,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         reconstructionPlateau(this.pModel);
         updateMainJoueur();
         hudToFront();
-        if (!this.controleur.UndoPossible()) {
-            bUndo.setDisable(true);
-        } else {
-            bUndo.setDisable(false);
-        }
-        if (!this.controleur.RedoPossible()) {
-            bRedo.setDisable(true);
-        } else {
-            bRedo.setDisable(false);
-        }
         System.out.println("Coup Jouer");
     }
 
