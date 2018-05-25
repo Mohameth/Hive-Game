@@ -1,10 +1,9 @@
 package Modele.Insectes;
 
 import Modele.Case;
-import Modele.Joueur;
+import Modele.Joueurs.Joueur;
 import Modele.Plateau;
 import Modele.HexaPoint;
-import Modele.TypeInsecte;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -28,7 +27,6 @@ public class Moustique extends Insecte {
     	if(this.getEmplacement().getInsectes().size()>1) {
         	return plateau.getCasesVoisines(this.getEmplacement(), false);
         }
-    	
     	ArrayList<Case> caseVoisinesOccupees=(ArrayList<Case>) plateau.getCasesVoisinesOccupees(this.getEmplacement());
     	ArrayList<Case> casePossibles=new ArrayList<>();
     	

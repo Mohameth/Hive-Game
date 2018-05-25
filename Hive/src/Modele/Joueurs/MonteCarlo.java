@@ -1,10 +1,14 @@
-package Modele;
+package Modele.Joueurs;
 
+import Modele.Case;
+import Modele.CoupleCaesInsecte;
+import Modele.Joueurs.JoueurIA;
 import java.util.ArrayList;
 import java.util.Random;
 
 import Modele.Insectes.Insecte;
 import Modele.Insectes.Reine;
+import Modele.Plateau;
 
 public class MonteCarlo {
 

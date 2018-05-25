@@ -6,11 +6,11 @@
 package Modele.IA;
 
 import Modele.Insectes.Insecte;
-import Modele.Joueur;
+import Modele.Joueurs.Joueur;
 import Modele.Plateau;
 import Modele.HexaPoint;
-import Modele.JoueurIA;
-import Modele.NumJoueur;
+import Modele.Joueurs.JoueurIA;
+import Modele.Joueurs.NumJoueur;
 import java.util.ArrayList;
 
 /**

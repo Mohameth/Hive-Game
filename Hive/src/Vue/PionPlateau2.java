@@ -6,7 +6,7 @@
 package Vue;
 
 import Modele.HexaPoint;
-import Modele.TypeInsecte;
+import Modele.Insectes.TypeInsecte;
 import java.util.ArrayList;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
@@ -187,7 +187,7 @@ public class PionPlateau2 implements ObservableVue {
                 double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x;
                 double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y;
                 //set drag&drop = true
-                System.out.println("Notifier vue ctrl ce pion drag = true");
+                //System.out.println("Notifier vue ctrl ce pion drag = true");
 
                 moveToXY(mouseEvent.getSceneX() - (this.scWidth / 2), mouseEvent.getSceneY() - (this.scHeight / 2));
                 //moveDeltaXY(deltaX, deltaY);
@@ -370,7 +370,8 @@ public class PionPlateau2 implements ObservableVue {
     public void moveToXY(double x, double y) {
         this.imagePion.moveToXY(x, y);
         if (this.pionEnDessous != null) {
-            this.pionEnDessous.moveToXY(x, y);
+            //pour le drag and drop ne pas deplacer le pion en dessous
+            //this.pionEnDessous.moveToXY(x, y);
         }
     }
 
@@ -382,6 +383,11 @@ public class PionPlateau2 implements ObservableVue {
                 zoneLibre.setZoneLibreCachee();
             }
         }
+    }
+
+    public void moveSnap(ZoneLibre zL) {
+        this.imagePion.moveToXY(zL.getImgPosX(), zL.getImgPosY());
+        //confirmer les coordonnées après le mouse release et valider possiton TODO
     }
 
     public void moveDeltaBoard(double x, double y) { //garde les zones libres affiché si visible

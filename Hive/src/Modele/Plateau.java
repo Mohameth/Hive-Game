@@ -1,5 +1,7 @@
 package Modele;
 
+import Modele.Insectes.TypeInsecte;
+import Modele.Joueurs.Joueur;
 import Modele.Insectes.Insecte;
 import java.util.Observable;
 import java.io.Serializable;
@@ -134,7 +136,7 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
     }
 
     /**
-     * ajoute un insecte à la position donné
+     * ajoute un insecte à la position donnée
      *
      * @param insecte insecte à ajouter
      * @param position coordonées de la case où ajouter l'insecte
@@ -556,9 +558,9 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
         return resultat;
     }
 
-    public void notifieVue() {
+    public void notifieVue(long tempsRestant) {
         setChanged();
-        notifyObservers();
+        notifyObservers(tempsRestant);
     }
 
     public HexaPoint getDernierCoupOrigine() {

@@ -5,6 +5,7 @@
  */
 package Modele.IA;
 
+import Modele.Joueurs.Joueur;
 import Modele.*;
 import Modele.Insectes.Insecte;
 import java.util.ArrayList;

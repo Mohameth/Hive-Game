@@ -6,8 +6,8 @@
 package IA;
 
 import Modele.Insectes.Insecte;
-import Modele.JoueurIA;
-import Modele.NumJoueur;
+import Modele.Joueurs.JoueurIA;
+import Modele.Joueurs.NumJoueur;
 import Modele.Plateau;
 
 /**

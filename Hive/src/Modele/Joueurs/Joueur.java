@@ -1,7 +1,11 @@
-package Modele;
+package Modele.Joueurs;
 
 import Controleur.Hive;
+import Modele.Deplacement;
+import Modele.HexaPoint;
 import Modele.Insectes.*;
+import Modele.Plateau;
+import Modele.Insectes.TypeInsecte;
 import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Level;
@@ -40,8 +44,8 @@ public abstract class Joueur implements Cloneable, Serializable {
 
     protected int tourJoueur;
 
-    
     protected NumJoueur numJoueur;
+
     /**
      * Coup d'un joueur
      *
@@ -93,8 +97,8 @@ public abstract class Joueur implements Cloneable, Serializable {
             return false;
         }
     }
-	
-	public boolean reinePresqueBloquee() {
+
+    public boolean reinePresqueBloquee() {
         if (this.reinePosee()) {
             Insecte reine;
             int i = 0;
@@ -108,15 +112,15 @@ public abstract class Joueur implements Cloneable, Serializable {
             return false;
         }
     }
-    
-    protected Reine getReine() {
-    	ArrayList<Insecte> liste=this.pionsEnMain();
-    	for(int i=0;i<liste.size();i++) {
-    		if(liste.get(i) instanceof Reine) {
-    			return (Reine) liste.get(i);
-    		}
-    	}
-    	return null;
+
+    public Reine getReine() {
+        ArrayList<Insecte> liste = this.pionsEnMain();
+        for (int i = 0; i < liste.size(); i++) {
+            if (liste.get(i) instanceof Reine) {
+                return (Reine) liste.get(i);
+            }
+        }
+        return null;
     }
 
     public NumJoueur getNumJoueur() {
@@ -137,8 +141,8 @@ public abstract class Joueur implements Cloneable, Serializable {
         }
         return res;
     }
-	
-	public ArrayList<Insecte> pionsEnJeu() {
+
+    public ArrayList<Insecte> pionsEnJeu() {
         ArrayList<Insecte> res = new ArrayList<>();
         for (Insecte ins : this.pions) {
             if (ins.getEmplacement() != null) {
@@ -152,7 +156,6 @@ public abstract class Joueur implements Cloneable, Serializable {
         this.pions = pions;
     }
 
-    
     /**
      * Place un insecte sur la case caseCible
      *
@@ -227,13 +230,21 @@ public abstract class Joueur implements Cloneable, Serializable {
             joueur.pions = cloneList(pions, joueur);
             joueur.tourJoueur = this.tourJoueur;
             joueur.numJoueur = this.numJoueur;
-            
+
             return joueur;
         } catch (CloneNotSupportedException e) {
             System.err.println("ERREUR Clone Joueur : " + e);
         }
 
         return null;
+    }
+
+    public Deplacement getDernierDeplacement() {
+        return dernierDeplacement;
+    }
+
+    public void setDernierDeplacement(Deplacement dernierDeplacement) {
+        this.dernierDeplacement = dernierDeplacement;
     }
 
     public ArrayList<Insecte> cloneList(ArrayList<Insecte> pions, Joueur j) {
@@ -253,7 +264,7 @@ public abstract class Joueur implements Cloneable, Serializable {
         } else if (this.dernierDeplacement.getI().getEmplacement() == null) {
             return false;
         } else {
-            return !this.dernierDeplacement.getI().getEmplacement().equals(this.dernierDeplacement.getOrig());
+            return !this.dernierDeplacement.getI().getEmplacement().getCoordonnees().equals(this.dernierDeplacement.getOrig());
         }
     }
 
@@ -274,9 +285,13 @@ public abstract class Joueur implements Cloneable, Serializable {
         if (this.dernierDeplacement == null) {
             return false;
         } else if (this.dernierDeplacement.getI().getEmplacement() == null) {
-            return false;
+            if (this.dernierDeplacement.getCible() == null) {
+                return false;
+            } else {
+                return true;
+            }
         } else {
-            return !this.dernierDeplacement.getI().getEmplacement().equals(this.dernierDeplacement.getCible());
+            return !(this.dernierDeplacement.getI().getEmplacement().getCoordonnees().equals(this.dernierDeplacement.getCible()));
         }
     }
 

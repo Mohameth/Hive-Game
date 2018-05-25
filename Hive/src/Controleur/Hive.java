@@ -2,14 +2,14 @@ package Controleur;
 
 import Modele.Insectes.*;
 import Modele.Case;
-import Modele.Joueur;
-import Modele.JoueurHumain;
-import Modele.JoueurIA;
+import Modele.Joueurs.Joueur;
+import Modele.Joueurs.JoueurHumain;
+import Modele.Joueurs.JoueurIA;
 import Modele.Plateau;
 import Modele.HexaPoint;
 import Modele.IA.IAMinimax;
-import Modele.NumJoueur;
-import Modele.TypeInsecte;
+import Modele.Joueurs.NumJoueur;
+import Modele.Insectes.TypeInsecte;
 import Vue.Vue;
 import static com.sun.javafx.PlatformUtil.isWindows;
 import java.io.File;
@@ -22,6 +22,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Observer;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Hive implements Serializable {
 
@@ -59,16 +62,17 @@ public class Hive implements Serializable {
         } else if (cas < 8) {
             switch (cas) {
                 case 5:
-                    this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.IAFACILE1);
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
+                    this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.IAFACILE1);
                     break;
                 case 6:
-                    this.joueur1 = new JoueurIA(this.plateau, 1, extension, NumJoueur.IAMOYEN1, joueur1); //Easy
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
+                    this.joueur1 = new JoueurIA(this.plateau, 1, extension, NumJoueur.IAMOYEN1, joueur2); //Easy
                     break;
                 case 7:
-                    this.joueur1 = new JoueurIA(this.plateau, 2, extension, NumJoueur.IADIFFICILE1, joueur1); //Medium                    
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
+                    this.joueur1 = new JoueurIA(this.plateau, 2, extension, NumJoueur.IADIFFICILE1, joueur2); //Medium                    
+
                     break;
             }
         } else {
@@ -188,20 +192,24 @@ public class Hive implements Serializable {
     }
 
     private void joueurSuivant() { //Passe au joueur suivant
-        this.plateau.notifieVue();
+        if (this.joueurCourant.getNumJoueur().estHumain()) {
+            this.plateau.notifieVue(-1);
+        } else {
+            this.plateau.notifieVue(((JoueurIA)this.joueurCourant).getTempsRestant());
+        }
+        
+        
         if (joueurCourant.equals(this.joueur1)) {
             this.joueurCourant = this.joueur2;
-            if (this.joueur2 instanceof JoueurIA) {
-                ((JoueurIA) this.joueurCourant).coup(null, null);
-                this.joueurSuivant();
-            }
-            if (this.joueur2 instanceof IAMinimax) {
-                ((IAMinimax) this.joueurCourant).coup(null, null);
-                this.joueurSuivant();
-            }
         } else if (joueurCourant.equals(this.joueur2)) {
             this.joueurCourant = this.joueur1;
         }
+        if (!this.joueurCourant.getNumJoueur().estHumain()) {
+                ((JoueurIA) this.joueurCourant).coup(null, null);
+                this.joueurSuivant();
+        }
+
+
     }
 
     public int JoueurGagnant() {
@@ -282,7 +290,7 @@ public class Hive implements Serializable {
                 this.joueur2.setPlateau(plateau);
                 this.joueurCourant.setPlateau(plateau);
 
-                this.plateau.notifieVue();
+                this.plateau.notifieVue(-1);
 
             } catch (ClassNotFoundException exception) {
                 System.out.println("Impossible de lire l'objet : " + exception.getMessage());
@@ -315,7 +323,7 @@ public class Hive implements Serializable {
                 this.joueur1.Undo();
                 this.joueurCourant = this.joueur1;
             }
-            this.plateau.notifieVue();
+            this.plateau.notifieVue(-1);
         }
     }
 
@@ -323,9 +331,9 @@ public class Hive implements Serializable {
         if (this.joueur2 instanceof JoueurIA) {
             return this.joueur1.RedoPossible();
         } else if (this.joueurCourant.equals(this.joueur1)) {
-            return this.joueur2.RedoPossible();
-        } else {
             return this.joueur1.RedoPossible();
+        } else {
+            return this.joueur2.RedoPossible();
         }
     }
 
@@ -335,13 +343,13 @@ public class Hive implements Serializable {
                 this.joueur1.Redo();
                 this.joueur2.Redo();
             } else if (this.joueurCourant.equals(this.joueur1)) {
-                this.joueur2.Redo();
+                this.joueur1.Redo();
                 this.joueurCourant = this.joueur2;
             } else {
-                this.joueur1.Redo();
+                this.joueur2.Redo();
                 this.joueurCourant = this.joueur1;
             }
-            this.plateau.notifieVue();
+            this.plateau.notifieVue(-1);
         }
     }
 
