@@ -688,6 +688,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         removeSelectedPion();
         updateMainJoueur();
         hudToFront();
+        this.controleur.setUndo(true);
         System.out.println("Coup Joué");
     }
 

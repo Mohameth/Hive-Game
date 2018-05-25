@@ -80,7 +80,6 @@ public class CoupFacile extends AbstractCoup {
 
         ArrayList<Case> deplacement = (ArrayList<Case>) insecte.deplacementPossible(plateau);
         HexaPoint p = deplacement.get(r.nextInt(deplacement.size())).getCoordonnees();
-        this.joueur.setDernierDeplacement(new Deplacement(insecte, insecte.getEmplacement().getCoordonnees(), p));
         this.joueur.coupChoisi(insecte, p, false);
         System.out.println(insecte.getClass() + " en " + p);
         return true;    
