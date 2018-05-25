@@ -54,7 +54,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private Hive controleur;
     private PionPlateau2 currentSelected;
     private boolean selectionValidee; //l'utilisateur a fait un mouse release sur le pion
-    private boolean currentSelectionIsSnapped; //l'utilisateur a fait un mouse release sur le pion
+    private ZoneLibre currentSelectionIsSnapped; //l'utilisateur a fait un mouse release sur le pion
     private PionMain currentMainSelected;
     private int sceneWidth, sceneHeight; //taille de la scene
     private double totZoom;  //zoom actuel du plateau
@@ -97,7 +97,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         this.sceneHeight = 720;
         this.totZoom = 0.5;
         this.selectionValidee = false;
-        this.currentSelectionIsSnapped = false;
+        this.currentSelectionIsSnapped = null;
         this.zoneLibresCollision = new ArrayList<>();
 
         Scene s = new Scene(root, primaryStage.getWidth(), primaryStage.getHeight());
@@ -562,15 +562,21 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         if (p.equals(this.currentSelected) && this.selectionValidee == false) {
             //onclique sur le pion release
             this.selectionValidee = true;
-            //System.out.println("Clic Selection");
+            System.out.println("Clic Selection");
         } else if (p.equals(this.currentSelected) && this.selectionValidee == true && p.isDragging()) {
             //si snap = ok valide le coup
             //si snap = false on remet a la position d'origine et removeselection
             //Fin drag & drop Verif si snap sinon back origine
             //System.out.println("Fin drag & drop Verif si snap sinon back origine");
-            if (this.currentSelectionIsSnapped) {
+            //System.out.println("Mouse release drag pose sur une zone si collision");
+
+            if (this.currentSelectionIsSnapped != null) {
                 //valide le drag and drop si snapped
                 //System.out.println("Valide le drag and drop");
+                p.setDragging(false);
+                selectionValidee = false;
+                updateMousePressedZoneLibre(currentSelectionIsSnapped);
+                removeSelectedPion();
             } else {
                 //retourne sur la position d'origine
                 p.goToPrevPos();
@@ -588,7 +594,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             //updateposition
 
             //mise a jour du tableau avec les points et zones libres
-            //System.out.println("Jouer coup plateau -> plateau");
+            System.out.println("Jouer coup plateau -> plateau");
             this.controleur.deplacementInsecte(currentSelected.getCoordPion(), zLibre.getCoordZoneLibre());
             this.currentSelected.setPionPosition(zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY());
             this.currentSelected.validCurrentPosXY();
@@ -1331,15 +1337,23 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     //toto lors du deplacement verifier collision A activer TODO
     public void checkCollision(PionPlateau2 p) {
+        ZoneLibre zlCollision = null;
         for (ZoneLibre lZoneLibre : listZoneLibres) {
             if (zoneLibresCollision.contains(lZoneLibre.getCoordZoneLibre())) {
                 if (collisionHitbox(p, lZoneLibre)) {
                     //p.snap(hitbox);
-                    System.out.println("Collsion");
+                    //System.out.println("Collsion");
                     p.moveSnap(lZoneLibre);
+                    zlCollision = lZoneLibre;
                 }
             }
 
+        }
+        //si il y a une collsion on met la collision a la zonelibre qui a été activé
+        if (zlCollision != null) {
+            currentSelectionIsSnapped = zlCollision;
+        } else {
+            currentSelectionIsSnapped = null;
         }
     }
 
@@ -1373,7 +1387,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void reconstructionPlateau(Plateau p) {
-        System.out.println("rec plateau");
+        //System.out.println("rec plateau");
         int nbNonCorrect = 0;
 
         if (p != null) {
