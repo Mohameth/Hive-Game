@@ -19,7 +19,7 @@ import java.util.ArrayList;
  */
 public class IAMinimax extends Joueur {
     Joueur adversaire;
-    int horizon = 0;
+    int horizon = 2;
     public Coup lastCoup = null;
     
     public IAMinimax(Plateau p, boolean extensions, NumJoueur numJoueur, Joueur adversaire) {
@@ -56,7 +56,7 @@ public class IAMinimax extends Joueur {
         i.deplacement(plateau, coup.getCible()); 
         System.out.println(i.getClass().getCanonicalName() + " en " + coup.getCible());
         lastCoup = coup;
-        
+              
         this.tourJoueur++;
         return true;
     }
@@ -67,7 +67,7 @@ public class IAMinimax extends Joueur {
         int oldVal = Integer.MIN_VALUE;
         int newVal;
         
-        ArrayList<Configuration> x = parent.getAllCoupsPossibles();
+        ArrayList<Configuration> x = parent.getAllCoupsPossibles(false);
         System.out.println("Analyse de " + x.size() + " configurations");
         for (Configuration c : x) {
             newVal = calculJoueurCourant(c, horizon);
@@ -90,9 +90,9 @@ public class IAMinimax extends Joueur {
             return conf.getEvaluation();
         }
         
-        int valeur = Integer.MIN_VALUE;
-        for (Configuration confCourante : conf.getAllCoupsPossibles()) {
-            valeur = Integer.max(conf.getEvaluation(), calculAdversaire(confCourante, horizon-1));
+        int valeur = conf.getEvaluation();
+        for (Configuration confCourante : conf.getAllCoupsPossibles(true)) {
+            valeur = Integer.max(valeur, calculAdversaire(confCourante, horizon-1));
         }
         
         return valeur;
@@ -104,8 +104,7 @@ public class IAMinimax extends Joueur {
         } 
         
         int valeur = Integer.MAX_VALUE;
-        //conf.echangeJoueur();
-        for (Configuration confCourante : conf.getAllCoupsPossibles()) {
+        for (Configuration confCourante : conf.getAllCoupsPossibles(false)) {
             valeur = Integer.min(valeur, calculJoueurCourant(confCourante, horizon-1));
         }
         //conf.echangeJoueur();
