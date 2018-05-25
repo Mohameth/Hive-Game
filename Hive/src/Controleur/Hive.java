@@ -53,7 +53,7 @@ public class Hive implements Serializable {
                     break;
                 case 3:
                     this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
-                    this.joueur2 = new IAMinimax(this.plateau, extension, NumJoueur.IAMOYEN2, joueur1); //Medium
+                    this.joueur2 = new JoueurIA(this.plateau, 2, extension, NumJoueur.IAMOYEN2, joueur1); //Medium
                     break;
                 case 4:
                     this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
