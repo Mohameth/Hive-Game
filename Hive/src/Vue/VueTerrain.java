@@ -1291,6 +1291,12 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     @Override
     public void update(Observable o, Object arg) {
+        long tempsRestant = (long) arg;
+        if (tempsRestant > 0) {
+            System.out.println("YESSSSSSSSSSS I'M A FUCKING ROBOT AND TIME REMAINS");
+        } else{
+            System.out.println("NO TIME REMAINING");
+        }
         Plateau p = (Plateau) o;
         this.pModel = p;
     }
