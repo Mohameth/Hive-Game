@@ -47,20 +47,12 @@ public abstract class AbstractCoup implements Runnable{
     @Override
     public void run() {
         this.tempsDebut = System.nanoTime();
-        this.coup();
+        if (this.coup()) {
+            this.tempsFin = System.nanoTime();
+        }
+        this.joueur.setTempsRestant(2000000000 -(tempsFin - tempsDebut));
     }
     
-    protected void attente() {
-        this.tempsFin = System.nanoTime();
-        if ((this.tempsFin - this.tempsDebut) < 2000000000) {
-            try {
-                TimeUnit.NANOSECONDS.sleep(2000000000 - (this.tempsFin - this.tempsDebut));
-                this.resetTemps();
-            } catch (InterruptedException ex) {
-                System.err.println("ERREUR attente IA : " + ex);
-            }
-        }
-    }
 
     protected void resetTemps() {
         this.tempsDebut = 0;
