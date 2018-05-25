@@ -47,7 +47,7 @@ public abstract class AbstractCoup implements Runnable {
         if (this.coup()) {
             this.tempsFin = System.nanoTime();
         }
-        this.joueur.setTempsRestant(2000000000 - (tempsFin - tempsDebut));
+        this.joueur.setTempsRestant((2000000000 - (tempsFin - tempsDebut))+ System.nanoTime());
         this.resetTemps();
     }
     
