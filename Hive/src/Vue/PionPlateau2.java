@@ -385,6 +385,11 @@ public class PionPlateau2 implements ObservableVue {
         }
     }
 
+    public void moveSnap(ZoneLibre zL) {
+        this.imagePion.moveToXY(zL.getImgPosX(), zL.getImgPosY());
+        //confirmer les coordonnées après le mouse release et valider possiton TODO
+    }
+
     public void moveDeltaBoard(double x, double y) { //garde les zones libres affiché si visible
         moveDeltaXY(x, y);
         //this.imagePion.moveDeltaXY(x, y);

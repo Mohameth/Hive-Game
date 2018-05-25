@@ -42,6 +42,7 @@ import static com.sun.javafx.PlatformUtil.isWindows;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.scene.shape.Circle;
 
 public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
@@ -1323,7 +1324,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         long tempsRestant = (long) arg;
         if (tempsRestant > 0) {
             System.out.println("YESSSSSSSSSSS I'M A FUCKING ROBOT AND TIME REMAINS");
-        } else{
+        } else {
             System.out.println("NO TIME REMAINING");
         }
         Plateau p = (Plateau) o;
@@ -1337,6 +1338,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 if (collisionHitbox(p, lZoneLibre)) {
                     //p.snap(hitbox);
                     System.out.println("Collsion");
+                    p.moveSnap(lZoneLibre);
                 }
             }
 
@@ -1347,9 +1349,20 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         //C1 with center (x1,y1) and radius r1;
         //C2 with center (x2,y2) and radius r2.
         //(x2-x1)^2 + (y1-y2)^2 <= (r1+r2)^2
-        double imgWidthRadius = 100;
+
+        double imgWidthRadius = 200 * totZoom;
         double imgx = p.getImgViewPion().getImgPosX();
         double imgy = p.getImgViewPion().getImgPosY();
+//        pions deplacé
+//        Circle c = new Circle(imgx, imgy, imgWidthRadius, Color.RED);
+//        c.setTranslateX(this.getWidth() / 2);
+//        c.setTranslateY(this.getHeight() / 2);
+//        getRoot().getChildren().add(c);
+//        hitbox
+//        Circle c1 = new Circle(zLibr.getImgPosX(), zLibr.getImgPosY(), (75 * totZoom), Color.GREEN);
+//        c1.setTranslateX(this.getWidth() / 2);
+//        c1.setTranslateY(this.getHeight() / 2);
+//        getRoot().getChildren().add(c1);
 
         double r1 = (zLibr.getImgPosX() - imgx);
         double r2 = (imgy - zLibr.getImgPosY());
