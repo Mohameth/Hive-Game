@@ -1322,7 +1322,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             } catch (InterruptedException ex) {
                 Logger.getLogger(VueTerrain.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else{
+        } else {
             System.out.println("NO TIME REMAINING");
         }
         Plateau p = (Plateau) o;
@@ -1373,7 +1373,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void reconstructionPlateau(Plateau p) {
-
+        System.out.println("rec plateau");
         int nbNonCorrect = 0;
 
         if (p != null) {
@@ -1539,9 +1539,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
                     ///*********** END BOUCLE
                     resetView();
-                    updateMainJoueur();
-                    hudToFront();
                 }
+                updateMainJoueur();
+                hudToFront();
             } else {
                 System.out.println("100% de correspondance!");
             }
