@@ -22,7 +22,7 @@ public class Moustique extends Insecte {
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
         
-        if (!this.getJoueur().tousPionsPosables() || this.getEmplacement().getInsecteOnTop()!=this) return new ArrayList<>();
+        if (!this.getJoueur().reinePosee() || this.getEmplacement().getInsecteOnTop()!=this) return new ArrayList<>();
     	
     	if(this.getEmplacement().getInsectes().size()>1) {
         	return plateau.getCasesVoisines(this.getEmplacement(), false);
@@ -97,6 +97,6 @@ public class Moustique extends Insecte {
 
     @Override
     public String toString() {
-        return "Moustique ";
+        return "Moustique";
     }
 }

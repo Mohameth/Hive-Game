@@ -22,27 +22,11 @@ public class Reine extends Insecte {
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
         
-    	if(this.getEmplacement().getNbInsectes() != 1) {
+    	if(!this.getJoueur().reinePosee() || this.getEmplacement().getNbInsectes() != 1) {
         	return new ArrayList<>();
         }
         return plateau.getCasesVoisinesAccessibles(this.getEmplacement(), true);
     }
-    	/*ArrayList<Case> casePossibles=(ArrayList<Case>) plateau.getCasesVoisines(this.getEmplacement(),true);
-		
-    	for(int j=0;j<casePossibles.size();j++) {
-			
-			if(!plateau.glissementPossibles(this.getEmplacement(),casePossibles.get(j))) {
-				casePossibles.remove(j);
-			}
-		}
-    	ArrayList<Case> casePossibles2=new ArrayList<>();
-    	
-		for(int i=0;i<casePossibles.size();i++) {
-			casePossibles2.add(casePossibles.get(i));
-		}
-		
-		return casePossibles2;
-    }*/
 
     @Override
     public TypeInsecte getType() {
@@ -51,6 +35,6 @@ public class Reine extends Insecte {
 
     @Override
     public String toString() {
-        return "Reine     ";
+        return "Reine";
     }
 }

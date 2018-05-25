@@ -21,7 +21,7 @@ public class Scarabee extends Insecte {
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
         
-        if (!this.getJoueur().tousPionsPosables() || (this.getEmplacement().getNbInsectes() != 1 && 
+        if (!this.getJoueur().reinePosee() || (this.getEmplacement().getNbInsectes() != 1 && 
                 !this.getEmplacement().getInsecteOnTop().equals(this))) return new ArrayList<>();
         
         ArrayList<Case> res = new ArrayList<>();
@@ -50,6 +50,6 @@ public class Scarabee extends Insecte {
 
     @Override
     public String toString() {
-        return "Scarabee  ";
+        return "Scarabee";
     }
 }

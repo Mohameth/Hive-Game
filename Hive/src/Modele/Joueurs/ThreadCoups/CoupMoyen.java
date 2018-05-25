@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package Modele.Joueurs.ThreadCoups;
 
 import Modele.HexaPoint;
@@ -18,20 +14,37 @@ import java.util.Random;
 
 /**
  *
- * @author firmyn
+ * @author GRP3
  */
 public class CoupMoyen extends AbstractCoup{
-    int horizon = 1;
+    int horizon = 2;
     public Coup lastCoup = null;
     
+    /**
+     * Joue un coup en utilisant l'algo du minimax
+     * 
+     * @param plateau le plateau avec les pions
+     * @param joueur le joueur courant
+     * @param adverse le joueur adverse
+     */
     public CoupMoyen(Plateau plateau, JoueurIA joueur, Joueur adverse) {
         super(plateau, joueur, adverse);
     }
     
+    /**
+     * Màj la profondeur de calcul
+     * 
+     * @param horizon 
+     */
     public void setHorizon(int horizon) {
         this.horizon = horizon;
     }
     
+    /**
+     * Joue un coup avec le minimax
+     * 
+     * @return true si la génération de coup a réussi
+     */
     @Override
     protected boolean coup() {
         Coup coup = minimax();
@@ -58,6 +71,10 @@ public class CoupMoyen extends AbstractCoup{
         return true;
     }
     
+    /**
+     * 
+     * @return le coup trouvé
+     */
     public Coup minimax() {
         Configuration parent = new Configuration(plateau, joueur, adverse);
         Configuration meilleurConf = null;

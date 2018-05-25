@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package Modele.IA;
 
 import Modele.Case;
@@ -18,7 +14,7 @@ import java.util.Iterator;
 
 /**
  *
- * @author moham
+ * @author GRP3
  */
 public class IAEvaluation {
 
@@ -33,6 +29,13 @@ public class IAEvaluation {
     private Insecte maReine;
     private Insecte reineAdverse;
 
+    /**
+     * Permet d'évaluer une configuration de jeu
+     * 
+     * @param jeu le plateau à évaluer
+     * @param joueur le joueur courant
+     * @param adversaire le joueur adverse
+     */
     public IAEvaluation(Plateau jeu, Joueur joueur, Joueur adversaire) {
         this.jeu = jeu;
         this.joueur = joueur;
@@ -44,7 +47,7 @@ public class IAEvaluation {
 
     /**
      *
-     * @return evaluation courante de la position
+     * @return l'évaluation courante de la position
      */
     public int getEvaluation() {
         if (aGagne()) {
@@ -62,11 +65,23 @@ public class IAEvaluation {
         return getSumEvaluation(myPiecesValues)
                 - getSumEvaluation(opponentPiecesValues);
     }
-
+    
+    /**
+     * Indique s'il s'agit d'un insecte adverse
+     * 
+     * @param i insecte
+     * @return true si l'insecte appartient au joueur adverse, false sinon
+     */
     private Boolean insecteBelongsToOpponent(Insecte i) {
         return !(i.getJoueur().getNumJoueur() == joueur.getNumJoueur());
     }
-
+    
+    /**
+     * Initialise la listes des pièces ainsi que leurs valeurs
+     * 
+     * @param piecesValues liste des pieces d'un joueur
+     * @param opponent true si on considère le joueur adverse
+     */
     private void initPiecesValues(HashMap<Insecte, Integer> piecesValues, Boolean opponent) {
         for (Insecte i : getTousInsecte()) {
             if (insecteBelongsToOpponent(i).equals(opponent)) {//si opponent, nos pieces ne serons pas initialisés
@@ -106,7 +121,12 @@ public class IAEvaluation {
 
         }
     }
-
+    
+    /**
+     * Liste de tous les insectes (à partir des joueurs)
+     * 
+     * @return une liste de tous les insectes
+     */
     private Collection<Insecte> getTousInsecte() {
         Collection<Insecte> res = new ArrayList<>();
         //Ajout des insectes du joueur
@@ -120,7 +140,13 @@ public class IAEvaluation {
 
         return res;
     }
-
+    
+    /**
+     * Indique si l'insecte i est recouvert (en dessous d'un autre insecte)
+     * 
+     * @param i insecte
+     * @return si l'insecte i est recouvert
+     */
     private Boolean estRecouvert(Insecte i) {
         return !i.getEmplacement().getInsecteOnTop().equals(i);
     }
@@ -135,7 +161,12 @@ public class IAEvaluation {
     private boolean estDansLaMain(Insecte i) {
         return i.getEmplacement() == null;
     }
-
+    /**
+     * Indique si l'insecte i entoure la reine adverse
+     * 
+     * @param i insecte
+     * @return true si i et la reine adverse sont voisin
+     */
     private boolean entoureReineAdverse(Insecte i) {
         //En train de bloquer la reine adverse + 15
         Insecte reine;
@@ -166,19 +197,40 @@ public class IAEvaluation {
         
         return jeu.estVoisin(reine, i);
     }
-
+    
+    /**
+     * Indique la mobilité d'un insecte
+     * 
+     * @param i insecte
+     * @return le nombre de cases vers lequel l'insecte i peut se déplacer 
+     */
     private int mobilite(Insecte i) {
         return i.deplacementPossible(jeu).size();
     }
-
+    
+    /**
+     * Indique si la configuration du plateau est gagnante
+     * 
+     * @return true si le joueur courant a gagné
+     */
     private boolean aGagne() {
         return adversaire.reineBloquee();
     }
-
+    
+    /**
+     * Indique si la configuration du plateau est perdant
+     * 
+     * @return true si l'adversaire a gagné
+     */
     private boolean aPerdu() {
         return joueur.reineBloquee();
     }
-
+    
+    /**
+     * Met à jour les valeurs des pièces selon leurs positions (par rapport aux autres pièces)
+     * 
+     * @param piecesValues liste des pieces + valeurs d'un joueur
+     */
     private void updatePositionValues(HashMap<Insecte, Integer> piecesValues) {
         HashMap<Insecte, Integer> piecesAjout = new HashMap<>();
         Iterator<Insecte> it = piecesValues.keySet().iterator();
@@ -209,7 +261,13 @@ public class IAEvaluation {
         }
         piecesValues.putAll(piecesAjout);
     }
-
+    
+    /**
+     * Calcule la somme des valeurs des pièces 
+     * 
+     * @param piecesValues liste des pieces + valeurs d'un joueur
+     * @return la somme des valeurs des pièces
+     */
     private int getSumEvaluation(HashMap<Insecte, Integer> piecesValues) {
         int sum = 0;
         for (int v : piecesValues.values()) {
