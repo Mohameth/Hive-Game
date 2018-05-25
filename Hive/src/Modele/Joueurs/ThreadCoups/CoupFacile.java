@@ -56,6 +56,8 @@ public class CoupFacile extends AbstractCoup {
         if (!this.joueur.tousPionsPosables()) {
             this.jouerReine();
             return true;
+        }else if(coupGagnant()) {
+        	return true;
         }
         do {
             insecte = this.joueur.getPions().get(r.nextInt(this.joueur.getPions().size()));

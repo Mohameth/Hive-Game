@@ -10,6 +10,8 @@ public class Noeud {
 
 	private int ni;
 	private int ti;
+	private int nbTourIA;
+	private int nbTourAdverse;
 	private ArrayList<Noeud> Fils;
 	private int nbFils;
 	private Noeud Pere;
@@ -23,7 +25,7 @@ public class Noeud {
 	private ArrayList<Insecte> PlateauIA;
 	private ArrayList<Insecte> PlateauAdverse;
 	
-	public Noeud(Plateau plateau,ArrayList<Insecte>mainIA,ArrayList<Insecte>mainAdverse
+	public Noeud(int nbTour,int nbTourAdverse,Plateau plateau,ArrayList<Insecte>mainIA,ArrayList<Insecte>mainAdverse
 			,ArrayList<Insecte>PlateauIA,ArrayList<Insecte>PlateauAdverse) {
 		this.ni=1;
 		this.ti=1;
@@ -38,7 +40,9 @@ public class Noeud {
 		this.mainAdverse=mainAdverse;
 		this.PlateauIA=PlateauIA;
 		this.PlateauAdverse=PlateauAdverse;
-                this.Fils = new ArrayList<>();
+        this.Fils = new ArrayList<>();
+        this.nbTourIA=nbTour;
+        this.nbTourAdverse=nbTourAdverse;
 	}
 	
 	public Noeud(Noeud Pere,Plateau plateau,ArrayList<Insecte>mainIA,ArrayList<Insecte>mainAdverse
@@ -56,7 +60,14 @@ public class Noeud {
 		this.mainAdverse=mainAdverse;
 		this.PlateauIA=PlateauIA;
 		this.PlateauAdverse=PlateauAdverse;
-                this.Fils = new ArrayList<>();
+        this.Fils = new ArrayList<>();
+        if(!tourIA) {
+        	this.nbTourIA=Pere.getNbTourIA()+1;
+        	this.nbTourAdverse=Pere.getNbTourAdverse();
+        }else {
+        	this.nbTourIA=Pere.getNbTourIA();
+        	this.nbTourAdverse=Pere.getNbTourAdverse()+1;
+        }     
 	}
 	
 	public int getNi() {
@@ -147,6 +158,14 @@ public class Noeud {
 	
 	public ArrayList<CoupleCaesInsecte> getPossiblilites(){
 		return possibilite;
+	}
+	
+	public int getNbTourIA() {
+		return nbTourIA;
+	}
+	
+	public int getNbTourAdverse() {
+		return nbTourAdverse;
 	}
 	
 }

@@ -58,7 +58,7 @@ public abstract class AbstractCoup implements Runnable {
     }
 
     public void jouerReine() {
-        Reine r = this.joueur.getReine();
+        Reine r = this.joueur.getReine(this.joueur.pionsEnMain());
         Random ra = new Random();
         ArrayList<Case> cases = plateau.pointVersCase(plateau.casesVidePlacement(this.joueur));
         HexaPoint c = cases.get(ra.nextInt(cases.size())).getCoordonnees();
@@ -101,7 +101,12 @@ public abstract class AbstractCoup implements Runnable {
         if (!adverse.reinePresqueBloquee()) {
             return false;
         }
-        Case c = ((ArrayList<Case>) plateau.getCasesVoisines(adverse.getReine().getEmplacement(), true)).get(0);
+        Reine reine=adverse.getReine(adverse.pionsEnJeu());
+        if(reine==null) {
+        	return false;
+        }
+        ArrayList<Case> c1=(ArrayList<Case>) plateau.getCasesVoisines(reine.getEmplacement(), true);
+        Case c = c1.get(0);
         ArrayList<Insecte> in = this.joueur.pionsEnJeu();
         for (int i = 0; i < in.size(); i++) {
             if (in.get(i).deplacementPossible(plateau).contains(c)) {
