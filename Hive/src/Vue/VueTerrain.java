@@ -608,7 +608,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             pp2.validCurrentPosXY();
         }
         coupJoue();
-
     }
 
     @Override
@@ -686,8 +685,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private void coupJoue() {
         hideZoneLibre();
         removeSelectedPion();
-        //reconstructionPlateau(this.pModel);
-        updateMainJoueur();
         hudToFront();
         System.out.println("Coup Joué");
     }
@@ -1319,14 +1316,19 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     public void update(Observable o, Object arg) {
         Plateau p = (Plateau) o;
         this.pModel = p;
-
         long tempsRestant = (long) arg;
+
+        //reconstructionPlateau(this.pModel);
+        updateMainJoueur();
 
         //si >0 alors c'est une ia
         if (tempsRestant > 0) {
+            //coupJoue(); //coup joué de l'humain
             this.iaCanPlay = tempsRestant;
+            System.out.println("IA IS THINKING...");
         } else {
             this.iaCanPlay = -1;
+            System.out.println("PLAYER JOUE");
         }
 
     }
@@ -1334,7 +1336,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     public void iaCanPlay(long temps) {
         if (iaCanPlay > 0 && (temps > iaCanPlay)) {
             iaCanPlay = -1;
-            System.out.println("IA A JOUER");
             reconstructionPlateau(this.pModel);
         }
     }

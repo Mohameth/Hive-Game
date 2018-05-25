@@ -371,7 +371,7 @@ public class PionPlateau2 implements ObservableVue {
         this.imagePion.moveToXY(x, y);
         if (this.pionEnDessous != null) {
             //pour le drag and drop ne pas deplacer le pion en dessous
-            //this.pionEnDessous.moveToXY(x, y);
+            this.pionEnDessous.moveToXY(x, y);
         }
     }
 
