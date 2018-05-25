@@ -27,7 +27,7 @@ public class VueSolo extends Vue {
 
     VueSolo(Stage primaryStage) {
         Properties prop = new Properties();
-        String propFileName = System.getProperty("user.dir").concat("/rsc/config.properties");
+        String propFileName = System.getProperty("user.dir").concat("/Hive/rsc/config.properties");
         InputStream input = null;
         try {
             input = new FileInputStream(propFileName);
@@ -95,7 +95,7 @@ public class VueSolo extends Vue {
         }
 
         VBox vb2 = new VBox();
-        Label tc = new Label(getLangStr("chColor") + ":");
+        Label tc = new Label(getLangStr("chColor"));
         tc.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         tc.setTextFill(Color.WHITE);
         final ToggleGroup group2 = new ToggleGroup();
@@ -180,7 +180,9 @@ public class VueSolo extends Vue {
         primaryStage.show();
 
         try {
-            input.close();
+            if (input != null) {
+                input.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

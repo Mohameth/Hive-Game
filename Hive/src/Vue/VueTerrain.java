@@ -1,6 +1,7 @@
 package Vue;
 
 import Modele.Insectes.TypeInsecte;
+import Modele.Joueurs.JoueurIA;
 import Modele.Joueurs.NumJoueur;
 import Controleur.Hive;
 import Modele.*;
@@ -837,7 +838,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     private BorderPane getHudPlayer(HashMap<TypeInsecte, Integer> m, int numplayer, boolean ia) {
         Properties prop = new Properties();
-        String propFileName = System.getProperty("user.dir").concat("/rsc/config.properties");
+        String propFileName = System.getProperty("user.dir").concat("/Hive/rsc/config.properties");
         InputStream input = null;
         try {
             input = new FileInputStream(propFileName);
@@ -890,17 +891,24 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             });
         } else {
             ComboBox<String> cb = new ComboBox<>();
-            cb.getItems().addAll(getLangStr("easy"), getLangStr("medi"), getLangStr("hard"));
-            cb.getSelectionModel().select(0);
+            cb.getItems().addAll(getLangStr("easy"),getLangStr("medi"),getLangStr("hard"));
+            cb.getSelectionModel().select(((JoueurIA) this.controleur.getJoueur2()).getDifficulte()-1);
             cb.setDisable(true);
             cb.getStylesheets().add("Vue/combo.css");
             nomJoueur.add(cb);
+            cb.setMinWidth(150);
             hName.getChildren().addAll(bEdit, cb);
             bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
                 if (cb.isDisable()) {
                     cb.setDisable(false);
                 } else {
                     cb.setDisable(true);
+                    int dif = 1;
+                    if(cb.getValue().equals(getLangStr("medi")))
+                        dif = 2;
+                    else if(cb.getValue().equals(getLangStr("hard")))
+                        dif = 3;
+                    ((JoueurIA) this.controleur.joueur2).setDifficulte(dif);
                 }
             });
         }
@@ -1106,10 +1114,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             TextField tnom = new TextField("file");
-            tnom.setStyle("-fx-font-weight: bold;\n"
-                    + "     -fx-font-size: 24px;\n"
-                    + "    -fx-background-color: transparent;\n"
-                    + "    -fx-text-fill : rgb(255,255,255);");
+            tnom.setStyle("-fx-font-weight: bold;-fx-font-size: 24px; -fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);-fx-border-color: white; -fx-border-width: 0 0 1 0;");
             ListView<String> lv = getSaveFile();
             Button save = new Button(getLangStr("save"));
             Button cancel = new Button(getLangStr("cancel"));
@@ -1608,7 +1613,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     public ListView<String> getSaveFile() {
         String path;
         if (isWindows()) {
-            path = System.getProperty("user.dir").concat("\\rsc\\SAVE");
+            path = System.getProperty("user.dir").concat("\\Hive\\rsc\\SAVE");
         } else {
             path = System.getProperty("user.dir").concat("/rsc/SAVE/");
         }
@@ -1759,9 +1764,12 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             ((ComboBox) nomJoueur.get(numJoueur - 1)).getStylesheets().remove("Vue/combo.css");
             ((ComboBox) nomJoueur.get(numJoueur - 1)).getStylesheets().add("Vue/combo1.css");
             nomJoueur.get(Math.abs(numJoueur - 2)).setStyle("-fx-text-fill : white");
-        } else {
+        } else if(nomJoueur.get(Math.abs(numJoueur - 2)) instanceof ComboBox){
             ((ComboBox) nomJoueur.get(Math.abs(numJoueur - 2))).getStylesheets().remove("Vue/combo1.css");
             ((ComboBox) nomJoueur.get(Math.abs(numJoueur - 2))).getStylesheets().add("Vue/combo.css");
+            nomJoueur.get(numJoueur - 1).setStyle("-fx-text-fill : red");
+        } else {
+            nomJoueur.get(Math.abs(numJoueur - 2)).setStyle("-fx-text-fill : white");
             nomJoueur.get(numJoueur - 1).setStyle("-fx-text-fill : red");
         }
 
