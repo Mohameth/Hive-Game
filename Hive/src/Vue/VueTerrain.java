@@ -43,6 +43,9 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.shape.Circle;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
@@ -151,7 +154,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         hudToFront();
 
         //ctrlGame();
-        coupJouer();
+        coupJoue();
     }
 
     public void displayZoneLibre() {
@@ -601,7 +604,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             //pp2.setPionPosition(zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY());
             pp2.validCurrentPosXY();
         }
-        coupJouer();
+        coupJoue();
 
     }
 
@@ -677,23 +680,13 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     }
 
-    private void coupJouer() {
+    private void coupJoue() {
         hideZoneLibre();
         removeSelectedPion();
         reconstructionPlateau(this.pModel);
         updateMainJoueur();
         hudToFront();
-        if (!this.controleur.UndoPossible()) {
-            bUndo.setDisable(true);
-        } else {
-            bUndo.setDisable(false);
-        }
-        if (!this.controleur.RedoPossible()) {
-            bRedo.setDisable(true);
-        } else {
-            bRedo.setDisable(false);
-        }
-        System.out.println("Coup Jouer");
+        System.out.println("Coup Joué");
     }
 
     //Main Pion vers plateau
@@ -1324,7 +1317,12 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         long tempsRestant = (long) arg;
         if (tempsRestant > 0) {
             System.out.println("YESSSSSSSSSSS I'M A FUCKING ROBOT AND TIME REMAINS");
-        } else {
+            try {
+                TimeUnit.NANOSECONDS.sleep(tempsRestant);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(VueTerrain.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else{
             System.out.println("NO TIME REMAINING");
         }
         Plateau p = (Plateau) o;
