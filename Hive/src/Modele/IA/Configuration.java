@@ -26,11 +26,13 @@ public class Configuration {
     boolean dejaEvalue = false;
     private Integer evaluation = null;
     private Coup coupJoue;
+    private boolean tourAdversaire = false;
 
-    private Configuration(Plateau plateau, Joueur joueurCourant, Joueur adversaire, Configuration parent, Coup coupJoue) {
+    private Configuration(Plateau plateau, Joueur joueurCourant, Joueur adversaire, boolean tourAdversaire, Configuration parent, Coup coupJoue) {
         this.plateau = plateau;
         this.joueurCourant = joueurCourant;
         this.adversaire = adversaire;
+        this.tourAdversaire = tourAdversaire;
         this.parent = parent;
         this.coupJoue = coupJoue;
     }
@@ -53,17 +55,18 @@ public class Configuration {
     }
     
     public boolean estFeuille() {
-        //return plateau.estGagnant() || plateau.estPerdant();
-        return false;
+        return joueurCourant.reineBloquee() || adversaire.reineBloquee();// || (dejaEvalue && fils.size() == 0);
     }
     
-    public ArrayList<Configuration> getAllCoupsPossibles() {
+    public ArrayList<Configuration> getAllCoupsPossibles(boolean tourAdversaire) {
+        this.tourAdversaire = tourAdversaire;
         if (fils == null) {
             fils = new ArrayList<>();
-
-            for (Insecte i : joueurCourant.getPions()) {
+            Joueur j = tourAdversaire ? adversaire : joueurCourant;
+            
+            for (Insecte i : j.getPions()) {
                 if (i.getEmplacement() == null) {
-                    for (HexaPoint p : plateau.casesVidePlacement(joueurCourant)) {
+                    for (HexaPoint p : plateau.casesVidePlacement(j)) {
                         addFils(true, i, p);
                     }
                 } else {
@@ -74,11 +77,19 @@ public class Configuration {
             }
         }
         if (fils.size() == 0) {
-            System.err.println("ERRRRRRRRRRRRRRRRRRRREEEUUUUUUUUUUUURRR");
+            //System.err.println("ERRRRRRRRRRRRRRRRRRRREEEUUUUUUUUUUUURRR");
         }
         
         return fils;
     }
+    
+    /*public ArrayList<Configuration> getAllCoupsPossiblesAdversaire() {
+        this.echangeJoueur();
+        getAllCoupsPossibles();
+        this.echangeJoueur();
+        
+        return fils;
+    }*/
     
     public void echangeJoueur() {
         Joueur j = joueurCourant;
@@ -87,6 +98,9 @@ public class Configuration {
     }
     
     private void copiePlateau(Plateau newPlateau, Joueur newCourant, Joueur newAdversaire) {
+        if (newPlateau.getInsectes().size() != 0) {
+            System.err.println("no");
+        }
         for(Insecte insecte : plateau.getInsectes()) {
             Insecte cloneInsecte = null;
             if (insecte.getJoueur().getNumJoueur() == joueurCourant.getNumJoueur())  {
@@ -97,7 +111,7 @@ public class Configuration {
                 cloneInsecte = newAdversaire.getPions().get(adversaire.getPions().indexOf(insecte));
                 cloneInsecte.setJoueur(adversaire);
             }
-
+            
             newPlateau.ajoutInsecte(cloneInsecte, insecte.getEmplacement().getCoordonnees());
         }
     }
@@ -112,10 +126,18 @@ public class Configuration {
         
         copiePlateau(newPlateau, newCourant, newAdversaire);
         
-        Insecte newInsecte = newCourant.getPions().get(joueurCourant.getPions().indexOf(i));
+        Joueur j = tourAdversaire ? adversaire : joueurCourant;
+        Joueur newJ = tourAdversaire ? newAdversaire : newCourant;
+        
+        Insecte newInsecte = newJ.getPions().get(j.getPions().indexOf(i));
         HexaPoint origine = null;
         int niveau = 1;
-        if (modePlacement) newCourant.placementInsecte(newInsecte, p);
+        if (modePlacement) newJ.placementInsecte(newInsecte, p);
+        
+        /*if (plateau.getInsectes().size() == 3 && modePlacement (i.getType() == TypeInsecte.REINE)) {
+            System.err.println("");
+        }*/
+        
         else {
             origine = newInsecte.getEmplacement().getCoordonnees();
             niveau = newInsecte.getNiveau();
@@ -124,12 +146,17 @@ public class Configuration {
         
         if (origine == null) origine = newInsecte.getEmplacement().getCoordonnees();
         
+        /*if (!newInsecte.deplacementPossible(newPlateau).isEmpty()) {
+            System.err.println("-------------> " + newInsecte.getType() + " " + newInsecte.deplacementPossible(newPlateau).size());
+        }*/
+        
         fils.add(new Configuration(
                 newPlateau, 
                 newCourant,
-                newAdversaire, 
+                newAdversaire,
+                tourAdversaire,
                 this, 
-                new Coup(modePlacement, joueurCourant.getPions().indexOf(i), origine, niveau, p)
+                new Coup(modePlacement, j.getPions().indexOf(i), origine, niveau, p)
         ));
     }
 
