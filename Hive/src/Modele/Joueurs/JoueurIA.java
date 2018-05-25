@@ -28,6 +28,7 @@ public class JoueurIA extends Joueur {
     private Insecte insecteChoisi;
     private HexaPoint caseChoisie;
     private boolean placement;
+    private long tempsRestant;
 
     public JoueurIA(Plateau p, int difficulte, boolean extensions, NumJoueur numJoueur, Joueur adverse) {
         super(p, extensions, numJoueur);
@@ -68,7 +69,6 @@ public class JoueurIA extends Joueur {
             } else {
                 this.plateau.deplaceInsecte(this.insecteChoisi, this.caseChoisie);
             }
-            this.plateau.deplaceInsecte(this.insecteChoisi, this.caseChoisie);
             this.resetCoupChoisi();
             this.incrementeTour();
             return true;
@@ -109,4 +109,13 @@ public class JoueurIA extends Joueur {
         }
     }
 
+    public long getTempsRestant() {
+        return tempsRestant;
+    }
+
+    public void setTempsRestant(long tempsRestant) {
+        this.tempsRestant = tempsRestant;
+    }
+
+    
 }

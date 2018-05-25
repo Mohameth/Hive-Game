@@ -22,6 +22,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Observer;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Hive implements Serializable {
 
@@ -188,13 +191,18 @@ public class Hive implements Serializable {
     }
 
     private void joueurSuivant() { //Passe au joueur suivant
-        this.plateau.notifieVue();
+        if (this.joueurCourant.getNumJoueur().estHumain()) {
+            this.plateau.notifieVue(-1);
+        } else {
+            this.plateau.notifieVue(((JoueurIA)this.joueurCourant).getTempsRestant());
+        }
+        
+        
         if (joueurCourant.equals(this.joueur1)) {
             this.joueurCourant = this.joueur2;
         } else if (joueurCourant.equals(this.joueur2)) {
             this.joueurCourant = this.joueur1;
         }
-        
         if (!this.joueurCourant.getNumJoueur().estHumain()) {
                 ((JoueurIA) this.joueurCourant).coup(null, null);
                 this.joueurSuivant();
@@ -281,7 +289,7 @@ public class Hive implements Serializable {
                 this.joueur2.setPlateau(plateau);
                 this.joueurCourant.setPlateau(plateau);
 
-                this.plateau.notifieVue();
+                this.plateau.notifieVue(-1);
 
             } catch (ClassNotFoundException exception) {
                 System.out.println("Impossible de lire l'objet : " + exception.getMessage());
@@ -314,7 +322,7 @@ public class Hive implements Serializable {
                 this.joueur1.Undo();
                 this.joueurCourant = this.joueur1;
             }
-            this.plateau.notifieVue();
+            this.plateau.notifieVue(-1);
         }
     }
 
@@ -340,7 +348,7 @@ public class Hive implements Serializable {
                 this.joueur1.Redo();
                 this.joueurCourant = this.joueur1;
             }
-            this.plateau.notifieVue();
+            this.plateau.notifieVue(-1);
         }
     }
 

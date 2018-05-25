@@ -65,6 +65,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private Plateau pModel;
     private boolean solo;
     ArrayList<HexaPoint> zoneLibresCollision;
+    private Button bUndo;
+    private Button bRedo;
 
     VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs, boolean solo) {
         boolean fs = primaryStage.isFullScreen();
@@ -680,6 +682,16 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         reconstructionPlateau(this.pModel);
         updateMainJoueur();
         hudToFront();
+        if (!this.controleur.UndoPossible()) {
+            bUndo.setDisable(true);
+        } else {
+            bUndo.setDisable(false);
+        }
+        if (!this.controleur.RedoPossible()) {
+            bRedo.setDisable(true);
+        } else {
+            bRedo.setDisable(false);
+        }
         System.out.println("Coup Jouer");
     }
 
@@ -976,8 +988,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         hb.setSpacing(10);
         hb.getChildren().addAll(bSave, bLoad);
 
-        Button bUndo = new Button();
-        Button bRedo = new Button();
+        bUndo = new Button();
+        bRedo = new Button();
         Button bSug = new Button();
         Button brules = new Button();
 
@@ -1028,16 +1040,25 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             getPause();
         });
 
+        if (!this.controleur.UndoPossible()) {
+            bUndo.setDisable(true);
+        }
+        if (!this.controleur.RedoPossible()) {
+            bRedo.setDisable(true);
+        }
+
         bUndo.setTooltip(new Tooltip("Anuler le dernier coup"));
         bUndo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             this.controleur.Undo();
             this.reconstructionPlateau(pModel);
+
         });
 
         bRedo.setTooltip(new Tooltip("Rejouer le dernier coup"));
         bRedo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             this.controleur.Redo();
             this.reconstructionPlateau(pModel);
+
         });
 
         brules.setTooltip(new Tooltip("Règles du jeu"));
@@ -1299,6 +1320,12 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     @Override
     public void update(Observable o, Object arg) {
+        long tempsRestant = (long) arg;
+        if (tempsRestant > 0) {
+            System.out.println("YESSSSSSSSSSS I'M A FUCKING ROBOT AND TIME REMAINS");
+        } else{
+            System.out.println("NO TIME REMAINING");
+        }
         Plateau p = (Plateau) o;
         this.pModel = p;
     }
@@ -1374,10 +1401,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                             }
                         }
 
-                    } else {
-                        if (!p.getCases().containsKey(pp2.getCoordPion()) || p.getCase(pp2.getCoordPion()).getInsectes().size() != 1 || p.getCase(pp2.getCoordPion()).getInsecteOnTop().getType() != pp2.getPionType()) {
-                            nbNonCorrect++;
-                        }
+                    } else if (!p.getCases().containsKey(pp2.getCoordPion()) || p.getCase(pp2.getCoordPion()).getInsectes().size() != 1 || p.getCase(pp2.getCoordPion()).getInsecteOnTop().getType() != pp2.getPionType()) {
+                        nbNonCorrect++;
                     }
                 }
             }
@@ -1510,6 +1535,16 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 System.out.println("100% de correspondance!");
             }
 
+        }
+        if (!this.controleur.UndoPossible()) {
+            bUndo.setDisable(true);
+        } else {
+            bUndo.setDisable(false);
+        }
+        if (!this.controleur.RedoPossible()) {
+            bRedo.setDisable(true);
+        } else {
+            bRedo.setDisable(false);
         }
     }
 
