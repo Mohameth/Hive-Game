@@ -129,9 +129,10 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
             //setChanged();
             //notifyObservers();
         } catch (Exception ex) {
-            System.err.println("Erreur ajout : " + ex);
+            System.err.print("Erreur ajout : "+this.nbPionsEnJeu);
             
             ex.printStackTrace();
+            System.out.println("");
         }
     }
 
@@ -146,7 +147,9 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
             this.dernierCoupOrigine = insecte.getEmplacement().getCoordonnees();
             this.dernierCoupCible = position;
             this.typePlacement = null;
-            this.getCase(position).addInsecte(insecte);
+            Case cible = this.getCase(position);
+            cible.addInsecte(insecte);
+            insecte.setEmplacement(cible);
             this.ajoutCasesVoisines(position);
 
         } catch (Exception ex) {
@@ -512,7 +515,12 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
             }
         }
     }
-
+    
+    /**
+     * Clone la plateau en omettant les insectes et en remettant le nb de pions en eju à 0
+     * 
+     * @return un clone du plateau
+     */
     @Override
     public Plateau clone() {
         try {
@@ -529,13 +537,16 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
         return null;
     }
     
+    /**
+     * Clone superficiellement (sans les insectes) la hashmap
+     * 
+     * @param cases hashmap à cloner
+     * @return un clone de @cases
+     */
     public static HashMap<HexaPoint, Case> cloneMap(Map<HexaPoint, Case> cases) {
         HashMap<HexaPoint, Case> clone = new HashMap<>(cases.size());
         for (Map.Entry<HexaPoint, Case> element : cases.entrySet()) {
-            Case c = new Case(element.getValue().getCoordonnees());
-            //c.setInsectes(cloneList(element.getValue().getInsectes()));
-            
-            clone.put(element.getKey(), new Case(element.getValue().getCoordonnees()));
+            clone.put(element.getKey().clone(), new Case(element.getValue().getCoordonnees()));
         }
         
         return clone;

@@ -134,8 +134,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         ArrayList<Insecte> initInsectes = new ArrayList<>();
 
         initInsectes = this.controleur.mainsInit();
-        BorderPane playerOne = getHudPlayer(getnbInsect(initInsectes), 1, true); //initialisation tout les pions possable
-        BorderPane playerTwo = getHudPlayer(getnbInsect(initInsectes), 2, false);
+        BorderPane playerOne = getHudPlayer(getnbInsect(initInsectes), 1, !this.controleur.getJoueur1().getNumJoueur().estHumain()); //initialisation tout les pions possable
+        BorderPane playerTwo = getHudPlayer(getnbInsect(initInsectes), 2, !this.controleur.getJoueur2().getNumJoueur().estHumain());
 
         playerOne.minWidthProperty().bind(s.widthProperty());
         playerOne.maxWidthProperty().bind(s.widthProperty());
@@ -153,14 +153,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         //faire au clic passer devant HUD
         hudToFront();
 
-        AnimationTimer anim = new AnimationTimer() {
-            @Override
-            public void handle(long temps) {
-                iaCanPlay(temps);
-            }
-        };
-        anim.start();
-
+        //ctrlGame();
         coupJoue();
     }
 
@@ -687,6 +680,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         removeSelectedPion();
         updateMainJoueur();
         hudToFront();
+        this.controleur.setUndo(true);
+        System.out.println("Coup Joué");
     }
 
     //Main Pion vers plateau
@@ -897,8 +892,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             });
         } else {
             ComboBox<String> cb = new ComboBox<>();
-            cb.getItems().addAll(getLangStr("easy"), getLangStr("medi"), getLangStr("hard"));
-            // cb.getSelectionModel().select(((JoueurIA) this.controleur.getJoueur2()).getDifficulte() - 1);
+            cb.getItems().addAll(getLangStr("easy"),getLangStr("medi"),getLangStr("hard"));
+            if(!this.controleur.getJoueur2().getNumJoueur().estHumain())
+                cb.getSelectionModel().select(((JoueurIA) this.controleur.getJoueur2()).getDifficulte()-1);
+            else
+                cb.getSelectionModel().select(((JoueurIA) this.controleur.getJoueur1()).getDifficulte()-1);
             cb.setDisable(true);
             cb.getStylesheets().add("Vue/combo.css");
             nomJoueur.add(cb);

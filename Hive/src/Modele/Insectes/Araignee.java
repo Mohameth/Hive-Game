@@ -25,7 +25,7 @@ public class Araignee extends Insecte {
         
     //@Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
-        if (!this.getJoueur().tousPionsPosables() || this.getEmplacement().getNbInsectes() != 1) return new ArrayList<>();
+        if (!this.getJoueur().reinePosee() || this.getEmplacement().getNbInsectes() != 1) return new ArrayList<>();
         ArrayList<Case> res = new ArrayList<>();
         ArrayList<Case> visitees = new ArrayList<>();
         Collection<Case> init = plateau.getCasesVoisinesAccessibles(this.getEmplacement(), true);
@@ -69,6 +69,6 @@ public class Araignee extends Insecte {
 
     @Override
     public String toString() {
-        return "Araignee  ";
+        return "Araignee";
     }
 }

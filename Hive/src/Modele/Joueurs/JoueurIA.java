@@ -56,7 +56,7 @@ public class JoueurIA extends Joueur {
         return difficulte;
     }
 
-    public void setDifficulte(int dif){
+    public void setDifficulte(int dif) {
         this.difficulte = dif;
     }
 
@@ -65,59 +65,59 @@ public class JoueurIA extends Joueur {
         try {
             Thread t = new Thread(this.threadCoup);
             t.start();
-            
+
             t.join();
         } catch (InterruptedException ex) {
             System.err.print("Erreur Thread IA : " + ex);
         }
-        
-        if(this.coupChoisiExistant()) {
-            if(this.placement) {
+
+        if (this.coupChoisiExistant()) {
+            if (this.placement) {
+                this.dernierDeplacement = new Deplacement(this.insecteChoisi, null, this.caseChoisie);
                 this.plateau.ajoutInsecte(this.insecteChoisi, this.caseChoisie);
             } else {
+                this.dernierDeplacement = new Deplacement(this.insecteChoisi, this.insecteChoisi.getEmplacement().getCoordonnees(), this.caseChoisie);
                 this.plateau.deplaceInsecte(this.insecteChoisi, this.caseChoisie);
             }
             this.resetCoupChoisi();
             this.incrementeTour();
             return true;
         }
-        
+
         return false;
     }
 
     public void coupChoisi(Insecte insecte, HexaPoint caseChoisie, boolean placement) {
         if (insecte != null) {
-          this.insecteChoisi = insecte;
-          this.caseChoisie = caseChoisie;
-          this.placement = placement;
-        } 
+            this.insecteChoisi = insecte;
+            this.caseChoisie = caseChoisie;
+            this.placement = placement;
+        }
     }
-    
+
     private void resetCoupChoisi() {
         this.insecteChoisi = null;
         this.caseChoisie = null;
         this.placement = false;
     }
-    
+
     private boolean coupChoisiExistant() {
         return (this.insecteChoisi != null && this.caseChoisie != null);
     }
-    
+
     private void setThreadCoup() {
-        switch(this.difficulte) {
+        switch (this.difficulte) {
             case 1:
                 this.threadCoup = new CoupFacile(this.plateau, this, this.adverse);
-            break;
+                break;
             case 2:
                 this.threadCoup = new CoupMoyen(this.plateau, this, this.adverse);
-            break;
+                break;
             case 3:
                 this.threadCoup = new CoupDifficile(this.plateau, this, this.adverse);
-            break;
+                break;
         }
     }
-    
-    
 
     public long getTempsRestant() {
         return tempsRestant;
@@ -127,5 +127,4 @@ public class JoueurIA extends Joueur {
         this.tempsRestant = tempsRestant;
     }
 
-    
 }

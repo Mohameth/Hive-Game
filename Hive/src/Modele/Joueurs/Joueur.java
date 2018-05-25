@@ -208,7 +208,7 @@ public abstract class Joueur implements Cloneable, Serializable {
         }
         return true;
     }
-
+    
     public int getTourJoueur() {
         return tourJoueur;
     }
