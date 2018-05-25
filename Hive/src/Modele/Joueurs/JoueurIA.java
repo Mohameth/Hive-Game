@@ -50,7 +50,14 @@ public class JoueurIA extends Joueur {
         return adverse;
     }
 
-    
+    public int getDifficulte() {
+        return difficulte;
+    }
+
+    public void setDifficulte(int dif){
+        this.difficulte = dif;
+    }
+
     @Override
     public boolean coup(Insecte insecte, HexaPoint cible) {
         try {
