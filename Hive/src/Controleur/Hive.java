@@ -330,9 +330,9 @@ public class Hive implements Serializable {
         if (this.joueur2 instanceof JoueurIA) {
             return this.joueur1.RedoPossible();
         } else if (this.joueurCourant.equals(this.joueur1)) {
-            return this.joueur2.RedoPossible();
-        } else {
             return this.joueur1.RedoPossible();
+        } else {
+            return this.joueur2.RedoPossible();
         }
     }
 
@@ -342,10 +342,10 @@ public class Hive implements Serializable {
                 this.joueur1.Redo();
                 this.joueur2.Redo();
             } else if (this.joueurCourant.equals(this.joueur1)) {
-                this.joueur2.Redo();
+                this.joueur1.Redo();
                 this.joueurCourant = this.joueur2;
             } else {
-                this.joueur1.Redo();
+                this.joueur2.Redo();
                 this.joueurCourant = this.joueur1;
             }
             this.plateau.notifieVue(-1);

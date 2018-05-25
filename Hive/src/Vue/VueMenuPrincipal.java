@@ -110,7 +110,7 @@ public class VueMenuPrincipal extends Vue {
         g.add(bp, 0, 0, 5, 1);
         g.add(vb, 0, 2, 1, 5);
         g.add(bpImg, 3, 3, 2, 3);
-        g.setStyle("-fx-background-image: url(background.jpg);");
+        g.setStyle("-fx-background-image: url(background.jpg); -fx-background-size: cover;");
 
         root.getChildren().addAll(g);
         primaryStage.setScene(scene);

@@ -24,14 +24,13 @@ import java.util.concurrent.TimeUnit;
  *
  * @author firmyn
  */
-public abstract class AbstractCoup implements Runnable{
-    
+public abstract class AbstractCoup implements Runnable {
+
     protected long tempsDebut;
     protected long tempsFin;
     protected Plateau plateau;
     protected JoueurIA joueur;
     protected Joueur adverse;
-
 
     public AbstractCoup(Plateau plateau, JoueurIA joueur, Joueur adverse) {
         this.plateau = plateau;
@@ -39,11 +38,9 @@ public abstract class AbstractCoup implements Runnable{
         this.adverse = adverse;
         this.resetTemps();
     }
-    
-    
-    
+
     protected abstract boolean coup();
-    
+
     @Override
     public void run() {
         this.tempsDebut = System.nanoTime();
@@ -65,12 +62,11 @@ public abstract class AbstractCoup implements Runnable{
         Random ra = new Random();
         ArrayList<Case> cases = plateau.pointVersCase(plateau.casesVidePlacement(this.joueur));
         HexaPoint c = cases.get(ra.nextInt(cases.size())).getCoordonnees();
-                    
+
         this.joueur.setDernierDeplacement(new Deplacement(r, null, c));
         this.joueur.coupChoisi(r, c, true);
     }
 
-    
     protected CoupleCaesInsecte getCouple(Noeud pere, Noeud fils, Insecte in, Case c, Case c2) {
 
         if (c2 == null) {
@@ -79,9 +75,9 @@ public abstract class AbstractCoup implements Runnable{
 
         return new CoupleCaesInsecte(getCase2(pere.getPlateau(), c2).getInsecteOnTop(),
                 getCase2(pere.getPlateau(), c), null);
-        
+
     }
-    
+
     protected Case getCase2(Plateau p1, Case c) {
         Map<HexaPoint, Case> cases = p1.getCases();
         for (Map.Entry<HexaPoint, Case> e : cases.entrySet()) {
@@ -110,7 +106,7 @@ public abstract class AbstractCoup implements Runnable{
         for (int i = 0; i < in.size(); i++) {
             if (in.get(i).deplacementPossible(plateau).contains(c)) {
                 if (!in.get(i).getEmplacement().estVoisin(c) || in.get(i).getEmplacement().getNbInsectes() > 1) {
-                    this.joueur.setDernierDeplacement(new Deplacement(in.get(i), in.get(i).getEmplacement().getCoordonnees() , c.getCoordonnees()));
+                    this.joueur.setDernierDeplacement(new Deplacement(in.get(i), in.get(i).getEmplacement().getCoordonnees(), c.getCoordonnees()));
                     in.get(i).deplacement(plateau, c.getCoordonnees());
                     return true;
                 }
@@ -118,6 +114,5 @@ public abstract class AbstractCoup implements Runnable{
         }
         return false;
     }
-
 
 }
