@@ -503,6 +503,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         if (this.listPionsPlateau.containsKey(newPos3D)) {
             //update pions doublons
             p.setPionEnDessous(this.listPionsPlateau.get(newPos3D));
+
             //this.getRoot().getChildren().remove(this.listPionsPlateau.get(newPos3D).getImage());
         }
         this.listPionsPlateau.put(newPos3D, p);
@@ -608,7 +609,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             //pp2.setPionPosition(zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY());
             pp2.validCurrentPosXY();
         }
-        coupJoue();
+        joueurJoue();
     }
 
     @Override
@@ -626,7 +627,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     public void updatePionPlateauHoveInDessous(PionPlateau2 pionPlateau, MouseEvent me) {
         //Entre dans la zone d'un pion avec un pion en dessous afficher le popup lors du hover
         String style = "-fx-background-color: rgba(255, 255, 255, 0.8); -fx-border-radius: 15;";
-
         DropShadow dropShadow = new DropShadow();
         dropShadow.setRadius(4.0);
         dropShadow.setOffsetX(0.0);
@@ -680,7 +680,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         //sort de la zone image pion ave un autre pion en dessous
         this.getRoot().getChildren().remove(listPionEnDessousHover);
         listPionEnDessousHover.getChildren().clear();//supprime les images presente
-
     }
 
     private void coupJoue() {
@@ -688,7 +687,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         removeSelectedPion();
         updateMainJoueur();
         hudToFront();
-        System.out.println("Coup Joué");
     }
 
     //Main Pion vers plateau
@@ -717,13 +715,63 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         return m;
     }
 
+    private boolean currentPlayerHumain() {
+        return this.controleur.getJoueurCourant().getNumJoueur().estHumain();
+    }
+
+    private boolean possedeUneIa() {
+        return (!this.controleur.getJoueur2().getNumJoueur().estHumain() || !this.controleur.getJoueur1().getNumJoueur().estHumain());
+    }
+
+    private boolean currentPlayerIsWhite() {
+        return this.controleur.tourJoueurBlanc();
+    }
+
     public void updateMainJoueur() { //liste d'insect en param
-        //joueur 1 = blanc
-        //2 = noir
-        //System.out.println("Verif des données!!");
+        if (currentPlayerHumain()) {
+            System.out.println("Je suis humain");
+            updateHumanPlayer(currentPlayerIsWhite());
+        } else {
+            System.out.println("Je suis une IA");
+        }
+    }
+
+    private void updateHumanPlayer(boolean isWhite) {
+        updateMainJoueurColor(isWhite); //met a jour les pions du joueur blanc
+        //setlock(isWhite);  //pour griser les pions
+        setLockPlayerPion(!isWhite); //lock les noirs  sur le plateau  et remove les blancs
+        if (isWhite) {
+            removeLock(true, this.controleur.tousPionsPosables(NumJoueur.JOUEUR1));
+        } else {
+            removeLock(false, this.controleur.tousPionsPosables(NumJoueur.JOUEUR2));
+        }
+        setlock(!isWhite);
+        if (isWhite) {
+            setNomJoueur(1);
+        } else {
+            setNomJoueur(2);
+        }
+
+    }
+
+    private void lockTousLespions() {
+        //si l'ia est blanc donc actualise les noirs du joueur
+        updateMainJoueurColor(!this.controleur.getJoueurCourant().getNumJoueur().estBlanc());
+
+        setlock(true);
+        setlock(false);
+        setLockPlayerPion(true, false);
+        setLockPlayerPion(false, false);
+    }
+
+    private void updateMainJoueurColor(boolean isWhite) {
         HashMap<TypeInsecte, Integer> m;
         //Mise a jour si probleme du texte
-        m = getnbInsect(this.controleur.mainJoueur(NumJoueur.JOUEUR1));
+        if (isWhite) {
+            m = getnbInsect(this.controleur.mainJoueur(NumJoueur.JOUEUR1));
+        } else {
+            m = getnbInsect(this.controleur.mainJoueur(NumJoueur.JOUEUR2));
+        }
 
         for (Map.Entry<TypeInsecte, PionMain> entry : pionMainPlayer1.entrySet()) {
             TypeInsecte keyType = entry.getKey();
@@ -737,51 +785,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             } else { //si n'est pas present le supprimer
                 pMain.setNbPion(0);
             }
-
         }
-
         m.clear();
-        m = getnbInsect(this.controleur.mainJoueur(NumJoueur.JOUEUR2));
-        for (Map.Entry<TypeInsecte, PionMain> entry : pionMainPlayer2.entrySet()) {
-            TypeInsecte keyType = entry.getKey();
-            PionMain pMain = entry.getValue();
-            if (m.containsKey(keyType)) {
-                //verifier les données
-                int nbInsects = m.get(keyType);
-                if (pMain.getNbPions() != nbInsects) {
-                    this.pionMainPlayer2.get(keyType).setNbPion(nbInsects);
-                }
-            } else { //si n'est pas present le supprimer
-                pMain.setNbPion(0);
-            }
-
-        }
-
-        //System.out.println("----------------------------- NOUVEAU TOUR -----------------------------");
-        if (this.controleur.tourJoueurBlanc() && this.controleur.getJoueur(NumJoueur.JOUEUR1).getNumJoueur().estHumain()) {
-            //setlock(true);  //pour griser les pions
-            setLockPlayerPion(false); //lock les noirs  sur le plateau  et remove les blancs
-            removeLock(true, this.controleur.tousPionsPosables(NumJoueur.JOUEUR1));
-            setlock(false);
-            setNomJoueur(1);
-        } else if (!this.controleur.tourJoueurBlanc() && this.controleur.getJoueur(NumJoueur.JOUEUR2).getNumJoueur().estHumain()) {
-            //Mise a jour si probleme du texte
-            //setlock(false); //pour griser les pions noir = false
-            setLockPlayerPion(true); //lock les blancs sur le plateau et remove les noirs
-            removeLock(false, this.controleur.tousPionsPosables(NumJoueur.JOUEUR2));
-            setlock(true);
-            setNomJoueur(2);
-        }
-
-        //si une ia qui joue bloquer les deux main et les pions du plateau empécher l'humain d'interragir
-        if (this.controleur.tourJoueurBlanc() && !this.controleur.getJoueur(NumJoueur.JOUEUR1).getNumJoueur().estHumain() || !this.controleur.tourJoueurBlanc() && !this.controleur.getJoueur(NumJoueur.JOUEUR2).getNumJoueur().estHumain()) {
-            //locklesMain des joueurs noir et blancs
-            System.out.println("IA JOUE UPDATE MAIN --- lock les joueurs");
-            setlock(true);
-            setlock(false);
-            setLockPlayerPion(true, false);
-            setLockPlayerPion(false, false);
-        }
     }
 
     private void removeLock(boolean white, boolean toutPion) {
@@ -839,7 +844,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     private BorderPane getHudPlayer(HashMap<TypeInsecte, Integer> m, int numplayer, boolean ia) {
         Properties prop = new Properties();
-        String propFileName = System.getProperty("user.dir").concat("/Hive/rsc/config.properties");
+        String propFileName = System.getProperty("user.dir").concat("/rsc/config.properties");
         InputStream input = null;
         try {
             input = new FileInputStream(propFileName);
@@ -893,7 +898,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         } else {
             ComboBox<String> cb = new ComboBox<>();
             cb.getItems().addAll(getLangStr("easy"), getLangStr("medi"), getLangStr("hard"));
-            cb.getSelectionModel().select(((JoueurIA) this.controleur.getJoueur2()).getDifficulte() - 1);
+            // cb.getSelectionModel().select(((JoueurIA) this.controleur.getJoueur2()).getDifficulte() - 1);
             cb.setDisable(true);
             cb.getStylesheets().add("Vue/combo.css");
             nomJoueur.add(cb);
@@ -1333,23 +1338,37 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         //si >0 alors c'est une ia
         if (tempsRestant > 0) {
+            lockTousLespions();
             this.iaCanPlay = tempsRestant;
-            updateMainJoueur();
             System.out.println("IA IS THINKING...");
-        } else {
+        } else { //l'humain a joué puis directe après l'ia va jouer
             this.iaCanPlay = -1;
-            System.out.println("PLAYER a JOUé");
-            updateMainJoueur();
-            hudToFront();
         }
-
     }
 
     public void iaCanPlay(long temps) {
         if (iaCanPlay > 0 && (temps > iaCanPlay)) {
             iaCanPlay = -1;
-            reconstructionPlateau(this.pModel);
+            ordinateurJoue();
         }
+    }
+
+    public void joueurJoue() {
+        hideZoneLibre();
+        if (!possedeUneIa()) {
+            removeSelectedPion();
+            updateMainJoueur();
+        }
+        updateUndoRedoBtn();
+        hudToFront();
+    }
+
+    public void ordinateurJoue() {
+        System.out.println("FINNN blocage des pions humain");
+        reconstructionPlateau(this.pModel);
+        updateMainJoueur();
+        updateUndoRedoBtn();
+        hudToFront();
     }
 
     //toto lors du deplacement verifier collision A activer TODO
@@ -1382,16 +1401,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         double imgWidthRadius = 200 * totZoom;
         double imgx = p.getImgViewPion().getImgPosX();
         double imgy = p.getImgViewPion().getImgPosY();
-//        pions deplacé
-//        Circle c = new Circle(imgx, imgy, imgWidthRadius, Color.RED);
-//        c.setTranslateX(this.getWidth() / 2);
-//        c.setTranslateY(this.getHeight() / 2);
-//        getRoot().getChildren().add(c);
-//        hitbox
-//        Circle c1 = new Circle(zLibr.getImgPosX(), zLibr.getImgPosY(), (75 * totZoom), Color.GREEN);
-//        c1.setTranslateX(this.getWidth() / 2);
-//        c1.setTranslateY(this.getHeight() / 2);
-//        getRoot().getChildren().add(c1);
 
         double r1 = (zLibr.getImgPosX() - imgx);
         double r2 = (imgy - zLibr.getImgPosY());
@@ -1456,6 +1465,21 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
                     PionPlateau2 value = entry.getValue();
                     this.getRoot().getChildren().remove(value.getImage());
+
+                    if (value.getPionEnDessous() != null) {
+                        ArrayList<PionPlateau2> listPiondessous = new ArrayList<>();
+                        listPiondessous = value.getDessousList(listPiondessous);
+                        for (PionPlateau2 piondessous : listPiondessous) {
+                            this.getRoot().getChildren().remove(piondessous.getImage());
+                        }
+                    } else {
+                        this.getRoot().getChildren().remove(value.getImage());
+                    }
+                }
+                //supprime les zones libres du plateau;
+
+                for (ZoneLibre zLibre : listZoneLibres) {
+                    this.getRoot().getChildren().remove(zLibre.getImage());
                 }
 
                 this.listPionsPlateau.clear();
@@ -1571,13 +1595,15 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                     ///*********** END BOUCLE
                     resetView();
                 }
-                updateMainJoueur();
                 hudToFront();
             } else {
                 System.out.println("100% de correspondance!");
             }
-
         }
+
+    }
+
+    private void updateUndoRedoBtn() {
         if (!this.controleur.UndoPossible()) {
             bUndo.setDisable(true);
         } else {
@@ -1625,7 +1651,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     public ListView<String> getSaveFile() {
         String path;
         if (isWindows()) {
-            path = System.getProperty("user.dir").concat("\\Hive\\rsc\\SAVE");
+            path = System.getProperty("user.dir").concat("\\rsc\\SAVE");
         } else {
             path = System.getProperty("user.dir").concat("/rsc/SAVE/");
         }
