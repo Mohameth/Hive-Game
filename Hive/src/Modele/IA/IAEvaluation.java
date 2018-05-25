@@ -57,10 +57,10 @@ public class IAEvaluation {
         initPiecesValues(myPiecesValues, false);
         initPiecesValues(opponentPiecesValues, true);
         updatePositionValues(myPiecesValues);
-        //updatePositionValues(opponentPiecesValues);
+        updatePositionValues(opponentPiecesValues);
 
-        return getSumEvaluation(myPiecesValues);
-               // - getSumEvaluation(opponentPiecesValues);
+        return getSumEvaluation(myPiecesValues)
+                - getSumEvaluation(opponentPiecesValues);
     }
 
     private Boolean insecteBelongsToOpponent(Insecte i) {
@@ -153,7 +153,6 @@ public class IAEvaluation {
     }
 
     private boolean maReineEstEntoure(Insecte i) {
-        //En train de bloquer la reine adverse + 15
         Insecte reine;
         if (insecteBelongsToOpponent(i)) {
             reine = reineAdverse;
