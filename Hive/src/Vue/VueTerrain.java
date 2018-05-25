@@ -758,13 +758,13 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         }
 
         //System.out.println("----------------------------- NOUVEAU TOUR -----------------------------");
-        if (this.controleur.tourJoueurBlanc() && this.controleur.getJoueur(1).getNumJoueur().estHumain()) {
+        if (this.controleur.tourJoueurBlanc() && this.controleur.getJoueur(NumJoueur.JOUEUR1).getNumJoueur().estHumain()) {
             //setlock(true);  //pour griser les pions
             setLockPlayerPion(false); //lock les noirs  sur le plateau  et remove les blancs
             removeLock(true, this.controleur.tousPionsPosables(NumJoueur.JOUEUR1));
             setlock(false);
             setNomJoueur(1);
-        } else if (!this.controleur.tourJoueurBlanc() && this.controleur.getJoueur(2).getNumJoueur().estHumain()) {
+        } else if (!this.controleur.tourJoueurBlanc() && this.controleur.getJoueur(NumJoueur.JOUEUR2).getNumJoueur().estHumain()) {
             //Mise a jour si probleme du texte
             //setlock(false); //pour griser les pions noir = false
             setLockPlayerPion(true); //lock les blancs sur le plateau et remove les noirs
@@ -774,7 +774,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         }
 
         //si une ia qui joue bloquer les deux main et les pions du plateau empécher l'humain d'interragir
-        if (this.controleur.tourJoueurBlanc() && !this.controleur.getJoueur(1).getNumJoueur().estHumain() || !this.controleur.tourJoueurBlanc() && !this.controleur.getJoueur(2).getNumJoueur().estHumain()) {
+        if (this.controleur.tourJoueurBlanc() && !this.controleur.getJoueur(NumJoueur.JOUEUR1).getNumJoueur().estHumain() || !this.controleur.tourJoueurBlanc() && !this.controleur.getJoueur(NumJoueur.JOUEUR2).getNumJoueur().estHumain()) {
             //locklesMain des joueurs noir et blancs
             System.out.println("IA JOUE UPDATE MAIN --- lock les joueurs");
             setlock(true);
@@ -892,8 +892,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             });
         } else {
             ComboBox<String> cb = new ComboBox<>();
-            cb.getItems().addAll(getLangStr("easy"),getLangStr("medi"),getLangStr("hard"));
-            cb.getSelectionModel().select(((JoueurIA) this.controleur.getJoueur2()).getDifficulte()-1);
+            cb.getItems().addAll(getLangStr("easy"), getLangStr("medi"), getLangStr("hard"));
+            cb.getSelectionModel().select(((JoueurIA) this.controleur.getJoueur2()).getDifficulte() - 1);
             cb.setDisable(true);
             cb.getStylesheets().add("Vue/combo.css");
             nomJoueur.add(cb);
@@ -905,10 +905,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 } else {
                     cb.setDisable(true);
                     int dif = 1;
-                    if(cb.getValue().equals(getLangStr("medi")))
+                    if (cb.getValue().equals(getLangStr("medi"))) {
                         dif = 2;
-                    else if(cb.getValue().equals(getLangStr("hard")))
+                    } else if (cb.getValue().equals(getLangStr("hard"))) {
                         dif = 3;
+                    }
                     ((JoueurIA) this.controleur.joueur2).setDifficulte(dif);
                 }
             });
@@ -1775,7 +1776,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             ((ComboBox) nomJoueur.get(numJoueur - 1)).getStylesheets().remove("Vue/combo.css");
             ((ComboBox) nomJoueur.get(numJoueur - 1)).getStylesheets().add("Vue/combo1.css");
             nomJoueur.get(Math.abs(numJoueur - 2)).setStyle("-fx-text-fill : white");
-        } else if(nomJoueur.get(Math.abs(numJoueur - 2)) instanceof ComboBox){
+        } else if (nomJoueur.get(Math.abs(numJoueur - 2)) instanceof ComboBox) {
             ((ComboBox) nomJoueur.get(Math.abs(numJoueur - 2))).getStylesheets().remove("Vue/combo1.css");
             ((ComboBox) nomJoueur.get(Math.abs(numJoueur - 2))).getStylesheets().add("Vue/combo.css");
             nomJoueur.get(numJoueur - 1).setStyle("-fx-text-fill : red");
