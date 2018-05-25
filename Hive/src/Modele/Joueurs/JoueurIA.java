@@ -40,6 +40,7 @@ public class JoueurIA extends Joueur {
     public JoueurIA(Plateau p, int difficulte, NumJoueur numJoueur, boolean extensions) {
         super(p, extensions, numJoueur);
         this.difficulte = difficulte;
+        this.setThreadCoup();
         this.adverse = null;
     }
 
@@ -108,6 +109,8 @@ public class JoueurIA extends Joueur {
             break;
         }
     }
+    
+    
 
     public long getTempsRestant() {
         return tempsRestant;

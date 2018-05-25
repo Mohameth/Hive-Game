@@ -62,16 +62,17 @@ public class Hive implements Serializable {
         } else if (cas < 8) {
             switch (cas) {
                 case 5:
-                    this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.IAFACILE1);
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
+                    this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.IAFACILE1);
                     break;
                 case 6:
-                    this.joueur1 = new JoueurIA(this.plateau, 1, extension, NumJoueur.IAMOYEN1, joueur1); //Easy
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
+                    this.joueur1 = new JoueurIA(this.plateau, 1, extension, NumJoueur.IAMOYEN1, joueur2); //Easy
                     break;
                 case 7:
-                    this.joueur1 = new JoueurIA(this.plateau, 2, extension, NumJoueur.IADIFFICILE1, joueur1); //Medium                    
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
+                    this.joueur1 = new JoueurIA(this.plateau, 2, extension, NumJoueur.IADIFFICILE1, joueur2); //Medium                    
+
                     break;
             }
         } else {
