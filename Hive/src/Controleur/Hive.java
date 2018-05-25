@@ -22,6 +22,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Observer;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Hive implements Serializable {
 
@@ -194,7 +197,6 @@ public class Hive implements Serializable {
         } else if (joueurCourant.equals(this.joueur2)) {
             this.joueurCourant = this.joueur1;
         }
-        
         if (!this.joueurCourant.getNumJoueur().estHumain()) {
                 ((JoueurIA) this.joueurCourant).coup(null, null);
                 this.joueurSuivant();

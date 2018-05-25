@@ -68,7 +68,6 @@ public class JoueurIA extends Joueur {
             } else {
                 this.plateau.deplaceInsecte(this.insecteChoisi, this.caseChoisie);
             }
-            this.plateau.deplaceInsecte(this.insecteChoisi, this.caseChoisie);
             this.resetCoupChoisi();
             this.incrementeTour();
             return true;
