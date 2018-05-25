@@ -113,14 +113,13 @@ public abstract class Joueur implements Cloneable, Serializable {
         }
     }
 
-    public Reine getReine() {
-        ArrayList<Insecte> liste = this.pionsEnMain();
-        for (int i = 0; i < liste.size(); i++) {
-            if (liste.get(i) instanceof Reine) {
-                return (Reine) liste.get(i);
-            }
-        }
-        return null;
+    public Reine getReine(ArrayList<Insecte> liste) {
+    	for(int i=0;i<liste.size();i++) {
+    		if(liste.get(i) instanceof Reine) {
+    			return (Reine) liste.get(i);
+    		}
+    	}
+    	return null;
     }
 
     public NumJoueur getNumJoueur() {

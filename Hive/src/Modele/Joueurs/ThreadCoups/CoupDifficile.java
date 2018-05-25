@@ -39,8 +39,8 @@ public class CoupDifficile extends AbstractCoup{
         if (this.coupGagnant()) {
             return true;
         }
-
-        Noeud noeud = new Noeud(plateau, this.joueur.pionsEnMain(), adverse.pionsEnMain(), this.joueur.pionsEnJeu(), adverse.pionsEnJeu());
+        System.out.println(joueur.getTourJoueur()+","+adverse.getTourJoueur());
+        Noeud noeud = new Noeud(joueur.getTourJoueur(),adverse.getTourJoueur(),plateau, this.joueur.pionsEnMain(), adverse.pionsEnMain(), this.joueur.pionsEnJeu(), adverse.pionsEnJeu());
         MonteCarlo monteCarlo = new MonteCarlo(this.joueur.getTourJoueur(), noeud, this.joueur);
 
         do {
@@ -70,7 +70,7 @@ public class CoupDifficile extends AbstractCoup{
         } else {
             this.joueur.setDernierDeplacement(new Deplacement(coupleCaesInsecte.getInsecte(), coupleCaesInsecte.getInsecte().getEmplacement().getCoordonnees(), coupleCaesInsecte.getCase().getCoordonnees()));
             coupleCaesInsecte.getInsecte().deplacement(noeud.getPlateau(), coupleCaesInsecte.getCase().getCoordonnees());
-        }
+}
         
         this.joueur.incrementeTour();
         return true;

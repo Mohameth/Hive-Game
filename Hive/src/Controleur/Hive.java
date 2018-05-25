@@ -29,8 +29,8 @@ import java.util.logging.Logger;
 public class Hive implements Serializable {
 
     Plateau plateau;
-    Joueur joueur1;
-    Joueur joueur2;
+    public Joueur joueur1;
+    public Joueur joueur2;
     Joueur joueurCourant;
     boolean Undo = true;
     transient Observer o;
@@ -84,6 +84,14 @@ public class Hive implements Serializable {
             }
         }
         this.joueurCourant = this.joueur1;
+    }
+
+    public Joueur getJoueur1() {
+        return joueur1;
+    }
+
+    public Joueur getJoueur2() {
+        return joueur2;
     }
 
     public boolean insecteAppartientJCourant(HexaPoint caseCible) { //permet de savoir si l'insecte le plus haut d'une case appartient au joueur dont c'est le tour
@@ -239,14 +247,10 @@ public class Hive implements Serializable {
     }
 
     
-    public Joueur getJoueur(int j) {
-        switch(j) {
-            case 1:
-                return this.joueur1;
-            case 2:
-                return this.joueur2;
-        }
-        return null;
+    public Joueur getJoueur(NumJoueur j) {
+        if (j.estBlanc())
+            return this.joueur1;
+        return this.joueur2;
     }
 
     public boolean save(String name) {

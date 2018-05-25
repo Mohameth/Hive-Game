@@ -13,7 +13,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 public class VueMulti extends Vue {
@@ -22,7 +24,7 @@ public class VueMulti extends Vue {
 
     VueMulti(Stage primaryStage) {
         Properties prop = new Properties();
-        String propFileName = System.getProperty("user.dir").concat("/rsc/config.properties");
+        String propFileName = System.getProperty("user.dir").concat("/Hive/rsc/config.properties");
         InputStream input = null;
         try {
             input = new FileInputStream(propFileName);
@@ -40,7 +42,9 @@ public class VueMulti extends Vue {
         
         boolean fs = primaryStage.isFullScreen();
         Label t = new Label(getLangStr("deuxjoueur"));
-        t.setFont(Font.font(60));
+        t.setFont(Font.font("Georgia", FontWeight.BOLD, 70));
+        t.setStyle("-fx-border-width: 0 0 3 0; -fx-border-color: rgb(37, 19, 7);");
+        t.setTextFill(Color.rgb(37, 19, 7));
 
         GridPane root = new GridPane();
 
@@ -54,6 +58,7 @@ public class VueMulti extends Vue {
 
         Label tp = new Label(getLangStr("white"));
         tp.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
+        tp.setTextFill(Color.WHITE);
         TextField ta = new TextField(prop.getProperty("joueurBlanc"));
         ta.setMaxSize(200.0, 5.0);
         HBox hb = new HBox(tp, ta);
@@ -62,6 +67,7 @@ public class VueMulti extends Vue {
         HBox hb1 = new HBox();
         Label tp1 = new Label(getLangStr("black"));
         tp1.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
+        tp1.setTextFill(Color.WHITE);
         TextField ta1 = new TextField(prop.getProperty("joueurNoir"));
         ta1.setMaxSize(300.0, 5.0);
         hb1.getChildren().addAll(tp1, ta1);
@@ -72,6 +78,7 @@ public class VueMulti extends Vue {
 
         Label tc = new Label(getLangStr("pname"));
         tc.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
+        tc.setTextFill(Color.WHITE);
 
         VBox vb2 = new VBox();
         vb2.getChildren().addAll(tc, hb, hb1);
@@ -102,7 +109,7 @@ public class VueMulti extends Vue {
         vb.setAlignment(Pos.CENTER);
         vb.setSpacing(100.0);
         vb.setPrefHeight(primaryStage.getHeight());
-        vb.setStyle("-fx-background-color : rgba(255, 255, 255, .7);-fx-border-color: black; -fx-border-width: 0 3 0 3;");
+        vb.setStyle("-fx-background-color : rgba(123,67,36, 0.2);  -fx-border-width: 0 0 0 0;");
         vb.setPadding(new Insets(0, 20, 0, 20));
 
         root.add(vb, 2, 0, 3, 1);
@@ -111,7 +118,7 @@ public class VueMulti extends Vue {
         s.getStylesheets().add("Vue/button.css");
         root.prefHeightProperty().bind(s.heightProperty());
         root.prefWidthProperty().bind(s.widthProperty());
-        root.setStyle("-fx-background-image: url(background.jpg);");
+        root.setStyle("-fx-background-image: url(backPions2.jpg); -fx-background-size: cover;");
         primaryStage.setScene(s);
         primaryStage.setFullScreen(fs);
         primaryStage.show();
