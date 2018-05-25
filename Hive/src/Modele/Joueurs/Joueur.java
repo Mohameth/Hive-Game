@@ -267,7 +267,7 @@ public abstract class Joueur implements Cloneable, Serializable {
         } else if (this.dernierDeplacement.getI().getEmplacement() == null) {
             return false;
         } else {
-            return !this.dernierDeplacement.getI().getEmplacement().equals(this.dernierDeplacement.getOrig());
+            return !this.dernierDeplacement.getI().getEmplacement().getCoordonnees().equals(this.dernierDeplacement.getOrig());
         }
     }
 
@@ -290,7 +290,7 @@ public abstract class Joueur implements Cloneable, Serializable {
         } else if (this.dernierDeplacement.getI().getEmplacement() == null) {
             return false;
         } else {
-            return !this.dernierDeplacement.getI().getEmplacement().equals(this.dernierDeplacement.getCible());
+            return ! (this.dernierDeplacement.getI().getEmplacement().getCoordonnees().equals(this.dernierDeplacement.getCible()));
         }
     }
 

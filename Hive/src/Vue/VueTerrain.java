@@ -61,6 +61,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private VBox listPionEnDessousHover;
     private Plateau pModel;
     private boolean solo;
+    private Button bUndo;
+    private Button bRedo;
 
     VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs, boolean solo) {
         boolean fs = primaryStage.isFullScreen();
@@ -123,8 +125,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         ArrayList<Insecte> initInsectes = new ArrayList<>();
 
         initInsectes = this.controleur.mainsInit();
-        BorderPane playerOne = getHudPlayer(getnbInsect(initInsectes), 1,true); //initialisation tout les pions possable
-        BorderPane playerTwo = getHudPlayer(getnbInsect(initInsectes), 2,false);
+        BorderPane playerOne = getHudPlayer(getnbInsect(initInsectes), 1, true); //initialisation tout les pions possable
+        BorderPane playerTwo = getHudPlayer(getnbInsect(initInsectes), 2, false);
 
         playerOne.minWidthProperty().bind(s.widthProperty());
         playerOne.maxWidthProperty().bind(s.widthProperty());
@@ -670,6 +672,16 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         reconstructionPlateau(this.pModel);
         updateMainJoueur();
         hudToFront();
+        if (!this.controleur.UndoPossible()) {
+            bUndo.setDisable(true);
+        } else {
+            bUndo.setDisable(false);
+        }
+        if (!this.controleur.RedoPossible()) {
+            bRedo.setDisable(true);
+        } else {
+            bRedo.setDisable(false);
+        }
         System.out.println("Coup Jouer");
     }
 
@@ -845,7 +857,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         } else {
             joueur = prop.getProperty("joueurNoir");
         }
-        if(!ia) {
+        if (!ia) {
             TextField txt1 = new TextField(joueur);
             txt1.setBackground(Background.EMPTY);
             nomJoueur.add(txt1);
@@ -870,14 +882,14 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             });
         } else {
             ComboBox<String> cb = new ComboBox<>();
-            cb.getItems().addAll(getLangStr("easy"),getLangStr("medi"),getLangStr("hard"));
+            cb.getItems().addAll(getLangStr("easy"), getLangStr("medi"), getLangStr("hard"));
             cb.getSelectionModel().select(0);
             cb.setDisable(true);
             cb.getStylesheets().add("Vue/combo.css");
             nomJoueur.add(cb);
             hName.getChildren().addAll(bEdit, cb);
             bEdit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-                if(cb.isDisable()){
+                if (cb.isDisable()) {
                     cb.setDisable(false);
                 } else {
                     cb.setDisable(true);
@@ -968,8 +980,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         hb.setSpacing(10);
         hb.getChildren().addAll(bSave, bLoad);
 
-        Button bUndo = new Button();
-        Button bRedo = new Button();
+        bUndo = new Button();
+        bRedo = new Button();
         Button bSug = new Button();
         Button brules = new Button();
 
@@ -1020,16 +1032,25 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             getPause();
         });
 
+        if (!this.controleur.UndoPossible()) {
+            bUndo.setDisable(true);
+        }
+        if (!this.controleur.RedoPossible()) {
+            bRedo.setDisable(true);
+        }
+
         bUndo.setTooltip(new Tooltip("Anuler le dernier coup"));
         bUndo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             this.controleur.Undo();
             this.reconstructionPlateau(pModel);
+
         });
 
         bRedo.setTooltip(new Tooltip("Rejouer le dernier coup"));
         bRedo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             this.controleur.Redo();
             this.reconstructionPlateau(pModel);
+
         });
 
         brules.setTooltip(new Tooltip("Règles du jeu"));
@@ -1351,40 +1372,37 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 }
 
             }
-            
-            if (nbNonCorrect==0){
+
+            if (nbNonCorrect == 0) {
                 System.out.println("vue==model");
                 //verfie que la vue correspond au model (cas ou la vue possède plus de pions que le model)
                 for (Map.Entry<HexaPoint, PionPlateau2> entrySet : listPionsPlateau.entrySet()) {
-                        HexaPoint hexap = entrySet.getKey();
-                        PionPlateau2 pp2 = entrySet.getValue();
-                        //
-                        if (pp2.getPionEnDessous()!=null){
-                            ArrayList<PionPlateau2>  listPiondessous = new ArrayList<>();
-                            listPiondessous = pp2.getDessousList(listPiondessous);
-                            ArrayList<Insecte> pionsModel = p.getCase(pp2.getCoordPion()).getInsectes();
+                    HexaPoint hexap = entrySet.getKey();
+                    PionPlateau2 pp2 = entrySet.getValue();
+                    //
+                    if (pp2.getPionEnDessous() != null) {
+                        ArrayList<PionPlateau2> listPiondessous = new ArrayList<>();
+                        listPiondessous = pp2.getDessousList(listPiondessous);
+                        ArrayList<Insecte> pionsModel = p.getCase(pp2.getCoordPion()).getInsectes();
 
-                            for (PionPlateau2 piondessous : listPiondessous) {
-                                boolean trouve = false;
-                                for(Insecte ins : pionsModel){
-                                    if (ins.getType() == piondessous.getPionType() && ins.getJoueur().getNumJoueur().estBlanc() == piondessous.isWhite()){
-                                        trouve = true;
-                                    }
-                                }
-                                if (!trouve){
-                                    nbNonCorrect++;
+                        for (PionPlateau2 piondessous : listPiondessous) {
+                            boolean trouve = false;
+                            for (Insecte ins : pionsModel) {
+                                if (ins.getType() == piondessous.getPionType() && ins.getJoueur().getNumJoueur().estBlanc() == piondessous.isWhite()) {
+                                    trouve = true;
                                 }
                             }
-
-                        }else{
-                            if (!p.getCases().containsKey(pp2.getCoordPion()) || p.getCase(pp2.getCoordPion()).getInsectes().size()!=1 || p.getCase(pp2.getCoordPion()).getInsecteOnTop().getType()!=pp2.getPionType() ){
+                            if (!trouve) {
                                 nbNonCorrect++;
                             }
                         }
+
+                    } else if (!p.getCases().containsKey(pp2.getCoordPion()) || p.getCase(pp2.getCoordPion()).getInsectes().size() != 1 || p.getCase(pp2.getCoordPion()).getInsecteOnTop().getType() != pp2.getPionType()) {
+                        nbNonCorrect++;
                     }
+                }
             }
-            
-            
+
             //regenère le plateau si pas de correspondance a 100%.
             if (nbNonCorrect > 0) {
                 //if (true) {
@@ -1508,7 +1526,17 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             } else {
                 System.out.println("100% de correspondance!");
             }
-            
+
+        }
+        if (!this.controleur.UndoPossible()) {
+            bUndo.setDisable(true);
+        } else {
+            bUndo.setDisable(false);
+        }
+        if (!this.controleur.RedoPossible()) {
+            bRedo.setDisable(true);
+        } else {
+            bRedo.setDisable(false);
         }
     }
 
@@ -1693,7 +1721,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void setNomJoueur(int numJoueur) {
-        if(nomJoueur.get(numJoueur - 1) instanceof ComboBox){
+        if (nomJoueur.get(numJoueur - 1) instanceof ComboBox) {
             ((ComboBox) nomJoueur.get(numJoueur - 1)).getStylesheets().remove("Vue/combo.css");
             ((ComboBox) nomJoueur.get(numJoueur - 1)).getStylesheets().add("Vue/combo1.css");
             nomJoueur.get(Math.abs(numJoueur - 2)).setStyle("-fx-text-fill : white");
@@ -1705,17 +1733,17 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     }
 
-    private VBox getTurnPlayer(int numJoueur){
+    private VBox getTurnPlayer(int numJoueur) {
         Node tf;
         Label l;
-        if(nomJoueur.get(numJoueur-1) instanceof TextField) {
+        if (nomJoueur.get(numJoueur - 1) instanceof TextField) {
             tf = (TextField) nomJoueur.get(numJoueur - 1);
             l = new Label("Tour de " + ((TextField) tf).getText());
-        }else {
+        } else {
             tf = (ComboBox) nomJoueur.get(numJoueur - 1);
-            l = new Label("Tour de " + ((ComboBox)tf).getValue());
+            l = new Label("Tour de " + ((ComboBox) tf).getValue());
         }
-        l.setFont(Font.font("",FontWeight.BOLD,50));
+        l.setFont(Font.font("", FontWeight.BOLD, 50));
         l.setTextFill(Color.WHITE);
         Label l1 = new Label("cliquez pour jouer");
         l1.setTextFill(Color.WHITE);
