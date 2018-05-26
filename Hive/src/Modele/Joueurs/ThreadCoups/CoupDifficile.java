@@ -52,7 +52,7 @@ public class CoupDifficile extends AbstractCoup{
             monteCarlo.miseAjour(noeud2, b);
             
         } while (monteCarlo.getNbNoeuds() < monteCarlo.getNbNoeudsMax());
-
+        
         double max = 0.0;
         int indice = 0;
 
@@ -64,18 +64,24 @@ public class CoupDifficile extends AbstractCoup{
             }
         }
 
-        /*CoupleCaesInsecte coupleCaesInsecte = getCouple(noeud, noeud.getListeFils().get(indice),
-                noeud.getPossiblilites().get(indice).getInsecte(), noeud.getPossiblilites().get(indice).getCase(),
-                noeud.getPossiblilites().get(indice).getAncienneCase());
-        if (coupleCaesInsecte.getInsecte().getEmplacement() == null) {
-            this.joueur.setDernierDeplacement(new Deplacement(coupleCaesInsecte.getInsecte(), null, coupleCaesInsecte.getCase().getCoordonnees()));
-            noeud.getPlateau().ajoutInsecte(coupleCaesInsecte.getInsecte(), coupleCaesInsecte.getCase().getCoordonnees());
-        } else {
-            this.joueur.setDernierDeplacement(new Deplacement(coupleCaesInsecte.getInsecte(), coupleCaesInsecte.getInsecte().getEmplacement().getCoordonnees(), coupleCaesInsecte.getCase().getCoordonnees()));
-            coupleCaesInsecte.getInsecte().deplacement(noeud.getPlateau(), coupleCaesInsecte.getCase().getCoordonnees());
-        }*/
         
-        this.joueur.incrementeTour();
+        /*CoupleCaesInsecte coupleCaesInsecte = getCouple(
+                noeud, 
+                noeud.getListeFils().get(indice),
+                noeud.getPossiblilites().get(indice).getInsecte(), 
+                noeud.getPossiblilites().get(indice).getCase(),
+                noeud.getPossiblilites().get(indice).getAncienneCase());
+        if (coupleCaesInsecte.getInsecte().getEmplacement() == null) {*/
+            //this.joueur.setDernierDeplacement(new Deplacement(coupleCaesInsecte.getInsecte(), null, coupleCaesInsecte.getCase().getCoordonnees()));
+        joueur.coupChoisi(noeud.getPossiblilites().get(indice).getInsecte(), noeud.getPossiblilites().get(indice).getCase().getCoordonnees(), true);
+            //noeud.getPlateau().ajoutInsecte(coupleCaesInsecte.getInsecte(), coupleCaesInsecte.getCase().getCoordonnees());
+        //} else {
+            //this.joueur.setDernierDeplacement(new Deplacement(coupleCaesInsecte.getInsecte(), coupleCaesInsecte.getInsecte().getEmplacement().getCoordonnees(), coupleCaesInsecte.getCase().getCoordonnees()));
+        joueur.coupChoisi(noeud.getPossiblilites().get(indice).getInsecte(), noeud.getPossiblilites().get(indice).getCase().getCoordonnees(), false);
+            //coupleCaesInsecte.getInsecte().deplacement(noeud.getPlateau(), coupleCaesInsecte.getCase().getCoordonnees());
+        //}
+        
+        //this.joueur.incrementeTour();
         return true;
     }
     
