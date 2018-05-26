@@ -86,6 +86,13 @@ public class VueSolo extends Vue {
         rEasy.setToggleGroup(group);
         rMedium.setToggleGroup(group);
         rHard.setToggleGroup(group);
+        if(!group.getToggles().isEmpty()) {
+            for (Toggle toggle : group.getToggles()) {
+                if (toggle.getUserData().equals(prop.getProperty("difficulteIA")))
+                    group.selectToggle(toggle);
+            }
+        }
+
         group.selectToggle(rMedium);
         vb1.getChildren().addAll(td, rEasy, rMedium, rHard);
         for (Toggle to : group.getToggles()) {
