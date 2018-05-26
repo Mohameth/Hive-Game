@@ -164,6 +164,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         };
         anim.start();
 
+        if (this.controleur.getJoueur1().getTourJoueur() == 1 && !currentPlayerHumain()) {
+            //je suis une ia qui commence
+            //coupinit();
+        }
+
     }
 
     public void displayZoneLibre() {
@@ -805,6 +810,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         } else {
             System.out.println("Je suis une IA");
+            updateMainJoueurColor(true);
+            updateMainJoueurColor(false);
             lockTousLespions();
             highlightPlayeName();
         }
@@ -813,8 +820,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     public void highlightPlayeName() {
         if (currentPlayerIsWhite()) {
             setNomJoueur(1);
+            System.out.println("Blanc");
         } else {
             setNomJoueur(2);
+            System.out.println("Noir");
         }
     }
 
@@ -1149,6 +1158,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bUndo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             this.controleur.Undo();
             this.reconstructionPlateau(pModel);
+            this.updateMainJoueur();
 
         });
 
@@ -1156,6 +1166,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bRedo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             this.controleur.Redo();
             this.reconstructionPlateau(pModel);
+            this.updateMainJoueur();
 
         });
 
@@ -1195,6 +1206,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 this.controleur.load(lv.getSelectionModel().getSelectedItem());
                 root.getChildren().removeAll(vLoad);
                 this.reconstructionPlateau(pModel);
+                this.updateMainJoueur();
             });
 
             root.getChildren().addAll(vLoad);
@@ -1419,7 +1431,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         this.pModel = p;
         long tempsRestant = (long) arg;
 
-        System.out.println("update");
         //si >0 alors c'est une ia
         if (tempsRestant > 0) {
             System.out.println("IA IS THINKING");
