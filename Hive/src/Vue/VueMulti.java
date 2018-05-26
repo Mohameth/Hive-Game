@@ -39,7 +39,7 @@ public class VueMulti extends Vue {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         boolean fs = primaryStage.isFullScreen();
         Label t = new Label(getLangStr("deuxjoueur"));
         t.setFont(Font.font("Georgia", FontWeight.BOLD, 70));

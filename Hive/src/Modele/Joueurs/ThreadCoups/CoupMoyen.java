@@ -17,7 +17,7 @@ import java.util.Random;
  * @author GRP3
  */
 public class CoupMoyen extends AbstractCoup{
-    int horizon = 2;
+    int horizon = 4;
     public Coup lastCoup = null;
     
     /**
@@ -84,7 +84,7 @@ public class CoupMoyen extends AbstractCoup{
         ArrayList<Configuration> x = parent.getAllCoupsPossibles(false);
         System.out.println("Analyse de " + x.size() + " configurations");
         for (Configuration c : x) {
-            newVal = calculJoueurCourant(c, horizon);
+            newVal = calculJoueurCourant(c, horizon, Integer.MIN_VALUE, Integer.MAX_VALUE);
             if (newVal > oldVal) {
                 meilleurConf = c;
                 oldVal = newVal;
@@ -99,29 +99,32 @@ public class CoupMoyen extends AbstractCoup{
         }
     }
     
-    public int calculJoueurCourant(Configuration conf, int horizon) {
+    public int calculJoueurCourant(Configuration conf, int horizon, int alpha, int beta) {
         if (conf.estFeuille() || horizon == 0) {
             return conf.getEvaluation();
         }
         
-        int valeur = conf.getEvaluation();
+        int valeur = Integer.MIN_VALUE;
         for (Configuration confCourante : conf.getAllCoupsPossibles(true)) {
-            valeur = Integer.max(valeur, calculAdversaire(confCourante, horizon-1));
+            valeur = Integer.max(valeur, calculAdversaire(confCourante, horizon-1, alpha, beta));
+            if (valeur > beta) return valeur;
+            alpha = Integer.max(alpha, valeur);
         }
         
         return valeur;
     }
     
-    public int calculAdversaire(Configuration conf, int horizon) {
+    public int calculAdversaire(Configuration conf, int horizon, int alpha, int beta) {
         if (conf.estFeuille() || horizon == 0) {
             return conf.getEvaluation();
         } 
         
         int valeur = Integer.MAX_VALUE;
         for (Configuration confCourante : conf.getAllCoupsPossibles(false)) {
-            valeur = Integer.min(valeur, calculJoueurCourant(confCourante, horizon-1));
+            valeur = Integer.min(valeur, calculJoueurCourant(confCourante, horizon-1, alpha, beta));
+            if (alpha > valeur) return valeur;
+            beta = Integer.min(beta, valeur);
         }
-        //conf.echangeJoueur();
         
         return valeur;
     }

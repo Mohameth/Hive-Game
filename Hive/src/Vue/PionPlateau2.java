@@ -74,7 +74,11 @@ public class PionPlateau2 implements ObservableVue {
 
     public void setPionEnDessous(PionPlateau2 pDessous) {
         this.pionEnDessous = pDessous;
+        this.pionEnDessous.setLock();
         this.imagePion.updateImageDessous(true);
+        //mettre l'image au meme coordonnée que le pion en dessous pour les aligners perfectement
+        this.getImgViewPion().setImgPosXY(pionEnDessous.getImgViewPion().getImgPosX(), pionEnDessous.getImgViewPion().getImgPosY());
+        this.validCurrentPosXY();
         notifyPionPlateauAddEnDessous(this);
     }
 
@@ -88,6 +92,7 @@ public class PionPlateau2 implements ObservableVue {
     }
 
     public void removePionEnDessous() {
+        this.pionEnDessous.removeLock();
         this.pionEnDessous = null;
         this.imagePion.updateImageDessous(false);
         notifyPionPlateauRemoveEnDessous(this);
@@ -371,7 +376,7 @@ public class PionPlateau2 implements ObservableVue {
         this.imagePion.moveToXY(x, y);
         if (this.pionEnDessous != null) {
             //pour le drag and drop ne pas deplacer le pion en dessous
-            this.pionEnDessous.moveToXY(x, y);
+            //this.pionEnDessous.moveToXY(x, y);
         }
     }
 
