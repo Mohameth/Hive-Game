@@ -26,40 +26,27 @@ public class Araignee extends Insecte {
     //@Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
         if (!this.getJoueur().reinePosee() || this.getEmplacement().getNbInsectes() != 1) return new ArrayList<>();
-        ArrayList<Case> res = new ArrayList<>();
-        ArrayList<Case> visitees = new ArrayList<>();
-        Collection<Case> init = plateau.getCasesVoisinesAccessibles(this.getEmplacement(), true);
-        Case caseInit = this.getEmplacement();
-        
-        visitees.add(this.getEmplacement());
-        for (Case c : init) {
-            this.deplacement(plateau, c.getCoordonnees());
-            deplacementWorker(plateau, c, visitees, res, 1);
-            this.deplacement(plateau, caseInit.getCoordonnees());
-        }
-        
-        Collection<Case> voisins = plateau.getCasesVoisines(this.getEmplacement(), true);
-        Iterator<Case> it = res.iterator();
-        while (it.hasNext()) {
-            Case c = it.next();
-            if (voisins.contains(c) || plateau.rucheBrisee(this.getEmplacement(), c)) it.remove();
-        }
-        
-        return res;
-    }
-        
-    private void deplacementWorker(Plateau p, Case courante, Collection<Case> visitees, Collection<Case> res, int dist) {
-        if (dist > 4) return;
-        if (dist == 3) res.add(courante);
-        
-        for (Case c : p.getCasesVoisinesAccessibles(courante, true)) {
-            if (!visitees.contains(c)) {
-                this.deplacement(p, c.getCoordonnees());
-                deplacementWorker(p, c, visitees, res, dist+1);
-                this.deplacement(p, courante.getCoordonnees());
+
+        Collection<Case> c1 = plateau.getCasesVoisinesAccessibles(this.getEmplacement(), true);
+        Collection<Case> c2 = new ArrayList<Case>(); 
+        for (Case c : c1) {
+            for(Case d : plateau.getCasesLibresAccessibles(c, this.getEmplacement())) {
+                if (!c1.contains(d)) {
+                    c2.add(d);
+                }
             }
         }
-        visitees.add(courante);
+        
+        Collection c3 = new ArrayList<Case>();
+        for (Case c : c2) {
+            for(Case d : plateau.getCasesLibresAccessibles(c, this.getEmplacement())) {
+                if (!c1.contains(d) && !c2.contains(d) && !plateau.rucheBrisee(this.getEmplacement(), d)) {
+                    c3.add(d);
+                }
+            }
+        }
+        
+        return c3;
     }
 
     @Override
