@@ -625,7 +625,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             //pp2.setPionPosition(zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY());
             pp2.validCurrentPosXY();
         }
-        if (!currentPlayerHumain()) {
+        //todo
+        if (!currentPlayerHumain() || this.controleur.getJoueur1().getNumJoueur().estHumain() && this.controleur.getJoueur2().getNumJoueur().estHumain()) {
             joueurJoue();
         } else {
             System.out.println("Player not human");
