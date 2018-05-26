@@ -169,12 +169,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             //je suis une ia qui commence
             this.controleur.coupInit();
         }
-
     }
 
     public void displayZoneLibre() {
-
-        System.out.println("Display zone libre");
         //updatePosZoneLibre();
         ArrayList<HexaPoint> zoneLibres = new ArrayList<>();
 
@@ -609,8 +606,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             //updateposition
 
             //mise a jour du tableau avec les points et zones libres
-            System.out.println("Jouer coup plateau -> plateau");
-            this.controleur.deplacementInsecte(currentSelected.getCoordPion(), zLibre.getCoordZoneLibre());
+            //System.out.println("Jouer coup plateau -> plateau");
+            if (currentPlayerHumain()) { //lorsque l'ia joue elle a deja validé le deplacement ne pas le refaire
+                this.controleur.deplacementInsecte(currentSelected.getCoordPion(), zLibre.getCoordZoneLibre());
+            }
             this.currentSelected.setPionPosition(zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY());
             this.currentSelected.validCurrentPosXY();
         } else if (this.currentMainSelected != null) {    // un pionMain est selectionnée d'un joueur et on créer un pionPlateau sur le plateau au coordonnée zLibre
@@ -619,12 +618,18 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             //currentMainSelected.affiche();
             //zLibre.affiche();
             //mise a jour du tableau avec les points et zones libres
-            this.controleur.joueurPlaceInsecte(currentMainSelected.getPionsType(), zLibre.getCoordZoneLibre());
+            if (currentPlayerHumain()) { //lorsque l'ia joue elle a deja validé le deplacement ne pas le refaire
+                this.controleur.joueurPlaceInsecte(currentMainSelected.getPionsType(), zLibre.getCoordZoneLibre());
+            }
             PionPlateau2 pp2 = new PionPlateau2(this, currentMainSelected.getPionsType(), currentMainSelected.isWhite(), zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY(), this.getZoom(), this.getWidth(), this.getHeight());
             //pp2.setPionPosition(zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY());
             pp2.validCurrentPosXY();
         }
-        joueurJoue();
+        if (!currentPlayerHumain()) {
+            joueurJoue();
+        } else {
+            System.out.println("Player not human");
+        }
         //joueurJoue();
     }
 
@@ -803,14 +808,14 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     public void updateMainJoueur() { //liste d'insect en param
         if (currentPlayerHumain()) {
-            System.out.println("Je suis humain");
+            System.out.println("Tour de l'humain");
             updateMainJoueurColor(true);
             updateMainJoueurColor(false);
             updateHumanPlayer(currentPlayerIsWhite());
             highlightPlayeName();
 
         } else {
-            System.out.println("Je suis une IA");
+            System.out.println("Tour de l'IA");
             updateMainJoueurColor(true);
             updateMainJoueurColor(false);
             lockTousLespions();
@@ -821,10 +826,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     public void highlightPlayeName() {
         if (currentPlayerIsWhite()) {
             setNomJoueur(1);
-            System.out.println("Blanc");
+            System.out.println("-> Blanc");
         } else {
             setNomJoueur(2);
-            System.out.println("Noir");
+            System.out.println("-> Noir");
         }
     }
 
@@ -1446,13 +1451,12 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     public void iaCanPlay(long temps) {
         if (iaCanPlay > 0 && (temps > iaCanPlay)) {
             iaCanPlay = -1;
-            reconstructionPlateau(this.pModel);
             ordinateurJoue();
         }
     }
 
     public void joueurJoue() {
-        System.out.println("Joueur place pion");
+        //System.out.println("Joueur place pion");
         removeSelectedPion();
         hideZoneLibre();
         updateUndoRedoBtn();
@@ -1461,7 +1465,25 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     public void ordinateurJoue() {
-        reconstructionPlateau(this.pModel);
+        //reconstructionPlateau(this.pModel);
+        //System.out.println("Ordinateur joue");
+        removeSelectedPion();
+        Deplacement iaMove = this.controleur.getJoueurCourant().getDernierDeplacement();
+        //si origine = null = depose pion de la main vers le plateau
+        if (iaMove.getOrig() == null) {
+            if (currentPlayerIsWhite()) {
+                //System.out.println("L'ia est blanc");
+                this.currentMainSelected = this.pionMainPlayer1.get(iaMove.getI().getType());
+            } else {
+                //System.out.println("L'ia est noir");
+                this.currentMainSelected = this.pionMainPlayer2.get(iaMove.getI().getType());
+            }
+            updateMousePressedZoneLibre(getZoneLibreEgal(iaMove.getCible()));
+        } else { //deplace un pion de plateau -> plateau
+            this.currentSelected = this.listPionsPlateau.get(iaMove.getOrig());
+            updateMousePressedZoneLibre(getZoneLibreEgal(iaMove.getCible()));
+        }
+//
         updateUndoRedoBtn();
         hudToFront();
         this.controleur.joueurSuivant();
@@ -1469,7 +1491,23 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     }
 
-    //toto lors du deplacement verifier collision A activer TODO
+    private ZoneLibre getZoneLibreEgal(HexaPoint pt) {
+        if (this.controleur.getJoueur1().getTourJoueur() == 2 && !currentPlayerHumain() && this.listZoneLibres.isEmpty()) {
+            //si l'ia commence ajouter la premiere zone libre le tour = 2 car le model est déja a jour
+            addPremierZoneLibre();
+        }
+
+        //recherche dans les zones libres un pion au meme coordonnée
+        for (ZoneLibre zLibre : listZoneLibres) {
+            if (zLibre.getCoordZoneLibre().equals(pt)) {
+                return zLibre;
+            }
+        }
+        throw new UnsupportedOperationException("Il existe toujours une case libre lire");
+
+    }
+
+//toto lors du deplacement verifier collision A activer TODO
     public void checkCollision(PionPlateau2 p) {
         ZoneLibre zlCollision = null;
         for (ZoneLibre lZoneLibre : listZoneLibres) {
@@ -1511,6 +1549,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void reconstructionPlateau(Plateau p) {
+        System.out.println("Reconstruire plateau");
         //System.out.println("rec plateau");
         int nbNonCorrect = 0;
 
@@ -1835,6 +1874,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             getPause();
         });
         root.getChildren().add(v);
+        v.toFront();
     }
 
     private void getRule(boolean pause) {
