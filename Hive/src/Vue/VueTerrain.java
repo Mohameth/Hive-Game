@@ -164,9 +164,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         };
         anim.start();
 
+        coupJoue();
         if (this.controleur.getJoueur1().getTourJoueur() == 1 && !currentPlayerHumain()) {
             //je suis une ia qui commence
-            //coupinit();
+            this.controleur.coupInit();
         }
 
     }
