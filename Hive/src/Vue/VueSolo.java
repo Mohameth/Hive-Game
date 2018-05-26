@@ -139,7 +139,7 @@ public class VueSolo extends Vue {
                         break;
                 }
                 if (group2.getSelectedToggle() != null) {
-                    switch (group.getSelectedToggle().getUserData().toString()) {
+                    switch (group2.getSelectedToggle().getUserData().toString()) {
                         case "black":
                             difficulte = difficulte + 3;
                             break;
