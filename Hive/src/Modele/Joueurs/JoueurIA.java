@@ -74,9 +74,11 @@ public class JoueurIA extends Joueur {
         if (this.coupChoisiExistant()) {
             if (this.placement) {
                 this.dernierDeplacement = new Deplacement(this.insecteChoisi, null, this.caseChoisie);
+                this.insecteChoisi.setEmplacement(this.plateau.getCase(this.caseChoisie));
                 this.plateau.ajoutInsecte(this.insecteChoisi, this.caseChoisie);
             } else {
                 this.dernierDeplacement = new Deplacement(this.insecteChoisi, this.insecteChoisi.getEmplacement().getCoordonnees(), this.caseChoisie);
+                this.plateau.deleteInsecte(insecte, this.insecteChoisi.getEmplacement().getCoordonnees());
                 this.plateau.deplaceInsecte(this.insecteChoisi, this.caseChoisie);
             }
             this.resetCoupChoisi();

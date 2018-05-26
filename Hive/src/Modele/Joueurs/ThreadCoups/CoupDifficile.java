@@ -44,10 +44,13 @@ public class CoupDifficile extends AbstractCoup{
         MonteCarlo monteCarlo = new MonteCarlo(this.joueur.getTourJoueur(), noeud, this.joueur);
 
         do {
+            
             Noeud noeud2 = monteCarlo.selection();
             noeud2 = monteCarlo.Expansion(noeud2);
+            System.out.println("Noeuds :" + monteCarlo.getNbNoeuds() + " " + monteCarlo.getNbNoeudsMax());
             boolean b = monteCarlo.simulation(noeud2);
             monteCarlo.miseAjour(noeud2, b);
+            
         } while (monteCarlo.getNbNoeuds() < monteCarlo.getNbNoeudsMax());
 
         double max = 0.0;
@@ -61,7 +64,7 @@ public class CoupDifficile extends AbstractCoup{
             }
         }
 
-        CoupleCaesInsecte coupleCaesInsecte = getCouple(noeud, noeud.getListeFils().get(indice),
+        /*CoupleCaesInsecte coupleCaesInsecte = getCouple(noeud, noeud.getListeFils().get(indice),
                 noeud.getPossiblilites().get(indice).getInsecte(), noeud.getPossiblilites().get(indice).getCase(),
                 noeud.getPossiblilites().get(indice).getAncienneCase());
         if (coupleCaesInsecte.getInsecte().getEmplacement() == null) {
@@ -70,7 +73,7 @@ public class CoupDifficile extends AbstractCoup{
         } else {
             this.joueur.setDernierDeplacement(new Deplacement(coupleCaesInsecte.getInsecte(), coupleCaesInsecte.getInsecte().getEmplacement().getCoordonnees(), coupleCaesInsecte.getCase().getCoordonnees()));
             coupleCaesInsecte.getInsecte().deplacement(noeud.getPlateau(), coupleCaesInsecte.getCase().getCoordonnees());
-}
+        }*/
         
         this.joueur.incrementeTour();
         return true;

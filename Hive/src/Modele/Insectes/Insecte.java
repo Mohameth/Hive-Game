@@ -32,7 +32,7 @@ public abstract class Insecte implements Cloneable, Serializable {
             plat.deleteInsecte(this, this.getEmplacement().getCoordonnees());
             plat.deplaceInsecte(this, cible);
             this.setEmplacement(emplacement);
-            joueur.incrementeTour();
+            //joueur.incrementeTour();
         } catch (Exception e) {
             System.err.println("ERREUR DEPLACEMENT :" + e);
         }
