@@ -180,10 +180,16 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             //System.out.println("Affiche zone libre pion de la main");
             zoneLibres = this.controleur.placementsPossibles(); //lorsqu'on clique sur un pionMain affiche les zones libres
             zoneLibresCollision = new ArrayList<>(zoneLibres);
+
         } else if (currentSelected != null) {
             //System.out.println("Affiche zone libre pion plateau");
             zoneLibres = this.controleur.deplacementsPossibles(currentSelected.getCoordPion());
             zoneLibresCollision = new ArrayList<>(zoneLibres);
+
+            if (zoneLibres.size() == 0) {
+                currentSelected.removeLock();
+                currentSelected.setLock();
+            }
         }
 
         if (zoneLibres.size() == 1 && zoneLibres.get(0).equals(new HexaPoint(0, 0, 0)) && this.listZoneLibres.isEmpty()) {
@@ -348,8 +354,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private void resetView() {
         double centrePlateau[] = getCentreDuPlateau();
         moveDeltaBoard(-centrePlateau[0], -centrePlateau[1]);
-
         zoomImage(0.3);
+        removeSelectedPion();
     }
 
     private double[] getCentreDuPlateau() {
@@ -795,10 +801,20 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             updateMainJoueurColor(true);
             updateMainJoueurColor(false);
             updateHumanPlayer(currentPlayerIsWhite());
+            highlightPlayeName();
 
         } else {
             System.out.println("Je suis une IA");
             lockTousLespions();
+            highlightPlayeName();
+        }
+    }
+
+    public void highlightPlayeName() {
+        if (currentPlayerIsWhite()) {
+            setNomJoueur(1);
+        } else {
+            setNomJoueur(2);
         }
     }
 
@@ -812,14 +828,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             removeLock(false, this.controleur.tousPionsPosables(NumJoueur.JOUEUR2));
         }
         setlock(!isWhite);
-        if (isWhite) {
-            System.out.println("Je suis blanc");
-            setNomJoueur(1);
-        } else {
-            System.out.println("Je suis noir");
-            setNomJoueur(2);
-        }
-
     }
 
     private void lockTousLespions() {
