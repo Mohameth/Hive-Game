@@ -200,11 +200,9 @@ public class Hive implements Serializable {
         return false;
     }
 
-    private void joueurSuivant() { //Passe au joueur suivant
+    public void joueurSuivant() { //Passe au joueur suivant
         if (this.joueurCourant.getNumJoueur().estHumain()) {
             this.plateau.notifieVue(-1);
-        } else {
-            this.plateau.notifieVue(((JoueurIA) this.joueurCourant).getTempsRestant());
         }
 
         if (joueurCourant.equals(this.joueur1)) {
@@ -214,7 +212,6 @@ public class Hive implements Serializable {
         }
         if (!this.joueurCourant.getNumJoueur().estHumain()) {
             ((JoueurIA) this.joueurCourant).coup(null, null);
-            this.joueurSuivant();
         }
 
     }
