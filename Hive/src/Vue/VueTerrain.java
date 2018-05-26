@@ -71,6 +71,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private Button bUndo;
     private Button bRedo;
     private long iaCanPlay = -1;
+    private boolean mainDrag = false;
 
     VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs, boolean solo) {
         boolean fs = primaryStage.isFullScreen();
@@ -155,6 +156,15 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         //ctrlGame();
         coupJoue();
+
+        AnimationTimer anim = new AnimationTimer() {
+            @Override
+            public void handle(long temps) {
+                iaCanPlay(temps);
+            }
+        };
+        anim.start();
+
     }
 
     public void displayZoneLibre() {
@@ -603,6 +613,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             pp2.validCurrentPosXY();
         }
         joueurJoue();
+        //joueurJoue();
     }
 
     @Override
@@ -685,13 +696,50 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     //Main Pion vers plateau
-    public void updateMouseReleasedMainJoueur(PionMain pm) {
+    public void updateMousePressedMainJoueur(PionMain pm) {
         //System.out.println("Clic sur main joueur");
         //clic dans la main du joueur1
         removeSelectedPion();
         this.currentMainSelected = pm;
         pm.setSelectedEffect();
         displayZoneLibre();
+    }
+
+    //Main Pion vers plateau drag
+    public void updateMouseDraggedMainJoueur(PionMain pm) {
+        this.currentMainSelected = pm;
+
+        mainDrag = true;
+        //ajoute un pion en dehors du plateau
+        //move to souris
+        //si back to ancienne position le supprimer avec les zones libres
+        System.out.println("Mouse drag pion Main");
+        if (!pm.isDragging()) {
+            PionPlateau2 pp2 = new PionPlateau2(this, currentMainSelected.getPionsType(), currentMainSelected.isWhite(), new HexaPoint(-47, -47, -47), -999, -999, this.getZoom(), this.getWidth(), this.getHeight());
+            pp2.validCurrentPosXY();
+            pm.setDragging(true, pp2);
+        }
+
+        if (pm.equals(this.currentMainSelected)) {
+            //valide la selection commence un drag:
+            checkCollision(pm.getPionPlateauDrag());
+            //p.afficheZoneLibre(false);
+            //System.out.println("Selection");
+            //selection du pion lors du move confirmation
+        }
+
+//
+//
+//        if (p.equals(this.currentSelected)) {
+//            //valide la selection commence un drag:
+//            this.selectionValidee = true;
+//            p.setDragging(true);
+//            updatePionPlateauHoveOutDessous(p);
+//            checkCollision(p);
+//            //p.afficheZoneLibre(false);
+//            //System.out.println("Selection");
+//            //selection du pion lors du move confirmation
+//        }
     }
 
     //ANCIEN CODE
@@ -725,9 +773,13 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     public void updateMainJoueur() { //liste d'insect en param
         if (currentPlayerHumain()) {
             System.out.println("Je suis humain");
+            updateMainJoueurColor(true);
+            updateMainJoueurColor(false);
             updateHumanPlayer(currentPlayerIsWhite());
+
         } else {
             System.out.println("Je suis une IA");
+            lockTousLespions();
         }
     }
 
@@ -742,8 +794,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         }
         setlock(!isWhite);
         if (isWhite) {
+            System.out.println("Je suis blanc");
             setNomJoueur(1);
         } else {
+            System.out.println("Je suis noir");
             setNomJoueur(2);
         }
 
@@ -761,21 +815,24 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     private void updateMainJoueurColor(boolean isWhite) {
         HashMap<TypeInsecte, Integer> m;
+        HashMap<TypeInsecte, PionMain> mainJoueur;
         //Mise a jour si probleme du texte
         if (isWhite) {
             m = getnbInsect(this.controleur.mainJoueur(NumJoueur.JOUEUR1));
+            mainJoueur = pionMainPlayer1;
         } else {
             m = getnbInsect(this.controleur.mainJoueur(NumJoueur.JOUEUR2));
+            mainJoueur = pionMainPlayer2;
         }
 
-        for (Map.Entry<TypeInsecte, PionMain> entry : pionMainPlayer1.entrySet()) {
+        for (Map.Entry<TypeInsecte, PionMain> entry : mainJoueur.entrySet()) {
             TypeInsecte keyType = entry.getKey();
             PionMain pMain = entry.getValue();
             if (m.containsKey(keyType)) {
                 //verifier les données
                 int nbInsects = m.get(keyType);
                 if (pMain.getNbPions() != nbInsects) {
-                    this.pionMainPlayer1.get(keyType).setNbPion(nbInsects);
+                    mainJoueur.get(keyType).setNbPion(nbInsects);
                 }
             } else { //si n'est pas present le supprimer
                 pMain.setNbPion(0);
@@ -892,11 +949,12 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             });
         } else {
             ComboBox<String> cb = new ComboBox<>();
-            cb.getItems().addAll(getLangStr("easy"),getLangStr("medi"),getLangStr("hard"));
-            if(!this.controleur.getJoueur2().getNumJoueur().estHumain())
-                cb.getSelectionModel().select(((JoueurIA) this.controleur.getJoueur2()).getDifficulte()-1);
-            else
-                cb.getSelectionModel().select(((JoueurIA) this.controleur.getJoueur1()).getDifficulte()-1);
+            cb.getItems().addAll(getLangStr("easy"), getLangStr("medi"), getLangStr("hard"));
+            if (!this.controleur.getJoueur2().getNumJoueur().estHumain()) {
+                cb.getSelectionModel().select(((JoueurIA) this.controleur.getJoueur2()).getDifficulte() - 1);
+            } else {
+                cb.getSelectionModel().select(((JoueurIA) this.controleur.getJoueur1()).getDifficulte() - 1);
+            }
             cb.setDisable(true);
             cb.getStylesheets().add("Vue/combo.css");
             nomJoueur.add(cb);
@@ -1334,14 +1392,16 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         this.pModel = p;
         long tempsRestant = (long) arg;
 
+        System.out.println("update");
         //si >0 alors c'est une ia
         if (tempsRestant > 0) {
-            lockTousLespions();
+            System.out.println("IA IS THINKING");
             this.iaCanPlay = tempsRestant;
-            System.out.println("IA IS THINKING...");
         } else { //l'humain a joué puis directe après l'ia va jouer
             this.iaCanPlay = -1;
+            // updateMainJoueur();
         }
+
     }
 
     public void iaCanPlay(long temps) {
@@ -1352,21 +1412,21 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     public void joueurJoue() {
+        System.out.println("Joueur place pion");
+        removeSelectedPion();
         hideZoneLibre();
-        if (!possedeUneIa()) {
-            removeSelectedPion();
-            updateMainJoueur();
-        }
         updateUndoRedoBtn();
         hudToFront();
+        updateMainJoueur();
     }
 
     public void ordinateurJoue() {
-        System.out.println("FINNN blocage des pions humain");
         reconstructionPlateau(this.pModel);
-        updateMainJoueur();
         updateUndoRedoBtn();
         hudToFront();
+        this.controleur.joueurSuivant();
+        updateMainJoueur();
+
     }
 
     //toto lors du deplacement verifier collision A activer TODO

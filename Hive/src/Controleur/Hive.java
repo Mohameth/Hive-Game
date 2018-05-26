@@ -40,7 +40,7 @@ public class Hive implements Serializable {
         Vue.initFenetre(args, this);
     }
 
-    public void setJoueurs(int cas, boolean extension) { //Création des joueurs selon le type de partie 
+    public void setJoueurs(int cas, boolean extension) { //Création des joueurs selon le type de partie
         if (cas > 0 && cas < 5) {
             switch (cas) {
                 case 1:
@@ -72,7 +72,7 @@ public class Hive implements Serializable {
                     break;
                 case 7:
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
-                    this.joueur1 = new JoueurIA(this.plateau, 2, extension, NumJoueur.IADIFFICILE1, joueur2); //Medium                    
+                    this.joueur1 = new JoueurIA(this.plateau, 2, extension, NumJoueur.IADIFFICILE1, joueur2); //Medium
 
                     break;
             }
@@ -200,7 +200,7 @@ public class Hive implements Serializable {
         return false;
     }
 
-    private void joueurSuivant() { //Passe au joueur suivant
+    public void joueurSuivant() { //Passe au joueur suivant
         if (this.joueurCourant.getNumJoueur().estHumain()) {
             this.plateau.notifieVue(-1);
         } else {
@@ -214,7 +214,7 @@ public class Hive implements Serializable {
         }
         if (!this.joueurCourant.getNumJoueur().estHumain()) {
             ((JoueurIA) this.joueurCourant).coup(null, null);
-            this.joueurSuivant();
+            //this.joueurSuivant();
         }
 
     }
@@ -246,10 +246,10 @@ public class Hive implements Serializable {
         return j.getTourJoueur();
     }
 
-    
     public Joueur getJoueur(NumJoueur j) {
-        if (j.estBlanc())
+        if (j.estBlanc()) {
             return this.joueur1;
+        }
         return this.joueur2;
     }
 
@@ -335,7 +335,7 @@ public class Hive implements Serializable {
             if (this.joueur2 instanceof JoueurIA) {
                 this.joueur2.Undo();
                 this.joueur1.Undo();
-            }else if (this.joueur1 instanceof JoueurIA) {
+            } else if (this.joueur1 instanceof JoueurIA) {
                 this.joueur2.Undo();
                 this.joueur1.Undo();
             } else if (this.joueurCourant.equals(this.joueur1)) {
