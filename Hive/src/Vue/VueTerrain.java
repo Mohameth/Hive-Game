@@ -168,7 +168,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     public void displayZoneLibre() {
 
-        //System.out.println("Display zone libre");
+        System.out.println("Display zone libre");
         //updatePosZoneLibre();
         ArrayList<HexaPoint> zoneLibres = new ArrayList<>();
 
@@ -317,9 +317,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 final MouseEvent mouseEvent) -> {
             lastMouseLocation.x = mouseEvent.getSceneX(); //sauvegarde des coordonnées initial de la souris
             lastMouseLocation.y = mouseEvent.getSceneY();
-            //remove selection
-            //removeSelectedPion();
-            //hideZoneLibre();
         });
 
         rect.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -450,9 +447,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         //ajout d'une zone libre
         //si le premier pion et qu'on a un piece alors supprimer le pion 0 0 0
 
-        if (this.listZoneLibres.size() == 1 && this.listZoneLibres.get(0).asParentNull() && listZoneLibres.get(0).getCoordZoneLibre().equals(new HexaPoint(0, 0, 0))) {
+        if (!mainDrag && this.listZoneLibres.size() == 1 && this.listZoneLibres.get(0).asParentNull() && listZoneLibres.get(0).getCoordZoneLibre().equals(new HexaPoint(0, 0, 0))) {
             this.getRoot().getChildren().remove(this.listZoneLibres.get(0).getImage());
             this.listZoneLibres.remove(0);
+            System.out.println("Supprime point 0 0");
         }
         this.listZoneLibres.add(zLibre);
         this.getRoot().getChildren().add(zLibre.getImage());
@@ -609,7 +607,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             //currentMainSelected.affiche();
             //zLibre.affiche();
             //mise a jour du tableau avec les points et zones libres
-
             this.controleur.joueurPlaceInsecte(currentMainSelected.getPionsType(), zLibre.getCoordZoneLibre());
             PionPlateau2 pp2 = new PionPlateau2(this, currentMainSelected.getPionsType(), currentMainSelected.isWhite(), zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY(), this.getZoom(), this.getWidth(), this.getHeight());
             //pp2.setPionPosition(zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY());
@@ -714,6 +711,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         if (pm.isDragging()) {
             System.out.println("True is dragging");
             removePionMainDrag(pm.getPionPlateauDrag());
+            mainDrag = false;
             if (this.currentSelectionIsSnapped != null) {
                 //valide le drag and drop si snapped
                 //System.out.println("Valide le drag and drop");
@@ -729,7 +727,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 pm.setDragging(false, null);
                 removeSelectedPion();
             }
-            mainDrag = false;
         }
     }
 
@@ -755,6 +752,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             pm.getPionPlateauDrag().setDragging(true);
             selectionValidee = true;
             this.currentMainSelected = pm;
+
         }
 
         if (pm.equals(this.currentMainSelected)) {
