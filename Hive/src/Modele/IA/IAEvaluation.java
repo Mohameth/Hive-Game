@@ -51,10 +51,10 @@ public class IAEvaluation {
      */
     public int getEvaluation() {
         if (aGagne()) {
-            return 1000;
+            return Integer.MAX_VALUE;
         }
         if (aPerdu()) {
-            return -1000;
+            return Integer.MIN_VALUE;
         }
 
         initPiecesValues(myPiecesValues, false);
@@ -87,7 +87,7 @@ public class IAEvaluation {
             if (insecteBelongsToOpponent(i).equals(opponent)) {//si opponent, nos pieces ne serons pas initialisés
                 switch (i.getType()) {
                     case REINE:
-                        piecesValues.put(i, 50);
+                        piecesValues.put(i, 30);
                         if (opponent) {
                             reineAdverse = i;
                         } else {
@@ -95,16 +95,16 @@ public class IAEvaluation {
                         }
                         break;
                     case SCARABEE:
-                        piecesValues.put(i, 20);
+                        piecesValues.put(i, 30);
                         break;
                     case SAUTERELLE:
                         piecesValues.put(i, 20);
                         break;
                     case ARAIGNEE:
-                        piecesValues.put(i, 10);
+                        piecesValues.put(i, 30);
                         break;
                     case FOURMI:
-                        piecesValues.put(i, 30);
+                        piecesValues.put(i, 150);
                         break;
 
                     case MOUSTIQUE:
@@ -152,9 +152,6 @@ public class IAEvaluation {
     }
 
     private boolean estImmobilise(Insecte i) {
-        if (i.getType() == TypeInsecte.FOURMI && i.deplacementPossible(jeu).isEmpty()) {
-            //System.out.println("\ntest");
-        }
         return i.deplacementPossible(jeu).isEmpty();
     }
 
@@ -168,13 +165,7 @@ public class IAEvaluation {
      * @return true si i et la reine adverse sont voisin
      */
     private boolean entoureReineAdverse(Insecte i) {
-        //En train de bloquer la reine adverse + 15
-        Insecte reine;
-        if (insecteBelongsToOpponent(i)) {
-            reine = maReine;
-        } else {
-            reine = reineAdverse;
-        }
+        Insecte reine = insecteBelongsToOpponent(i) ? maReine : reineAdverse;
         
         if (reine == null || reine.getEmplacement() == null) {
             return false;
@@ -184,18 +175,17 @@ public class IAEvaluation {
     }
 
     private boolean maReineEstEntoure(Insecte i) {
-        Insecte reine;
-        if (insecteBelongsToOpponent(i)) {
-            reine = reineAdverse;
-        } else {
-            reine = maReine;
-        }
+        Insecte reine = insecteBelongsToOpponent(i) ? reineAdverse : maReine;
 
         if (reine == null || reine.getEmplacement() == null) {
             return false;
         }
         
         return jeu.estVoisin(reine, i);
+    }
+    
+    private boolean peutEntourerReineAdverse(Insecte i) {
+        return false;
     }
     
     /**
@@ -239,23 +229,14 @@ public class IAEvaluation {
             Integer value = piecesValues.get(i);
             
             if (estDansLaMain(i)) {
-                value = 0;
-            } else if (estRecouvert(i)) {
-                value -= 20;
+                value -= value*2;
             } else {
-                value += mobilite(i);
-                if (entoureReineAdverse(i)) {
-                    value += 100;
-                }
-                /*if (maReineEstEntoure(i)) {
-                    value -= 50;
-                }*/ //--> BUG
+                if (estRecouvert(i))    value /= 5;
+                else                                        value += mobilite(i)*2;
+                //if (entoureReineAdverse(i))                 value += 10000;
+                //else if (peutEntourerReineAdverse(i))       value += 50;
+                //if (maReineEstEntoure(i))                   value -= 100;
             }
-
-            /*if (bloqueFourmiAdverse(i)) value += 5;
-            value += capaciteABloquerReineAdverse(i);
-             */
-            //TODO: Gérer les pouvoirs spéciaux et ne pas mettre les valeurs en bruts.
             
             piecesAjout.put(i, value);
         }

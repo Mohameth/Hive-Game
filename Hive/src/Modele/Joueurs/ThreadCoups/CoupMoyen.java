@@ -17,7 +17,7 @@ import java.util.Random;
  * @author GRP3
  */
 public class CoupMoyen extends AbstractCoup{
-    int horizon = 4;
+    int horizon = 2;
     public Coup lastCoup = null;
     
     /**
@@ -85,7 +85,7 @@ public class CoupMoyen extends AbstractCoup{
         System.out.println("Analyse de " + x.size() + " configurations");
         for (Configuration c : x) {
             newVal = calculJoueurCourant(c, horizon, Integer.MIN_VALUE, Integer.MAX_VALUE);
-            if (newVal > oldVal) {
+            if (newVal >= oldVal) {
                 meilleurConf = c;
                 oldVal = newVal;
             }
