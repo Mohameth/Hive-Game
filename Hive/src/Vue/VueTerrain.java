@@ -167,6 +167,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     public void displayZoneLibre() {
+
         //System.out.println("Display zone libre");
         //updatePosZoneLibre();
         ArrayList<HexaPoint> zoneLibres = new ArrayList<>();
@@ -229,6 +230,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     public void hideZoneLibre() {
+//        for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+//            System.out.println(ste);
+//        }
         for (ZoneLibre zoneLibre : listZoneLibres) {
             zoneLibre.setZoneLibreCachee();
         }
@@ -702,43 +706,61 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         this.currentMainSelected = pm;
         pm.setSelectedEffect();
         displayZoneLibre();
+        mainDrag = false;
+    }
+
+    public void updateMouseReleaseMainJoueur(PionMain pm) {
+        System.out.println("Mouse release main joueur");
+        if (pm.isDragging()) {
+            System.out.println("True is dragging");
+            removePionMainDrag(pm.getPionPlateauDrag());
+            if (this.currentSelectionIsSnapped != null) {
+                //valide le drag and drop si snapped
+                //System.out.println("Valide le drag and drop");
+                pm.getPionPlateauDrag().setDragging(false);
+                pm.setDragging(false, null);
+                selectionValidee = false;
+                currentSelected = null;
+                updateMousePressedZoneLibre(currentSelectionIsSnapped);
+                removeSelectedPion();
+            } else {
+                //retourne sur la position d'origine
+                pm.getPionPlateauDrag().goToPrevPos();
+                pm.setDragging(false, null);
+                removeSelectedPion();
+            }
+            mainDrag = false;
+        }
+    }
+
+    public void removePionMainDrag(PionPlateau2 pp) {
+        for (ZoneLibre zLi : pp.getZonesLibresListe()) {
+            this.getRoot().getChildren().remove(zLi.getImage());
+            this.listZoneLibres.remove(zLi);
+        }
+        this.getRoot().getChildren().remove(pp.getImage());
+        this.listPionsPlateau.remove(pp.getCoordPion());
     }
 
     //Main Pion vers plateau drag
     public void updateMouseDraggedMainJoueur(PionMain pm) {
-        this.currentMainSelected = pm;
 
         mainDrag = true;
-        //ajoute un pion en dehors du plateau
-        //move to souris
         //si back to ancienne position le supprimer avec les zones libres
-        System.out.println("Mouse drag pion Main");
         if (!pm.isDragging()) {
+            //ajoute un pion en dehors du plateau
             PionPlateau2 pp2 = new PionPlateau2(this, currentMainSelected.getPionsType(), currentMainSelected.isWhite(), new HexaPoint(-47, -47, -47), -999, -999, this.getZoom(), this.getWidth(), this.getHeight());
             pp2.validCurrentPosXY();
             pm.setDragging(true, pp2);
+            pm.getPionPlateauDrag().setDragging(true);
+            selectionValidee = true;
+            this.currentMainSelected = pm;
         }
 
         if (pm.equals(this.currentMainSelected)) {
-            //valide la selection commence un drag:
+            //move to souris check collsion
             checkCollision(pm.getPionPlateauDrag());
-            //p.afficheZoneLibre(false);
-            //System.out.println("Selection");
-            //selection du pion lors du move confirmation
         }
-
-//
-//
-//        if (p.equals(this.currentSelected)) {
-//            //valide la selection commence un drag:
-//            this.selectionValidee = true;
-//            p.setDragging(true);
-//            updatePionPlateauHoveOutDessous(p);
-//            checkCollision(p);
-//            //p.afficheZoneLibre(false);
-//            //System.out.println("Selection");
-//            //selection du pion lors du move confirmation
-//        }
     }
 
     //ANCIEN CODE

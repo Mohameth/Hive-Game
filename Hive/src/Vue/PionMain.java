@@ -144,6 +144,12 @@ public class PionMain {
             }
         });
 
+        getImage().addEventFilter(MouseEvent.MOUSE_RELEASED, (
+                final MouseEvent mouseEvent) -> {
+            this.vtObserver.updateMouseReleaseMainJoueur(this);
+        }
+        );
+
     }
 
 }
