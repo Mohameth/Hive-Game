@@ -355,8 +355,10 @@ public class MonteCarlo {
     	}
     	for(int i=0;i<in1.size();i++) {
     		if(in1.get(i).deplacementPossible(plateau).contains(c)) {
-    			in1.get(i).deplacement(plateau,c.getCoordonnees());
-    			return true;
+    			if (!in1.get(i).getEmplacement().estVoisin(c) || in1.get(i).getEmplacement().getNbInsectes() > 1) {
+    				in1.get(i).deplacement(plateau,c.getCoordonnees());
+        			return true;
+    			}
     		}
     	}
     	return false;
