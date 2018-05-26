@@ -90,6 +90,11 @@ public class Hive implements Serializable {
         return joueur1;
     }
 
+    public void coupInit() {
+        if (this.joueurCourant.equals(this.joueur1) && !this.joueur1.getNumJoueur().estHumain())
+            ((JoueurIA) this.joueurCourant).coup(null, null);
+    }
+    
     public Joueur getJoueur2() {
         return joueur2;
     }
