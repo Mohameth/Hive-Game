@@ -87,7 +87,7 @@ public class IAEvaluation {
             if (insecteBelongsToOpponent(i).equals(opponent)) {//si opponent, nos pieces ne serons pas initialisés
                 switch (i.getType()) {
                     case REINE:
-                        piecesValues.put(i, 30);
+                        piecesValues.put(i, 50);
                         if (opponent) {
                             reineAdverse = i;
                         } else {
@@ -95,16 +95,16 @@ public class IAEvaluation {
                         }
                         break;
                     case SCARABEE:
-                        piecesValues.put(i, 30);
+                        piecesValues.put(i, 20);
                         break;
                     case SAUTERELLE:
                         piecesValues.put(i, 20);
                         break;
                     case ARAIGNEE:
-                        piecesValues.put(i, 30);
+                        piecesValues.put(i, 20);
                         break;
                     case FOURMI:
-                        piecesValues.put(i, 150);
+                        piecesValues.put(i, 30);
                         break;
 
                     case MOUSTIQUE:
