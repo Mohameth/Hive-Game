@@ -336,6 +336,27 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
 
         return dep;
     }
+    
+    /**
+     * Donne les cases libres voisines de c qui sont accessible pour un insecte 
+     * en ignorant ghost pour les glissements
+     *
+     * @param c case de départ
+     * @param ghost case potentiellement ignoré
+     * @return la liste des cases accessibles
+     */
+    public Collection<Case> getCasesLibresAccessibles(Case c, Case ghost) {
+        Collection<Case> dep = this.getCasesVoisines(c, true);
+        Iterator<Case> it = dep.iterator();
+        while (it.hasNext()) {
+            Case voisin = it.next();
+            if (!this.glissementPossible(c, voisin, ghost)) {
+                it.remove();
+            }
+        }
+
+        return dep;
+    }
 
     /**
      * Test du glissement à partir de la case c1 vers c2
@@ -358,6 +379,37 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
         for (Case voisinCourant : voisinsC1) {
             if (voisinsC2.contains(voisinCourant)) {//Voisin en commun de c1 et c2
                 if (!voisinCourant.estVide() && voisinCourant.getNbInsectes() >= c1.getNbInsectes()) {
+                    nombreCasesAdjacentesNonVide++;
+                }
+            }
+        }
+
+        return nombreCasesAdjacentesNonVide == 1 && !rucheBrisee(c1, c2);
+    }
+    
+    /**
+     * Test du glissement à partir de la case c1 vers c2, en ignorant ghost 
+     * s'il ne contient qu'un insecte
+     *
+     * @param c1 case initiale
+     * @param c2 case destination
+     * @param ghost case potentiellement ignoré
+     * @return true si le glissement de c1 à c2 est possible sans casser la
+     * ruche
+     */
+    public boolean glissementPossible(Case c1, Case c2, Case ghost) {
+        if (c1 == null || c2 == null) {
+            return false;
+        }
+        int nombreCasesAdjacentesNonVide = 0;
+        Collection<Case> voisinsC1 = getCasesVoisines(c1, false);
+        voisinsC1.remove(c2);
+        Collection<Case> voisinsC2 = getCasesVoisines(c2, false);
+        voisinsC2.remove(c1);
+
+        for (Case voisinCourant : voisinsC1) {
+            if (voisinsC2.contains(voisinCourant)) {//Voisin en commun de c1 et c2
+                if ((!voisinCourant.estVide() && !voisinCourant.equals(ghost) && ghost.getInsectes().size() == 1)&& voisinCourant.getNbInsectes() >= c1.getNbInsectes()) {
                     nombreCasesAdjacentesNonVide++;
                 }
             }

@@ -153,7 +153,13 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         //faire au clic passer devant HUD
         hudToFront();
 
-        //ctrlGame();
+        AnimationTimer anim = new AnimationTimer() {
+             @Override
+             public void handle(long temps) {
+                iaCanPlay(temps);
+            }
+        };
+        anim.start();
         coupJoue();
     }
 
