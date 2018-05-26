@@ -83,6 +83,7 @@ public class JoueurIA extends Joueur {
             }
             this.resetCoupChoisi();
             this.incrementeTour();
+            this.plateau.notifieVue(tempsRestant);
             return true;
         }
 

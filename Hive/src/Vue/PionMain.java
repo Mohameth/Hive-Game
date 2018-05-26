@@ -25,6 +25,8 @@ public class PionMain {
     private Text idTextLab;
     private BorderPane bp;
     private VueTerrain vtObserver;
+    private boolean dragging;
+    private PionPlateau2 pionPlateauDrag;
 
     public PionMain(VueTerrain vt, TypeInsecte typeIns, int nbInsect, boolean white, Text idTextLab, BorderPane bPane) {
         this.white = white;
@@ -34,8 +36,10 @@ public class PionMain {
         this.imgPion.getImage().setFitWidth(this.imgPion.getImage().getFitWidth() / 4.5);
         this.imgPion.getImage().setFitHeight(this.imgPion.getImage().getFitHeight() / 4.5);
         this.bp = bPane;
+        this.dragging = false;
         this.nbPions = nbInsect;
         this.idTextLab = idTextLab;
+        this.pionPlateauDrag = null;
         setOnClicEvent();
     }
 
@@ -107,15 +111,45 @@ public class PionMain {
         return this.imgPion.getImage();
     }
 
+    public void setDragging(boolean isDragging, PionPlateau2 pp2) {
+        this.dragging = isDragging;
+        this.pionPlateauDrag = pp2;
+    }
+
+    public PionPlateau2 getPionPlateauDrag() {
+        return this.pionPlateauDrag;
+    }
+
+    public boolean isDragging() {
+        return dragging;
+    }
+
     public void setOnClicEvent() {
 
-        getImage().addEventFilter(MouseEvent.MOUSE_RELEASED, (
+        getImage().addEventFilter(MouseEvent.MOUSE_PRESSED, (
                 final MouseEvent mouseEvent) -> {
             if (!isLocked()) {
-                this.vtObserver.updateMouseReleasedMainJoueur(this);
+                this.vtObserver.updateMousePressedMainJoueur(this);
             }
         }
         );
+
+        getImage().addEventFilter(MouseEvent.MOUSE_DRAGGED, (
+                final MouseEvent mouseEvent) -> {
+            if (!isLocked()) {
+                if (pionPlateauDrag != null) {
+                    pionPlateauDrag.moveToXY(mouseEvent.getSceneX() - (pionPlateauDrag.getWidth() / 2), mouseEvent.getSceneY() - (pionPlateauDrag.getHeight() / 2));
+                }
+                this.vtObserver.updateMouseDraggedMainJoueur(this);
+            }
+        });
+
+        getImage().addEventFilter(MouseEvent.MOUSE_RELEASED, (
+                final MouseEvent mouseEvent) -> {
+            this.vtObserver.updateMouseReleaseMainJoueur(this);
+        }
+        );
+
     }
 
 }
