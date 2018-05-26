@@ -1407,8 +1407,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         if (iaCanPlay > 0 && (temps > iaCanPlay)) {
             iaCanPlay = -1;
             reconstructionPlateau(this.pModel);
-            this.controleur.joueurSuivant();
-            //ordinateurJoue();
+            ordinateurJoue();
         }
     }
 
