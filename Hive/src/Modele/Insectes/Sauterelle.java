@@ -21,7 +21,7 @@ public class Sauterelle extends Insecte {
     }
 	
 	public boolean equals(Insecte insecte) {
-		return (insecte instanceof Sauterelle);
+		return (insecte.getType() == TypeInsecte.SAUTERELLE);
 	}
 
     @Override

@@ -22,7 +22,7 @@ public class Fourmi extends Insecte {
     }
 	
 	public boolean equals(Insecte insecte) {
-		return (insecte instanceof Fourmi);
+		return (insecte.getType() == TypeInsecte.FOURMI);
 	}
     
     @Override
