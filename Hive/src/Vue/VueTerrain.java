@@ -1475,7 +1475,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         //updateMainJoueur();
         this.controleur.joueurSuivant();
         updateMainJoueur();
-
+        CheckGagnant();
     }
 
     public void ordinateurJoue() {
@@ -1502,7 +1502,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         this.controleur.joueurSuivant();
         updateMainJoueur();
         reconstructionPlateau(this.pModel);
-
+        CheckGagnant();
     }
 
     private ZoneLibre getZoneLibreEgal(HexaPoint pt) {
@@ -1802,7 +1802,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     public ListView<String> getSaveFile() {
         String path;
         path = "rsc/SAVE/";
-        
+
         System.out.println(path);
         File rep = new File(path);
         if (!rep.exists()) {
@@ -1993,4 +1993,44 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         return v1;
     }
 
+    public void CheckGagnant() {
+        int jGagnant = this.controleur.JoueurGagnant();
+        if (jGagnant != 0) {
+            TextField tf = (TextField) nomJoueur.get(jGagnant - 1);
+            String nameG = tf.getText();
+            System.out.println(nameG + " à Gagné");
+            Label l = new Label(nameG + " " + getLangStr("winMess"));
+            l.setTextFill(Color.WHITE);
+            l.prefWidthProperty().bind(primaryStage.widthProperty());
+            l.setAlignment(Pos.CENTER);
+            l.setPadding(new Insets(10, 0, 0, 0));
+            l.setStyle("-fx-background-color : rgba(0, 0, 0, .5);-fx-font-weight: bold;\n-fx-font-size: 2.1em;\n-fx-text-fill: white;");
+            Button y = new Button(getLangStr("backmenu"));
+            y.setPrefWidth(150);
+            Button n = new Button(getLangStr("restart"));
+            n.setPrefWidth(150);
+
+            HBox h = new HBox(y, n);
+            h.getStylesheets().add("Vue/button.css");
+            h.setSpacing(30);
+            h.setAlignment(Pos.CENTER);
+            h.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
+            h.setPadding(new Insets(20, 0, 10, 0));
+            VBox v = new VBox(l, h);
+            //v.setSpacing(20);
+            v.prefWidthProperty().bind(this.primaryStage.widthProperty());
+            v.prefHeightProperty().bind(this.primaryStage.heightProperty());
+            v.setAlignment(Pos.CENTER);
+
+            y.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+                root.getChildren().removeAll(v);
+                SceneMain(this.primaryStage);
+            });
+
+            n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+
+            });
+            root.getChildren().add(v);
+        }
+    }
 }
