@@ -216,7 +216,6 @@ public class Hive implements Serializable {
         if (!this.joueurCourant.getNumJoueur().estHumain()) {
             ((JoueurIA) this.joueurCourant).coup(null, null);
         }
-
     }
 
     public int JoueurGagnant() {

@@ -155,8 +155,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         //faire au clic passer devant HUD
         hudToFront();
 
-        coupJoue();
-
         AnimationTimer anim = new AnimationTimer() {
             @Override
             public void handle(long temps) {
@@ -177,7 +175,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         ArrayList<HexaPoint> zoneLibres = new ArrayList<>();
 
         if (currentMainSelected != null && currentSelected != null) {
-            throw new UnsupportedOperationException("Ne doit jamais arriver"); //To change body of generated methods, choose Tools | Templates.
+            throw new UnsupportedOperationException("Something happened - multiple selection Impossible");
         }
 
         if (currentMainSelected != null) {
@@ -460,7 +458,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         if (!mainDrag && this.listZoneLibres.size() == 1 && this.listZoneLibres.get(0).asParentNull() && listZoneLibres.get(0).getCoordZoneLibre().equals(new HexaPoint(0, 0, 0))) {
             this.getRoot().getChildren().remove(this.listZoneLibres.get(0).getImage());
             this.listZoneLibres.remove(0);
-            System.out.println("Supprime point 0 0");
         }
         this.listZoneLibres.add(zLibre);
         this.getRoot().getChildren().add(zLibre.getImage());
@@ -613,6 +610,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             }
             this.currentSelected.setPionPosition(zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY());
             this.currentSelected.validCurrentPosXY();
+            if (!currentPlayerHumain()) {
+                this.currentSelected.blinkImage();
+            }
         } else if (this.currentMainSelected != null) {    // un pionMain est selectionnée d'un joueur et on créer un pionPlateau sur le plateau au coordonnée zLibre
             //update add pion, pion ajouté depuis la main
             //System.out.println("Jouer coup main -> plateau");
@@ -625,19 +625,21 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             PionPlateau2 pp2 = new PionPlateau2(this, currentMainSelected.getPionsType(), currentMainSelected.isWhite(), zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY(), this.getZoom(), this.getWidth(), this.getHeight());
             //pp2.setPionPosition(zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY());
             pp2.validCurrentPosXY();
+            if (!currentPlayerHumain()) {
+                pp2.blinkImage();
+            }
         }
         //todo
-        if (!currentPlayerHumain() || this.controleur.getJoueur1().getNumJoueur().estHumain() && this.controleur.getJoueur2().getNumJoueur().estHumain()) {
+        //if (!currentPlayerHumain() || this.controleur.getJoueur1().getNumJoueur().estHumain() && this.controleur.getJoueur2().getNumJoueur().estHumain()) {
+        if (currentPlayerHumain()) {
             joueurJoue();
-        } else {
-            System.out.println("Player not human");
         }
         //joueurJoue();
     }
 
     @Override
     public void updatePionPlateauAddEnDessous(PionPlateau2 pionPlateau) {
-        System.out.println("Add en Dessous");
+        //System.out.println("Add en Dessous");
         //this.getRoot().getChildren().add();
     }
 
@@ -711,7 +713,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         updateMainJoueur();
         hudToFront();
         this.controleur.setUndo(true);
-        System.out.println("Coup Joué");
     }
 
     //Main Pion vers plateau
@@ -726,9 +727,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     public void updateMouseReleaseMainJoueur(PionMain pm) {
-        System.out.println("Mouse release main joueur");
+        //System.out.println("Mouse release main joueur");
         if (pm.isDragging()) {
-            System.out.println("True is dragging");
+            //System.out.println("True is dragging");
             removePionMainDrag(pm.getPionPlateauDrag());
             mainDrag = false;
             if (this.currentSelectionIsSnapped != null) {
@@ -810,14 +811,14 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     public void updateMainJoueur() { //liste d'insect en param
         if (currentPlayerHumain()) {
-            System.out.println("Tour de l'humain");
+            //System.out.println("Tour de l'humain");
             updateMainJoueurColor(true);
             updateMainJoueurColor(false);
             updateHumanPlayer(currentPlayerIsWhite());
             highlightPlayeName();
 
         } else {
-            System.out.println("Tour de l'IA");
+            //System.out.println("Tour de l'IA");
             updateMainJoueurColor(true);
             updateMainJoueurColor(false);
             lockTousLespions();
@@ -828,10 +829,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     public void highlightPlayeName() {
         if (currentPlayerIsWhite()) {
             setNomJoueur(1);
-            System.out.println("-> Blanc");
+            //System.out.println("-> Blanc");
         } else {
             setNomJoueur(2);
-            System.out.println("-> Noir");
+            //System.out.println("-> Noir");
         }
     }
 
@@ -1021,11 +1022,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                     } else {
                         j = this.controleur.joueur2;
                     }
-                    if (!j.getNumJoueur().estHumain())
-                    {
+                    if (!j.getNumJoueur().estHumain()) {
                         ((JoueurIA) this.controleur.joueur2).setDifficulte(dif);
                     }
-                    
+
                 }
             });
         }
@@ -1177,7 +1177,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             this.controleur.Undo();
             this.reconstructionPlateau(pModel);
             this.updateMainJoueur();
-
         });
 
         bRedo.setTooltip(new Tooltip("Rejouer le dernier coup"));
@@ -1185,7 +1184,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             this.controleur.Redo();
             this.reconstructionPlateau(pModel);
             this.updateMainJoueur();
-
         });
 
         brules.setTooltip(new Tooltip("Règles du jeu"));
@@ -1456,6 +1454,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         } else { //l'humain a joué puis directe après l'ia va jouer
             this.iaCanPlay = -1;
             // updateMainJoueur();
+            reconstructionPlateau(this.pModel);
         }
 
     }
@@ -1471,9 +1470,13 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         //System.out.println("Joueur place pion");
         removeSelectedPion();
         hideZoneLibre();
+        this.controleur.setUndo(true);
         updateUndoRedoBtn();
         hudToFront();
+        //updateMainJoueur();
+        this.controleur.joueurSuivant();
         updateMainJoueur();
+
     }
 
     public void ordinateurJoue() {
@@ -1495,11 +1498,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             this.currentSelected = this.listPionsPlateau.get(iaMove.getOrig());
             updateMousePressedZoneLibre(getZoneLibreEgal(iaMove.getCible()));
         }
-//
         updateUndoRedoBtn();
         hudToFront();
         this.controleur.joueurSuivant();
         updateMainJoueur();
+        reconstructionPlateau(this.pModel);
 
     }
 
@@ -1561,7 +1564,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void reconstructionPlateau(Plateau p) {
-        System.out.println("Reconstruire plateau");
         //System.out.println("rec plateau");
         int nbNonCorrect = 0;
 
@@ -1750,6 +1752,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             }
         }
 
+        this.updateUndoRedoBtn();
     }
 
     private void updateUndoRedoBtn() {
