@@ -19,10 +19,15 @@ public class Sauterelle extends Insecte {
     	return new Sauterelle(this.getJoueur());
     	
     }
+	
+	public boolean equals(Insecte insecte) {
+		return (insecte instanceof Sauterelle);
+	}
 
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
-        if (!this.getJoueur().reinePosee() || this.getEmplacement().getNbInsectes() != 1) return new ArrayList<>();
+        if (!this.getJoueur().reinePosee() || this.getEmplacement().getNbInsectes() != 1 || 
+        		plateau.rucheBrisee2(this.getEmplacement())) return new ArrayList<>();
     	ArrayList<Case> caseVoisins=(ArrayList<Case>) plateau.getCasesVoisinesOccupees(this.getEmplacement());
     	ArrayList<Case> casePossibles=new ArrayList<>();
     	
@@ -47,10 +52,6 @@ public class Sauterelle extends Insecte {
     		else {
     			casePossibles.add(extremiteGaucheHaut(c,plateau));
     		}
-    	}
-    	
-    	if(!casePossibles.isEmpty() && plateau.rucheBrisee(this.getEmplacement(),casePossibles.get(0))) {
-    		return new ArrayList<>();
     	}
     	
     	return casePossibles;

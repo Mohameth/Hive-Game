@@ -17,12 +17,16 @@ public class Scarabee extends Insecte {
 	public Insecte clone() {
     	return new Scarabee(this.getJoueur());
     }
+	
+	public boolean equals(Insecte insecte) {
+		return (insecte instanceof Scarabee);
+	}
     
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
         
         if (!this.getJoueur().reinePosee() || (this.getEmplacement().getNbInsectes() != 1 && 
-                !this.getEmplacement().getInsecteOnTop().equals(this))) return new ArrayList<>();
+                this.getEmplacement().getInsecteOnTop()!=this)) return new ArrayList<>();
         
         ArrayList<Case> res = new ArrayList<>();
         for (Case c : plateau.getCasesVoisines(this.getEmplacement(), false)) {

@@ -22,6 +22,10 @@ public class Araignee extends Insecte {
 	public Insecte clone() {
     	return new Araignee(this.getJoueur());
     }
+	
+	public boolean equals(Insecte insecte) {
+		return (insecte instanceof Araignee);
+	}
         
     //@Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
