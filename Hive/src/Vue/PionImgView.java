@@ -274,7 +274,6 @@ public class PionImgView {
     }
 
     public void blinkImage() {
-        System.out.println("Blink Image");
         playBlinkEffect();
     }
 
