@@ -47,6 +47,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Timer;
 import javafx.animation.AnimationTimer;
+import javafx.scene.shape.Circle;
 
 public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
@@ -356,19 +357,56 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private void resetView() {
         double centrePlateau[] = getCentreDuPlateau();
         moveDeltaBoard(-centrePlateau[0], -centrePlateau[1]);
-        zoomImage(0.3);
+        zoomImage(0.5);
         removeSelectedPion();
+        //AddplacePion();
     }
 
-    private double[] getCentreDuPlateau() {
+    //adapte l'affichage pour que les pions et les positions possible soient accessible
+    private void AddplacePion() {
+        /*double res[] = getMinMaxPionPlateau();
+        double marge = 250;
+        double minX = res[1];
+        double maxX = res[3];
+        double minY = res[2];
+        double maxY = res[4];
+        double minXScreen = (-getWidth() / 2);
+        double maxXScreen = (getWidth() / 2) - marge;
+        System.out.println("marge: " + marge);
+        double minYScreen = (-getHeight() / 2) + marge;
+        double maxYScreen = (getHeight() / 2) - marge;
+
+        Circle c = new Circle(minX, minY, 20, Color.RED);
+        c.setTranslateX(getWidth() / 2);
+        c.setTranslateY(getHeight() / 2);
+        getRoot().getChildren().add(c);
+
+        double curZomm = this.totZoom;
+        if (res[0] == 1) {
+            while ((minX < minXScreen) || (maxX > maxXScreen) || (minY < minYScreen) || (maxY > maxYScreen)) {
+                System.out.println("reset zoom");
+                curZomm = this.totZoom;
+                zoomImage(curZomm - 0.10);
+                res = getMinMaxPionPlateau();
+                minX = res[1];
+                maxX = res[3];
+                minY = res[2];
+                maxY = res[4];
+            }
+            System.out.println("MinxScenne: " + minXScreen + "MaxScene: " + maxXScreen + "MinYSceen: " + minYScreen + " MaxYSceen: " + maxYScreen);
+            System.out.println("Minx: " + minX + "MaxX: " + maxX + "MinY: " + minY + " MaxY: " + maxY);
+        }*/
+    }
+
+    private double[] getMinMaxPionPlateau() {
         double minX = Double.MAX_VALUE;
         double minY = Double.MAX_VALUE;
         double maxX = -Double.MAX_VALUE;
         double maxY = -Double.MAX_VALUE;
         double tmpx = 0, tmpy = 0;
-        boolean asPion = false;
+        double asPion = 0;
         for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
-            asPion = true;
+            asPion = 1;
             PionPlateau2 pp2 = entry.getValue();
             tmpx = pp2.getImgViewPion().getImgPosX();
             tmpy = pp2.getImgViewPion().getImgPosY();
@@ -385,11 +423,16 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 maxY = tmpy;
             }
         }
+        return new double[]{asPion, minX, minY, maxX, maxY};
+    }
 
-        if (!asPion) {
+    private double[] getCentreDuPlateau() {
+        double res[] = getMinMaxPionPlateau();
+
+        if (res[0] == 0) {
             return new double[]{0, 0};
         } else {
-            return new double[]{(minX + maxX) / 2, (minY + maxY) / 2};
+            return new double[]{(res[1] + res[3]) / 2, (res[2] + res[4]) / 2};
         }
     }
 
@@ -1503,6 +1546,39 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         this.controleur.joueurSuivant();
         updateMainJoueur();
         reconstructionPlateau(this.pModel);
+
+    }
+
+    public void applyUndo(Deplacement depl) {
+
+        removeSelectedPion();
+        Deplacement undoRedoMove = this.controleur.getJoueurCourant().getDernierDeplacement();
+
+        //supprimer le pion du plateau si le dernier coup était d'un placement de pion main -> plateau
+        //si origine = null
+        //deplacer le pion a la position d'origine si deplacement plateau -> plateau
+        //si depl==null annuler ia + joueur
+        //deplace les deux moves
+        if (depl != null) {
+
+        } else { //deplace le deplacement courant
+            //si origine = null = depose pion de la main vers le plateau donc il faut le supprimer du plateau
+            if (depl.getOrig() == null) {
+                //deplace le pion n'importe ou et le supprime
+                this.currentSelected = this.listPionsPlateau.get(depl.getCible());
+                this.currentSelected.setPionPosition(new HexaPoint(-47, -47, -47), -999, -999);
+                this.currentSelected.validCurrentPosXY();
+                removePionMainDrag(this.currentSelected);
+            } else { //deplace un pion de plateau -> plateau
+                this.currentSelected = this.listPionsPlateau.get(depl.getCible());
+                updateMousePressedZoneLibre(getZoneLibreEgal(depl.getOrig()));
+            }
+        }
+        reconstructionPlateau(this.pModel);
+        hudToFront();
+    }
+
+    public void applyRedo(Deplacement delp) {
 
     }
 
