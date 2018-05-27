@@ -84,9 +84,9 @@ public class CoupMoyen extends AbstractCoup{
         int newVal;
         
         ArrayList<Configuration> x = parent.getAllCoupsPossibles(false);
-        System.out.println("Analyse de " + x.size() + " configurations");
+        System.out.println("Analyse de mes " + x.size() + " coups");
         for (Configuration c : x) {
-            newVal = calculJoueurCourant(c, horizon);
+            newVal = calculJoueurCourant(c, horizon, Integer.MIN_VALUE, Integer.MAX_VALUE);
             if (newVal > oldVal) {
                 meilleurConf = c;
                 oldVal = newVal;
@@ -101,31 +101,32 @@ public class CoupMoyen extends AbstractCoup{
         }
     }
     
-    public int calculJoueurCourant(Configuration conf, int horizon) {
+    public int calculJoueurCourant(Configuration conf, int horizon, int alpha, int beta) {
         if (conf.estFeuille() || horizon == 0) {
             return conf.getEvaluation();
         }
         
         int valeur = Integer.MIN_VALUE;
+        //System.out.println(" --> Analyse de " + conf.getAllCoupsPossibles(true) + "coups adverses");
         for (Configuration confCourante : conf.getAllCoupsPossibles(true)) {
-            valeur = Integer.max(valeur, calculAdversaire(confCourante, horizon-1));
-            /*if (valeur > beta) return valeur;
-            alpha = Integer.max(alpha, valeur);*/
+            valeur = Integer.max(valeur, calculAdversaire(confCourante, horizon-1, alpha, beta));
+            if (valeur > beta) return valeur;
+            alpha = Integer.max(alpha, valeur);
         }
         
         return valeur;
     }
     
-    public int calculAdversaire(Configuration conf, int horizon) {
+    public int calculAdversaire(Configuration conf, int horizon, int alpha, int  beta) {
         if (conf.estFeuille() || horizon == 0) {
             return conf.getEvaluation();
         } 
         
         int valeur = Integer.MAX_VALUE;
         for (Configuration confCourante : conf.getAllCoupsPossibles(false)) {
-            valeur = Integer.min(valeur, calculJoueurCourant(confCourante, horizon-1));
-            /*if (alpha > valeur) return valeur;
-            beta = Integer.min(beta, valeur);*/
+            valeur = Integer.min(valeur, calculJoueurCourant(confCourante, horizon-1, alpha, beta));
+            if (alpha > valeur) return valeur;
+            beta = Integer.min(beta, valeur);
         }
         
         return valeur;
