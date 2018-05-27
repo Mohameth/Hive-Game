@@ -79,7 +79,7 @@ public class JoueurIA extends Joueur {
                 this.plateau.ajoutInsecte(this.insecteChoisi, this.caseChoisie);
             } else {
                 this.dernierDeplacement = new Deplacement(this.insecteChoisi, this.insecteChoisi.getEmplacement().getCoordonnees(), this.caseChoisie);
-                this.plateau.deleteInsecte(insecte, this.insecteChoisi.getEmplacement().getCoordonnees());
+                if (!(this.threadCoup instanceof CoupDifficile)) this.plateau.deleteInsecte(insecte, this.insecteChoisi.getEmplacement().getCoordonnees());
                 this.plateau.deplaceInsecte(this.insecteChoisi, this.caseChoisie);
             }
             this.resetCoupChoisi();

@@ -55,7 +55,7 @@ public class MonteCarlo {
 
             plateau2 = Pere.getPlateau().clone(PlateauIA2,PlateauAdverse2,joueurIA);
             ArrayList<Insecte> joueurCourant = new ArrayList<>();
-
+            
             if (Pere.getTourIA()) {
                 joueurCourant.addAll(mainIA2);
                 joueurCourant.addAll(PlateauIA2);
