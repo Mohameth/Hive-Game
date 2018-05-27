@@ -1177,7 +1177,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             this.controleur.Undo();
             this.reconstructionPlateau(pModel);
             this.updateMainJoueur();
-
         });
 
         bRedo.setTooltip(new Tooltip("Rejouer le dernier coup"));
@@ -1185,7 +1184,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             this.controleur.Redo();
             this.reconstructionPlateau(pModel);
             this.updateMainJoueur();
-
         });
 
         brules.setTooltip(new Tooltip("Règles du jeu"));
@@ -1472,6 +1470,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         //System.out.println("Joueur place pion");
         removeSelectedPion();
         hideZoneLibre();
+        this.controleur.setUndo(true);
         updateUndoRedoBtn();
         hudToFront();
         //updateMainJoueur();
@@ -1753,6 +1752,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             }
         }
 
+        this.updateUndoRedoBtn();
     }
 
     private void updateUndoRedoBtn() {
