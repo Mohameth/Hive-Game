@@ -6,6 +6,7 @@ import Modele.Joueurs.NumJoueur;
 import Controleur.Hive;
 import Modele.*;
 import Modele.Insectes.Insecte;
+import Modele.Joueurs.Joueur;
 import javafx.animation.FadeTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -612,6 +613,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             }
             this.currentSelected.setPionPosition(zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY());
             this.currentSelected.validCurrentPosXY();
+            if (!currentPlayerHumain()) {
+                this.currentSelected.blinkImage();
+            }
         } else if (this.currentMainSelected != null) {    // un pionMain est selectionnée d'un joueur et on créer un pionPlateau sur le plateau au coordonnée zLibre
             //update add pion, pion ajouté depuis la main
             //System.out.println("Jouer coup main -> plateau");
@@ -624,9 +628,13 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             PionPlateau2 pp2 = new PionPlateau2(this, currentMainSelected.getPionsType(), currentMainSelected.isWhite(), zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY(), this.getZoom(), this.getWidth(), this.getHeight());
             //pp2.setPionPosition(zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY());
             pp2.validCurrentPosXY();
+            if (!currentPlayerHumain()) {
+                pp2.blinkImage();
+            }
         }
         //todo
-        if (!currentPlayerHumain() || this.controleur.getJoueur1().getNumJoueur().estHumain() && this.controleur.getJoueur2().getNumJoueur().estHumain()) {
+        //if (!currentPlayerHumain() || this.controleur.getJoueur1().getNumJoueur().estHumain() && this.controleur.getJoueur2().getNumJoueur().estHumain()) {
+        if (currentPlayerHumain()) {
             joueurJoue();
         } else {
             System.out.println("Player not human");
@@ -1014,7 +1022,16 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                     } else if (cb.getValue().equals(getLangStr("hard"))) {
                         dif = 3;
                     }
-                    ((JoueurIA) this.controleur.joueur2).setDifficulte(dif);
+                    Joueur j = null;
+                    if (numplayer == 1) {
+                        j = this.controleur.joueur1;
+                    } else {
+                        j = this.controleur.joueur2;
+                    }
+                    if (!j.getNumJoueur().estHumain()) {
+                        ((JoueurIA) this.controleur.joueur2).setDifficulte(dif);
+                    }
+
                 }
             });
         }
@@ -1443,6 +1460,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         } else { //l'humain a joué puis directe après l'ia va jouer
             this.iaCanPlay = -1;
             // updateMainJoueur();
+            reconstructionPlateau(this.pModel);
         }
 
     }
@@ -1461,7 +1479,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         this.controleur.setUndo(true);
         updateUndoRedoBtn();
         hudToFront();
+        //updateMainJoueur();
+        this.controleur.joueurSuivant();
         updateMainJoueur();
+
     }
 
     public void ordinateurJoue() {
@@ -1483,11 +1504,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             this.currentSelected = this.listPionsPlateau.get(iaMove.getOrig());
             updateMousePressedZoneLibre(getZoneLibreEgal(iaMove.getCible()));
         }
-//
         updateUndoRedoBtn();
         hudToFront();
         this.controleur.joueurSuivant();
         updateMainJoueur();
+        reconstructionPlateau(this.pModel);
 
     }
 
