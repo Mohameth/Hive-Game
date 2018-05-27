@@ -121,7 +121,6 @@ public class Hive implements Serializable {
     public boolean deplacementInsecte(HexaPoint origine, HexaPoint cible) {
         if (!plateau.getCase(origine).estVide() && insecteAppartientJCourant(origine)) {
             joueurCourant.coup(plateau.getCase(origine).getInsecteOnTop(), cible);
-            this.joueurSuivant();
         }
         return true;
     }
@@ -157,7 +156,6 @@ public class Hive implements Serializable {
         } while (ins.getType() != insecte);
 
         this.joueurCourant.placementInsecte(ins, cible);
-        this.joueurSuivant();
     }
 
     public ArrayList<Insecte> mainJoueur(NumJoueur numJoueur) { // Récupère la main du joueur choisi
