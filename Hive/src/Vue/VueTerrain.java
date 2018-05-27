@@ -1028,11 +1028,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                     } else {
                         j = this.controleur.joueur2;
                     }
-                    if (!j.getNumJoueur().estHumain())
-                    {
+                    if (!j.getNumJoueur().estHumain()) {
                         ((JoueurIA) this.controleur.joueur2).setDifficulte(dif);
                     }
-                    
+
                 }
             });
         }
@@ -1463,6 +1462,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         } else { //l'humain a joué puis directe après l'ia va jouer
             this.iaCanPlay = -1;
             // updateMainJoueur();
+            reconstructionPlateau(this.pModel);
         }
 
     }
@@ -1509,6 +1509,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         hudToFront();
         this.controleur.joueurSuivant();
         updateMainJoueur();
+        reconstructionPlateau(this.pModel);
 
     }
 
