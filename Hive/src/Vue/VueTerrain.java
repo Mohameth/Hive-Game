@@ -155,8 +155,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         //faire au clic passer devant HUD
         hudToFront();
 
-        coupJoue();
-
         AnimationTimer anim = new AnimationTimer() {
             @Override
             public void handle(long temps) {
@@ -177,7 +175,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         ArrayList<HexaPoint> zoneLibres = new ArrayList<>();
 
         if (currentMainSelected != null && currentSelected != null) {
-            throw new UnsupportedOperationException("Ne doit jamais arriver"); //To change body of generated methods, choose Tools | Templates.
+            throw new UnsupportedOperationException("Something happened - multiple selection Impossible");
         }
 
         if (currentMainSelected != null) {
@@ -460,7 +458,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         if (!mainDrag && this.listZoneLibres.size() == 1 && this.listZoneLibres.get(0).asParentNull() && listZoneLibres.get(0).getCoordZoneLibre().equals(new HexaPoint(0, 0, 0))) {
             this.getRoot().getChildren().remove(this.listZoneLibres.get(0).getImage());
             this.listZoneLibres.remove(0);
-            System.out.println("Supprime point 0 0");
         }
         this.listZoneLibres.add(zLibre);
         this.getRoot().getChildren().add(zLibre.getImage());
@@ -636,15 +633,13 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         //if (!currentPlayerHumain() || this.controleur.getJoueur1().getNumJoueur().estHumain() && this.controleur.getJoueur2().getNumJoueur().estHumain()) {
         if (currentPlayerHumain()) {
             joueurJoue();
-        } else {
-            System.out.println("Player not human");
         }
         //joueurJoue();
     }
 
     @Override
     public void updatePionPlateauAddEnDessous(PionPlateau2 pionPlateau) {
-        System.out.println("Add en Dessous");
+        //System.out.println("Add en Dessous");
         //this.getRoot().getChildren().add();
     }
 
@@ -718,7 +713,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         updateMainJoueur();
         hudToFront();
         this.controleur.setUndo(true);
-        System.out.println("Coup Joué");
     }
 
     //Main Pion vers plateau
@@ -733,9 +727,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     public void updateMouseReleaseMainJoueur(PionMain pm) {
-        System.out.println("Mouse release main joueur");
+        //System.out.println("Mouse release main joueur");
         if (pm.isDragging()) {
-            System.out.println("True is dragging");
+            //System.out.println("True is dragging");
             removePionMainDrag(pm.getPionPlateauDrag());
             mainDrag = false;
             if (this.currentSelectionIsSnapped != null) {
@@ -817,14 +811,14 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     public void updateMainJoueur() { //liste d'insect en param
         if (currentPlayerHumain()) {
-            System.out.println("Tour de l'humain");
+            //System.out.println("Tour de l'humain");
             updateMainJoueurColor(true);
             updateMainJoueurColor(false);
             updateHumanPlayer(currentPlayerIsWhite());
             highlightPlayeName();
 
         } else {
-            System.out.println("Tour de l'IA");
+            //System.out.println("Tour de l'IA");
             updateMainJoueurColor(true);
             updateMainJoueurColor(false);
             lockTousLespions();
@@ -835,10 +829,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     public void highlightPlayeName() {
         if (currentPlayerIsWhite()) {
             setNomJoueur(1);
-            System.out.println("-> Blanc");
+            //System.out.println("-> Blanc");
         } else {
             setNomJoueur(2);
-            System.out.println("-> Noir");
+            //System.out.println("-> Noir");
         }
     }
 
@@ -1570,7 +1564,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void reconstructionPlateau(Plateau p) {
-        System.out.println("Reconstruire plateau");
         //System.out.println("rec plateau");
         int nbNonCorrect = 0;
 
