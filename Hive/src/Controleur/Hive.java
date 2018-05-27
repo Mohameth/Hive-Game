@@ -2,6 +2,7 @@ package Controleur;
 
 import Modele.Insectes.*;
 import Modele.Case;
+import Modele.Deplacement;
 import Modele.Joueurs.Joueur;
 import Modele.Joueurs.JoueurHumain;
 import Modele.Joueurs.JoueurIA;
@@ -323,7 +324,8 @@ public class Hive implements Serializable {
         }
     }
 
-    public void Undo() {
+    public Deplacement Undo() {
+        Deplacement d = null;
         if (UndoPossible()) {
             if (this.joueur2 instanceof JoueurIA) {
                 this.joueur2.Undo();
@@ -334,13 +336,16 @@ public class Hive implements Serializable {
             } else if (this.joueurCourant.equals(this.joueur1)) {
                 this.joueur2.Undo();
                 this.joueurCourant = this.joueur2;
+                d = this.joueur2.getDernierDeplacement();
             } else {
                 this.joueur1.Undo();
                 this.joueurCourant = this.joueur1;
+                d = this.joueur2.getDernierDeplacement();
             }
             this.Undo = false;
             this.plateau.notifieVue(-1);
         }
+        return d;
     }
 
     public boolean RedoPossible() {
@@ -353,7 +358,8 @@ public class Hive implements Serializable {
         }
     }
 
-    public void Redo() {
+    public Deplacement Redo() {
+        Deplacement d = null;
         if (RedoPossible()) {
             if (this.joueur2 instanceof JoueurIA) {
                 this.joueur1.Redo();
@@ -364,13 +370,16 @@ public class Hive implements Serializable {
             } else if (this.joueurCourant.equals(this.joueur1)) {
                 this.joueur1.Redo();
                 this.joueurCourant = this.joueur2;
+                d = this.joueur1.getDernierDeplacement();
             } else {
                 this.joueur2.Redo();
                 this.joueurCourant = this.joueur1;
+                d = this.joueur2.getDernierDeplacement();
             }
             this.Undo = true;
             this.plateau.notifieVue(-1);
         }
+        return d;
     }
 
     public void addObserverPlateau(Observer o) {
