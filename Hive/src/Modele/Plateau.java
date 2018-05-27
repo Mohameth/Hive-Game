@@ -33,6 +33,7 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
     private HexaPoint dernierCoupOrigine;
     private HexaPoint dernierCoupCible;
     private TypeInsecte typePlacement;
+	private int nbCaseOccupe;
     
     /**
      * construit un plateau avec une seul case en 0,0,0
@@ -41,7 +42,7 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
         cases = new HashMap<HexaPoint, Case>();
         HexaPoint origine = new HexaPoint(0, 0, 0);
         cases.put(origine, new Case(origine));
-
+		this.nbCaseOccupe=0;
         this.nbPionsEnJeu = 0; //Peut-être à remplacer par une méthode
     }
 
@@ -124,6 +125,9 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
             this.typePlacement = insecte.getType();
             this.dernierCoupOrigine = null;
             this.getCase(position).addInsecte(insecte);
+            if(this.getCase(position).getNbInsectes()==1) {
+            	nbCaseOccupe++;
+            }
             this.nbPionsEnJeu++;
             this.ajoutCasesVoisines(position);
             //setChanged();
@@ -149,7 +153,9 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
             this.typePlacement = null;
             Case cible = this.getCase(position);
             cible.addInsecte(insecte);
-            insecte.setEmplacement(cible);
+            if(cible.getNbInsectes()==1) {
+            	nbCaseOccupe++;
+            }
             this.ajoutCasesVoisines(position);
 
         } catch (Exception ex) {
@@ -197,6 +203,9 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
     public void deleteInsecte(Insecte insecte, HexaPoint position) {
         try {
             this.getCase(position).removeInsecte();
+            if(this.getCase(position).getNbInsectes()==0) {
+            	nbCaseOccupe--;
+            }
         } catch (Exception ex) {
             System.err.println("Erreur delete : " + ex);
             ex.printStackTrace();
@@ -513,43 +522,38 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
     }
 
     public boolean rucheBrisee2(Case ghost) { //Tester aussi avec un compteur de changements
-        if (this.rucheVide()) {
-            return false;
+    	
+    	if(this.nbCaseOccupe<2) {
+        	return false;
         }
-        ArrayList<Case> caseOccupe;
-        if (ghost == null) {
-            ghost = this.cases.get(new HexaPoint(0, 0, 0));
+    	
+        ArrayList<Case> listeCases = new ArrayList<>(this.cases.values());
+        ArrayList<Case> listeCases2 = new ArrayList<>();
+        ArrayList<Case> listeCases3 = new ArrayList<>();
+        listeCases.remove(ghost);
+        boolean ok=true;
+        
+        for(int i=0;i<listeCases.size() && ok;i++) {
+        	if(!listeCases.get(i).estVide()) {
+        		listeCases2.add(listeCases.get(i));
+                listeCases3.add(listeCases.get(i));
+                ok=false;
+        	}
+        } 
+
+        while(!listeCases2.isEmpty()) {
+        	Case c=listeCases2.get(0);
+        	ArrayList<Case> listeCases4=(ArrayList<Case>) this.getCasesVoisinesOccupees(c);
+        	for(int i=0;i<listeCases4.size();i++) {
+        		Case c2=listeCases4.get(i);
+        		if(!listeCases3.contains(c2) && !c2.equals(ghost)) {
+        			listeCases3.add(c2);
+        			listeCases2.add(c2);
+        		}
+        	}
+        	listeCases2.remove(c);
         }
-
-        if (ghost.estVide()) {
-            caseOccupe = (ArrayList<Case>) this.getCasesVoisinesOccupees(ghost);
-        } else {
-            caseOccupe = new ArrayList<>();
-            caseOccupe.add(ghost);
-        }
-
-        ArrayList<Case> caseOccupe2 = new ArrayList<>();
-        if (!caseOccupe.isEmpty()) {
-            caseOccupe2.add(caseOccupe.get(0));
-        }
-        caseOccupe.clear();
-
-        while (!caseOccupe2.isEmpty()) {
-            Case c = caseOccupe2.get(0);
-            caseOccupe2.remove(c);
-            if (!caseOccupe.contains(c)) {
-                caseOccupe.add(c);
-            }
-            ArrayList<Case> caseVoisines = (ArrayList<Case>) this.getCasesVoisinesOccupees(c);
-            for (int i = 0; i < caseVoisines.size(); i++) {
-                if (!caseOccupe.contains(caseVoisines.get(i)) && !caseVoisines.get(i).equals(ghost)) {
-                    caseOccupe2.add(caseVoisines.get(i));
-                }
-            }
-
-        }
-
-        return caseOccupe.size() != this.nbPionsEnJeu;
+        return listeCases3.size() != this.nbCaseOccupe-1;
     }
 
     @Override

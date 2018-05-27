@@ -18,11 +18,16 @@ public class Coccinelle extends Insecte {
     	return new Coccinelle(this.getJoueur());
     	
     }
+	
+	public boolean equals(Insecte insecte) {
+		return (insecte instanceof Coccinelle);
+	}
 
     @Override
    public Collection<Case> deplacementPossible(Plateau plateau) {
     	
-    	if(!this.getJoueur().reinePosee() || this.getEmplacement().getNbInsectes() != 1) {
+    	if(!this.getJoueur().reinePosee() || this.getEmplacement().getNbInsectes() != 1 || 
+    			plateau.rucheBrisee2(this.getEmplacement())) {
         	return new ArrayList<>();
         }
     	
@@ -59,17 +64,6 @@ public class Coccinelle extends Insecte {
     	if(casePossibles3.contains(this.getEmplacement())) {
     		casePossibles3.remove(this.getEmplacement());
     	}
-    	if(!casePossibles3.isEmpty() && plateau.rucheBrisee(this.getEmplacement(),casePossibles3.get(0))) {
-    		return new ArrayList<>();
-    	}
-        
-        Iterator<Case> it = casePossibles3.iterator();
-        while (it.hasNext()) {
-            Case possibilite = it.next();
-            if (plateau.rucheBrisee(this.getEmplacement(), possibilite)) {
-                it.remove();
-            }
-        }
         
     	return casePossibles3;
     }

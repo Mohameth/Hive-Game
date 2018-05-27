@@ -6,6 +6,7 @@ import Modele.Joueurs.NumJoueur;
 import Controleur.Hive;
 import Modele.*;
 import Modele.Insectes.Insecte;
+import Modele.Joueurs.Joueur;
 import javafx.animation.FadeTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -1021,7 +1022,17 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                     } else if (cb.getValue().equals(getLangStr("hard"))) {
                         dif = 3;
                     }
-                    ((JoueurIA) this.controleur.joueur2).setDifficulte(dif);
+                    Joueur j = null;
+                    if (numplayer == 1) {
+                        j = this.controleur.joueur1;
+                    } else {
+                        j = this.controleur.joueur2;
+                    }
+                    if (!j.getNumJoueur().estHumain())
+                    {
+                        ((JoueurIA) this.controleur.joueur2).setDifficulte(dif);
+                    }
+                    
                 }
             });
         }

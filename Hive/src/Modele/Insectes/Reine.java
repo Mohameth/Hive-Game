@@ -18,6 +18,10 @@ public class Reine extends Insecte {
     	return new Reine(this.getJoueur());
     	
     }
+	
+	public boolean equals(Insecte insecte) {
+		return (insecte instanceof Reine);
+	}
     
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {

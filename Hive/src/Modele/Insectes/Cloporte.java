@@ -47,5 +47,10 @@ public class Cloporte extends Insecte {
     public String toString() {
         return "Cloporte";
     }
+
+    @Override
+    public boolean equals(Insecte insecte) {
+        return (insecte.getType() == TypeInsecte.CLOPORTE);
+    }
     
 }
