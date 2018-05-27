@@ -121,7 +121,6 @@ public class Hive implements Serializable {
     public boolean deplacementInsecte(HexaPoint origine, HexaPoint cible) {
         if (!plateau.getCase(origine).estVide() && insecteAppartientJCourant(origine)) {
             joueurCourant.coup(plateau.getCase(origine).getInsecteOnTop(), cible);
-            this.joueurSuivant();
         }
         return true;
     }
@@ -157,7 +156,6 @@ public class Hive implements Serializable {
         } while (ins.getType() != insecte);
 
         this.joueurCourant.placementInsecte(ins, cible);
-        this.joueurSuivant();
     }
 
     public ArrayList<Insecte> mainJoueur(NumJoueur numJoueur) { // Récupère la main du joueur choisi
@@ -218,7 +216,6 @@ public class Hive implements Serializable {
         if (!this.joueurCourant.getNumJoueur().estHumain()) {
             ((JoueurIA) this.joueurCourant).coup(null, null);
         }
-
     }
 
     public int JoueurGagnant() {
@@ -257,11 +254,8 @@ public class Hive implements Serializable {
 
     public boolean save(String name) {
         String path;
-        if (isWindows()) {
-            path = System.getProperty("user.dir").concat("\\rsc\\SAVE\\");
-        } else {
-            path = System.getProperty("user.dir").concat("/rsc/SAVE/");
-        }
+        path = "rsc/SAVE/";
+       
         File f = new File(path + name);
         if (!f.exists()) {
             try {
@@ -282,11 +276,8 @@ public class Hive implements Serializable {
 
     public boolean load(String name) {
         String path;
-        if (isWindows()) {
-            path = System.getProperty("user.dir").concat("\\rsc\\SAVE\\");
-        } else {
-            path = System.getProperty("user.dir").concat("/rsc/SAVE/");
-        }
+        path = "rsc/SAVE/";
+        
         File f = new File(path + name);
         if (f.exists()) {
             try {

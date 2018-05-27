@@ -9,7 +9,7 @@ import Modele.Plateau;
 public class Noeud {
 
 	private int ni;
-	private int ti;
+	private double ti;
 	private int nbTourIA;
 	private int nbTourAdverse;
 	private ArrayList<Noeud> Fils;
@@ -48,7 +48,7 @@ public class Noeud {
 	public Noeud(Noeud Pere,Plateau plateau,ArrayList<Insecte>mainIA,ArrayList<Insecte>mainAdverse
 			,ArrayList<Insecte>PlateauIA,ArrayList<Insecte>PlateauAdverse) {
 		this.ni=0;
-		this.ti=0;
+		this.ti=0.0;
 		this.nbFils=0;
 		this.nbFilsMax=false;
 		this.profondeur=Pere.getProfondeur()+1;
@@ -74,7 +74,7 @@ public class Noeud {
 		return ni;
 	}
 	
-	public int getTi() {
+	public double getTi() {
 		return ti;
 	}
 	
@@ -119,16 +119,14 @@ public class Noeud {
 	}
 	
 	public double getUSB() {
-		double Vi=(double)(ti)/ni;
+		double Vi=ti/ni;
 		double s=2.0*Math.sqrt(Math.log((double) Pere.getNi())/ni);
 		return Vi+s;
 	}
 	
-	public void mettreAjour(boolean b) {
+	public void mettreAjour(double b) {
 		ni++;
-		if(b) {
-			ti++;
-		}
+		ti+=b;
 		if(Pere!=null) {
 			Pere.mettreAjour(b);
 		}

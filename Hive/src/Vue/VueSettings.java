@@ -309,7 +309,7 @@ public class VueSettings extends Vue {
 
     private void setConfig() {
         Properties prop = new Properties();
-        String propFileName = System.getProperty("user.dir").concat("/rsc/config.properties");
+        String propFileName = "rsc/config.properties";
         if(group.getSelectedToggle() != null)
             prop.setProperty("difficulteIA",group.getSelectedToggle().getUserData().toString());
         if(nomJ2 != null && nomJ1 != null){
@@ -331,7 +331,7 @@ public class VueSettings extends Vue {
 
     private void getConfig() {
         Properties prop = new Properties();
-        String propFileName = System.getProperty("user.dir").concat("/rsc/config.properties");
+        String propFileName = "rsc/config.properties";
         InputStream input = null;
         try {
             input = new FileInputStream(propFileName);

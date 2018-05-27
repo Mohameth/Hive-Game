@@ -11,15 +11,21 @@ import com.sun.javafx.geom.transform.BaseTransform;
 import com.sun.javafx.jmx.MXNodeAlgorithm;
 import com.sun.javafx.jmx.MXNodeAlgorithmContext;
 import com.sun.javafx.sg.prism.NGNode;
+import javafx.animation.FillTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.Node;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Light;
+import javafx.scene.effect.Lighting;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 /**
  *
@@ -253,6 +259,22 @@ public class PionImgView {
         dropShadow.setSpread(0.90);
         dropShadow.setColor(hoverColor);
         this.getImage().setEffect(dropShadow);
+    }
+
+    private void playBlinkEffect() {
+
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.1), evt
+                -> this.getImage().setOpacity(0.5)
+        ),
+                new KeyFrame(Duration.seconds(0.2), evt
+                        -> this.getImage().setOpacity(1)
+                ));
+        timeline.setCycleCount(4);
+        timeline.play();
+    }
+
+    public void blinkImage() {
+        playBlinkEffect();
     }
 
     public void setSelectedEffect() {

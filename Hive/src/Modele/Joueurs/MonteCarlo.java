@@ -47,6 +47,7 @@ public class MonteCarlo {
             CoupleCaesInsecte coupleCaesInsecte;
 
             Plateau plateau2;
+            Random r=new Random();
             ArrayList<Insecte> mainIA2 =cloneInsecte(Pere.getMainIA());
             ArrayList<Insecte> mainAdverse2 =cloneInsecte(Pere.getMainAdverse());
             ArrayList<Insecte> PlateauIA2 = new ArrayList<>();
@@ -70,26 +71,26 @@ public class MonteCarlo {
             Case c2 = null;
 
             do {
-                count++;
-                i = joueurCourant.get((int)(Math.random()*joueurCourant.size()));
+                count++;b1=false;b2=false;
+                i = joueurCourant.get(r.nextInt(joueurCourant.size()));
 
                 if (i.getEmplacement() == null) {
                     c = plateau2.pointVersCase(plateau2.casesVidePlacement(i.getJoueur()));;
                     if (!c.isEmpty()) {
-                        c2 = c.get((int)(Math.random()*c.size()));
+                        c2 = c.get(r.nextInt(c.size()));
                         b1 = true;
                     }
                 } else {
                     c = (ArrayList<Case>) i.deplacementPossible(plateau2);
                     if (!c.isEmpty()) {
-                        c2 = c.get((int)(Math.random()*c.size()));
+                        c2 = c.get(r.nextInt(c.size()));
                         b2 = true;
                     }
                 }
                 coupleCaesInsecte = new CoupleCaesInsecte(i, c2, i.getEmplacement());
-            } while (((!b1 && !b2) || Pere.existePossibilite(coupleCaesInsecte)) && count < 30);
+            } while (((!b1 && !b2) || Pere.existePossibilite(coupleCaesInsecte)) && count < 60);
 
-            if (count == 30 && !b1 && !b2) {
+            if (count == 60 && !b1 && !b2) {
                 Pere.setNbFilsMax();
             } else {
                 Pere.ajoutPossibilite(coupleCaesInsecte);
@@ -152,6 +153,7 @@ public class MonteCarlo {
         ArrayList<Insecte> mainAdverse2 =cloneInsecte(noeud.getMainAdverse());
         ArrayList<Insecte> PlateauIA2 = new ArrayList<>();
         ArrayList<Insecte> PlateauAdverse2 = new ArrayList<>();
+        Random r=new Random();
 
         plateau2 = noeud.getPlateau().clone(PlateauIA2, PlateauAdverse2, joueurIA);
         ArrayList<Insecte> joueurCourant = new ArrayList<>();
@@ -170,20 +172,18 @@ public class MonteCarlo {
         Case c2 = null;
 
         do {
-            b1 = false;
-            b2 = false;
-            i = joueurCourant.get((int)(Math.random()*joueurCourant.size()));
+            i = joueurCourant.get(r.nextInt(joueurCourant.size()));
 
             if (i.getEmplacement() == null) {
                 c = plateau2.pointVersCase(plateau2.casesVidePlacement(i.getJoueur()));
                 if (!c.isEmpty()) {
-                    c2 = c.get((int)(Math.random()*c.size()));
+                    c2 = c.get(r.nextInt(c.size()));
                     b1 = true;
                 }
             } else {
                 c = (ArrayList<Case>) i.deplacementPossible(plateau2);
                 if (!c.isEmpty()) {
-                    c2 = c.get((int)(Math.random()*c.size()));
+                    c2 = c.get(r.nextInt(c.size()));
                     b2 = true;
                 }
             }
@@ -211,13 +211,14 @@ public class MonteCarlo {
         return fils;
     }
 
-    public boolean simulation(Noeud n) {
+    public double simulation(Noeud n) {
 
         int count = 0;
         int nbTourIA=n.getNbTourIA();
         int nbTourAdverse=n.getNbTourAdverse();
         boolean b = n.getTourIA();
-        ArrayList<Insecte> joueurCourant = new ArrayList<>();
+        Random r=new Random();
+        ArrayList<Insecte> joueurCourant;
         ArrayList<Insecte> mainIA2 =cloneInsecte(n.getMainIA());
         ArrayList<Insecte> mainAdverse2 =cloneInsecte(n.getMainAdverse());
         ArrayList<Insecte> PlateauIA2 = new ArrayList<>();
@@ -234,6 +235,7 @@ public class MonteCarlo {
         }       
         
         while (!coupGagnat(in1,in2,plateau2) && count<60){
+        	joueurCourant = new ArrayList<>();
             if (b) {
                 joueurCourant.addAll(mainIA2);
                 joueurCourant.addAll(PlateauIA2);
@@ -242,44 +244,54 @@ public class MonteCarlo {
                 joueurCourant.addAll(PlateauAdverse2);
             }
 
-            ArrayList<Case> c;
-            boolean b1 = false, b2 = false;
+            ArrayList<Case> c =new ArrayList<>();
+            boolean b1=false,b2=false;
             Insecte i;
             Case c2 = null;
             do {
+            	b1=false;b2=false;
+            	
             	if((b && nbTourIA==4 && (i=getReine(mainIA2))!=null)||(!b && nbTourAdverse==4 &&
             			(i=getReine(mainAdverse2))!=null)) {
             			c=plateau2.pointVersCase(plateau2.casesVidePlacement(i.getJoueur()));
-            			c2 = c.get((int)(Math.random()*c.size()));
+            			c2 = c.get(r.nextInt(c.size()));
                         b1 = true;
             	}  	
             else {
-                int res = (int)(Math.random()*joueurCourant.size());
+                int res =r.nextInt(joueurCourant.size());
                 i = joueurCourant.get(res);
 
                 if (i.getEmplacement() == null) {
                     c = plateau2.pointVersCase(plateau2.casesVidePlacement(i.getJoueur()));
                     if (!c.isEmpty()) {
-                        c2 = c.get((int)(Math.random()*c.size()));
+                        c2 = c.get(r.nextInt(c.size()));
                         b1 = true;
+                    }else if(b){
+                    	joueurCourant.removeAll(mainIA2);
+                    }else {
+                    	joueurCourant.removeAll(mainAdverse2);
                     }
-                } else {
+                } else if((b && this.getReine(mainIA2)==null)||(!b && this.getReine(mainAdverse2)==null)){
                     c = (ArrayList<Case>) i.deplacementPossible(plateau2);
                     if (!c.isEmpty()) {
-                        c2 = c.get((int)(Math.random()*c.size()));
+                    	int j=r.nextInt(c.size());
+                        c2 = c.get(j);
                         b2 = true;
+                    }else {
+                    	joueurCourant.remove(i);
                     }
                 }
             }
-                //System.out.println(i+","+i.getEmplacement()+","+c2+","+count+","+this.getNbNoeuds());
-                /*System.out.println(mainIA2);
-                System.out.println(mainAdverse2);*/
-                if(c.isEmpty()) {
-                	joueurCourant.remove(i);
-                }
+                
             } while (!b1 && !b2 && !joueurCourant.isEmpty());
             
-            if(joueurCourant.isEmpty()) return false;
+            if(!b1 && !b2 && joueurCourant.isEmpty()) {
+            	if( plateau2.getCasesVoisinesOccupees(this.getReine(PlateauIA2).getEmplacement()).size()<
+            	plateau2.getCasesVoisinesOccupees(this.getReine(PlateauAdverse2).getEmplacement()).size()) {
+            		return 0.25;
+            	}
+            	return 0.0;
+            }
           
             if (b1) {
                 if (b) {
@@ -291,33 +303,36 @@ public class MonteCarlo {
                 }
                 plateau2.ajoutInsecte(i, c2.getCoordonnees());
             } else {
-                i.deplacement(plateau2, c2.getCoordonnees());
+            	i.deplacement(plateau2,c2.getCoordonnees());
             }
-            joueurCourant.clear();
             b = !b;
             if(b) {
             	in1=PlateauIA2;
                 in2 =PlateauAdverse2;
-                nbTourIA++;
+                nbTourAdverse++;
             }else {
             	in1=PlateauAdverse2;
                 in2 =PlateauIA2;
-                nbTourAdverse++;
+                nbTourIA++;
             }
             count++;
         }
-        
-        //System.out.println(this.getNbNoeuds());
 
         if (count == 60) {
-        	//System.out.println("no");
-            return false;
+        	if( plateau2.getCasesVoisinesOccupees(this.getReine(PlateauIA2).getEmplacement()).size()<
+                	plateau2.getCasesVoisinesOccupees(this.getReine(PlateauAdverse2).getEmplacement()).size()) {
+                		return 0.5;
+                	}
+                	return 0.0;
+    
         }
-      //System.out.println("yes");
-        return !b;
+        if(b) {
+        	return 1.0;
+        }
+        return 0.0;
     }
 
-    public void miseAjour(Noeud n, boolean b) {
+    public void miseAjour(Noeud n, double b) {
         n.mettreAjour(b);
     }
 

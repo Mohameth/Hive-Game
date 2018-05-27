@@ -18,11 +18,16 @@ public class Moustique extends Insecte {
     	return new Moustique(this.getJoueur());
     	
     }
+	
+	public boolean equals(Insecte insecte) {
+		return (insecte instanceof Moustique);
+	}
 
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
         
-        if (!this.getJoueur().reinePosee() || this.getEmplacement().getInsecteOnTop()!=this) return new ArrayList<>();
+        if (!this.getJoueur().reinePosee() || this.getEmplacement().getInsecteOnTop()!=this || 
+        		plateau.rucheBrisee2(this.getEmplacement())) return new ArrayList<>();
     	
     	if(this.getEmplacement().getInsectes().size()>1) {
         	return plateau.getCasesVoisines(this.getEmplacement(), false);
@@ -42,21 +47,6 @@ public class Moustique extends Insecte {
     	if(casePossibles.contains(this.getEmplacement())) {
     		casePossibles.remove(this.getEmplacement());
     	}
-    	if(!casePossibles.isEmpty() && plateau.rucheBrisee(this.getEmplacement(),casePossibles.get(0))) {
-    		return new ArrayList<>();
-    	}
-        
-        Iterator<Case> it = casePossibles.iterator();
-        while (it.hasNext()) {
-            Case possibilite = it.next();
-            for (Case c : plateau.getCasesVoisines(this.getEmplacement(), true)) {
-                if (c.equals(possibilite)) {
-                    if (plateau.rucheBrisee(this.getEmplacement(), c)) {
-                        it.remove();
-                    }
-                }
-            }
-        }
         
     	return casePossibles;
     }

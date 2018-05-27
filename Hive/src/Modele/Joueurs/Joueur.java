@@ -165,7 +165,7 @@ public abstract class Joueur implements Cloneable, Serializable {
         try {
             this.plateau.ajoutInsecte(insecte, caseCible);
             this.dernierDeplacement = new Deplacement(insecte, null, caseCible);
-            this.tourJoueur++;
+            this.incrementeTour();
         } catch (Exception ex) {
             Logger.getLogger(Joueur.class.getName()).log(Level.SEVERE, null, ex);
         }

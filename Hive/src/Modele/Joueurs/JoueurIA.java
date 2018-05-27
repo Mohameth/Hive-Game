@@ -58,6 +58,7 @@ public class JoueurIA extends Joueur {
 
     public void setDifficulte(int dif) {
         this.difficulte = dif;
+        this.setThreadCoup();
     }
 
     @Override

@@ -20,6 +20,10 @@ public class Fourmi extends Insecte {
     	return new Fourmi(this.getJoueur());
     	
     }
+	
+	public boolean equals(Insecte insecte) {
+		return (insecte instanceof Fourmi);
+	}
     
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
