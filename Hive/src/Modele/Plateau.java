@@ -276,7 +276,7 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
                 joueurAdverse = false;
                 Iterator<Case> itv = voisins.iterator();
                 while (!joueurAdverse && itv.hasNext()) {
-                    if (!itv.next().getInsecteOnTop().getJoueur().equals(j)) {
+                    if (!(itv.next().getInsecteOnTop().getJoueur().getNumJoueur() == j.getNumJoueur())) {
                         joueurAdverse = true;
                     }
                 }
