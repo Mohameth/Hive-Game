@@ -17,7 +17,7 @@ import java.util.Random;
  * @author GRP3
  */
 public class CoupMoyen extends AbstractCoup{
-    int horizon = 2;
+    int horizon = 1;
     public Coup lastCoup = null;
     
     /**

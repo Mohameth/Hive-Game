@@ -50,11 +50,10 @@ public class IAEvaluation {
      * @return l'évaluation courante de la position
      */
     public int getEvaluation() {
-        if (aGagne()) {
-            return Integer.MAX_VALUE;
-        }
-        if (aPerdu()) {
-            return Integer.MIN_VALUE;
+        if (aGagne() && aPerdu()) return Integer.MIN_VALUE;
+        else {
+            if (aGagne()) return Integer.MAX_VALUE;
+            if (aPerdu()) return Integer.MIN_VALUE;
         }
 
         initPiecesValues(myPiecesValues, false);
@@ -64,7 +63,55 @@ public class IAEvaluation {
 
         return getSumEvaluation(myPiecesValues)
                 - getSumEvaluation(opponentPiecesValues);
+        /*int nbInsecteLibreJoueur = 0;
+        int nbInsecteLibreAdversaire = 0;
+        int nbInsectesEntoureReineAdverse = 0;
+        int nbInsectesEntoureMaReine = 0;
+        int nbFourmiEnJeu = 0;
+        int nbFourmiAdversaireEnJeu = 0;
+        for (Insecte i : getTousInsecte()) {
+            boolean monInsecte = !insecteBelongsToOpponent(i);
+            
+            if (!estDansLaMain(i)) {
+                if (i.getType() == TypeInsecte.FOURMI && !estImmobilise(i)) {
+                    if (monInsecte) nbFourmiEnJeu++; else nbFourmiAdversaireEnJeu++;
+                }
+                if (!estImmobilise(i)) {
+                    if (monInsecte) nbInsecteLibreJoueur++; else nbInsecteLibreAdversaire++;
+                }
+                if (entoureReineAdverse(i)) nbInsectesEntoureReineAdverse++;
+                //else if (entoureMaReine(i)) nbInsectesEntoureMaReine++;
+            }
+        }
+        
+        return 100*(nbInsectesEntoureReineAdverse) 
+                + 20*(nbFourmiEnJeu - nbFourmiAdversaireEnJeu)
+                + 10*(nbInsecteLibreJoueur - nbInsecteLibreAdversaire);*/
     }
+    
+    /*public int nbInsecteLibreJoueur() {
+        return 0;
+    }
+    
+    public int nbInsecteLibreAdversaire() {
+        return 0;
+    }
+    
+    public int nbInsectesEntoureReineAdverse() {
+        return 0;
+    }
+    
+    public int nbInsectesEntoureMaReine() {
+        return 0;
+    }
+    
+    public int nbFourmiEnJeu() {
+        return 0;
+    }
+    
+    public int nbFourmiAdversaireEnJeu() {
+        return 0;
+    }*/
     
     /**
      * Indique s'il s'agit d'un insecte adverse
@@ -174,7 +221,7 @@ public class IAEvaluation {
         return jeu.estVoisin(reine, i);
     }
 
-    private boolean maReineEstEntoure(Insecte i) {
+    private boolean entoureMaReine(Insecte i) {
         Insecte reine = insecteBelongsToOpponent(i) ? reineAdverse : maReine;
 
         if (reine == null || reine.getEmplacement() == null) {
@@ -187,6 +234,11 @@ public class IAEvaluation {
     private boolean peutEntourerReineAdverse(Insecte i) {
         return false;
     }
+    
+    /*public int pasVersReineAdverse(Insecte i) {
+        Insecte reine = insecteBelongsToOpponent(i) ? maReine : reineAdverse;
+        //if (i)
+    }*/
     
     /**
      * Indique la mobilité d'un insecte
@@ -216,6 +268,12 @@ public class IAEvaluation {
         return joueur.reineBloquee();
     }
     
+    private boolean recouvreReineAdverse(Insecte i) {
+        Insecte reine = insecteBelongsToOpponent(i) ? maReine : reineAdverse;
+        
+        return i.getNiveau() > 1 && reine.getEmplacement().equals(i.getEmplacement());
+    }
+    
     /**
      * Met à jour les valeurs des pièces selon leurs positions (par rapport aux autres pièces)
      * 
@@ -231,9 +289,12 @@ public class IAEvaluation {
             if (estDansLaMain(i)) {
                 value -= value*2;
             } else {
-                if (estRecouvert(i))    value /= 5;
-                else                                        value += mobilite(i)*2;
-                //if (entoureReineAdverse(i))                 value += 10000;
+                if (estRecouvert(i))        value /= 5;
+                else {
+                    value += mobilite(i)*2;
+                    if (recouvreReineAdverse(i)) value *= 5;
+                }
+                if (entoureReineAdverse(i)) value += 100;
                 //else if (peutEntourerReineAdverse(i))       value += 50;
                 //if (maReineEstEntoure(i))                   value -= 100;
             }
