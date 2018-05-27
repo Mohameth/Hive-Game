@@ -612,6 +612,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             }
             this.currentSelected.setPionPosition(zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY());
             this.currentSelected.validCurrentPosXY();
+            if (!currentPlayerHumain()) {
+                this.currentSelected.blinkImage();
+            }
         } else if (this.currentMainSelected != null) {    // un pionMain est selectionnée d'un joueur et on créer un pionPlateau sur le plateau au coordonnée zLibre
             //update add pion, pion ajouté depuis la main
             //System.out.println("Jouer coup main -> plateau");
@@ -624,9 +627,13 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             PionPlateau2 pp2 = new PionPlateau2(this, currentMainSelected.getPionsType(), currentMainSelected.isWhite(), zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY(), this.getZoom(), this.getWidth(), this.getHeight());
             //pp2.setPionPosition(zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY());
             pp2.validCurrentPosXY();
+            if (!currentPlayerHumain()) {
+                pp2.blinkImage();
+            }
         }
         //todo
-        if (!currentPlayerHumain() || this.controleur.getJoueur1().getNumJoueur().estHumain() && this.controleur.getJoueur2().getNumJoueur().estHumain()) {
+        //if (!currentPlayerHumain() || this.controleur.getJoueur1().getNumJoueur().estHumain() && this.controleur.getJoueur2().getNumJoueur().estHumain()) {
+        if (currentPlayerHumain()) {
             joueurJoue();
         } else {
             System.out.println("Player not human");
@@ -1462,7 +1469,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         hideZoneLibre();
         updateUndoRedoBtn();
         hudToFront();
+        //updateMainJoueur();
+        this.controleur.joueurSuivant();
         updateMainJoueur();
+
     }
 
     public void ordinateurJoue() {
@@ -1484,7 +1494,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             this.currentSelected = this.listPionsPlateau.get(iaMove.getOrig());
             updateMousePressedZoneLibre(getZoneLibreEgal(iaMove.getCible()));
         }
-//
         updateUndoRedoBtn();
         hudToFront();
         this.controleur.joueurSuivant();

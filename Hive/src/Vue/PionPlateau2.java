@@ -406,6 +406,10 @@ public class PionPlateau2 implements ObservableVue {
         this.imagePion.setSelectedEffect();
     }
 
+    public void blinkImage() {
+        this.imagePion.blinkImage();
+    }
+
     public void unSelect() {
         this.imagePion.unSelect();
     }
