@@ -48,7 +48,7 @@ public class CoupDifficile extends AbstractCoup{
             Noeud noeud2 = monteCarlo.selection();
             noeud2 = monteCarlo.Expansion(noeud2);
             System.out.println("Noeuds :" + monteCarlo.getNbNoeuds() + " " + monteCarlo.getNbNoeudsMax());
-            boolean b = monteCarlo.simulation(noeud2);
+            double b = monteCarlo.simulation(noeud2);
             monteCarlo.miseAjour(noeud2, b);
             
         } while (monteCarlo.getNbNoeuds() < monteCarlo.getNbNoeudsMax());
