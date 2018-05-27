@@ -15,6 +15,7 @@ import Modele.Joueurs.Joueur;
 import Modele.Joueurs.JoueurIA;
 import Modele.Joueurs.Noeud;
 import Modele.Plateau;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
@@ -24,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author firmyn
  */
-public abstract class AbstractCoup implements Runnable {
+public abstract class AbstractCoup implements Runnable,Serializable {
 
     protected long tempsDebut;
     protected long tempsFin;
