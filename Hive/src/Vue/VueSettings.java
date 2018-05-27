@@ -19,11 +19,9 @@ import javafx.util.StringConverter;
 
 import java.awt.*;
 import java.io.*;
-import java.net.URL;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import static javafx.scene.input.DataFormat.URL;
 
 public class VueSettings extends Vue {
 
@@ -311,8 +309,7 @@ public class VueSettings extends Vue {
 
     private void setConfig() {
         Properties prop = new Properties();
-        URL propFileName = getClass().getClassLoader().getResource("config.properties");
-        System.out.println(propFileName);
+        String propFileName = "rsc/config.properties";
         if(group.getSelectedToggle() != null)
             prop.setProperty("difficulteIA",group.getSelectedToggle().getUserData().toString());
         if(nomJ2 != null && nomJ1 != null){
@@ -326,7 +323,7 @@ public class VueSettings extends Vue {
         else
             prop.setProperty("fullscreen","false");
         try {
-            prop.store(new FileWriter(new File(propFileName.getFile())),"");
+            prop.store(new FileWriter(propFileName),"");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -334,9 +331,10 @@ public class VueSettings extends Vue {
 
     private void getConfig() {
         Properties prop = new Properties();
+        String propFileName = "rsc/config.properties";
         InputStream input = null;
         try {
-            input = getClass().getClassLoader(). getResourceAsStream("config.properties");
+            input = new FileInputStream(propFileName);
             prop.load(input);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
