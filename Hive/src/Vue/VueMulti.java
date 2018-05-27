@@ -24,10 +24,9 @@ public class VueMulti extends Vue {
 
     VueMulti(Stage primaryStage) {
         Properties prop = new Properties();
-        String propFileName = "rsc/config.properties";
         InputStream input = null;
         try {
-            input = new FileInputStream(propFileName);
+            input = getClass().getClassLoader().getResourceAsStream("config.properties");
             prop.load(input);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
