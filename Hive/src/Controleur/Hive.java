@@ -254,11 +254,8 @@ public class Hive implements Serializable {
 
     public boolean save(String name) {
         String path;
-        if (isWindows()) {
-            path = System.getProperty("user.dir").concat("\\rsc\\SAVE\\");
-        } else {
-            path = System.getProperty("user.dir").concat("/rsc/SAVE/");
-        }
+        path = "rsc/SAVE/";
+       
         File f = new File(path + name);
         if (!f.exists()) {
             try {
@@ -279,11 +276,8 @@ public class Hive implements Serializable {
 
     public boolean load(String name) {
         String path;
-        if (isWindows()) {
-            path = System.getProperty("user.dir").concat("\\rsc\\SAVE\\");
-        } else {
-            path = System.getProperty("user.dir").concat("/rsc/SAVE/");
-        }
+        path = "rsc/SAVE/";
+        
         File f = new File(path + name);
         if (f.exists()) {
             try {
