@@ -4,7 +4,6 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
-import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -15,7 +14,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class VueMenuPrincipal extends Vue {
@@ -77,7 +75,7 @@ public class VueMenuPrincipal extends Vue {
         });
 
         Button tuto = new Button();
-        tuto.setText(getLangStr("tuto"));
+        tuto.setText(getLangStr("rule"));
         tuto.setMaxWidth(200.0);
 
         Button setting = new Button();

@@ -1,12 +1,16 @@
 package Vue;
 
+import Controleur.Hive;
+import Modele.Case;
+import Modele.Deplacement;
+import Modele.HexaPoint;
+import Modele.Insectes.Insecte;
 import Modele.Insectes.TypeInsecte;
+import Modele.Joueurs.Joueur;
 import Modele.Joueurs.JoueurIA;
 import Modele.Joueurs.NumJoueur;
-import Controleur.Hive;
-import Modele.*;
-import Modele.Insectes.Insecte;
-import Modele.Joueurs.Joueur;
+import Modele.Plateau;
+import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -37,16 +41,11 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
-
-import static com.sun.javafx.PlatformUtil.isWindows;
-import java.awt.event.ActionListener;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.Timer;
-import javafx.animation.AnimationTimer;
 
 public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
@@ -1233,10 +1232,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             Label fileName = new Label(getLangStr("FileName"));
             fileName.setTextFill(Color.WHITE);
             fileName.setAlignment(Pos.TOP_CENTER);
-            fileName.setPadding(new Insets(10, 0, 0, 0));
             fileName.setStyle("-fx-font-weight: bold;-fx-font-size: 26px; -fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);-fx-vertical-align: text-top;");
             TextField tnom = new TextField("file");
-            tnom.setStyle("-fx-font-weight: bold;-fx-font-size: 24px; -fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);-fx-border-color: white; -fx-border-width: 0 0 0.1 0;");
+            tnom.setStyle("-fx-font-weight: bold;-fx-font-size: 26px; -fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);-fx-border-color: white; -fx-border-width: 0 0 0 0;");
             ListView<String> lv = getSaveFile();
             Button save = new Button(getLangStr("save"));
             Button cancel = new Button(getLangStr("cancel"));
@@ -1256,7 +1254,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             vLoad.prefHeightProperty().bind(primaryStage.heightProperty());
             vLoad.setAlignment(Pos.CENTER);
             vLoad.setSpacing(10);
-            vLoad.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
+            vLoad.setStyle("-fx-background-color : rgba(0, 0, 0, .8);");
             lv.setMaxWidth((primaryStage.getWidth() * 33) / 100);
             tnom.setMaxWidth((primaryStage.getWidth() * 33) / 100);
             lv.getStylesheets().add("Vue/button.css");
