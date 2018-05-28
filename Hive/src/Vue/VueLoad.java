@@ -1,5 +1,6 @@
 package Vue;
 
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -45,6 +46,7 @@ public class VueLoad extends Vue {
         ListView<String> lv = getSaveFile();
         Button load = new Button(getLangStr("load"));
         load.setMinWidth(150);
+        load.setDisable(true);
         Button cancel = new Button(getLangStr("cancel"));
         cancel.setMinWidth(150);
 
@@ -62,6 +64,13 @@ public class VueLoad extends Vue {
         vLoad.setSpacing(10);
         lv.setMaxWidth((primaryStage.getWidth() * 33) / 100);
         lv.getStylesheets().add("Vue/button.css");
+        lv.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+            @Override
+            public void handle(MouseEvent event) {
+                load.setDisable(false);
+            }
+        });
 
         cancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
             SceneMain(primaryStage);
@@ -93,12 +102,7 @@ public class VueLoad extends Vue {
     }
 
     public ListView<String> getSaveFile() {
-        String path;
-        if (isWindows()) {
-            path = System.getProperty("user.dir").concat("\\Hive\\rsc\\SAVE");
-        } else {
-            path = System.getProperty("user.dir").concat("/rsc/SAVE/");
-        }
+        String path = "rsc/SAVE/";
         System.out.println(path);
         File rep = new File(path);
         if (!rep.exists()) {

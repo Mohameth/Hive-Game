@@ -91,7 +91,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         root = new Group();
 
         this.controleur = controleur;
-        this.controleur.resetPartie();
+        //this.controleur.resetPartie();
         this.controleur.setJoueurs(casJoueurs, true);
         this.controleur.addObserverPlateau(this);
         this.pModel = null;
@@ -1014,10 +1014,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bEdit.setStyle("-fx-background-color: Transparent;\n");
         HBox hName = new HBox();
         hName.setAlignment(Pos.CENTER_LEFT);
-        bEdit.setTooltip(new Tooltip("Changer de nom"));
+        bEdit.setTooltip(new Tooltip(getLangStr("ChangeName")));
         String joueur = "joueur " + numplayer;
         if (numplayer == 1) {
             joueur = prop.getProperty("joueurBlanc");
+            System.out.println(joueur);
         } else {
             joueur = prop.getProperty("joueurNoir");
         }
@@ -1196,7 +1197,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         VBox vb1 = new VBox();
         vb1.getChildren().addAll(hb1, hb2);
         vb1.setSpacing(10);
-        //vb1.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 3 0 0 0;\n");
         vb1.setAlignment(Pos.BOTTOM_CENTER);
 
         VBox vb = new VBox();
@@ -1224,13 +1224,13 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             bRedo.setDisable(true);
         }
 
-        bUndo.setTooltip(new Tooltip("Anuler le dernier coup"));
+        bUndo.setTooltip(new Tooltip(getLangStr("Undo")));
         bUndo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             applyUndo(this.controleur.Undo());
             this.reconstructionPlateau(pModel);
         });
 
-        bRedo.setTooltip(new Tooltip("Rejouer le dernier coup"));
+        bRedo.setTooltip(new Tooltip(getLangStr("Redo")));
         bRedo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             if (currentPlayerIsWhite()) {
                 applyRedo(this.controleur.Redo(), true);
@@ -1240,16 +1240,17 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             this.reconstructionPlateau(pModel);
         });
 
-        brules.setTooltip(new Tooltip("Règles du jeu"));
+        brules.setTooltip(new Tooltip(getLangStr("Rules")));
         brules.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             getRule(false);
         });
 
-        bPause.setTooltip(new Tooltip("Afficher le menu"));
-        bLoad.setTooltip(new Tooltip("Charger une partie"));
+        bPause.setTooltip(new Tooltip(getLangStr("ShowMenu")));
+        bLoad.setTooltip(new Tooltip(getLangStr("LoadGame")));
         bLoad.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             ListView<String> lv = getSaveFile();
             Button load = new Button(getLangStr("load"));
+            load.setDisable(true);
             Button cancel = new Button(getLangStr("cancel"));
 
             HBox hbutton = new HBox();
@@ -1264,12 +1265,20 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             vLoad.prefHeightProperty().bind(primaryStage.heightProperty());
             vLoad.setAlignment(Pos.CENTER);
             vLoad.setSpacing(10);
-            vLoad.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
+            vLoad.setStyle("-fx-background-color : rgba(0, 0, 0, .8);");
             lv.setMaxWidth((primaryStage.getWidth() * 33) / 100);
             lv.getStylesheets().add("Vue/button.css");
 
             cancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
                 root.getChildren().removeAll(vLoad);
+            });
+
+            lv.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+                @Override
+                public void handle(MouseEvent event) {
+                    load.setDisable(false);
+                }
             });
 
             load.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
@@ -1282,7 +1291,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             root.getChildren().addAll(vLoad);
         });
 
-        bSave.setTooltip(new Tooltip("Sauvegarder la partie"));
+        bSave.setTooltip(new Tooltip(getLangStr("SaveGame")));
 
         bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             Label fileName = new Label(getLangStr("FileName"));
@@ -1530,6 +1539,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     private void recommencerPartie() {
         this.controleur.resetPartie();
+        this.controleur.addObserverPlateau(this);
+
         //supprimer les pions du plateau:
         for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
             PionPlateau2 value = entry.getValue();
@@ -2178,10 +2189,13 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     public void CheckGagnant() {
         int jGagnant = this.controleur.JoueurGagnant();
         if (jGagnant != 0) {
-            TextField tf = (TextField) nomJoueur.get(jGagnant - 1);
-            String nameG = tf.getText();
-            System.out.println(nameG + " à Gagné");
-            Label l = new Label(nameG + " " + getLangStr("winMess"));
+            String nomG = null;
+            if(this.controleur.getJoueur(jGagnant).getNumJoueur().estHumain())
+                nomG = ((TextField) nomJoueur.get(jGagnant - 1)).getText();
+            else
+                nomG = (String)((ComboBox) nomJoueur.get(jGagnant-1)).getValue();
+            System.out.println(nomG + " à Gagné");
+            Label l = new Label(nomG + " " + getLangStr("winMess"));
             l.setTextFill(Color.WHITE);
             l.prefWidthProperty().bind(primaryStage.widthProperty());
             l.setAlignment(Pos.CENTER);

@@ -2,15 +2,16 @@ package Vue;
 
 import Controleur.Hive;
 import hive.HiveMain;
+import javafx.application.Application;
+import javafx.stage.Stage;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import javafx.application.Application;
-import javafx.stage.Stage;
-
 import java.util.Locale;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,10 +24,12 @@ public class Vue extends Application {
     protected String language;
     protected String country;
     Locale currentLocale;
+    protected Properties prop;
     public static ResourceBundle messages;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        prop = new Properties();
         String path;
         path = "rsc";
         File rep = new File(path);
@@ -40,6 +43,7 @@ public class Vue extends Application {
         if (!config.exists()) {
             try {
                 InputStream in = getClass().getClassLoader().getResourceAsStream("config.properties");
+                prop.load(in);
                 Files.copy(in , config.toPath() , StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException ex) {
                 Logger.getLogger(HiveMain.class.getName()).log(Level.SEVERE, null, ex);
