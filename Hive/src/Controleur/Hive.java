@@ -96,10 +96,11 @@ public class Hive implements Serializable {
     }
 
     public void coupInit() {
-        if (this.joueurCourant.equals(this.joueur1) && !this.joueur1.getNumJoueur().estHumain())
+        if (this.joueurCourant.equals(this.joueur1) && !this.joueur1.getNumJoueur().estHumain()) {
             ((JoueurIA) this.joueurCourant).coup(null, null);
+        }
     }
-    
+
     public Joueur getJoueur2() {
         return joueur2;
     }
@@ -262,7 +263,7 @@ public class Hive implements Serializable {
     public boolean save(String name) {
         String path;
         path = "rsc/SAVE/";
-       
+
         File f = new File(path + name);
         if (!f.exists()) {
             try {
@@ -284,7 +285,7 @@ public class Hive implements Serializable {
     public boolean load(String name) {
         String path;
         path = "rsc/SAVE/";
-        
+
         File f = new File(path + name);
         if (f.exists()) {
             try {
@@ -346,7 +347,7 @@ public class Hive implements Serializable {
             } else {
                 this.joueur1.Undo();
                 this.joueurCourant = this.joueur1;
-                d = this.joueur2.getDernierDeplacement();
+                d = this.joueur1.getDernierDeplacement();
             }
             this.Undo = false;
             this.plateau.notifieVue(-1);
