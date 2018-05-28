@@ -84,7 +84,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private boolean undoRedoMove = false;
     private BorderPane loaderImg = null;
 
-    VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs, boolean solo) {
+    VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs, boolean solo, boolean load) {
         boolean fs = primaryStage.isFullScreen();
         this.primaryStage = primaryStage;
         this.nomJoueur = new ArrayList<>();
@@ -93,8 +93,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         this.controleur = controleur;
         //this.controleur.resetPartie();
-        this.controleur.setJoueurs(casJoueurs, true);
+        if (!load) {
+            this.controleur.setJoueurs(casJoueurs, true);
+        }
         this.controleur.addObserverPlateau(this);
+
         this.pModel = null;
 
         pionMainPlayer1 = new HashMap<>();
@@ -181,7 +184,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             }
         };
         anim.start();
-
+        if (load) {
+            this.pModel = this.controleur.getPlateau();
+            this.reconstructionPlateau(pModel);
+        }
         coupJoue();
         if (this.controleur.getJoueur1().getTourJoueur() == 1 && !currentPlayerHumain()) {
             //je suis une ia qui commence
@@ -401,6 +407,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         moveDeltaBoard(-centrePlateau[0], -centrePlateau[1]);
         zoomImage(0.5);
         removeSelectedPion();
+        this.updateUndoRedoBtn();
         //AddplacePion();
     }
 
@@ -1667,8 +1674,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 applyUndo(this.controleur.getJoueur1().getDernierDeplacement());
                 applyUndo(this.controleur.getJoueur2().getDernierDeplacement());
             }
-        } else { //deplace le deplacement courant
-            //si origine = null = depose pion de la main vers le plateau donc il faut le supprimer du plateau
+        } else //deplace le deplacement courant
+        //si origine = null = depose pion de la main vers le plateau donc il faut le supprimer du plateau
+        {
             if (depl.getOrig() == null) {
                 //deplace le pion n'importe ou et le supprime
                 this.currentSelected = this.listPionsPlateau.get(depl.getCible());
@@ -1699,22 +1707,20 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 applyRedo(this.controleur.getJoueur2().getDernierDeplacement(), false);
                 applyRedo(this.controleur.getJoueur1().getDernierDeplacement(), true);
             }
-        } else {
-            if (depl.getOrig() == null) {
-                if (isWhite) {
-                    this.currentMainSelected = this.pionMainPlayer1.get(depl.getI().getType());
-                } else {
-                    this.currentMainSelected = this.pionMainPlayer2.get(depl.getI().getType());
-                }
-                undoRedoMove = true;
-                updateMousePressedZoneLibre(getZoneLibreEgal(depl.getCible()));
-                undoRedoMove = false;
-            } else { //deplace un pion de plateau -> plateau
-                this.currentSelected = this.listPionsPlateau.get(depl.getOrig());
-                undoRedoMove = true;
-                updateMousePressedZoneLibre(getZoneLibreEgal(depl.getCible()));
-                undoRedoMove = false;
+        } else if (depl.getOrig() == null) {
+            if (isWhite) {
+                this.currentMainSelected = this.pionMainPlayer1.get(depl.getI().getType());
+            } else {
+                this.currentMainSelected = this.pionMainPlayer2.get(depl.getI().getType());
             }
+            undoRedoMove = true;
+            updateMousePressedZoneLibre(getZoneLibreEgal(depl.getCible()));
+            undoRedoMove = false;
+        } else { //deplace un pion de plateau -> plateau
+            this.currentSelected = this.listPionsPlateau.get(depl.getOrig());
+            undoRedoMove = true;
+            updateMousePressedZoneLibre(getZoneLibreEgal(depl.getCible()));
+            undoRedoMove = false;
         }
         removeSelectedPion();
         updateMainJoueur();

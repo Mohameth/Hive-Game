@@ -149,12 +149,12 @@ public class VueSolo extends Vue {
                             break;
                     }
                     try {
-                        prop.store(new FileWriter("Hive/rsc/config.properties"),"");
+                        prop.store(new FileWriter("rsc/config.properties"),"");
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
                 }
-                SceneTerrain(primaryStage, difficulte, true);
+                SceneTerrain(primaryStage, difficulte, true, false);
             }
         });
 

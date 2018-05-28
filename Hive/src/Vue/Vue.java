@@ -79,8 +79,11 @@ public class Vue extends Application {
         new VueSolo(primaryStage);
     }
 
-    protected void SceneTerrain(Stage primaryStage, int casJoueur, boolean solo){
-        new VueTerrain(primaryStage, controleur, casJoueur, solo);
+    protected void SceneTerrain(Stage primaryStage, int casJoueur, boolean solo, boolean load){
+        if (!load) {
+            this.controleur.resetPartie();
+        }
+        new VueTerrain(primaryStage, controleur, casJoueur, solo, load);
     }
 
     protected void SceneSettings(Stage primaryStage){
