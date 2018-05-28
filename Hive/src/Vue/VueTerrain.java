@@ -91,7 +91,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         root = new Group();
 
         this.controleur = controleur;
-        this.controleur.resetPartie();
+        //this.controleur.resetPartie();
         this.controleur.setJoueurs(casJoueurs, true);
         this.controleur.addObserverPlateau(this);
         this.pModel = null;
@@ -1540,6 +1540,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     private void recommencerPartie() {
         this.controleur.resetPartie();
+        this.controleur.addObserverPlateau(this);
+
         //supprimer les pions du plateau:
         for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
             PionPlateau2 value = entry.getValue();
