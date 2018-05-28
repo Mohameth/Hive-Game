@@ -82,7 +82,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         root = new Group();
 
         this.controleur = controleur;
-        this.controleur.reset();
+        this.controleur.resetPartie();
         this.controleur.setJoueurs(casJoueurs, true);
         this.controleur.addObserverPlateau(this);
         this.pModel = null;
@@ -1308,6 +1308,14 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bResume.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().removeAll(menu);
         });
+        
+        bRestart.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            root.getChildren().removeAll(menu);
+            this.controleur.resetPartie();
+
+        });
+
+
 
         bMain.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().removeAll(menu);
