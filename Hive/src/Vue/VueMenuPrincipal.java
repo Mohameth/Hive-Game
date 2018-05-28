@@ -31,13 +31,6 @@ public class VueMenuPrincipal extends Vue {
         Scene scene = new Scene(root, primaryStage.getWidth(), primaryStage.getHeight());
         scene.getStylesheets().add("Vue/button.css");
 
-//        Font f = Font.loadFont(getClass().getClassLoader().getResource("FunSized.ttf").toExternalForm(), 150);
-//
-//        Label t = new Label("Hive");
-//        if (f != null) {
-//            t.setFont(f);
-//        }
-//        t.setTextFill(Color.WHITE);
         Image img = new Image("hivelogo.png");
         ImageView imgv = new ImageView(img);
 

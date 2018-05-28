@@ -16,10 +16,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Properties;
 
 public class VueSolo extends Vue {
@@ -33,6 +30,7 @@ public class VueSolo extends Vue {
         try {
             input = new FileInputStream(propFileName);
             prop.load(input);
+            input.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -147,7 +145,6 @@ public class VueSolo extends Vue {
                             break;
                         case "white":
                             prop.setProperty("joueurBlanc",ta.getText());
-                            System.out.println(prop.getProperty("joueurBlanc"));
                             break;
                     }
                     try {
@@ -197,12 +194,5 @@ public class VueSolo extends Vue {
         primaryStage.setFullScreen(fs);
         primaryStage.show();
 
-        try {
-            if (input != null) {
-                input.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
