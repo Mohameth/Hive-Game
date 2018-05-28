@@ -960,7 +960,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bEdit.setStyle("-fx-background-color: Transparent;\n");
         HBox hName = new HBox();
         hName.setAlignment(Pos.CENTER_LEFT);
-        bEdit.setTooltip(new Tooltip("Changer de nom"));
+        bEdit.setTooltip(new Tooltip(getLangStr("ChangeName")));
         String joueur = "joueur " + numplayer;
         if (numplayer == 1) {
             joueur = prop.getProperty("joueurBlanc");
@@ -1170,27 +1170,27 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             bRedo.setDisable(true);
         }
 
-        bUndo.setTooltip(new Tooltip("Anuler le dernier coup"));
+        bUndo.setTooltip(new Tooltip(getLangStr("Undo")));
         bUndo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             this.controleur.Undo();
             this.reconstructionPlateau(pModel);
             this.updateMainJoueur();
         });
 
-        bRedo.setTooltip(new Tooltip("Rejouer le dernier coup"));
+        bRedo.setTooltip(new Tooltip(getLangStr("Redo")));
         bRedo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             this.controleur.Redo();
             this.reconstructionPlateau(pModel);
             this.updateMainJoueur();
         });
 
-        brules.setTooltip(new Tooltip("Règles du jeu"));
+        brules.setTooltip(new Tooltip(getLangStr("Rules")));
         brules.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             getRule(false);
         });
 
-        bPause.setTooltip(new Tooltip("Afficher le menu"));
-        bLoad.setTooltip(new Tooltip("Charger une partie"));
+        bPause.setTooltip(new Tooltip(getLangStr("ShowMenu")));
+        bLoad.setTooltip(new Tooltip(getLangStr("LoadGame")));
         bLoad.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             ListView<String> lv = getSaveFile();
             Button load = new Button(getLangStr("load"));
@@ -1226,7 +1226,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             root.getChildren().addAll(vLoad);
         });
 
-        bSave.setTooltip(new Tooltip("Sauvegarder la partie"));
+        bSave.setTooltip(new Tooltip(getLangStr("SaveGame")));
 
         bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             Label fileName = new Label(getLangStr("FileName"));
