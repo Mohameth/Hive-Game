@@ -1577,6 +1577,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             this.bUndo.setDisable(true);
         } else { //l'humain a joué puis directe après l'ia va jouer
             this.iaCanPlay = -1;
+            if (tempsRestant == -2) showLoader(); //L'IA est en train de calculer
         }
 
     }

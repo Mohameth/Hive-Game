@@ -98,6 +98,7 @@ public class Hive implements Serializable {
 
     public void coupInit() {
         if (this.joueurCourant.equals(this.joueur1) && !this.joueur1.getNumJoueur().estHumain()) {
+            //this.plateau.notifieVue(-2);
             ((JoueurIA) this.joueurCourant).coup(null, null);
         }
     }
@@ -239,6 +240,7 @@ public class Hive implements Serializable {
             this.joueurCourant = this.joueur1;
         }
         if (!this.joueurCourant.getNumJoueur().estHumain()) {
+            this.plateau.notifieVue(-2);
             ((JoueurIA) this.joueurCourant).coup(null, null);
         }
     }

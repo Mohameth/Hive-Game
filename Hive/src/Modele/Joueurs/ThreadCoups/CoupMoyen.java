@@ -11,13 +11,14 @@ import Modele.Joueurs.NumJoueur;
 import Modele.Plateau;
 import java.util.ArrayList;
 import java.util.Random;
+import javafx.application.Platform;
 
 /**
  *
  * @author GRP3
  */
 public class CoupMoyen extends AbstractCoup{
-    int horizon = 1;
+    int horizon = 2;
     public Coup lastCoup = null;
     
     /**
@@ -48,11 +49,10 @@ public class CoupMoyen extends AbstractCoup{
     @Override
     protected boolean coup() {
         Coup coup = minimax();
-        /*if (coup == null) {
-            JoueurIA iaf = new JoueurIA(this.plateau,1,false,NumJoueur.JOUEUR2,this.adversaire);
-            iaf.setPions(pions);
-            return iaf.coup(insecte, cible);
-        }*/
+        if (coup == null) {//Si tous les coups sont perdant, on joue au hasard
+            CoupFacile cf = new CoupFacile(plateau, joueur, adverse);
+            return cf.coup();
+        }
         Insecte i;
         
         if (coup.isModePlacement()) {
@@ -84,7 +84,9 @@ public class CoupMoyen extends AbstractCoup{
         int newVal;
         
         ArrayList<Configuration> x = parent.getAllCoupsPossibles(false);
-        System.out.println("Analyse de mes " + x.size() + " coups");
+        //System.out.println("Analyse de mes " + x.size() + " coups");
+        int evalParent = parent.getEvaluation();
+        System.out.println("\nPosition courante évalué à " + evalParent);
         for (Configuration c : x) {
             newVal = calculJoueurCourant(c, horizon, Integer.MIN_VALUE, Integer.MAX_VALUE);
             if (newVal > oldVal) {
@@ -93,7 +95,7 @@ public class CoupMoyen extends AbstractCoup{
             }
         }
         if (meilleurConf != null) {
-            System.out.println("Coup évalué à " + meilleurConf.getEvaluation());
+            System.out.println("Coup évalué à " + meilleurConf.getEvaluation() + "\n");
             return meilleurConf.getCoupJoue();
         } else {
             System.out.println("aucune conf : Jeu aleatoire");
@@ -102,31 +104,36 @@ public class CoupMoyen extends AbstractCoup{
     }
     
     public int calculJoueurCourant(Configuration conf, int horizon, int alpha, int beta) {
-        if (conf.estFeuille() || horizon == 0) {
-            return conf.getEvaluation();
+        if (horizon == 0 || conf.estFeuille()) {
+            int eval = conf.getEvaluation();
+            conf = null;
+            return eval;
         }
         
-        int valeur = Integer.MIN_VALUE;
-        //System.out.println(" --> Analyse de " + conf.getAllCoupsPossibles(true) + "coups adverses");
+        int valeur = Integer.MAX_VALUE;
+        //System.out.println(" --> Analyse de " + conf.getAllCoupsPossibles(true).size() + "coups adverses");
         for (Configuration confCourante : conf.getAllCoupsPossibles(true)) {
-            valeur = Integer.max(valeur, calculAdversaire(confCourante, horizon-1, alpha, beta));
-            if (valeur > beta) return valeur;
-            alpha = Integer.max(alpha, valeur);
+            valeur = Integer.min(valeur, calculAdversaire(confCourante, horizon-1, alpha, beta));
+            if (alpha > valeur) return valeur;
+            beta = Integer.min(beta, valeur);
         }
         
         return valeur;
     }
     
     public int calculAdversaire(Configuration conf, int horizon, int alpha, int  beta) {
-        if (conf.estFeuille() || horizon == 0) {
-            return conf.getEvaluation();
+        if (horizon == 0 || conf.estFeuille()) {
+            int eval = conf.getEvaluation();
+            conf = null;
+            return eval;
         } 
         
-        int valeur = Integer.MAX_VALUE;
+        int valeur = Integer.MIN_VALUE;
+        //System.out.println(" --> Analyse de " + conf.getAllCoupsPossibles(false).size() + "coups du turfu");
         for (Configuration confCourante : conf.getAllCoupsPossibles(false)) {
-            valeur = Integer.min(valeur, calculJoueurCourant(confCourante, horizon-1, alpha, beta));
-            if (alpha > valeur) return valeur;
-            beta = Integer.min(beta, valeur);
+            valeur = Integer.max(valeur, calculJoueurCourant(confCourante, horizon-1, alpha, beta));
+            if (valeur > beta) return valeur;
+            alpha = Integer.max(alpha, valeur);
         }
         
         return valeur;
