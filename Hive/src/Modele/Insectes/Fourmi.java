@@ -1,10 +1,9 @@
 package Modele.Insectes;
 
 import Modele.Case;
-import Modele.Joueur;
+import Modele.Joueurs.Joueur;
 import Modele.Plateau;
 import Modele.HexaPoint;
-import Modele.TypeInsecte;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -21,10 +20,14 @@ public class Fourmi extends Insecte {
     	return new Fourmi(this.getJoueur());
     	
     }
+	
+	public boolean equals(Insecte insecte) {
+		return (insecte instanceof Fourmi);
+	}
     
     @Override
     public Collection<Case> deplacementPossible(Plateau plateau) {
-        if (!this.getJoueur().tousPionsPosables() || !this.getEmplacement().getInsecteOnTop().equals(this)) return new ArrayList<>();
+        if (!this.getJoueur().reinePosee() || this.getEmplacement().getNbInsectes() != 1) return new ArrayList<>();
         ArrayList<Case> result = new ArrayList<>();
         LinkedList<Case> toCheck = new LinkedList<>();
         
@@ -53,7 +56,7 @@ public class Fourmi extends Insecte {
     
     @Override
     public String toString() {
-        return "Fourmi    ";
+        return "Fourmi";
     }
 
 }

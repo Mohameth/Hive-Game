@@ -1,10 +1,9 @@
 package Modele.Insectes;
 
-import Modele.Joueur;
+import Modele.Joueurs.Joueur;
 import Modele.Case;
 import Modele.Plateau;
 import Modele.HexaPoint;
-import Modele.TypeInsecte;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Objects;
@@ -25,6 +24,8 @@ public abstract class Insecte implements Cloneable, Serializable {
     public boolean equalsType(Insecte i) {
         return getType() == i.getType();
     }
+    
+    public abstract boolean equals(Insecte insecte);
 
     public void deplacement(Plateau plat, HexaPoint cible) {
         try {
@@ -32,7 +33,6 @@ public abstract class Insecte implements Cloneable, Serializable {
             //plat.getCase(cible).addInsecte(this);
             plat.deleteInsecte(this, this.getEmplacement().getCoordonnees());
             plat.deplaceInsecte(this, cible);
-            joueur.incrementeTour();
         } catch (Exception e) {
             System.err.println("ERREUR DEPLACEMENT :" + e);
         }

@@ -1,12 +1,12 @@
 package Modele.Insectes;
 
 import Modele.Case;
-import Modele.Joueur;
+import Modele.Joueurs.Joueur;
 import Modele.Plateau;
 import Modele.HexaPoint;
-import Modele.TypeInsecte;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 public class Coccinelle extends Insecte {
 
@@ -18,11 +18,16 @@ public class Coccinelle extends Insecte {
     	return new Coccinelle(this.getJoueur());
     	
     }
+	
+	public boolean equals(Insecte insecte) {
+		return (insecte instanceof Coccinelle);
+	}
 
     @Override
    public Collection<Case> deplacementPossible(Plateau plateau) {
     	
-    	if(!this.getJoueur().tousPionsPosables() || !this.getEmplacement().getInsecteOnTop().equals(this)) {
+    	if(!this.getJoueur().reinePosee() || this.getEmplacement().getNbInsectes() != 1 || 
+    			plateau.rucheBrisee2(this.getEmplacement())) {
         	return new ArrayList<>();
         }
     	
@@ -59,9 +64,7 @@ public class Coccinelle extends Insecte {
     	if(casePossibles3.contains(this.getEmplacement())) {
     		casePossibles3.remove(this.getEmplacement());
     	}
-    	if(!casePossibles3.isEmpty() && plateau.rucheBrisee(this.getEmplacement(),casePossibles3.get(0))) {
-    		return new ArrayList<>();
-    	}
+        
     	return casePossibles3;
     }
 

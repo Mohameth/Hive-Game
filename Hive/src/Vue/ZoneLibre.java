@@ -93,7 +93,7 @@ public class ZoneLibre {
         this.getImage().addEventFilter(MouseEvent.MOUSE_PRESSED, (
                 final MouseEvent mouseEvent) -> {
             //valider le coup au mouse release:
-            System.out.println("Mouse pressed Zone Libre");
+            //System.out.println("Mouse pressed Zone Libre");
             this.pionParent.notifyMousePressedZoneLibreVoisin(this);
             //affiche();
         });

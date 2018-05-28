@@ -4,11 +4,14 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -27,18 +30,28 @@ public class VueMenuPrincipal extends Vue {
 
         this.primaryStage = primaryStage;
         root = new Group();
-        Scene scene = new Scene(root, primaryStage.getWidth(),primaryStage.getHeight());
+        Scene scene = new Scene(root, primaryStage.getWidth(), primaryStage.getHeight());
         scene.getStylesheets().add("Vue/button.css");
 
-        Font f = Font.loadFont(getClass().getClassLoader().getResource("FunSized.ttf").toExternalForm(),150);
-
-        Label t = new Label("Hive");
-        if (f !=  null)
-            t.setFont(f);
-        t.setTextFill(Color.WHITE);
+//        Font f = Font.loadFont(getClass().getClassLoader().getResource("FunSized.ttf").toExternalForm(), 150);
+//
+//        Label t = new Label("Hive");
+//        if (f != null) {
+//            t.setFont(f);
+//        }
+//        t.setTextFill(Color.WHITE);
+        Image img = new Image("hivelogo.png");
+        ImageView imgv = new ImageView(img);
 
         BorderPane bp = new BorderPane();
-        bp.setCenter(t);
+        bp.setCenter(imgv);
+        bp.setAlignment(imgv, Pos.CENTER);
+
+        Image imgDeco = new Image("HiveTiles.png");
+        ImageView imgv2 = new ImageView(imgDeco);
+
+        BorderPane bpImg = new BorderPane();
+        bpImg.setCenter(imgv2);
 
         Button solo = new Button();
         solo.setText(getLangStr("solo"));
@@ -83,9 +96,9 @@ public class VueMenuPrincipal extends Vue {
             getPupExit();
         });
 
-        VBox vb = new VBox(solo,jvj,loadGame,tuto,setting,quit);
+        VBox vb = new VBox(solo, jvj, loadGame, tuto, setting, quit);
         vb.setSpacing(20.0);
-        vb.setPadding(new Insets(0,0,0,70));
+        vb.setPadding(new Insets(0, 0, 0, 70));
 
         GridPane g = new GridPane();
         for (int column = 0; column < NB_COL; column++) {
@@ -98,34 +111,36 @@ public class VueMenuPrincipal extends Vue {
 
         g.prefHeightProperty().bind(scene.heightProperty());
         g.prefWidthProperty().bind(scene.widthProperty());
-        g.add(bp,0,0,5,1);
-        g.add(vb,0,2,1,5);
-        g.setStyle("-fx-background-image: url(background.jpg);");
+        g.add(bp, 0, 0, 5, 1);
+        g.add(vb, 0, 2, 1, 5);
+        g.add(bpImg, 3, 3, 2, 3);
+        g.setStyle("-fx-background-image: url(background.jpg); -fx-background-size: cover;");
 
         root.getChildren().addAll(g);
         primaryStage.setScene(scene);
         primaryStage.setFullScreen(fs);
+        primaryStage.getIcons().add(new Image("logo.png"));
         primaryStage.show();
     }
 
-    private void getPupExit(){
+    private void getPupExit() {
         Label l = new Label(getLangStr("quitGame"));
         l.setTextFill(Color.WHITE);
         l.prefWidthProperty().bind(primaryStage.widthProperty());
         l.setAlignment(Pos.CENTER);
-        l.setPadding(new Insets(10,0,0,0));
+        l.setPadding(new Insets(10, 0, 0, 0));
         l.setStyle("-fx-background-color : rgba(0, 0, 0, .5);-fx-font-weight: bold;\n-fx-font-size: 1.1em;\n-fx-text-fill: white;");
         Button y = new Button(getLangStr("oui"));
         y.setPrefWidth(150);
         Button n = new Button(getLangStr("non"));
         n.setPrefWidth(150);
 
-        HBox h = new HBox(y,n);
+        HBox h = new HBox(y, n);
         h.setSpacing(30);
         h.setAlignment(Pos.CENTER);
         h.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
-        h.setPadding(new Insets(20,0,10,0));
-        VBox v = new VBox(l,h);
+        h.setPadding(new Insets(20, 0, 10, 0));
+        VBox v = new VBox(l, h);
         //v.setSpacing(20);
         v.prefWidthProperty().bind(primaryStage.widthProperty());
         v.prefHeightProperty().bind(primaryStage.heightProperty());

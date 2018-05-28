@@ -6,11 +6,11 @@
 package Modele.Insectes;
 
 import Modele.Case;
-import Modele.Joueur;
-import Modele.JoueurHumain;
+import Modele.Joueurs.Joueur;
+import Modele.Joueurs.JoueurHumain;
 import Modele.Plateau;
 import Modele.HexaPoint;
-import Modele.NumJoueur;
+import Modele.Joueurs.NumJoueur;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.After;

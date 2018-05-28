@@ -280,11 +280,11 @@ public class VueSettings extends Vue {
 
         Text td = new Text(getLangStr("difficulte"));
         RadioButton rEasy = new RadioButton(getLangStr("easy"));
-        rEasy.setUserData(getLangStr("easy"));
+        rEasy.setUserData("easy");
         RadioButton rMedium = new RadioButton(getLangStr("medi"));
-        rMedium.setUserData(getLangStr("medi"));
+        rMedium.setUserData("medium");
         RadioButton rHard = new RadioButton(getLangStr("hard"));
-        rHard.setUserData(getLangStr("hard"));
+        rHard.setUserData("hard");
         rEasy.setToggleGroup(group);
         rMedium.setToggleGroup(group);
         rHard.setToggleGroup(group);
@@ -309,7 +309,7 @@ public class VueSettings extends Vue {
 
     private void setConfig() {
         Properties prop = new Properties();
-        String propFileName = System.getProperty("user.dir").concat("/Hive/rsc/config.properties");
+        String propFileName = "rsc/config.properties";
         if(group.getSelectedToggle() != null)
             prop.setProperty("difficulteIA",group.getSelectedToggle().getUserData().toString());
         if(nomJ2 != null && nomJ1 != null){
@@ -331,7 +331,7 @@ public class VueSettings extends Vue {
 
     private void getConfig() {
         Properties prop = new Properties();
-        String propFileName = System.getProperty("user.dir").concat("/rsc/config.properties");
+        String propFileName = "rsc/config.properties";
         InputStream input = null;
         try {
             input = new FileInputStream(propFileName);

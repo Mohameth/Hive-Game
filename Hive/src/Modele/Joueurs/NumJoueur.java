@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Modele;
+package Modele.Joueurs;
 
 /**
  *
@@ -24,5 +24,9 @@ public enum NumJoueur {
     
     public boolean estBlanc() {
         return (this.contenu % 2) != 0;
+    }
+
+    public boolean estHumain() {
+        return this.contenu < 3;
     }
 }

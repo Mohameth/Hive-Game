@@ -1,13 +1,17 @@
-package Modele;
+package Modele.Joueurs;
 
+import Modele.CoupleCaesInsecte;
 import java.util.ArrayList;
 
 import Modele.Insectes.Insecte;
+import Modele.Plateau;
 
 public class Noeud {
 
 	private int ni;
-	private int ti;
+	private double ti;
+	private int nbTourIA;
+	private int nbTourAdverse;
 	private ArrayList<Noeud> Fils;
 	private int nbFils;
 	private Noeud Pere;
@@ -21,7 +25,7 @@ public class Noeud {
 	private ArrayList<Insecte> PlateauIA;
 	private ArrayList<Insecte> PlateauAdverse;
 	
-	public Noeud(Plateau plateau,ArrayList<Insecte>mainIA,ArrayList<Insecte>mainAdverse
+	public Noeud(int nbTour,int nbTourAdverse,Plateau plateau,ArrayList<Insecte>mainIA,ArrayList<Insecte>mainAdverse
 			,ArrayList<Insecte>PlateauIA,ArrayList<Insecte>PlateauAdverse) {
 		this.ni=1;
 		this.ti=1;
@@ -36,13 +40,15 @@ public class Noeud {
 		this.mainAdverse=mainAdverse;
 		this.PlateauIA=PlateauIA;
 		this.PlateauAdverse=PlateauAdverse;
-                this.Fils = new ArrayList<>();
+        this.Fils = new ArrayList<>();
+        this.nbTourIA=nbTour;
+        this.nbTourAdverse=nbTourAdverse;
 	}
 	
 	public Noeud(Noeud Pere,Plateau plateau,ArrayList<Insecte>mainIA,ArrayList<Insecte>mainAdverse
 			,ArrayList<Insecte>PlateauIA,ArrayList<Insecte>PlateauAdverse) {
 		this.ni=0;
-		this.ti=0;
+		this.ti=0.0;
 		this.nbFils=0;
 		this.nbFilsMax=false;
 		this.profondeur=Pere.getProfondeur()+1;
@@ -54,14 +60,21 @@ public class Noeud {
 		this.mainAdverse=mainAdverse;
 		this.PlateauIA=PlateauIA;
 		this.PlateauAdverse=PlateauAdverse;
-                this.Fils = new ArrayList<>();
+        this.Fils = new ArrayList<>();
+        if(!tourIA) {
+        	this.nbTourIA=Pere.getNbTourIA()+1;
+        	this.nbTourAdverse=Pere.getNbTourAdverse();
+        }else {
+        	this.nbTourIA=Pere.getNbTourIA();
+        	this.nbTourAdverse=Pere.getNbTourAdverse()+1;
+        }     
 	}
 	
 	public int getNi() {
 		return ni;
 	}
 	
-	public int getTi() {
+	public double getTi() {
 		return ti;
 	}
 	
@@ -106,16 +119,14 @@ public class Noeud {
 	}
 	
 	public double getUSB() {
-		double Vi=(double)(ti)/ni;
+		double Vi=ti/ni;
 		double s=2.0*Math.sqrt(Math.log((double) Pere.getNi())/ni);
 		return Vi+s;
 	}
 	
-	public void mettreAjour(boolean b) {
+	public void mettreAjour(double b) {
 		ni++;
-		if(b) {
-			ti++;
-		}
+		ti+=b;
 		if(Pere!=null) {
 			Pere.mettreAjour(b);
 		}
@@ -145,6 +156,14 @@ public class Noeud {
 	
 	public ArrayList<CoupleCaesInsecte> getPossiblilites(){
 		return possibilite;
+	}
+	
+	public int getNbTourIA() {
+		return nbTourIA;
+	}
+	
+	public int getNbTourAdverse() {
+		return nbTourAdverse;
 	}
 	
 }

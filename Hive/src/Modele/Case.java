@@ -1,5 +1,7 @@
 package Modele;
 
+import Modele.Insectes.TypeInsecte;
+import Modele.Joueurs.Joueur;
 import Modele.Insectes.Insecte;
 import Modele.Insectes.Scarabee;
 import java.awt.Point;
@@ -57,7 +59,7 @@ public class Case implements Serializable{
 
     public void addInsecte(Insecte insecte) throws Exception {
         if (!this.estVide() && !((insecte.getType() == TypeInsecte.SCARABEE) || (insecte.getType() == TypeInsecte.MOUSTIQUE)))
-                throw new Exception("Ajout impossible sur case non vide \n"+this.getInsecteOnTop()+ " sur " + this + " \n");
+                throw new Exception("Ajout de "+ insecte +" sur case non vide : \n" + this);
         if (this.insectes.size() == 7) throw new Exception("Ajout impossible -> 7 insectes maximum");
         this.insectes.add(insecte);
         insecte.setEmplacement(this);
@@ -67,8 +69,7 @@ public class Case implements Serializable{
     public void removeInsecte() throws Exception{
         if (this.estVide()) throw new Exception("Retrait impossible sur case vide");
         
-        Insecte i = this.insectes.get(this.insectes.size()-1);
-        this.insectes.remove(i);
+        this.insectes.remove(this.insectes.size()-1);
     }
     
     public boolean insecteBloque(Insecte insecte) throws Exception {
@@ -154,9 +155,9 @@ public class Case implements Serializable{
     
     @Override
     public String toString() {
-        String res = "Case[" + coordonnees + ']' + ":\n";
+        String res = "Case[" + coordonnees + ']' + ":";
         for (Insecte i : this.insectes) {
-            res += "\t " + i + "\n";
+            res += "\t" + i;
         }
         return res;
     }
