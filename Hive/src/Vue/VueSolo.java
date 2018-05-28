@@ -1,5 +1,6 @@
 package Vue;
 
+import java.io.FileInputStream;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -24,9 +25,10 @@ public class VueSolo extends Vue {
 
     VueSolo(Stage primaryStage) {
         Properties prop = new Properties();
+        String propFileName = "rsc/config.properties";
         InputStream input = null;
         try {
-            input = new FileInputStream("rsc/config.properties");
+            input = new FileInputStream(propFileName);
             prop.load(input);
             input.close();
         } catch (FileNotFoundException e) {
@@ -57,7 +59,6 @@ public class VueSolo extends Vue {
         Label tp = new Label(getLangStr("entername"));
         tp.setStyle("-fx-font-weight: bold;-fx-font-size: 24px;");
         tp.setTextFill(Color.WHITE);
-        System.out.println(prop);
         TextField ta = new TextField(prop.getProperty("joueurBlanc"));
 
         ta.setMaxSize(300.0, 5.0);

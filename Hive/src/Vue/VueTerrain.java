@@ -44,6 +44,16 @@ import javafx.util.Duration;
 import java.io.*;
 import java.util.*;
 
+import static com.sun.javafx.PlatformUtil.isWindows;
+import java.awt.event.ActionListener;
+import java.io.FileInputStream;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.Timer;
+import javafx.animation.AnimationTimer;
+import javafx.scene.shape.Circle;
+
 public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     private ArrayList<ZoneLibre> listZoneLibres;
@@ -1023,9 +1033,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     private BorderPane getHudPlayer(HashMap<TypeInsecte, Integer> m, int numplayer, boolean ia) {
         Properties prop = new Properties();
+        String propFileName = "rsc/config.properties";
         InputStream input = null;
         try {
-            input = new FileInputStream("rsc/config.properties");
+            input = new FileInputStream(propFileName);
             prop.load(input);
             input.close();
         } catch (FileNotFoundException e) {
@@ -1568,7 +1579,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void recommencerPartie() {
-        this.controleur.resetPartie();
+        this.controleur.recommencerPartie();
         this.controleur.addObserverPlateau(this);
 
         //supprimer les pions du plateau:
@@ -2107,14 +2118,14 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         String[] urlImg = new String[20];
         l.setStyle("-fx-font-weight: bold;\n-fx-font-size: 100px;\n-fx-text-fill: white;");
 
-        for (int x = 1; x < 12; x++) {
+        for (int x = 1; x < 14; x++) {
             urlImg[x - 1] = "rules/rule" + x + ".png";
         }
 
         ImageView img = new ImageView(new Image(urlImg[numeroPageTuto]));
         Button back = new Button(getLangStr("previous"));
         back.setPrefWidth(150);
-        Label nbPage = new Label((numeroPageTuto + 1) + "/11");
+        Label nbPage = new Label(" " + (numeroPageTuto + 1) + "/13");
         nbPage.setStyle("-fx-font-weight: bold;\n-fx-font-size: 1.1em;\n-fx-text-fill: white;");
         Button next = new Button(getLangStr("next"));
         next.setPrefWidth(150);
@@ -2142,7 +2153,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         next.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             back.setDisable(false);
             img.setImage(changeImg(urlImg, true, nbPage));
-            if (numeroPageTuto == 10) {
+            if (numeroPageTuto == 12) {
                 next.setDisable(true);
             }
         });
@@ -2159,12 +2170,16 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private Image changeImg(String[] url, boolean next, Label l) {
-        if (next && numeroPageTuto < 10) {
+        if (next && numeroPageTuto < 12) {
             numeroPageTuto++;
         } else if (!next && numeroPageTuto > 0) {
             numeroPageTuto--;
         }
-        l.setText((numeroPageTuto + 1) + "/11");
+        if (numeroPageTuto + 1 < 10) {
+            l.setText(" " + (numeroPageTuto + 1) + "/13");
+        } else {
+            l.setText((numeroPageTuto + 1) + "/13");
+        }
         return new Image(url[numeroPageTuto]);
 
     }
