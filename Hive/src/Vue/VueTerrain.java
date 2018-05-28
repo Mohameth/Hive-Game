@@ -1311,36 +1311,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         
         bRestart.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().removeAll(menu);
-            this.controleur.resetPartie();
-            //supprimer les pions du plateau:
-                for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
-                    PionPlateau2 value = entry.getValue();
-                    this.getRoot().getChildren().remove(value.getImage());
-
-                    if (value.getPionEnDessous() != null) {
-                        ArrayList<PionPlateau2> listPiondessous = new ArrayList<>();
-                        listPiondessous = value.getDessousList(listPiondessous);
-                        for (PionPlateau2 piondessous : listPiondessous) {
-                            this.getRoot().getChildren().remove(piondessous.getImage());
-                        }
-                    } else {
-                        this.getRoot().getChildren().remove(value.getImage());
-                    }
-                }
-            //supprime les zones libres du plateau;
-
-            for (ZoneLibre zLibre : listZoneLibres) {
-                this.getRoot().getChildren().remove(zLibre.getImage());
-            }
-            this.listPionsPlateau.clear();
-            this.listZoneLibres.clear();
-            removeSelectedPion();
-            
-            updateMainJoueur();
-            hudToFront();
-            this.resetView();
-
-
+            this.recommencerPartie();
         });
 
 
@@ -1501,6 +1472,37 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         }
     }
 
+    private void recommencerPartie() {
+        this.controleur.resetPartie();
+        //supprimer les pions du plateau:
+            for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+                PionPlateau2 value = entry.getValue();
+                this.getRoot().getChildren().remove(value.getImage());
+
+                if (value.getPionEnDessous() != null) {
+                    ArrayList<PionPlateau2> listPiondessous = new ArrayList<>();
+                    listPiondessous = value.getDessousList(listPiondessous);
+                    for (PionPlateau2 piondessous : listPiondessous) {
+                        this.getRoot().getChildren().remove(piondessous.getImage());
+                    }
+                } else {
+                    this.getRoot().getChildren().remove(value.getImage());
+                }
+            }
+        //supprime les zones libres du plateau;
+
+        for (ZoneLibre zLibre : listZoneLibres) {
+            this.getRoot().getChildren().remove(zLibre.getImage());
+        }
+        this.listPionsPlateau.clear();
+        this.listZoneLibres.clear();
+        removeSelectedPion();
+
+        updateMainJoueur();
+        hudToFront();
+        this.resetView();
+    }
+    
     public void joueurJoue() {
         //System.out.println("Joueur place pion");
         removeSelectedPion();
@@ -2071,7 +2073,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             });
 
             n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-
+                root.getChildren().removeAll(v);
+                this.recommencerPartie();
             });
             root.getChildren().add(v);
         }
