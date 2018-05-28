@@ -11,7 +11,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -25,7 +27,10 @@ public class VueLoad extends Vue {
 
         boolean fs = primaryStage.isFullScreen();
         Label t = new Label(getLangStr("ldgame"));
-        t.setFont(Font.font(60));
+        t.setFont(Font.font("Georgia", FontWeight.BOLD, 50));
+        t.setStyle("-fx-border-width: 0 0 3 0; -fx-border-color: rgb(37, 19, 7);");
+        t.setTextFill(Color.rgb(37, 19, 7));
+        t.setPadding(new Insets(50,0,0,0));
 
         GridPane root = new GridPane();
 
@@ -39,12 +44,14 @@ public class VueLoad extends Vue {
 
         ListView<String> lv = getSaveFile();
         Button load = new Button(getLangStr("load"));
+        load.setMinWidth(150);
         Button cancel = new Button(getLangStr("cancel"));
+        cancel.setMinWidth(150);
 
         HBox hbutton = new HBox();
         hbutton.getStylesheets().add("Vue/button.css");
         hbutton.getChildren().addAll(load, cancel);
-        hbutton.setSpacing(10);
+        hbutton.setSpacing(30);
         hbutton.setAlignment(Pos.CENTER);
 
         VBox vLoad = new VBox();
@@ -53,27 +60,23 @@ public class VueLoad extends Vue {
         vLoad.prefHeightProperty().bind(primaryStage.heightProperty());
         vLoad.setAlignment(Pos.CENTER);
         vLoad.setSpacing(10);
-        //vLoad.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
         lv.setMaxWidth((primaryStage.getWidth() * 33) / 100);
         lv.getStylesheets().add("Vue/button.css");
 
         cancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
-            root.getChildren().removeAll(vLoad);
+            SceneMain(primaryStage);
         });
 
         load.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
-            this.controleur.load(lv.getSelectionModel().getSelectedItem());
-            root.getChildren().removeAll(vLoad);
+            //this.controleur.load(lv.getSelectionModel().getSelectedItem());
         });
-
-        //root.getChildren().addAll(vLoad);
 
         VBox vb = new VBox();
         vb.getChildren().addAll(t, vLoad);
         vb.setAlignment(Pos.CENTER);
-        vb.setSpacing(100.0);
+        vb.setSpacing(10.0);
         vb.setPrefHeight(primaryStage.getHeight());
-        vb.setStyle("-fx-background-color : rgba(255, 255, 255, .7);-fx-border-color: black; -fx-border-width: 0 3 0 3;");
+        vb.setStyle("-fx-background-color : rgba(123,67,36, 0.2);  -fx-border-width: 0 0 0 0;");
         vb.setPadding(new Insets(0, 20, 0, 20));
 
         root.add(vb, 2, 0, 3, 1);
@@ -82,7 +85,7 @@ public class VueLoad extends Vue {
         s.getStylesheets().add("Vue/button.css");
         root.prefHeightProperty().bind(s.heightProperty());
         root.prefWidthProperty().bind(s.widthProperty());
-        root.setStyle("-fx-background-image: url(background.jpg);");
+        root.setStyle("-fx-background-image: url(backPions2.jpg); -fx-background-size: cover;");
         primaryStage.setScene(s);
         primaryStage.setFullScreen(fs);
         primaryStage.show();

@@ -12,8 +12,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
@@ -110,7 +111,7 @@ public class VueSettings extends Vue {
 
         g.prefHeightProperty().bind(primaryStage.heightProperty());
         g.prefWidthProperty().bind(primaryStage.widthProperty());
-        g.setStyle("-fx-background-image: url(background.jpg);");
+        g.setStyle("-fx-background-image: url(backPions2.jpg); -fx-background-size: cover;");
         g.getStylesheets().add("Vue/button1.css");
 
         return g;
@@ -129,10 +130,14 @@ public class VueSettings extends Vue {
         gAll.getColumnConstraints().get(1).setHalignment(HPos.CENTER);
 
         Label t5 = new Label(getLangStr("all"));
-        t5.setFont(Font.font(36));
         t5.setAlignment(Pos.TOP_LEFT);
+        t5.setFont(Font.font("Georgia", FontWeight.BOLD, 36));
+        t5.setStyle("-fx-border-width: 0 0 3 0; -fx-border-color: rgb(37, 19, 7);");
+        t5.setTextFill(Color.rgb(37, 19, 7));
 
-        Text t6 = new Text(getLangStr("wSize"));
+        Label t6 = new Label(getLangStr("wSize"));
+        t6.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
+        t6.setTextFill(Color.WHITE);
         this.cb = new ComboBox();
         cb.getItems().addAll(new Point(1920, 1080), new Point(1280, 720));
         cb.getSelectionModel().select(cb.getItems().get(0));
@@ -151,7 +156,9 @@ public class VueSettings extends Vue {
             }
         });
 
-        Text t7 = new Text(getLangStr("language"));
+        Label t7 = new Label(getLangStr("language"));
+        t7.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
+        t7.setTextFill(Color.WHITE);
         cb1 = new ComboBox();
         cb1.getItems().addAll(getLangStr("fr"), getLangStr("en"));
         cb1.getSelectionModel().select(getLangStr("fr"));
@@ -161,6 +168,8 @@ public class VueSettings extends Vue {
         hb2.setSpacing(10);
 
         chb = new CheckBox(getLangStr("fullscreen"));
+        chb.setTextFill(Color.WHITE);
+        chb.setFont(Font.font("",FontWeight.BOLD,18));
         chb.setAlignment(Pos.TOP_CENTER);
 
         HBox hb3 = new HBox();
@@ -238,7 +247,7 @@ public class VueSettings extends Vue {
         gAll.add(hb5, 0, 3, 2, 1);
 
         gAll.setPadding(new Insets(0, 20.0, 0, 20.0));
-        gAll.setStyle("-fx-background-color : rgba(255, 255, 255, .7);-fx-border-color: black; -fx-border-width: 0 3 0 3;");
+        gAll.setStyle("-fx-background-color : rgba(123,67,36, 0.2);  -fx-border-width: 0 0 0 0;");
         getConfig();
 
         return gAll;
@@ -246,13 +255,21 @@ public class VueSettings extends Vue {
 
     private VBox getMulti() {
         Label t1 = new Label(getLangStr("multi"));
-        t1.setFont(Font.font(36));
+        t1.setFont(Font.font("Georgia", FontWeight.BOLD, 36));
+        t1.setStyle("-fx-border-width: 0 0 3 0; -fx-border-color: rgb(37, 19, 7);");
+        t1.setTextFill(Color.rgb(37, 19, 7));
 
         Label t2 = new Label(getLangStr("pname"));
+        t2.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
+        t2.setTextFill(Color.WHITE);
 
-        Text t3 = new Text(getLangStr("white"));
+        Label t3 = new Label(getLangStr("white"));
+        t3.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
+        t3.setTextFill(Color.WHITE);
         nomJ1 = new TextField();
-        Text t4 = new Text(getLangStr("black"));
+        Label t4 = new Label(getLangStr("black"));
+        t4.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
+        t4.setTextFill(Color.WHITE);
         nomJ2 = new TextField();
 
         HBox hb = new HBox();
@@ -263,12 +280,12 @@ public class VueSettings extends Vue {
         hb1.getChildren().addAll(t4, nomJ2);
         hb1.setSpacing(15);
         hb1.setPadding(new Insets(0, 0, 30, 0));
-        hb1.setStyle("-fx-border-color: black; -fx-border-width: 0 0 3 0;");
+        //hb1.setStyle("-fx-border-color: black; -fx-border-width: 0 0 3 0;");
 
         VBox v = new VBox();
         v.getChildren().addAll(t1, t2, hb, hb1);
         v.setPadding(new Insets(0, 20.0, 0, 20.0));
-        v.setStyle("-fx-background-color : rgba(255, 255, 255, .7);-fx-border-color: black; -fx-border-width: 0 3 0 3;");
+        v.setStyle("-fx-background-color : rgba(123,67,36, 0.2);  -fx-border-width: 0 0 0 0;");
         v.setSpacing(10.0);
 
         return v;
@@ -277,14 +294,22 @@ public class VueSettings extends Vue {
     private VBox getSolo() {
         Label t = new Label(getLangStr("solo"));
         t.setFont(Font.font(36));
+        t.setFont(Font.font("Georgia", FontWeight.BOLD, 36));
+        t.setStyle("-fx-border-width: 0 0 3 0; -fx-border-color: rgb(37, 19, 7);");
+        t.setTextFill(Color.rgb(37, 19, 7));
 
-        Text td = new Text(getLangStr("difficulte"));
+        Label td = new Label(getLangStr("difficulte"));
+        td.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
+        td.setTextFill(Color.WHITE);
         RadioButton rEasy = new RadioButton(getLangStr("easy"));
         rEasy.setUserData("easy");
+        rEasy.setTextFill(Color.WHITE);
         RadioButton rMedium = new RadioButton(getLangStr("medi"));
         rMedium.setUserData("medium");
+        rMedium.setTextFill(Color.WHITE);
         RadioButton rHard = new RadioButton(getLangStr("hard"));
         rHard.setUserData("hard");
+        rHard.setTextFill(Color.WHITE);
         rEasy.setToggleGroup(group);
         rMedium.setToggleGroup(group);
         rHard.setToggleGroup(group);
@@ -292,7 +317,7 @@ public class VueSettings extends Vue {
 
         VBox vb = new VBox();
         vb.getChildren().addAll(td, rEasy, rMedium, rHard);
-        vb.setStyle("-fx-border-color: black; -fx-border-width: 0 0 3 0;");
+        //vb.setStyle("-fx-border-color: black; -fx-border-width: 0 0 3 0;");
         vb.setPadding(new Insets(0, 0, 30.0, 0));
         VBox.setMargin(vb, new Insets(0, 20, 0, 0));
         vb.setSpacing(5);
@@ -300,7 +325,7 @@ public class VueSettings extends Vue {
         VBox v = new VBox();
         v.getChildren().addAll(t, vb);
         v.setAlignment(Pos.CENTER_LEFT);
-        v.setStyle("-fx-background-color : rgba(255, 255, 255, .7);-fx-border-color: black; -fx-border-width: 0 3 0 3;");
+        v.setStyle("-fx-background-color : rgba(123,67,36, 0.2);  -fx-border-width: 0 0 0 0;");
         v.setSpacing(20);
         v.setPadding(new Insets(0, 0, 0, 20));
 
