@@ -1230,13 +1230,18 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bSave.setTooltip(new Tooltip("Sauvegarder la partie"));
 
         bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            Label fileName = new Label(getLangStr("FileName"));
+            fileName.setTextFill(Color.WHITE);
+            fileName.setAlignment(Pos.TOP_CENTER);
+            fileName.setPadding(new Insets(10, 0, 0, 0));
+            fileName.setStyle("-fx-font-weight: bold;-fx-font-size: 26px; -fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);-fx-vertical-align: text-top;");
             TextField tnom = new TextField("file");
-            tnom.setStyle("-fx-font-weight: bold;-fx-font-size: 24px; -fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);-fx-border-color: white; -fx-border-width: 0 0 1 0;");
+            tnom.setStyle("-fx-font-weight: bold;-fx-font-size: 24px; -fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);-fx-border-color: white; -fx-border-width: 0 0 0.1 0;");
             ListView<String> lv = getSaveFile();
             Button save = new Button(getLangStr("save"));
             Button cancel = new Button(getLangStr("cancel"));
 
-            HBox htextin = new HBox(tnom);
+            HBox htextin = new HBox(fileName, tnom);
             htextin.setAlignment(Pos.CENTER);
 
             HBox hbutton = new HBox();
@@ -1308,13 +1313,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bResume.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().removeAll(menu);
         });
-        
+
         bRestart.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().removeAll(menu);
             this.recommencerPartie();
         });
-
-
 
         bMain.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().removeAll(menu);
@@ -1457,6 +1460,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         if (tempsRestant > 0) {
             System.out.println("IA IS THINKING");
             this.iaCanPlay = tempsRestant;
+            this.bRedo.setDisable(true);
+            this.bUndo.setDisable(true);
         } else { //l'humain a joué puis directe après l'ia va jouer
             this.iaCanPlay = -1;
             // updateMainJoueur();
@@ -1475,20 +1480,20 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private void recommencerPartie() {
         this.controleur.resetPartie();
         //supprimer les pions du plateau:
-            for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
-                PionPlateau2 value = entry.getValue();
-                this.getRoot().getChildren().remove(value.getImage());
+        for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+            PionPlateau2 value = entry.getValue();
+            this.getRoot().getChildren().remove(value.getImage());
 
-                if (value.getPionEnDessous() != null) {
-                    ArrayList<PionPlateau2> listPiondessous = new ArrayList<>();
-                    listPiondessous = value.getDessousList(listPiondessous);
-                    for (PionPlateau2 piondessous : listPiondessous) {
-                        this.getRoot().getChildren().remove(piondessous.getImage());
-                    }
-                } else {
-                    this.getRoot().getChildren().remove(value.getImage());
+            if (value.getPionEnDessous() != null) {
+                ArrayList<PionPlateau2> listPiondessous = new ArrayList<>();
+                listPiondessous = value.getDessousList(listPiondessous);
+                for (PionPlateau2 piondessous : listPiondessous) {
+                    this.getRoot().getChildren().remove(piondessous.getImage());
                 }
+            } else {
+                this.getRoot().getChildren().remove(value.getImage());
             }
+        }
         //supprime les zones libres du plateau;
 
         for (ZoneLibre zLibre : listZoneLibres) {
@@ -1502,7 +1507,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         hudToFront();
         this.resetView();
     }
-    
+
     public void joueurJoue() {
         //System.out.println("Joueur place pion");
         removeSelectedPion();
@@ -1958,15 +1963,17 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         back.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             next.setDisable(false);
             img.setImage(changeImg(urlImg, false, nbPage));
-            if (numeroPageTuto == 0)
+            if (numeroPageTuto == 0) {
                 back.setDisable(true);
+            }
         });
 
         next.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             back.setDisable(false);
             img.setImage(changeImg(urlImg, true, nbPage));
-            if (numeroPageTuto == 10)
+            if (numeroPageTuto == 10) {
                 next.setDisable(true);
+            }
         });
 
         retour.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
