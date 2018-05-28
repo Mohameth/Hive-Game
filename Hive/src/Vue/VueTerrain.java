@@ -1584,7 +1584,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void recommencerPartie() {
-        this.controleur.resetPartie();
+        this.controleur.recommencerPartie();
         this.controleur.addObserverPlateau(this);
 
         //supprimer les pions du plateau:

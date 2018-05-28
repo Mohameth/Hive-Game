@@ -203,7 +203,15 @@ public class Hive implements Serializable {
         return this.joueur1.pionsEnMain();
     }
 
-    public void resetPartie() { // Quand on veut rejouer on réinitialise entièrement le jeu
+    public void resetPartie() {
+        this.plateau = new Plateau();
+        this.joueur1 = null;
+        this.joueur2 = null;
+        this.joueurCourant = null;
+        this.Undo = true;
+    }
+    
+    public void recommencerPartie() { // Quand on veut rejouer on réinitialise entièrement le jeu
         this.plateau = new Plateau();
         this.joueur1 = null;
         this.joueur2 = null;
@@ -302,7 +310,7 @@ public class Hive implements Serializable {
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
                 Hive h = (Hive) ois.readObject();
                 ois.close();
-                this.resetPartie();
+                this.recommencerPartie();
                 this.casCourantJoueurs = h.casCourantJoueurs;
                 this.extensions = h.extensions;
                 this.joueur1 = h.joueur1;
