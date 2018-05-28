@@ -403,7 +403,26 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 final MouseEvent mouseEvent) -> {
             double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x;
             double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y;
-            applyBoardMove(deltaX, deltaY);
+
+            Properties prop = new Properties();
+            InputStream input = null;
+            try {
+                input = new FileInputStream("rsc/config.properties");
+                prop.load(input);
+                input.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.getMessage();
+            }
+
+            boolean invertDir = (Boolean.valueOf(prop.getProperty("invert")));
+            if (invertDir) {
+                applyBoardMove(-deltaX, -deltaY);
+            } else {
+                applyBoardMove(deltaX, deltaY);
+            }
+
             lastMouseLocation.x = mouseEvent.getSceneX();
             lastMouseLocation.y = mouseEvent.getSceneY();
         });
