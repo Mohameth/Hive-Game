@@ -80,7 +80,7 @@ public class Hive implements Serializable {
             try {
                 throw new Exception("Mauvaise difficulte");
             } catch (Exception ex) {
-                System.err.println("ERREUR setJoueurs : " + ex);
+                System.err.println("ERREUR setJoueurs : " + cas + " - " + ex);
             }
         }
         this.casCourantJoueurs = cas;
