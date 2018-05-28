@@ -895,6 +895,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     public void updateMainJoueur() { //liste d'insect en param
+        removeSelectedPion();
         if (currentPlayerHumain()) {
             //System.out.println("Tour de l'humain");
             updateMainJoueurColor(true);
@@ -904,8 +905,12 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         } else {
             //System.out.println("Tour de l'IA");
-            updateMainJoueurColor(true);
-            updateMainJoueurColor(false);
+            if (currentPlayerIsWhite()) {
+                updateMainJoueurColor(false);
+            } else {
+                updateMainJoueurColor(true);
+            }
+
             lockTousLespions();
             highlightPlayeName();
             this.bRedo.setDisable(true);
