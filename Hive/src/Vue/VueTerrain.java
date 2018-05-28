@@ -25,9 +25,7 @@ import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -43,16 +41,6 @@ import javafx.util.Duration;
 
 import java.io.*;
 import java.util.*;
-
-import static com.sun.javafx.PlatformUtil.isWindows;
-import java.awt.event.ActionListener;
-import java.io.FileInputStream;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.Timer;
-import javafx.animation.AnimationTimer;
-import javafx.scene.shape.Circle;
 
 public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
@@ -126,6 +114,13 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         rect.widthProperty().bind(s.widthProperty());
         rect.heightProperty().bind(s.heightProperty());
         makeSceneResizeEvent(s);//Window resize event
+        s.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent ke) {
+                if (ke.getCode() == KeyCode.ESCAPE) {
+                    getPause();
+                }
+            }
+        });
 
         primaryStage.setScene(s);
         primaryStage.setFullScreen(fs);
@@ -1323,8 +1318,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 this.controleur.load(lv.getSelectionModel().getSelectedItem());
                 root.getChildren().removeAll(vLoad);
                 this.reconstructionPlateau(pModel);
-                if(this.controleur.joueur1.getNumJoueur().estHumain())
-                    ((ComboBox) nomJoueur.get(2)).getSelectionModel().select();
+                if(!this.controleur.joueur2.getNumJoueur().estHumain())
+                    ((ComboBox) nomJoueur.get(1)).getSelectionModel().select(this.controleur.joueur2.getNumJoueur().getDifficulte()-1);
+                else if(!this.controleur.joueur1.getNumJoueur().estHumain())
+                    ((ComboBox) nomJoueur.get(0)).getSelectionModel().select(this.controleur.joueur2.getNumJoueur().getDifficulte()-1);
                 this.updateMainJoueur();
             });
 
@@ -1440,6 +1437,14 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bSettings.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             VueSettings v = new VueSettings(primaryStage, true, root);
             root.getChildren().add(v.getSetting(solo));
+        });
+
+        menu.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent ke) {
+                if (ke.getCode() == KeyCode.ESCAPE) {
+                    root.getChildren().remove(menu);
+                }
+            }
         });
 
         root.getChildren().addAll(menu);

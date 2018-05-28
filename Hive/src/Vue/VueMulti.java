@@ -68,7 +68,7 @@ public class VueMulti extends Vue {
         TextField ta1 = new TextField(prop.getProperty("joueurNoir"));
         ta1.setMaxSize(300.0, 5.0);
         hb1.getChildren().addAll(tp1, ta1);
-        hb1.setSpacing(12.0);
+        hb1.setSpacing(13);
 
         Button bplay = new Button(getLangStr("jouer"));
         bplay.setMinSize(200.0, 50.0);

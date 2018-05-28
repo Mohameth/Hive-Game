@@ -37,7 +37,7 @@ public class VueSettings extends Vue {
     private TextField nomJ2;
     private ComboBox<Point> cb;
     private ComboBox<String> cb1;
-    private CheckBox chb;
+    private CheckBox chb, chb1;
 
     VueSettings(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -172,6 +172,11 @@ public class VueSettings extends Vue {
         chb.setFont(Font.font("",FontWeight.BOLD,18));
         chb.setAlignment(Pos.TOP_CENTER);
 
+        chb1 = new CheckBox(getLangStr("chgDir"));
+        chb1.setTextFill(Color.WHITE);
+        chb1.setFont(Font.font("",FontWeight.BOLD,18));
+        chb1.setAlignment(Pos.TOP_CENTER);
+
         HBox hb3 = new HBox();
         hb3.getChildren().addAll(t7, cb1);
         hb3.setSpacing(40);
@@ -244,6 +249,7 @@ public class VueSettings extends Vue {
         gAll.add(hb2, 0, 1, 1, 1);
         gAll.add(hb3, 0, 2, 1, 1);
         gAll.add(chb, 1, 1, 1, 1);
+        gAll.add(chb1, 1, 2, 1, 1);
         gAll.add(hb5, 0, 3, 2, 1);
 
         gAll.setPadding(new Insets(0, 20.0, 0, 20.0));
@@ -278,7 +284,7 @@ public class VueSettings extends Vue {
 
         HBox hb1 = new HBox();
         hb1.getChildren().addAll(t4, nomJ2);
-        hb1.setSpacing(15);
+        hb1.setSpacing(17);
         hb1.setPadding(new Insets(0, 0, 30, 0));
 
         VBox v = new VBox();
@@ -345,6 +351,10 @@ public class VueSettings extends Vue {
             prop.setProperty("fullscreen","true");
         else
             prop.setProperty("fullscreen","false");
+        if(chb1.isSelected())
+            prop.setProperty("invert","true");
+        else
+            prop.setProperty("invert","false");
         try {
             prop.store(new FileWriter(propFileName),"");
         } catch (IOException e) {
@@ -370,10 +380,8 @@ public class VueSettings extends Vue {
                     group.selectToggle(t);
             }
         }
-        if(prop.getProperty("fullscreen").equals("true"))
-            chb.setSelected(true);
-        else
-            chb.setSelected(false);
+        chb.setSelected(Boolean.valueOf(prop.getProperty("fullscreen")));
+        chb1.setSelected(Boolean.valueOf(prop.getProperty("invert")));
         if(nomJ1 != null && nomJ2 != null){
             nomJ1.setText(prop.getProperty("joueurBlanc",nomJ1.getText()));
             nomJ2.setText(prop.getProperty("joueurNoir",nomJ2.getText()));
