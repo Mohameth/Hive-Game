@@ -102,12 +102,7 @@ public class VueLoad extends Vue {
     }
 
     public ListView<String> getSaveFile() {
-        String path;
-        if (isWindows()) {
-            path = System.getProperty("user.dir").concat("\\Hive\\rsc\\SAVE");
-        } else {
-            path = System.getProperty("user.dir").concat("/rsc/SAVE/");
-        }
+        String path = "rsc/SAVE/";
         System.out.println(path);
         File rep = new File(path);
         if (!rep.exists()) {
