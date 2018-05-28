@@ -1520,6 +1520,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     public void ordinateurJoue() {
+        CheckGagnant();
         //reconstructionPlateau(this.pModel);
         //System.out.println("Ordinateur joue");
         removeSelectedPion();
