@@ -65,7 +65,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private boolean selectionValidee; //l'utilisateur a fait un mouse release sur le pion
     private ZoneLibre currentSelectionIsSnapped; //l'utilisateur a fait un mouse release sur le pion
     private PionMain currentMainSelected;
-    private int sceneWidth, sceneHeight; //taille de la scene
+    private double sceneWidth, sceneHeight; //taille de la scene
     private double totZoom;  //zoom actuel du plateau
     private ArrayList<BorderPane> hudElems;
     private HashMap<TypeInsecte, PionMain> pionMainPlayer1, pionMainPlayer2;
@@ -108,8 +108,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         hudElems = new ArrayList<>();
         this.currentSelected = null; //aucune piece selectionnée
         this.currentMainSelected = null; //aucune piece selectionnée
-        this.sceneWidth = 1280; //taille de base
-        this.sceneHeight = 720;
+        this.sceneWidth = primaryStage.getWidth();
+        this.sceneHeight = primaryStage.getHeight();
         this.totZoom = 0.5;
         this.selectionValidee = false;
         this.currentSelectionIsSnapped = null;
@@ -348,12 +348,12 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void updateWindowWidth(Number w) {
-        this.sceneWidth = w.intValue();
+        this.sceneWidth = w.doubleValue();
         updateTranslationPiece();
     }
 
     private void updateWindowHeight(Number h) {
-        this.sceneHeight = h.intValue();
+        this.sceneHeight = h.doubleValue();
         updateTranslationPiece();
     }
 
@@ -1130,7 +1130,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         pointJ1.setAlignment(Pos.CENTER);
         pointJ1.setPadding(new Insets(5, 0, 5, 0));
 
-        String style = "-fx-background-color: rgba(255, 255, 255, 0.2);";
+        //String style = "-fx-background-color: rgba(255, 255, 255, 0.2);";
+        String style = "-fx-background-color: rgba(123,67,36, 0.4);";
 
         hName.setStyle(style);
 
@@ -1249,7 +1250,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         pDroite.setPadding(new Insets(15, 10, 15, 10));
         pDroite.setTop(vb);
         pDroite.setBottom(vb1);
-        String style = "-fx-background-color: rgba(255, 255, 255, 0.2);";
+        //String style = "-fx-background-color: rgba(255, 255, 255, 0.2);";
+        String style = "-fx-background-color: rgba(123,67,36, 0.4);";
         pDroite.setStyle(style);
 
         pDroite.getStylesheets().add("Vue/button.css");
