@@ -1,31 +1,20 @@
 package Controleur;
 
-import Modele.Insectes.*;
 import Modele.Case;
 import Modele.Deplacement;
+import Modele.HexaPoint;
+import Modele.Insectes.Insecte;
+import Modele.Insectes.TypeInsecte;
 import Modele.Joueurs.Joueur;
 import Modele.Joueurs.JoueurHumain;
 import Modele.Joueurs.JoueurIA;
-import Modele.Plateau;
-import Modele.HexaPoint;
-import Modele.IA.IAMinimax;
 import Modele.Joueurs.NumJoueur;
-import Modele.Insectes.TypeInsecte;
+import Modele.Plateau;
 import Vue.Vue;
-import static com.sun.javafx.PlatformUtil.isWindows;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+
+import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Observer;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Hive implements Serializable {
 
@@ -43,6 +32,15 @@ public class Hive implements Serializable {
         this.plateau = new Plateau();
         Vue.initFenetre(args, this);
         this.Undo = true;
+    }
+
+    public Joueur getJoueur(int i){
+        if(i == 1)
+            return joueur1;
+        else if(i == 2)
+            return joueur2;
+        else
+            return null;
     }
 
     public void setJoueurs(int cas, boolean extension) { //Création des joueurs selon le type de partie
@@ -98,10 +96,11 @@ public class Hive implements Serializable {
     }
 
     public void coupInit() {
-        if (this.joueurCourant.equals(this.joueur1) && !this.joueur1.getNumJoueur().estHumain())
+        if (this.joueurCourant.equals(this.joueur1) && !this.joueur1.getNumJoueur().estHumain()) {
             ((JoueurIA) this.joueurCourant).coup(null, null);
+        }
     }
-    
+
     public Joueur getJoueur2() {
         return joueur2;
     }
@@ -264,7 +263,7 @@ public class Hive implements Serializable {
     public boolean save(String name) {
         String path;
         path = "rsc/SAVE/";
-       
+
         File f = new File(path + name);
         if (!f.exists()) {
             try {
@@ -286,7 +285,7 @@ public class Hive implements Serializable {
     public boolean load(String name) {
         String path;
         path = "rsc/SAVE/";
-        
+
         File f = new File(path + name);
         if (f.exists()) {
             try {
@@ -348,7 +347,7 @@ public class Hive implements Serializable {
             } else {
                 this.joueur1.Undo();
                 this.joueurCourant = this.joueur1;
-                d = this.joueur2.getDernierDeplacement();
+                d = this.joueur1.getDernierDeplacement();
             }
             this.Undo = false;
             this.plateau.notifieVue(-1);
