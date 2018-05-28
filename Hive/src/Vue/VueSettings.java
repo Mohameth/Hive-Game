@@ -10,6 +10,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -48,6 +51,8 @@ public class VueSettings extends Vue {
         getConfig();
         s.getStylesheets().add("Vue/button1.css");
         primaryStage.setScene(s);
+        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER,KeyCombination.ALT_DOWN));
+        primaryStage.setFullScreenExitHint("");
         primaryStage.setFullScreen(fs);
         primaryStage.show();
     }

@@ -61,7 +61,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private ArrayList<Node> nomJoueur;
     private VBox listPionEnDessousHover;
     private Plateau pModel;
-    private boolean solo;
+    private boolean solo, isPause;
     ArrayList<HexaPoint> zoneLibresCollision;
     private Button bUndo;
     private Button bRedo;
@@ -69,13 +69,16 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private boolean mainDrag = false;
     private boolean undoRedoMove = false;
     private BorderPane loaderImg = null;
+    private VBox menu;
 
     VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs, boolean solo, boolean load) {
         boolean fs = primaryStage.isFullScreen();
         this.primaryStage = primaryStage;
         this.nomJoueur = new ArrayList<>();
         this.solo = solo;
+        this.isPause = false;
         root = new Group();
+        getPause();
 
         this.controleur = controleur;
         //this.controleur.resetPartie();
@@ -117,12 +120,21 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         s.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
                 if (ke.getCode() == KeyCode.ESCAPE) {
-                    getPause();
+                    if(!isPause) {
+                        root.getChildren().add(menu);
+                        isPause = true;
+                    } else {
+                        root.getChildren().remove(menu);
+                        isPause = false;
+                    }
+
                 }
             }
         });
 
         primaryStage.setScene(s);
+        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER,KeyCombination.ALT_DOWN));
+        primaryStage.setFullScreenExitHint("");
         primaryStage.setFullScreen(fs);
         primaryStage.getIcons().add(new Image("logo.png"));
         primaryStage.show();
@@ -1252,7 +1264,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         pDroite.getStylesheets().add("Vue/button.css");
 
         bPause.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            getPause();
+           root.getChildren().add(menu);
+           isPause = true;
         });
 
         if (!this.controleur.UndoPossible()) {
@@ -1405,7 +1418,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         Button bQuit = new Button(getLangStr("quitter"));
         bQuit.setMaxWidth(200);
 
-        VBox menu = new VBox();
+        menu = new VBox();
         menu.getChildren().addAll(t, bResume, bRules, bRestart, bSettings, bMain, bQuit);
         menu.setMinSize(width, heigth);
         menu.prefHeightProperty().bind(primaryStage.getScene().heightProperty());
@@ -1417,10 +1430,12 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         bResume.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().removeAll(menu);
+            isPause = false;
         });
 
         bRestart.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().removeAll(menu);
+            isPause = false;
             this.recommencerPartie();
         });
 
@@ -1443,16 +1458,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             VueSettings v = new VueSettings(primaryStage, true, root);
             root.getChildren().add(v.getSetting(solo));
         });
-
-        menu.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent ke) {
-                if (ke.getCode() == KeyCode.ESCAPE) {
-                    root.getChildren().remove(menu);
-                }
-            }
-        });
-
-        root.getChildren().addAll(menu);
     }
 
     private BorderPane getHudGauche() {
@@ -2082,7 +2087,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            getPause();
+            root.getChildren().add(menu);
         });
         root.getChildren().add(v);
     }
@@ -2117,7 +2122,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            getPause();
+            root.getChildren().add(menu);
         });
         root.getChildren().add(v);
         v.toFront();
@@ -2170,9 +2175,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         retour.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            if (pause) {
-                getPause();
-            }
+            if (pause)
+                root.getChildren().add(menu);
         });
 
         root.getChildren().add(v);

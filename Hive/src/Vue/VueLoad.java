@@ -10,6 +10,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -18,8 +21,6 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 import java.io.File;
-
-import static com.sun.javafx.PlatformUtil.isWindows;
 
 public class VueLoad extends Vue {
     private static int NB_COL = 7;
@@ -97,6 +98,8 @@ public class VueLoad extends Vue {
         root.prefWidthProperty().bind(s.widthProperty());
         root.setStyle("-fx-background-image: url(backPions2.jpg); -fx-background-size: cover;");
         primaryStage.setScene(s);
+        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER,KeyCombination.ALT_DOWN));
+        primaryStage.setFullScreenExitHint("");
         primaryStage.setFullScreen(fs);
         primaryStage.show();
 
