@@ -373,6 +373,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         moveDeltaBoard(-centrePlateau[0], -centrePlateau[1]);
         zoomImage(0.5);
         removeSelectedPion();
+        this.updateUndoRedoBtn();
         //AddplacePion();
     }
 
