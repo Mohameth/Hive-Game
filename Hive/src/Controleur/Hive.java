@@ -44,13 +44,13 @@ public class Hive implements Serializable {
     }
 
     public void setJoueurs(int cas, boolean extension) { //Création des joueurs selon le type de partie
-        if (cas > 0 && cas < 5) {
+        if (cas > 0 && cas < 8) {
             switch (cas) {
-                case 1:
+                case 1: //Joueur contre Joueur
                     this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
                     break;
-                case 2:
+                case 2: //Joueur contre IA
                     this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
                     this.joueur2 = new JoueurIA(this.plateau, 1, extension, NumJoueur.IAFACILE2, joueur1); //Easy
                     break;
@@ -62,20 +62,17 @@ public class Hive implements Serializable {
                     this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
                     this.joueur2 = new JoueurIA(this.plateau, 3, extension, NumJoueur.IADIFFICILE2, joueur1); //hard
                     break;
-            }
-        } else if (cas < 8) {
-            switch (cas) {
-                case 5:
+                case 5: //IA contre Joueur
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
-                    this.joueur1 = new JoueurIA(this.plateau, 1, extension, NumJoueur.IAFACILE1, joueur2);
+                    this.joueur1 = new JoueurIA(this.plateau, 1, extension, NumJoueur.IAFACILE1, joueur2); //Easy
                     break;
                 case 6:
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
-                    this.joueur1 = new JoueurIA(this.plateau, 2, extension, NumJoueur.IAMOYEN1, joueur2); //Easy
+                    this.joueur1 = new JoueurIA(this.plateau, 2, extension, NumJoueur.IAMOYEN1, joueur2); //Medium
                     break;
                 case 7:
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
-                    this.joueur1 = new JoueurIA(this.plateau, 3, extension, NumJoueur.IADIFFICILE1, joueur2); //Medium
+                    this.joueur1 = new JoueurIA(this.plateau, 3, extension, NumJoueur.IADIFFICILE1, joueur2);  //hard
 
                     break;
             }
