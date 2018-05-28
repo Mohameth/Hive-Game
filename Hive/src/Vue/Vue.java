@@ -56,6 +56,8 @@ public class Vue extends Application {
         new VueSettings(primaryStage);
     }
 
+    protected void SceneLoad(Stage primaryStage){ new VueLoad(primaryStage);}
+
     protected void SceneMulti(Stage primaryStage){ new VueMulti(primaryStage);}
 
     public static void initFenetre(String[] args, Hive c) {

@@ -59,6 +59,10 @@ public class VueMenuPrincipal extends Vue {
         Button loadGame = new Button(getLangStr("ldgame"));
         loadGame.setMaxWidth(200.0);
 
+        loadGame.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            SceneLoad(primaryStage);
+        });
+
         Button tuto = new Button();
         tuto.setText(getLangStr("tuto"));
         tuto.setMaxWidth(200.0);
