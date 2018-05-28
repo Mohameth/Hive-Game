@@ -1,22 +1,23 @@
 package Vue;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+
+import java.io.*;
+import java.util.Properties;
 
 public class VueMulti extends Vue {
 
@@ -26,17 +27,13 @@ public class VueMulti extends Vue {
         Properties prop = new Properties();
         InputStream input = null;
         try {
-            input = getClass().getClassLoader().getResourceAsStream("config.properties");
+            input = new FileInputStream("rsc/config.properties");
             prop.load(input);
+            input.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.getMessage();
-        }
-        try {
-            input.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         boolean fs = primaryStage.isFullScreen();
@@ -93,6 +90,14 @@ public class VueMulti extends Vue {
         });
 
         bplay.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            prop.setProperty("joueurNoir",ta1.getText());
+            prop.setProperty("joueurBlanc",ta.getText());
+            try {
+                prop.store(new FileWriter("rsc/config.properties"),"");
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
             SceneTerrain(primaryStage, 1, false, false);
         });
 

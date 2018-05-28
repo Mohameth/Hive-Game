@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -28,6 +29,7 @@ public class Vue extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        Properties prop = new Properties();
         String path;
         path = "rsc";
         File rep = new File(path);
@@ -35,12 +37,11 @@ public class Vue extends Application {
             rep.mkdir();
             System.out.println("generation rsc");
         }
-        
         path = "rsc/config.properties";
+        InputStream in = new FileInputStream(path);
         File config = new File(path);
         if (!config.exists()) {
             try {
-                InputStream in = getClass().getClassLoader().getResourceAsStream("config.properties");
                 Files.copy(in , config.toPath() , StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException ex) {
                 Logger.getLogger(HiveMain.class.getName()).log(Level.SEVERE, null, ex);
@@ -48,8 +49,18 @@ public class Vue extends Application {
             System.out.println("generation rsc/config.properties");
         }
 
-        this.language = "fr";
-        this.country = "FR";
+        prop.load(in);
+        String dim = prop.getProperty("tailleFenetre");
+        String s[] = dim.split("x");
+        width = Integer.parseInt(s[0]);
+        heigth = Integer.parseInt(s[1]);
+        if(prop.get("langue").equals("Français") || prop.get("langue").equals("French")) {
+            this.language = "fr";
+            this.country = "FR";
+        } else {
+            language = "en";
+            country = "US";
+        }
         this.currentLocale = new Locale(this.language, this.country);
         this.messages = ResourceBundle.getBundle("MessagesBundle", currentLocale);
         primaryStage.setTitle("Hive");
@@ -57,6 +68,7 @@ public class Vue extends Application {
         primaryStage.setMinHeight(heigth);
         primaryStage.setWidth(width);
         primaryStage.setHeight(heigth);
+        primaryStage.setFullScreen(Boolean.valueOf(prop.getProperty("fullscreen")));
         SceneMain(primaryStage);
     }
 

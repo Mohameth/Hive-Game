@@ -41,20 +41,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
-
-import static com.sun.javafx.PlatformUtil.isWindows;
-import java.awt.event.ActionListener;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.Timer;
-import javafx.animation.AnimationTimer;
-import javafx.scene.shape.Circle;
 
 public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
@@ -1037,17 +1025,13 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         Properties prop = new Properties();
         InputStream input = null;
         try {
-            input = getClass().getClassLoader().getResourceAsStream("config.properties");
+            input = new FileInputStream("rsc/config.properties");
             prop.load(input);
+            input.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.getMessage();
-        }
-        try {
-            input.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         Button bEdit = new Button();
@@ -1328,6 +1312,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 this.controleur.load(lv.getSelectionModel().getSelectedItem());
                 root.getChildren().removeAll(vLoad);
                 this.reconstructionPlateau(pModel);
+                if(this.controleur.joueur1.getNumJoueur().estHumain())
+                    ((ComboBox) nomJoueur.get(2)).getSelectionModel().select();
                 this.updateMainJoueur();
             });
 

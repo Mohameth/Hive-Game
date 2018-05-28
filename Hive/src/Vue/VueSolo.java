@@ -15,10 +15,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Properties;
 
 public class VueSolo extends Vue {
@@ -29,8 +26,9 @@ public class VueSolo extends Vue {
         Properties prop = new Properties();
         InputStream input = null;
         try {
-            input = getClass().getClassLoader().getResourceAsStream("config.properties");
+            input = new FileInputStream("rsc/config.properties");
             prop.load(input);
+            input.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -59,6 +57,7 @@ public class VueSolo extends Vue {
         Label tp = new Label(getLangStr("entername"));
         tp.setStyle("-fx-font-weight: bold;-fx-font-size: 24px;");
         tp.setTextFill(Color.WHITE);
+        System.out.println(prop);
         TextField ta = new TextField(prop.getProperty("joueurBlanc"));
 
         ta.setMaxSize(300.0, 5.0);
@@ -145,7 +144,6 @@ public class VueSolo extends Vue {
                             break;
                         case "white":
                             prop.setProperty("joueurBlanc",ta.getText());
-                            System.out.println(prop.getProperty("joueurBlanc"));
                             break;
                     }
                     try {
@@ -195,12 +193,5 @@ public class VueSolo extends Vue {
         primaryStage.setFullScreen(fs);
         primaryStage.show();
 
-        try {
-            if (input != null) {
-                input.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

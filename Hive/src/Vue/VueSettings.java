@@ -280,7 +280,6 @@ public class VueSettings extends Vue {
         hb1.getChildren().addAll(t4, nomJ2);
         hb1.setSpacing(15);
         hb1.setPadding(new Insets(0, 0, 30, 0));
-        //hb1.setStyle("-fx-border-color: black; -fx-border-width: 0 0 3 0;");
 
         VBox v = new VBox();
         v.getChildren().addAll(t1, t2, hb, hb1);
@@ -317,7 +316,6 @@ public class VueSettings extends Vue {
 
         VBox vb = new VBox();
         vb.getChildren().addAll(td, rEasy, rMedium, rHard);
-        //vb.setStyle("-fx-border-color: black; -fx-border-width: 0 0 3 0;");
         vb.setPadding(new Insets(0, 0, 30.0, 0));
         VBox.setMargin(vb, new Insets(0, 20, 0, 0));
         vb.setSpacing(5);
@@ -356,11 +354,11 @@ public class VueSettings extends Vue {
 
     private void getConfig() {
         Properties prop = new Properties();
-        String propFileName = "rsc/config.properties";
         InputStream input = null;
         try {
-            input = new FileInputStream(propFileName);
+            input = new FileInputStream("rsc/config.properties");
             prop.load(input);
+            input.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -390,12 +388,6 @@ public class VueSettings extends Vue {
             String s = p.x + "x" + p.y;
             if(s.equals(prop.getProperty("tailleFenetre")))
                 cb.getSelectionModel().select(p);
-        }
-
-        try {
-            input.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }
