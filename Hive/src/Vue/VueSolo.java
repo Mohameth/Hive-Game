@@ -154,7 +154,7 @@ public class VueSolo extends Vue {
                         e1.printStackTrace();
                     }
                 }
-                SceneTerrain(primaryStage, difficulte, true);
+                SceneTerrain(primaryStage, difficulte, true, false);
             }
         });
 

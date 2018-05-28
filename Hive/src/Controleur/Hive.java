@@ -43,6 +43,10 @@ public class Hive implements Serializable {
             return null;
     }
 
+    public Plateau getPlateau() {
+        return plateau;
+    }
+
     public void setJoueurs(int cas, boolean extension) { //Création des joueurs selon le type de partie
         if (cas > 0 && cas < 8) {
             switch (cas) {
@@ -100,6 +104,14 @@ public class Hive implements Serializable {
 
     public Joueur getJoueur2() {
         return joueur2;
+    }
+
+    public int getCasCourantJoueurs() {
+        return casCourantJoueurs;
+    }
+
+    public void setCasCourantJoueurs(int casCourantJoueurs) {
+        this.casCourantJoueurs = casCourantJoueurs;
     }
 
     public boolean insecteAppartientJCourant(HexaPoint caseCible) { //permet de savoir si l'insecte le plus haut d'une case appartient au joueur dont c'est le tour
@@ -291,13 +303,17 @@ public class Hive implements Serializable {
                 Hive h = (Hive) ois.readObject();
                 ois.close();
                 this.resetPartie();
+                this.casCourantJoueurs = h.casCourantJoueurs;
+                this.extensions = h.extensions;
                 this.joueur1 = h.joueur1;
                 this.joueur2 = h.joueur2;
                 this.joueurCourant = h.joueurCourant;
                 this.plateau = h.plateau;
                 //this.plateau.setCases(h.plateau.getCases());
                 //this.plateau.setNbPionsEnJeu(h.plateau.getNbPionsEnJeu());
-                this.addObserverPlateau(o);
+                if (o != null) {
+                    this.addObserverPlateau(o);
+                }
                 this.joueur1.setPlateau(plateau);
                 this.joueur2.setPlateau(plateau);
                 this.joueurCourant.setPlateau(plateau);

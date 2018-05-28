@@ -24,12 +24,10 @@ public class Vue extends Application {
     protected String language;
     protected String country;
     Locale currentLocale;
-    protected Properties prop;
     public static ResourceBundle messages;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        prop = new Properties();
         String path;
         path = "rsc";
         File rep = new File(path);
@@ -43,7 +41,6 @@ public class Vue extends Application {
         if (!config.exists()) {
             try {
                 InputStream in = getClass().getClassLoader().getResourceAsStream("config.properties");
-                prop.load(in);
                 Files.copy(in , config.toPath() , StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException ex) {
                 Logger.getLogger(HiveMain.class.getName()).log(Level.SEVERE, null, ex);
@@ -79,8 +76,11 @@ public class Vue extends Application {
         new VueSolo(primaryStage);
     }
 
-    protected void SceneTerrain(Stage primaryStage, int casJoueur, boolean solo){
-        new VueTerrain(primaryStage, controleur, casJoueur, solo);
+    protected void SceneTerrain(Stage primaryStage, int casJoueur, boolean solo, boolean load){
+        if (!load) {
+            this.controleur.resetPartie();
+        }
+        new VueTerrain(primaryStage, controleur, casJoueur, solo, load);
     }
 
     protected void SceneSettings(Stage primaryStage){
