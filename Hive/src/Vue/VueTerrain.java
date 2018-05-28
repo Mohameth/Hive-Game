@@ -82,6 +82,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private long iaCanPlay = -1;
     private boolean mainDrag = false;
     private boolean undoRedoMove = false;
+    private BorderPane loaderImg = null;
 
     VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs, boolean solo) {
         boolean fs = primaryStage.isFullScreen();
@@ -156,11 +157,20 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         playerTwo.setLayoutY(-110);
         playerTwo.translateYProperty().bind(s.heightProperty());
 
-        root.getChildren().addAll(p, ctrlView, playerOne, playerTwo);
+        loaderImg = createLoader();
+        hideLoader();
+        root.getChildren().addAll(p, ctrlView, playerOne, playerTwo, loaderImg);
+
+        loaderImg.setLayoutX(-118);
+        loaderImg.setLayoutY(-300);
+        loaderImg.translateXProperty().bind(s.widthProperty());
+        loaderImg.translateYProperty().bind(s.heightProperty());
+
         this.hudElems.add(ctrlView);
         this.hudElems.add(playerOne);
         this.hudElems.add(playerTwo);
         this.hudElems.add(p);
+        this.hudElems.add(loaderImg);
         //faire au clic passer devant HUD
         hudToFront();
 
@@ -177,6 +187,14 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             //je suis une ia qui commence
             this.controleur.coupInit();
         }
+    }
+
+    private void hideLoader() {
+        this.loaderImg.setVisible(false);
+    }
+
+    private void showLoader() {
+        this.loaderImg.setVisible(true);
     }
 
     public void displayZoneLibre() {
@@ -222,6 +240,22 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             }
         }
         hudToFront();
+    }
+
+    private BorderPane createLoader() {
+        //loading image
+        BorderPane loader = new BorderPane();
+        Image imgIaLoad = new Image("icons/iaload.gif");
+        ImageView imgvLoad = new ImageView();
+        imgvLoad.setCursor(Cursor.WAIT);
+        imgvLoad.setImage(imgIaLoad);
+
+        imgvLoad.setFitWidth(imgIaLoad.getWidth());
+        imgvLoad.setFitHeight(imgIaLoad.getHeight());
+        //centrage du point dans l'image
+
+        loader.setCenter(imgvLoad);
+        return loader;
     }
 
     private boolean containsSamePoint(ArrayList<HexaPoint> aZL, ZoneLibre zone) {
@@ -1521,6 +1555,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         //si >0 alors c'est une ia
         if (tempsRestant > 0) {
             System.out.println("IA IS THINKING");
+            showLoader();
             this.iaCanPlay = tempsRestant;
             this.bRedo.setDisable(true);
             this.bUndo.setDisable(true);
@@ -1583,6 +1618,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     public void ordinateurJoue() {
+        hideLoader();
         CheckGagnant();
         //reconstructionPlateau(this.pModel);
         //System.out.println("Ordinateur joue");
@@ -2190,10 +2226,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         int jGagnant = this.controleur.JoueurGagnant();
         if (jGagnant != 0) {
             String nomG = null;
-            if(this.controleur.getJoueur(jGagnant).getNumJoueur().estHumain())
+            if (this.controleur.getJoueur(jGagnant).getNumJoueur().estHumain()) {
                 nomG = ((TextField) nomJoueur.get(jGagnant - 1)).getText();
-            else
-                nomG = (String)((ComboBox) nomJoueur.get(jGagnant-1)).getValue();
+            } else {
+                nomG = (String) ((ComboBox) nomJoueur.get(jGagnant - 1)).getValue();
+            }
             System.out.println(nomG + " à Gagné");
             Label l = new Label(nomG + " " + getLangStr("winMess"));
             l.setTextFill(Color.WHITE);
