@@ -332,6 +332,24 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void moveDeltaBoard(double x, double y) {
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("rsc/config.properties");
+            prop.load(input);
+            input.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+
+        boolean invertDir = (Boolean.valueOf(prop.getProperty("invert")));
+        if (invertDir) {
+            x = -x;
+            y = -y;
+        }
+
         for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
             entry.getValue().moveDeltaBoard(x, y);
         }
@@ -397,7 +415,26 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 final MouseEvent mouseEvent) -> {
             double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x;
             double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y;
-            applyBoardMove(deltaX, deltaY);
+
+            Properties prop = new Properties();
+            InputStream input = null;
+            try {
+                input = new FileInputStream("rsc/config.properties");
+                prop.load(input);
+                input.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.getMessage();
+            }
+
+            boolean invertDir = (Boolean.valueOf(prop.getProperty("invert")));
+            if (invertDir) {
+                applyBoardMove(-deltaX, -deltaY);
+            } else {
+                applyBoardMove(deltaX, deltaY);
+            }
+
             lastMouseLocation.x = mouseEvent.getSceneX();
             lastMouseLocation.y = mouseEvent.getSceneY();
         });
@@ -408,8 +445,26 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void resetView() {
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("rsc/config.properties");
+            prop.load(input);
+            input.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+
+        boolean invertDir = (Boolean.valueOf(prop.getProperty("invert")));
         double centrePlateau[] = getCentreDuPlateau();
-        moveDeltaBoard(-centrePlateau[0], -centrePlateau[1]);
+        if (invertDir) {
+            moveDeltaBoard(centrePlateau[0], centrePlateau[1]);
+        } else {
+            moveDeltaBoard(-centrePlateau[0], -centrePlateau[1]);
+        }
+
         zoomImage(0.5);
         removeSelectedPion();
         this.updateUndoRedoBtn();
@@ -1336,10 +1391,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 this.controleur.load(lv.getSelectionModel().getSelectedItem());
                 root.getChildren().removeAll(vLoad);
                 this.reconstructionPlateau(pModel);
-                if(!this.controleur.joueur2.getNumJoueur().estHumain())
-                    ((ComboBox) nomJoueur.get(1)).getSelectionModel().select(this.controleur.joueur2.getNumJoueur().getDifficulte()-1);
-                else if(!this.controleur.joueur1.getNumJoueur().estHumain())
-                    ((ComboBox) nomJoueur.get(0)).getSelectionModel().select(this.controleur.joueur2.getNumJoueur().getDifficulte()-1);
+                if (!this.controleur.joueur2.getNumJoueur().estHumain()) {
+                    ((ComboBox) nomJoueur.get(1)).getSelectionModel().select(this.controleur.joueur2.getNumJoueur().getDifficulte() - 1);
+                } else if (!this.controleur.joueur1.getNumJoueur().estHumain()) {
+                    ((ComboBox) nomJoueur.get(0)).getSelectionModel().select(this.controleur.joueur2.getNumJoueur().getDifficulte() - 1);
+                }
                 this.updateMainJoueur();
             });
 
@@ -1521,6 +1577,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bgauche.setPadding(new Insets(0, 0, 15, 15));
 
         double moveRangeXY = 40;
+
         double ZoomRangePM = 1; //equivaut a 3 zoom
 
         breset.addEventHandler(MouseEvent.MOUSE_CLICKED,
