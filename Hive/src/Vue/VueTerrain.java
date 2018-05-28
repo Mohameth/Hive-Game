@@ -49,6 +49,7 @@ import java.util.*;
 
 import static com.sun.javafx.PlatformUtil.isWindows;
 import java.awt.event.ActionListener;
+import java.io.FileInputStream;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -1035,9 +1036,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     private BorderPane getHudPlayer(HashMap<TypeInsecte, Integer> m, int numplayer, boolean ia) {
         Properties prop = new Properties();
+        String propFileName = "rsc/config.properties";
         InputStream input = null;
         try {
-            input = getClass().getClassLoader().getResourceAsStream("config.properties");
+            input = new FileInputStream(propFileName);
             prop.load(input);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -1582,7 +1584,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void recommencerPartie() {
-        this.controleur.resetPartie();
+        this.controleur.recommencerPartie();
         this.controleur.addObserverPlateau(this);
 
         //supprimer les pions du plateau:
