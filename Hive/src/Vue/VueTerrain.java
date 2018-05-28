@@ -74,6 +74,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private Button bRedo;
     private long iaCanPlay = -1;
     private boolean mainDrag = false;
+    private boolean undoRedoMove = false;
 
     VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs, boolean solo) {
         boolean fs = primaryStage.isFullScreen();
@@ -615,7 +616,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         if (p.equals(this.currentSelected) && this.selectionValidee == false) {
             //onclique sur le pion release
             this.selectionValidee = true;
-            System.out.println("Clic Selection");
+            //clic selection
         } else if (p.equals(this.currentSelected) && this.selectionValidee == true && p.isDragging()) {
             //si snap = ok valide le coup
             //si snap = false on remet a la position d'origine et removeselection
@@ -648,7 +649,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
             //mise a jour du tableau avec les points et zones libres
             //System.out.println("Jouer coup plateau -> plateau");
-            if (currentPlayerHumain()) { //lorsque l'ia joue elle a deja validé le deplacement ne pas le refaire
+            if (currentPlayerHumain() && undoRedoMove == false) { //lorsque l'ia joue elle a deja validé le deplacement ne pas le refaire
                 this.controleur.deplacementInsecte(currentSelected.getCoordPion(), zLibre.getCoordZoneLibre());
             }
             this.currentSelected.setPionPosition(zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY());
@@ -662,7 +663,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             //currentMainSelected.affiche();
             //zLibre.affiche();
             //mise a jour du tableau avec les points et zones libres
-            if (currentPlayerHumain()) { //lorsque l'ia joue elle a deja validé le deplacement ne pas le refaire
+            if (currentPlayerHumain() && undoRedoMove == false) { //lorsque l'ia joue elle a deja validé le deplacement ne pas le refaire
                 this.controleur.joueurPlaceInsecte(currentMainSelected.getPionsType(), zLibre.getCoordZoneLibre());
             }
             PionPlateau2 pp2 = new PionPlateau2(this, currentMainSelected.getPionsType(), currentMainSelected.isWhite(), zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY(), this.getZoom(), this.getWidth(), this.getHeight());
@@ -674,7 +675,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         }
         //todo
         //if (!currentPlayerHumain() || this.controleur.getJoueur1().getNumJoueur().estHumain() && this.controleur.getJoueur2().getNumJoueur().estHumain()) {
-        if (currentPlayerHumain()) {
+        if (currentPlayerHumain() && undoRedoMove == false) {
             joueurJoue();
         }
         //joueurJoue();
@@ -1217,16 +1218,18 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         bUndo.setTooltip(new Tooltip("Anuler le dernier coup"));
         bUndo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            this.controleur.Undo();
+            applyUndo(this.controleur.Undo());
             this.reconstructionPlateau(pModel);
-            this.updateMainJoueur();
         });
 
         bRedo.setTooltip(new Tooltip("Rejouer le dernier coup"));
         bRedo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            this.controleur.Redo();
+            if (currentPlayerIsWhite()) {
+                applyRedo(this.controleur.Redo(), true);
+            } else {
+                applyRedo(this.controleur.Redo(), false);
+            }
             this.reconstructionPlateau(pModel);
-            this.updateMainJoueur();
         });
 
         brules.setTooltip(new Tooltip("Règles du jeu"));
@@ -1496,8 +1499,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             this.iaCanPlay = tempsRestant;
         } else { //l'humain a joué puis directe après l'ia va jouer
             this.iaCanPlay = -1;
-            // updateMainJoueur();
-            reconstructionPlateau(this.pModel);
+            //updateMainJoueur();
+            //reconstructionPlateau(this.pModel);
         }
 
     }
@@ -1514,11 +1517,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         removeSelectedPion();
         hideZoneLibre();
         this.controleur.setUndo(true);
-        updateUndoRedoBtn();
         hudToFront();
         //updateMainJoueur();
         this.controleur.joueurSuivant();
         updateMainJoueur();
+        updateUndoRedoBtn();
 
     }
 
@@ -1552,15 +1555,24 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     public void applyUndo(Deplacement depl) {
 
         removeSelectedPion();
-        Deplacement undoRedoMove = this.controleur.getJoueurCourant().getDernierDeplacement();
-
         //supprimer le pion du plateau si le dernier coup était d'un placement de pion main -> plateau
         //si origine = null
         //deplacer le pion a la position d'origine si deplacement plateau -> plateau
         //si depl==null annuler ia + joueur
         //deplace les deux moves
-        if (depl != null) {
-
+        if (depl == null) {
+            if (this.controleur.getJoueurCourant().getNumJoueur().estBlanc()) { //joueur1
+                //en premier undo joueur 2 puis joueur 1
+                //le joueur est blanc est l'ia est noir
+                //c'est au tour du joueur il annule le coup de l'ia plus sont propre coup
+                applyUndo(this.controleur.getJoueur2().getDernierDeplacement());
+                applyUndo(this.controleur.getJoueur1().getDernierDeplacement());
+            } else {
+                //en premier undo joueur 1 puis joueur 2
+                //c'est au tour du joueur noir humain (l'ia est en blanc) annule le coup 1 de l'ia puis le coup 2 de l'humain
+                applyUndo(this.controleur.getJoueur1().getDernierDeplacement());
+                applyUndo(this.controleur.getJoueur2().getDernierDeplacement());
+            }
         } else { //deplace le deplacement courant
             //si origine = null = depose pion de la main vers le plateau donc il faut le supprimer du plateau
             if (depl.getOrig() == null) {
@@ -1571,20 +1583,58 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 removePionMainDrag(this.currentSelected);
             } else { //deplace un pion de plateau -> plateau
                 this.currentSelected = this.listPionsPlateau.get(depl.getCible());
+                undoRedoMove = true;
                 updateMousePressedZoneLibre(getZoneLibreEgal(depl.getOrig()));
+                undoRedoMove = false;
             }
         }
-        reconstructionPlateau(this.pModel);
+        removeSelectedPion();
+        updateMainJoueur();
+        updateUndoRedoBtn();
         hudToFront();
     }
 
-    public void applyRedo(Deplacement delp) {
-
+    public void applyRedo(Deplacement depl, boolean isWhite) {
+        removeSelectedPion();
+        if (depl == null) {
+            if (currentPlayerIsWhite()) { //joueur1
+                //redo on refait jouer le joueur courant + l'ia
+                applyRedo(this.controleur.getJoueur1().getDernierDeplacement(), true);
+                applyRedo(this.controleur.getJoueur2().getDernierDeplacement(), false);
+            } else {
+                applyRedo(this.controleur.getJoueur2().getDernierDeplacement(), false);
+                applyRedo(this.controleur.getJoueur1().getDernierDeplacement(), true);
+            }
+        } else {
+            if (depl.getOrig() == null) {
+                if (isWhite) {
+                    this.currentMainSelected = this.pionMainPlayer1.get(depl.getI().getType());
+                } else {
+                    this.currentMainSelected = this.pionMainPlayer2.get(depl.getI().getType());
+                }
+                undoRedoMove = true;
+                updateMousePressedZoneLibre(getZoneLibreEgal(depl.getCible()));
+                undoRedoMove = false;
+            } else { //deplace un pion de plateau -> plateau
+                this.currentSelected = this.listPionsPlateau.get(depl.getOrig());
+                undoRedoMove = true;
+                updateMousePressedZoneLibre(getZoneLibreEgal(depl.getCible()));
+                undoRedoMove = false;
+            }
+        }
+        removeSelectedPion();
+        updateMainJoueur();
+        updateUndoRedoBtn();
+        hudToFront();
     }
 
     private ZoneLibre getZoneLibreEgal(HexaPoint pt) {
         if (this.controleur.getJoueur1().getTourJoueur() == 2 && !currentPlayerHumain() && this.listZoneLibres.isEmpty()) {
             //si l'ia commence ajouter la premiere zone libre le tour = 2 car le model est déja a jour
+            addPremierZoneLibre();
+        }
+
+        if (this.listZoneLibres.isEmpty() && this.undoRedoMove == true) {
             addPremierZoneLibre();
         }
 
@@ -1715,7 +1765,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
                 int nbPionsPose = 0;
 
-                //copy here
                 Case casenonVide2 = null;
                 for (Map.Entry<HexaPoint, Case> entry : p.getCases().entrySet()) {
                     Case casenonVide = entry.getValue();
@@ -1879,7 +1928,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     public ListView<String> getSaveFile() {
         String path;
         path = "rsc/SAVE/";
-        
+
         System.out.println(path);
         File rep = new File(path);
         if (!rep.exists()) {
