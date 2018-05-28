@@ -1,12 +1,16 @@
 package Vue;
 
+import Controleur.Hive;
+import Modele.Case;
+import Modele.Deplacement;
+import Modele.HexaPoint;
+import Modele.Insectes.Insecte;
 import Modele.Insectes.TypeInsecte;
+import Modele.Joueurs.Joueur;
 import Modele.Joueurs.JoueurIA;
 import Modele.Joueurs.NumJoueur;
-import Controleur.Hive;
-import Modele.*;
-import Modele.Insectes.Insecte;
-import Modele.Joueurs.Joueur;
+import Modele.Plateau;
+import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -37,7 +41,10 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 import static com.sun.javafx.PlatformUtil.isWindows;
@@ -84,7 +91,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         root = new Group();
 
         this.controleur = controleur;
-        this.controleur.reset();
+        this.controleur.resetPartie();
         this.controleur.setJoueurs(casJoueurs, true);
         this.controleur.addObserverPlateau(this);
         this.pModel = null;
@@ -985,10 +992,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     private BorderPane getHudPlayer(HashMap<TypeInsecte, Integer> m, int numplayer, boolean ia) {
         Properties prop = new Properties();
-        String propFileName = "rsc/config.properties";
         InputStream input = null;
         try {
-            input = new FileInputStream(propFileName);
+            input = getClass().getClassLoader().getResourceAsStream("config.properties");
             prop.load(input);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -1277,13 +1283,17 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bSave.setTooltip(new Tooltip("Sauvegarder la partie"));
 
         bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            Label fileName = new Label(getLangStr("FileName"));
+            fileName.setTextFill(Color.WHITE);
+            fileName.setAlignment(Pos.TOP_CENTER);
+            fileName.setStyle("-fx-font-weight: bold;-fx-font-size: 26px; -fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);-fx-vertical-align: text-top;");
             TextField tnom = new TextField("file");
-            tnom.setStyle("-fx-font-weight: bold;-fx-font-size: 24px; -fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);-fx-border-color: white; -fx-border-width: 0 0 1 0;");
+            tnom.setStyle("-fx-font-weight: bold;-fx-font-size: 26px; -fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);-fx-border-color: white; -fx-border-width: 0 0 0 0;");
             ListView<String> lv = getSaveFile();
             Button save = new Button(getLangStr("save"));
             Button cancel = new Button(getLangStr("cancel"));
 
-            HBox htextin = new HBox(tnom);
+            HBox htextin = new HBox(fileName, tnom);
             htextin.setAlignment(Pos.CENTER);
 
             HBox hbutton = new HBox();
@@ -1298,7 +1308,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             vLoad.prefHeightProperty().bind(primaryStage.heightProperty());
             vLoad.setAlignment(Pos.CENTER);
             vLoad.setSpacing(10);
-            vLoad.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
+            vLoad.setStyle("-fx-background-color : rgba(0, 0, 0, .8);");
             lv.setMaxWidth((primaryStage.getWidth() * 33) / 100);
             tnom.setMaxWidth((primaryStage.getWidth() * 33) / 100);
             lv.getStylesheets().add("Vue/button.css");
@@ -1354,6 +1364,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         bResume.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().removeAll(menu);
+        });
+
+        bRestart.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            root.getChildren().removeAll(menu);
+            this.recommencerPartie();
         });
 
         bMain.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
@@ -1497,6 +1512,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         if (tempsRestant > 0) {
             System.out.println("IA IS THINKING");
             this.iaCanPlay = tempsRestant;
+            this.bRedo.setDisable(true);
+            this.bUndo.setDisable(true);
         } else { //l'humain a joué puis directe après l'ia va jouer
             this.iaCanPlay = -1;
             //updateMainJoueur();
@@ -1512,6 +1529,37 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         }
     }
 
+    private void recommencerPartie() {
+        this.controleur.resetPartie();
+        //supprimer les pions du plateau:
+        for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+            PionPlateau2 value = entry.getValue();
+            this.getRoot().getChildren().remove(value.getImage());
+
+            if (value.getPionEnDessous() != null) {
+                ArrayList<PionPlateau2> listPiondessous = new ArrayList<>();
+                listPiondessous = value.getDessousList(listPiondessous);
+                for (PionPlateau2 piondessous : listPiondessous) {
+                    this.getRoot().getChildren().remove(piondessous.getImage());
+                }
+            } else {
+                this.getRoot().getChildren().remove(value.getImage());
+            }
+        }
+        //supprime les zones libres du plateau;
+
+        for (ZoneLibre zLibre : listZoneLibres) {
+            this.getRoot().getChildren().remove(zLibre.getImage());
+        }
+        this.listPionsPlateau.clear();
+        this.listZoneLibres.clear();
+        removeSelectedPion();
+
+        updateMainJoueur();
+        hudToFront();
+        this.resetView();
+    }
+
     public void joueurJoue() {
         //System.out.println("Joueur place pion");
         removeSelectedPion();
@@ -1523,9 +1571,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         updateMainJoueur();
         updateUndoRedoBtn();
 
+        CheckGagnant();
     }
 
     public void ordinateurJoue() {
+        CheckGagnant();
         //reconstructionPlateau(this.pModel);
         //System.out.println("Ordinateur joue");
         removeSelectedPion();
@@ -1549,7 +1599,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         this.controleur.joueurSuivant();
         updateMainJoueur();
         reconstructionPlateau(this.pModel);
-
+        CheckGagnant();
     }
 
     public void applyUndo(Deplacement depl) {
@@ -2031,6 +2081,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         Button next = new Button(getLangStr("next"));
         next.setPrefWidth(150);
         Button retour = new Button(getLangStr("back"));
+        back.setDisable(true);
 
         HBox h = new HBox(back, nbPage, next);
         h.setAlignment(Pos.CENTER);
@@ -2043,11 +2094,19 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         v.setAlignment(Pos.CENTER);
         v.setSpacing(15);
         back.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            next.setDisable(false);
             img.setImage(changeImg(urlImg, false, nbPage));
+            if (numeroPageTuto == 0) {
+                back.setDisable(true);
+            }
         });
 
         next.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            back.setDisable(false);
             img.setImage(changeImg(urlImg, true, nbPage));
+            if (numeroPageTuto == 10) {
+                next.setDisable(true);
+            }
         });
 
         retour.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
@@ -2119,4 +2178,45 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         return v1;
     }
 
+    public void CheckGagnant() {
+        int jGagnant = this.controleur.JoueurGagnant();
+        if (jGagnant != 0) {
+            TextField tf = (TextField) nomJoueur.get(jGagnant - 1);
+            String nameG = tf.getText();
+            System.out.println(nameG + " à Gagné");
+            Label l = new Label(nameG + " " + getLangStr("winMess"));
+            l.setTextFill(Color.WHITE);
+            l.prefWidthProperty().bind(primaryStage.widthProperty());
+            l.setAlignment(Pos.CENTER);
+            l.setPadding(new Insets(10, 0, 0, 0));
+            l.setStyle("-fx-background-color : rgba(0, 0, 0, .5);-fx-font-weight: bold;\n-fx-font-size: 2.1em;\n-fx-text-fill: white;");
+            Button y = new Button(getLangStr("backmenu"));
+            y.setPrefWidth(150);
+            Button n = new Button(getLangStr("restart"));
+            n.setPrefWidth(150);
+
+            HBox h = new HBox(y, n);
+            h.getStylesheets().add("Vue/button.css");
+            h.setSpacing(30);
+            h.setAlignment(Pos.CENTER);
+            h.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
+            h.setPadding(new Insets(20, 0, 10, 0));
+            VBox v = new VBox(l, h);
+            //v.setSpacing(20);
+            v.prefWidthProperty().bind(this.primaryStage.widthProperty());
+            v.prefHeightProperty().bind(this.primaryStage.heightProperty());
+            v.setAlignment(Pos.CENTER);
+
+            y.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+                root.getChildren().removeAll(v);
+                SceneMain(this.primaryStage);
+            });
+
+            n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+                root.getChildren().removeAll(v);
+                this.recommencerPartie();
+            });
+            root.getChildren().add(v);
+        }
+    }
 }

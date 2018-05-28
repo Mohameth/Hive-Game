@@ -33,12 +33,16 @@ public class Hive implements Serializable {
     public Joueur joueur1;
     public Joueur joueur2;
     Joueur joueurCourant;
-    boolean Undo = true;
+    boolean Undo;
     transient Observer o;
+    
+    private int casCourantJoueurs;
+    private boolean extensions;
 
     public Hive(String[] args) {
         this.plateau = new Plateau();
         Vue.initFenetre(args, this);
+        this.Undo = true;
     }
 
     public void setJoueurs(int cas, boolean extension) { //Création des joueurs selon le type de partie
@@ -84,6 +88,8 @@ public class Hive implements Serializable {
                 System.err.println("ERREUR setJoueurs : " + ex);
             }
         }
+        this.casCourantJoueurs = cas;
+        this.extensions = extension;
         this.joueurCourant = this.joueur1;
     }
 
@@ -190,11 +196,13 @@ public class Hive implements Serializable {
         return this.joueur1.pionsEnMain();
     }
 
-    public void reset() { // Quand on veut rejouer on réinitialise entièrement le jeu
+    public void resetPartie() { // Quand on veut rejouer on réinitialise entièrement le jeu
         this.plateau = new Plateau();
         this.joueur1 = null;
         this.joueur2 = null;
         this.joueurCourant = null;
+        this.setJoueurs(casCourantJoueurs, extensions);
+        this.Undo = true;
     }
 
     public boolean tourJoueurBlanc() { //Permet à la vue de savoir à quel joueur peut jouer
@@ -287,7 +295,7 @@ public class Hive implements Serializable {
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
                 Hive h = (Hive) ois.readObject();
                 ois.close();
-                this.reset();
+                this.resetPartie();
                 this.joueur1 = h.joueur1;
                 this.joueur2 = h.joueur2;
                 this.joueurCourant = h.joueurCourant;
