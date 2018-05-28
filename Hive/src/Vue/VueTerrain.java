@@ -874,6 +874,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             updateMainJoueurColor(false);
             lockTousLespions();
             highlightPlayeName();
+            this.bRedo.setDisable(true);
+            this.bUndo.setDisable(true);
         }
     }
 
@@ -1516,7 +1518,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         Plateau p = (Plateau) o;
         this.pModel = p;
         long tempsRestant = (long) arg;
-
         //si >0 alors c'est une ia
         if (tempsRestant > 0) {
             System.out.println("IA IS THINKING");
@@ -1525,8 +1526,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             this.bUndo.setDisable(true);
         } else { //l'humain a joué puis directe après l'ia va jouer
             this.iaCanPlay = -1;
-            //updateMainJoueur();
-            //reconstructionPlateau(this.pModel);
         }
 
     }
@@ -1577,12 +1576,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         hideZoneLibre();
         this.controleur.setUndo(true);
         hudToFront();
-        //updateMainJoueur();
-        this.controleur.joueurSuivant();
-        updateMainJoueur();
-        updateUndoRedoBtn();
-
         CheckGagnant();
+        this.controleur.joueurSuivant();
+        updateUndoRedoBtn();
+        updateMainJoueur();
     }
 
     public void ordinateurJoue() {
@@ -1605,12 +1602,12 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             this.currentSelected = this.listPionsPlateau.get(iaMove.getOrig());
             updateMousePressedZoneLibre(getZoneLibreEgal(iaMove.getCible()));
         }
-        updateUndoRedoBtn();
         hudToFront();
+        CheckGagnant();
         this.controleur.joueurSuivant();
+        updateUndoRedoBtn();
         updateMainJoueur();
         reconstructionPlateau(this.pModel);
-        CheckGagnant();
     }
 
     public void applyUndo(Deplacement depl) {
