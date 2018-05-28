@@ -6,20 +6,20 @@ import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.effect.BlurType;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import javafx.scene.effect.BlurType;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.paint.Color;
-import javafx.scene.text.FontWeight;
 
 public class VueSolo extends Vue {
 
@@ -141,7 +141,17 @@ public class VueSolo extends Vue {
                     switch (group2.getSelectedToggle().getUserData().toString()) {
                         case "black":
                             difficulte = difficulte + 3;
+                            prop.setProperty("joueurNoir",ta.getText());
                             break;
+                        case "white":
+                            prop.setProperty("joueurBlanc",ta.getText());
+                            System.out.println(prop.getProperty("joueurBlanc"));
+                            break;
+                    }
+                    try {
+                        prop.store(new FileWriter("Hive/rsc/config.properties"),"");
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
                     }
                 }
                 SceneTerrain(primaryStage, difficulte, true);
