@@ -1905,6 +1905,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         Button next = new Button(getLangStr("next"));
         next.setPrefWidth(150);
         Button retour = new Button(getLangStr("back"));
+        back.setDisable(true);
 
         HBox h = new HBox(back, nbPage, next);
         h.setAlignment(Pos.CENTER);
@@ -1917,11 +1918,17 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         v.setAlignment(Pos.CENTER);
         v.setSpacing(15);
         back.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            next.setDisable(false);
             img.setImage(changeImg(urlImg, false, nbPage));
+            if (numeroPageTuto == 0)
+                back.setDisable(true);
         });
 
         next.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            back.setDisable(false);
             img.setImage(changeImg(urlImg, true, nbPage));
+            if (numeroPageTuto == 10)
+                next.setDisable(true);
         });
 
         retour.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
