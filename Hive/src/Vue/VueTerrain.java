@@ -964,6 +964,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         String joueur = "joueur " + numplayer;
         if (numplayer == 1) {
             joueur = prop.getProperty("joueurBlanc");
+            System.out.println(joueur);
         } else {
             joueur = prop.getProperty("joueurNoir");
         }
@@ -1142,7 +1143,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         VBox vb1 = new VBox();
         vb1.getChildren().addAll(hb1, hb2);
         vb1.setSpacing(10);
-        //vb1.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 3 0 0 0;\n");
         vb1.setAlignment(Pos.BOTTOM_CENTER);
 
         VBox vb = new VBox();
@@ -1194,6 +1194,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bLoad.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             ListView<String> lv = getSaveFile();
             Button load = new Button(getLangStr("load"));
+            load.setDisable(true);
             Button cancel = new Button(getLangStr("cancel"));
 
             HBox hbutton = new HBox();
@@ -1208,12 +1209,20 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             vLoad.prefHeightProperty().bind(primaryStage.heightProperty());
             vLoad.setAlignment(Pos.CENTER);
             vLoad.setSpacing(10);
-            vLoad.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
+            vLoad.setStyle("-fx-background-color : rgba(0, 0, 0, .8);");
             lv.setMaxWidth((primaryStage.getWidth() * 33) / 100);
             lv.getStylesheets().add("Vue/button.css");
 
             cancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
                 root.getChildren().removeAll(vLoad);
+            });
+
+            lv.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+                @Override
+                public void handle(MouseEvent event) {
+                    load.setDisable(false);
+                }
             });
 
             load.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
@@ -2046,10 +2055,13 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     public void CheckGagnant() {
         int jGagnant = this.controleur.JoueurGagnant();
         if (jGagnant != 0) {
-            TextField tf = (TextField) nomJoueur.get(jGagnant - 1);
-            String nameG = tf.getText();
-            System.out.println(nameG + " à Gagné");
-            Label l = new Label(nameG + " " + getLangStr("winMess"));
+            String nomG = null;
+            if(this.controleur.getJoueur(jGagnant).getNumJoueur().estHumain())
+                nomG = ((TextField) nomJoueur.get(jGagnant - 1)).getText();
+            else
+                nomG = (String)((ComboBox) nomJoueur.get(jGagnant-1)).getValue();
+            System.out.println(nomG + " à Gagné");
+            Label l = new Label(nomG + " " + getLangStr("winMess"));
             l.setTextFill(Color.WHITE);
             l.prefWidthProperty().bind(primaryStage.widthProperty());
             l.setAlignment(Pos.CENTER);
