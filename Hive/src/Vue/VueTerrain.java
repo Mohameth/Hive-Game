@@ -61,7 +61,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private ArrayList<Node> nomJoueur;
     private VBox listPionEnDessousHover;
     private Plateau pModel;
-    private boolean solo;
+    private boolean solo, isPause;
     ArrayList<HexaPoint> zoneLibresCollision;
     private Button bUndo;
     private Button bRedo;
@@ -69,13 +69,16 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private boolean mainDrag = false;
     private boolean undoRedoMove = false;
     private BorderPane loaderImg = null;
+    private VBox menu;
 
     VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs, boolean solo, boolean load) {
         boolean fs = primaryStage.isFullScreen();
         this.primaryStage = primaryStage;
         this.nomJoueur = new ArrayList<>();
         this.solo = solo;
+        this.isPause = false;
         root = new Group();
+        getPause();
 
         this.controleur = controleur;
         //this.controleur.resetPartie();
@@ -117,12 +120,21 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         s.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
                 if (ke.getCode() == KeyCode.ESCAPE) {
-                    getPause();
+                    if(!isPause) {
+                        root.getChildren().add(menu);
+                        isPause = true;
+                    } else {
+                        root.getChildren().remove(menu);
+                        isPause = false;
+                    }
+
                 }
             }
         });
 
         primaryStage.setScene(s);
+        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER,KeyCombination.ALT_DOWN));
+        primaryStage.setFullScreenExitHint("");
         primaryStage.setFullScreen(fs);
         primaryStage.getIcons().add(new Image("logo.png"));
         primaryStage.show();
@@ -320,6 +332,24 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void moveDeltaBoard(double x, double y) {
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("rsc/config.properties");
+            prop.load(input);
+            input.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+
+        boolean invertDir = (Boolean.valueOf(prop.getProperty("invert")));
+        if (invertDir) {
+            x = -x;
+            y = -y;
+        }
+
         for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
             entry.getValue().moveDeltaBoard(x, y);
         }
@@ -385,7 +415,26 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 final MouseEvent mouseEvent) -> {
             double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x;
             double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y;
-            applyBoardMove(deltaX, deltaY);
+
+            Properties prop = new Properties();
+            InputStream input = null;
+            try {
+                input = new FileInputStream("rsc/config.properties");
+                prop.load(input);
+                input.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.getMessage();
+            }
+
+            boolean invertDir = (Boolean.valueOf(prop.getProperty("invert")));
+            if (invertDir) {
+                applyBoardMove(-deltaX, -deltaY);
+            } else {
+                applyBoardMove(deltaX, deltaY);
+            }
+
             lastMouseLocation.x = mouseEvent.getSceneX();
             lastMouseLocation.y = mouseEvent.getSceneY();
         });
@@ -396,8 +445,26 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void resetView() {
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("rsc/config.properties");
+            prop.load(input);
+            input.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+
+        boolean invertDir = (Boolean.valueOf(prop.getProperty("invert")));
         double centrePlateau[] = getCentreDuPlateau();
-        moveDeltaBoard(-centrePlateau[0], -centrePlateau[1]);
+        if (invertDir) {
+            moveDeltaBoard(centrePlateau[0], centrePlateau[1]);
+        } else {
+            moveDeltaBoard(-centrePlateau[0], -centrePlateau[1]);
+        }
+
         zoomImage(0.5);
         removeSelectedPion();
         this.updateUndoRedoBtn();
@@ -1252,7 +1319,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         pDroite.getStylesheets().add("Vue/button.css");
 
         bPause.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            getPause();
+           root.getChildren().add(menu);
+           isPause = true;
         });
 
         if (!this.controleur.UndoPossible()) {
@@ -1323,10 +1391,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 this.controleur.load(lv.getSelectionModel().getSelectedItem());
                 root.getChildren().removeAll(vLoad);
                 this.reconstructionPlateau(pModel);
-                if(!this.controleur.joueur2.getNumJoueur().estHumain())
-                    ((ComboBox) nomJoueur.get(1)).getSelectionModel().select(this.controleur.joueur2.getNumJoueur().getDifficulte()-1);
-                else if(!this.controleur.joueur1.getNumJoueur().estHumain())
-                    ((ComboBox) nomJoueur.get(0)).getSelectionModel().select(this.controleur.joueur2.getNumJoueur().getDifficulte()-1);
+                if (!this.controleur.joueur2.getNumJoueur().estHumain()) {
+                    ((ComboBox) nomJoueur.get(1)).getSelectionModel().select(this.controleur.joueur2.getNumJoueur().getDifficulte() - 1);
+                } else if (!this.controleur.joueur1.getNumJoueur().estHumain()) {
+                    ((ComboBox) nomJoueur.get(0)).getSelectionModel().select(this.controleur.joueur2.getNumJoueur().getDifficulte() - 1);
+                }
                 this.updateMainJoueur();
             });
 
@@ -1405,7 +1474,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         Button bQuit = new Button(getLangStr("quitter"));
         bQuit.setMaxWidth(200);
 
-        VBox menu = new VBox();
+        menu = new VBox();
         menu.getChildren().addAll(t, bResume, bRules, bRestart, bSettings, bMain, bQuit);
         menu.setMinSize(width, heigth);
         menu.prefHeightProperty().bind(primaryStage.getScene().heightProperty());
@@ -1417,10 +1486,12 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         bResume.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().removeAll(menu);
+            isPause = false;
         });
 
         bRestart.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().removeAll(menu);
+            isPause = false;
             this.recommencerPartie();
         });
 
@@ -1443,16 +1514,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             VueSettings v = new VueSettings(primaryStage, true, root);
             root.getChildren().add(v.getSetting(solo));
         });
-
-        menu.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent ke) {
-                if (ke.getCode() == KeyCode.ESCAPE) {
-                    root.getChildren().remove(menu);
-                }
-            }
-        });
-
-        root.getChildren().addAll(menu);
     }
 
     private BorderPane getHudGauche() {
@@ -1516,6 +1577,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bgauche.setPadding(new Insets(0, 0, 15, 15));
 
         double moveRangeXY = 40;
+
         double ZoomRangePM = 1; //equivaut a 3 zoom
 
         breset.addEventHandler(MouseEvent.MOUSE_CLICKED,
@@ -2083,7 +2145,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            getPause();
+            root.getChildren().add(menu);
         });
         root.getChildren().add(v);
     }
@@ -2118,7 +2180,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            getPause();
+            root.getChildren().add(menu);
         });
         root.getChildren().add(v);
         v.toFront();
@@ -2171,9 +2233,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         retour.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            if (pause) {
-                getPause();
-            }
+            if (pause)
+                root.getChildren().add(menu);
         });
 
         root.getChildren().add(v);

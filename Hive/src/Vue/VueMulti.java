@@ -9,6 +9,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -59,7 +62,7 @@ public class VueMulti extends Vue {
         TextField ta = new TextField(prop.getProperty("joueurBlanc"));
         ta.setMaxSize(200.0, 5.0);
         HBox hb = new HBox(tp, ta);
-        hb.setSpacing(5);
+        hb.setSpacing(10);
 
         HBox hb1 = new HBox();
         Label tp1 = new Label(getLangStr("black"));
@@ -68,7 +71,7 @@ public class VueMulti extends Vue {
         TextField ta1 = new TextField(prop.getProperty("joueurNoir"));
         ta1.setMaxSize(300.0, 5.0);
         hb1.getChildren().addAll(tp1, ta1);
-        hb1.setSpacing(13);
+        hb1.setSpacing(14);
 
         Button bplay = new Button(getLangStr("jouer"));
         bplay.setMinSize(200.0, 50.0);
@@ -125,6 +128,8 @@ public class VueMulti extends Vue {
         root.prefWidthProperty().bind(s.widthProperty());
         root.setStyle("-fx-background-image: url(backPions2.jpg); -fx-background-size: cover;");
         primaryStage.setScene(s);
+        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER,KeyCombination.ALT_DOWN));
+        primaryStage.setFullScreenExitHint("");
         primaryStage.setFullScreen(fs);
         primaryStage.show();
     }

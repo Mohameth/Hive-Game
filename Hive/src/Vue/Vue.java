@@ -3,6 +3,9 @@ package Vue;
 import Controleur.Hive;
 import hive.HiveMain;
 import javafx.application.Application;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -68,6 +71,8 @@ public class Vue extends Application {
         primaryStage.setMinHeight(heigth);
         primaryStage.setWidth(width);
         primaryStage.setHeight(heigth);
+        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER,KeyCombination.ALT_DOWN));
+        primaryStage.setFullScreenExitHint("");
         primaryStage.setFullScreen(Boolean.valueOf(prop.getProperty("fullscreen")));
         SceneMain(primaryStage);
     }
