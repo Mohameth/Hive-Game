@@ -78,7 +78,7 @@ public class VueLoad extends Vue {
 
         load.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
             this.controleur.load(lv.getSelectionModel().getSelectedItem());
-            //this.SceneTerrain(primaryStage, , this.controleur.);
+            this.SceneTerrain(primaryStage, this.controleur.getCasCourantJoueurs() , this.controleur.getCasCourantJoueurs() > 1, true);
         });
 
         VBox vb = new VBox();
