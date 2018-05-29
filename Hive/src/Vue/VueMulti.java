@@ -60,6 +60,7 @@ public class VueMulti extends Vue {
         tp.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         tp.setTextFill(Color.WHITE);
         TextField ta = new TextField(prop.getProperty("joueurBlanc"));
+        ta.setPromptText(getLangStr("whitePlayer"));
         ta.setMaxSize(200.0, 5.0);
         HBox hb = new HBox(tp, ta);
         hb.setSpacing(10);
@@ -78,6 +79,7 @@ public class VueMulti extends Vue {
         tp1.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         tp1.setTextFill(Color.WHITE);
         TextField ta1 = new TextField(prop.getProperty("joueurNoir"));
+        ta1.setPromptText(getLangStr("blackPlayer"));
         ta1.setMaxSize(300.0, 5.0);
         hb1.getChildren().addAll(tp1, ta1);
         hb1.setSpacing(14);
