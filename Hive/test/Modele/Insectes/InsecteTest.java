@@ -217,7 +217,7 @@ public class InsecteTest {
 
         HexaPoint orig = new HexaPoint(0,0,0);
         
-        Reine reine = new Reine(j1);
+        Reine reine = j1.getReine(j1.getPions());
         Sauterelle sauterelle = new Sauterelle(j1);
         
         ArrayList<Case> expected;
@@ -267,13 +267,13 @@ public class InsecteTest {
         Sauterelle sauterelleBlanche = new Sauterelle(j1);
         Fourmi fourmiBlanche = new Fourmi(j1);
         Araignee araigneeBlanche = new Araignee(j1);
-        Reine reineBlanche = new Reine(j1);
+        Reine reineBlanche = j1.getReine(j1.getPions());
         Sauterelle sauterelleBlanche2 = new Sauterelle(j1);
         Sauterelle sauterelleBlanche3 = new Sauterelle(j1);
         Scarabee scarabeeNoire = new Scarabee(j2);
         Sauterelle sauterelleNoire = new Sauterelle(j2);
         Fourmi fourmiNoire = new Fourmi(j2);
-        Reine reineNoire = new Reine(j2);
+        Reine reineNoire = j2.getReine(j2.getPions());
         Araignee araigneeNoire = new Araignee(j2);
         
         creeCaseEtPlaceInsecte(instance, sauterelleBlanche, 0, 0, 0);

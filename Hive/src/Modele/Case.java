@@ -79,7 +79,7 @@ public class Case implements Serializable{
         if (!this.insectes.contains(insecte))
             throw new Exception("Cet insecte n'est pas sur cette case");
         
-        if(this.insectes.contains(insecte) && !this.getInsecteOnTop().equals(insecte))
+        if(this.insectes.contains(insecte) && this.getInsecteOnTop() != insecte)
             return true;
         
         return false;
