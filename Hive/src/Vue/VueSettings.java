@@ -188,7 +188,7 @@ public class VueSettings extends Vue {
 
         Button bSaveDef = new Button(getLangStr("save"));
         Button bCancel = new Button(getLangStr("cancel"));
-        Button bSave = new Button(getLangStr("saveGame"));
+        //Button bSave = new Button(getLangStr("saveGame"));
 
         bCancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             if (!inGame) {
@@ -205,6 +205,8 @@ public class VueSettings extends Vue {
             } else {
                 primaryStage.hide();
                 primaryStage.setFullScreen(false);
+                primaryStage.setMinWidth(cb.getValue().x);
+                primaryStage.setMinHeight(cb.getValue().y);
                 primaryStage.setWidth(cb.getValue().x);
                 primaryStage.setHeight(cb.getValue().y);
             }
@@ -226,7 +228,7 @@ public class VueSettings extends Vue {
             }
         });
 
-        bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+        /*bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             if (chb.isSelected()) {
                 primaryStage.setFullScreen(true);
             } else {
@@ -246,12 +248,12 @@ public class VueSettings extends Vue {
             root.getChildren().remove(g);
             primaryStage.hide();
             primaryStage.show();
-        });
+        });*/
 
         HBox hb5 = new HBox();
-        if (this.inGame) {
+        /*if (this.inGame) {
             hb5.getChildren().add(bSave);
-        }
+        }*/
         hb5.getChildren().addAll(bCancel, bSaveDef);
         hb5.setSpacing(20);
 
@@ -351,14 +353,35 @@ public class VueSettings extends Vue {
     }
 
     private void setConfig() {
+        Properties oldProp = new Properties();
+        InputStreamReader input = null;
+        try {
+            input = new InputStreamReader(new FileInputStream("rsc/config.properties"), "UTF-8");
+            oldProp.load(input);
+            input.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+
+        
         Properties prop = new Properties();
         String propFileName = "rsc/config.properties";
         if (group.getSelectedToggle() != null) {
             prop.setProperty("difficulteIA", group.getSelectedToggle().getUserData().toString());
+        } else {
+            prop.setProperty("difficulteIA", oldProp.getProperty("difficulteIA"));
         }
-        if (nomJ2 != null && nomJ1 != null) {
+        if (nomJ1 != null) {
             prop.setProperty("joueurBlanc", nomJ1.getText());
+        } else {
+            prop.setProperty("joueurBlanc", oldProp.getProperty("joueurBlanc"));
+        }
+        if (nomJ2 != null) {
             prop.setProperty("joueurNoir", nomJ2.getText());
+        } else {
+            prop.setProperty("joueurBlanc", oldProp.getProperty("joueurNoir"));
         }
         prop.setProperty("langue", cb1.getValue());
         prop.setProperty("tailleFenetre", cb.getValue().x + "x" + cb.getValue().y);

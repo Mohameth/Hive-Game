@@ -1,6 +1,7 @@
 package Modele.Joueurs;
 
 import Modele.CoupleCaesInsecte;
+import Modele.IA.IAEvaluation;
 import java.util.ArrayList;
 
 import Modele.Insectes.Insecte;
@@ -71,7 +72,7 @@ public class Noeud {
 	}
 	
 	public int getNi() {
-		return ni;
+                return ni;
 	}
 	
 	public double getTi() {

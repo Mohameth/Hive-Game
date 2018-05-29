@@ -88,7 +88,7 @@ public class Configuration {
         Joueur j = tourAdversaire ? adversaire : joueurCourant;
 
         for (Insecte i : j.getPions()) {
-            if ((i.getEmplacement() == null) && (i.getType() != TypeInsecte.REINE && j.tousPionsPosables())) {
+            if ((i.getEmplacement() == null) && (i.getType() == TypeInsecte.REINE || j.tousPionsPosables())) {
                 for (HexaPoint p : plateau.casesVidePlacement(j)) {
                     addFils(fils, true, i, p);
                 }
