@@ -116,6 +116,14 @@ public class Hive implements Serializable {
         this.casCourantJoueurs = casCourantJoueurs;
     }
 
+    public void calculCasCourantJoueur() {
+        if (this.casCourantJoueurs > 1 && this.casCourantJoueurs < 5) {
+            this.casCourantJoueurs = 1 + this.joueur2.getNumJoueur().getDifficulte();
+        } else if (this.casCourantJoueurs > 4 && this.casCourantJoueurs < 8) {
+            this.casCourantJoueurs = 4 + this.joueur1.getNumJoueur().getDifficulte();
+        }
+    }
+    
     public boolean insecteAppartientJCourant(HexaPoint caseCible) { //permet de savoir si l'insecte le plus haut d'une case appartient au joueur dont c'est le tour
         Case c = plateau.getCase(caseCible);
         try {
@@ -214,6 +222,7 @@ public class Hive implements Serializable {
     }
 
     public void recommencerPartie() { // Quand on veut rejouer on réinitialise entièrement le jeu
+        this.calculCasCourantJoueur();
         this.plateau = new Plateau();
         this.joueur1 = null;
         this.joueur2 = null;

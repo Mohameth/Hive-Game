@@ -57,6 +57,31 @@ public class JoueurIA extends Joueur {
     }
 
     public void setDifficulte(int dif) {
+        if (this.getNumJoueur().estBlanc()) {
+            switch (dif) {
+                case 1:
+                    this.numJoueur = NumJoueur.IAFACILE1;
+                break;
+                case 2:
+                    this.numJoueur = NumJoueur.IAMOYEN1;
+                break;
+                case 3:
+                    this.numJoueur = NumJoueur.IADIFFICILE1;
+                break;
+            }
+        } else {
+            switch (dif) {
+                case 1:
+                    this.numJoueur = NumJoueur.IAFACILE2;
+                break;
+                case 2:
+                    this.numJoueur = NumJoueur.IAMOYEN2;
+                break;
+                case 3:
+                    this.numJoueur = NumJoueur.IADIFFICILE2;
+                break;
+            }
+        }
         this.difficulte = dif;
         this.setThreadCoup();
     }
