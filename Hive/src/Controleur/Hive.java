@@ -24,7 +24,7 @@ public class Hive implements Serializable {
     Joueur joueurCourant;
     boolean Undo;
     transient Observer o;
-    
+
     private int casCourantJoueurs;
     private boolean extensions;
 
@@ -34,13 +34,14 @@ public class Hive implements Serializable {
         this.Undo = true;
     }
 
-    public Joueur getJoueur(int i){
-        if(i == 1)
+    public Joueur getJoueur(int i) {
+        if (i == 1) {
             return joueur1;
-        else if(i == 2)
+        } else if (i == 2) {
             return joueur2;
-        else
+        } else {
             return null;
+        }
     }
 
     public Plateau getPlateau() {
@@ -211,7 +212,7 @@ public class Hive implements Serializable {
         this.joueurCourant = null;
         this.Undo = true;
     }
-    
+
     public void recommencerPartie() { // Quand on veut rejouer on réinitialise entièrement le jeu
         this.plateau = new Plateau();
         this.joueur1 = null;
@@ -247,9 +248,17 @@ public class Hive implements Serializable {
 
     public int JoueurGagnant() {
         if (this.joueur1.reineBloquee()) {
-            return 2;
+            if (this.joueur2.reineBloquee()) {
+                return 3;
+            } else {
+                return 2;
+            }
         } else if (this.joueur2.reineBloquee()) {
-            return 1;
+            if (this.joueur1.reineBloquee()) {
+                return 3;
+            } else {
+                return 1;
+            }
         } else {
             return 0;
         }

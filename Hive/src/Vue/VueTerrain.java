@@ -1762,8 +1762,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             }
         } else //deplace le deplacement courant
         //si origine = null = depose pion de la main vers le plateau donc il faut le supprimer du plateau
-        {
-            if (depl.getOrig() == null) {
+         if (depl.getOrig() == null) {
                 //deplace le pion n'importe ou et le supprime
                 this.currentSelected = this.listPionsPlateau.get(depl.getCible());
                 this.currentSelected.setPionPosition(new HexaPoint(-47, -47, -47), -999, -999);
@@ -1775,7 +1774,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 updateMousePressedZoneLibre(getZoneLibreEgal(depl.getOrig()));
                 undoRedoMove = false;
             }
-        }
         removeSelectedPion();
         updateMainJoueur();
         updateUndoRedoBtn();
@@ -2322,13 +2320,17 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         int jGagnant = this.controleur.JoueurGagnant();
         if (jGagnant != 0) {
             String nomG = null;
-            if (this.controleur.getJoueur(jGagnant).getNumJoueur().estHumain()) {
+            if (jGagnant == 3) {
+                nomG = getLangStr("draw");
+            } else if (this.controleur.getJoueur(jGagnant).getNumJoueur().estHumain()) {
                 nomG = ((TextField) nomJoueur.get(jGagnant - 1)).getText();
+                nomG = nomG + " " + getLangStr("winMess");
             } else {
                 nomG = (String) ((ComboBox) nomJoueur.get(jGagnant - 1)).getValue();
+                nomG = nomG + " " + getLangStr("winMess");
             }
-            System.out.println(nomG + " à Gagné");
-            Label l = new Label(nomG + " " + getLangStr("winMess"));
+            System.out.println(nomG);
+            Label l = new Label(nomG);
             l.setTextFill(Color.WHITE);
             l.prefWidthProperty().bind(primaryStage.widthProperty());
             l.setAlignment(Pos.CENTER);
