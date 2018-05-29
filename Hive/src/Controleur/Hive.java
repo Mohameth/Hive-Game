@@ -312,7 +312,7 @@ public class Hive implements Serializable {
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
                 Hive h = (Hive) ois.readObject();
                 ois.close();
-                this.recommencerPartie();
+                this.resetPartie();
                 this.casCourantJoueurs = h.casCourantJoueurs;
                 this.extensions = h.extensions;
                 this.joueur1 = h.joueur1;
