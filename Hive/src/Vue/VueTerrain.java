@@ -69,6 +69,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private boolean mainDrag = false;
     private boolean undoRedoMove = false;
     private BorderPane loaderImg = null;
+    private boolean invertDir = false;
     private VBox menu;
 
     VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs, boolean solo, boolean load) {
@@ -120,20 +121,49 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         s.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
                 if (ke.getCode() == KeyCode.ESCAPE) {
-                    if(!isPause) {
+                    if (!isPause) {
                         root.getChildren().add(menu);
                         isPause = true;
                     } else {
                         root.getChildren().remove(menu);
                         isPause = false;
+
+                        Properties prop = new Properties();
+                        InputStream input = null;
+                        try {
+                            input = new FileInputStream("rsc/config.properties");
+                            prop.load(input);
+                            input.close();
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.getMessage();
+                        }
+
+                        invertDir = (Boolean.valueOf(prop.getProperty("invert")));
+
                     }
 
                 }
             }
         });
 
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("rsc/config.properties");
+            prop.load(input);
+            input.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+
+        this.invertDir = (Boolean.valueOf(prop.getProperty("invert")));
+
         primaryStage.setScene(s);
-        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER,KeyCombination.ALT_DOWN));
+        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER, KeyCombination.ALT_DOWN));
         primaryStage.setFullScreenExitHint("");
         primaryStage.setFullScreen(fs);
         primaryStage.getIcons().add(new Image("logo.png"));
@@ -332,20 +362,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void moveDeltaBoard(double x, double y) {
-        Properties prop = new Properties();
-        InputStream input = null;
-        try {
-            input = new FileInputStream("rsc/config.properties");
-            prop.load(input);
-            input.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.getMessage();
-        }
-
-        boolean invertDir = (Boolean.valueOf(prop.getProperty("invert")));
-        if (invertDir) {
+        if (this.invertDir) {
             x = -x;
             y = -y;
         }
@@ -416,20 +433,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x;
             double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y;
 
-            Properties prop = new Properties();
-            InputStream input = null;
-            try {
-                input = new FileInputStream("rsc/config.properties");
-                prop.load(input);
-                input.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.getMessage();
-            }
-
-            boolean invertDir = (Boolean.valueOf(prop.getProperty("invert")));
-            if (invertDir) {
+            if (this.invertDir) {
                 applyBoardMove(-deltaX, -deltaY);
             } else {
                 applyBoardMove(deltaX, deltaY);
@@ -445,21 +449,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void resetView() {
-        Properties prop = new Properties();
-        InputStream input = null;
-        try {
-            input = new FileInputStream("rsc/config.properties");
-            prop.load(input);
-            input.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.getMessage();
-        }
-
-        boolean invertDir = (Boolean.valueOf(prop.getProperty("invert")));
         double centrePlateau[] = getCentreDuPlateau();
-        if (invertDir) {
+        if (this.invertDir) {
             moveDeltaBoard(centrePlateau[0], centrePlateau[1]);
         } else {
             moveDeltaBoard(-centrePlateau[0], -centrePlateau[1]);
@@ -1319,8 +1310,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         pDroite.getStylesheets().add("Vue/button.css");
 
         bPause.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-           root.getChildren().add(menu);
-           isPause = true;
+            root.getChildren().add(menu);
+            isPause = true;
         });
 
         if (!this.controleur.UndoPossible()) {
@@ -1485,6 +1476,18 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         menu.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
 
         bResume.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            Properties prop = new Properties();
+            InputStream input = null;
+            try {
+                input = new FileInputStream("rsc/config.properties");
+                prop.load(input);
+                input.close();
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            } catch (IOException ex) {
+                ex.getMessage();
+            }
+            this.invertDir = (Boolean.valueOf(prop.getProperty("invert")));
             root.getChildren().removeAll(menu);
             isPause = false;
         });
@@ -1639,7 +1642,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             this.bUndo.setDisable(true);
         } else { //l'humain a joué puis directe après l'ia va jouer
             this.iaCanPlay = -1;
-            if (tempsRestant == -2) showLoader(); //L'IA est en train de calculer
+            if (tempsRestant == -2) {
+                showLoader(); //L'IA est en train de calculer
+            }
         }
 
     }
@@ -2233,8 +2238,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         retour.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            if (pause)
+            if (pause) {
                 root.getChildren().add(menu);
+            }
         });
 
         root.getChildren().add(v);
