@@ -1,6 +1,5 @@
 package Vue;
 
-import java.io.FileInputStream;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -189,8 +188,8 @@ public class VueSolo extends Vue {
 
         Scene s = new Scene(root, primaryStage.getScene().getWidth(), primaryStage.getScene().getHeight());
         s.getStylesheets().add("Vue/button.css");
-        root.prefHeightProperty().bind(s.heightProperty());
-        root.prefWidthProperty().bind(s.widthProperty());
+        root.minHeightProperty().bind(s.heightProperty());
+        root.minWidthProperty().bind(s.widthProperty());
         root.setStyle("-fx-background-image: url(backPions2.jpg); -fx-background-size: cover;");
         primaryStage.setScene(s);
         primaryStage.setFullScreen(fs);

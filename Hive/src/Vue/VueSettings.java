@@ -86,8 +86,8 @@ public class VueSettings extends Vue {
         GridPane all = getAll();
         g.add(all, 2, 1, 3, 2);
 
-        g.prefHeightProperty().bind(primaryStage.heightProperty());
-        g.prefWidthProperty().bind(primaryStage.widthProperty());
+        g.minHeightProperty().bind(primaryStage.heightProperty());
+        g.minWidthProperty().bind(primaryStage.widthProperty());
         g.setStyle("-fx-background-image: url(background.jpg);");
         g.getStylesheets().add("Vue/button1.css");
 
@@ -373,7 +373,7 @@ public class VueSettings extends Vue {
             prop.setProperty("invert", "false");
         }
         try {
-            prop.store(new FileWriter(propFileName), "");
+            prop.store(new OutputStreamWriter(new FileOutputStream(propFileName),"UTF-8"), "");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -381,9 +381,9 @@ public class VueSettings extends Vue {
 
     private void getConfig() {
         Properties prop = new Properties();
-        InputStream input = null;
+        InputStreamReader input = null;
         try {
-            input = new FileInputStream("rsc/config.properties");
+            input = new InputStreamReader(new FileInputStream("rsc/config.properties"), "UTF-8");
             prop.load(input);
             input.close();
         } catch (FileNotFoundException e) {
