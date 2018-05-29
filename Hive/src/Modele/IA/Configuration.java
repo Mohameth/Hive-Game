@@ -4,6 +4,7 @@ package Modele.IA;
 import Modele.Joueurs.Joueur;
 import Modele.*;
 import Modele.Insectes.Insecte;
+import Modele.Insectes.TypeInsecte;
 import java.util.ArrayList;
 import javafx.util.Pair;
 
@@ -87,7 +88,7 @@ public class Configuration {
         Joueur j = tourAdversaire ? adversaire : joueurCourant;
 
         for (Insecte i : j.getPions()) {
-            if (i.getEmplacement() == null) {
+            if ((i.getEmplacement() == null) && (i.getType() != TypeInsecte.REINE && j.tousPionsPosables())) {
                 for (HexaPoint p : plateau.casesVidePlacement(j)) {
                     addFils(fils, true, i, p);
                 }
