@@ -188,7 +188,7 @@ public class VueSettings extends Vue {
 
         Button bSaveDef = new Button(getLangStr("save"));
         Button bCancel = new Button(getLangStr("cancel"));
-        Button bSave = new Button(getLangStr("saveGame"));
+        //Button bSave = new Button(getLangStr("saveGame"));
 
         bCancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             if (!inGame) {
@@ -226,7 +226,7 @@ public class VueSettings extends Vue {
             }
         });
 
-        bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+        /*bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             if (chb.isSelected()) {
                 primaryStage.setFullScreen(true);
             } else {
@@ -246,12 +246,12 @@ public class VueSettings extends Vue {
             root.getChildren().remove(g);
             primaryStage.hide();
             primaryStage.show();
-        });
+        });*/
 
         HBox hb5 = new HBox();
-        if (this.inGame) {
+        /*if (this.inGame) {
             hb5.getChildren().add(bSave);
-        }
+        }*/
         hb5.getChildren().addAll(bCancel, bSaveDef);
         hb5.setSpacing(20);
 
