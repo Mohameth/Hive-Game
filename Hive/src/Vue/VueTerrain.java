@@ -80,6 +80,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         this.isPause = false;
         root = new Group();
         getPause();
+        menu.minHeightProperty().bind(primaryStage.heightProperty());
+        menu.minWidthProperty().bind(primaryStage.widthProperty());
 
         this.controleur = controleur;
         //this.controleur.resetPartie();
@@ -107,6 +109,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         Scene s = new Scene(root, primaryStage.getWidth(), primaryStage.getHeight());
 
+
         //creation du plateau
         Rectangle rect = new Rectangle(0, 0);
         Image img = new Image("background.jpg");
@@ -121,12 +124,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         s.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
                 if (ke.getCode() == KeyCode.ESCAPE) {
-                    if (!isPause) {
-                        root.getChildren().add(menu);
-                        isPause = true;
+                    if(menu.isVisible()) {
+                        menu.setVisible(false);
                     } else {
-                        root.getChildren().remove(menu);
-                        isPause = false;
+                        menu.setVisible(true);
+                        menu.toFront();
 
                         Properties prop = new Properties();
                         InputStream input = null;
@@ -1311,8 +1313,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         pDroite.getStylesheets().add("Vue/button.css");
 
         bPause.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            root.getChildren().add(menu);
-            isPause = true;
+            menu.setVisible(true);
+            menu.toFront();
         });
 
         if (!this.controleur.UndoPossible()) {
@@ -1468,15 +1470,14 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         menu = new VBox();
         menu.getChildren().addAll(t, bResume, bRules, bRestart, bSettings, bMain, bQuit);
-        menu.setMinSize(width, heigth);
-        menu.prefHeightProperty().bind(primaryStage.getScene().heightProperty());
-        menu.prefWidthProperty().bind(primaryStage.getScene().widthProperty());
+        menu.setMinSize(primaryStage.getWidth(), primaryStage.getHeight());
         menu.setAlignment(Pos.CENTER);
         menu.setSpacing(10);
         menu.getStylesheets().add("Vue/button.css");
         menu.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
 
         bResume.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            menu.setVisible(false);
             Properties prop = new Properties();
             InputStream input = null;
             try {
@@ -1489,28 +1490,29 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 ex.getMessage();
             }
             this.invertDir = (Boolean.valueOf(prop.getProperty("invert")));
-            root.getChildren().removeAll(menu);
-            isPause = false;
         });
 
         bRestart.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            root.getChildren().removeAll(menu);
-            isPause = false;
+            //root.getChildren().removeAll(menu);
+            menu.setVisible(false);
             this.recommencerPartie();
         });
 
         bMain.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            root.getChildren().removeAll(menu);
+            //root.getChildren().removeAll(menu);
+            menu.setVisible(false);
             getPupBackMain();
         });
 
         bQuit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            root.getChildren().removeAll(menu);
+            //root.getChildren().removeAll(menu);
+            menu.setVisible(false);
             getPupExit();
         });
 
         bRules.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            root.getChildren().removeAll(menu);
+            //root.getChildren().removeAll(menu);
+            menu.setVisible(false);
             getRule(true);
         });
 
@@ -1518,6 +1520,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             VueSettings v = new VueSettings(primaryStage, true, root);
             root.getChildren().add(v.getSetting(solo));
         });
+
+        root.getChildren().add(menu);
+        menu.setVisible(false);
     }
 
     private BorderPane getHudGauche() {
@@ -2152,7 +2157,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            root.getChildren().add(menu);
+            menu.setVisible(true);
         });
         root.getChildren().add(v);
     }
@@ -2187,7 +2192,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            root.getChildren().add(menu);
+            menu.setVisible(true);
         });
         root.getChildren().add(v);
         v.toFront();
@@ -2240,9 +2245,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         retour.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            if (pause) {
-                root.getChildren().add(menu);
-            }
+            if (pause)
+                menu.setVisible(true);
         });
 
         root.getChildren().add(v);
