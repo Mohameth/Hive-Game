@@ -80,7 +80,6 @@ public class PionPlateau2 implements ObservableVue {
         this.imagePion.setImgPosXY(pionEnDessous.getImgViewPion().getImgPosX(), pionEnDessous.getImgViewPion().getImgPosY());
         this.imagePion.setPrevImgPosXY(pionEnDessous.getImgViewPion().getPrevImgPosX(), pionEnDessous.getImgViewPion().getPrevImgPosY());
         this.imagePion.setCurrentZoom(pionEnDessous.getZoom());
-        System.out.println("set pion en dessous");
 
         //this.validCurrentPosXY();
         notifyPionPlateauAddEnDessous(this);

@@ -1922,8 +1922,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             //regenère le plateau si pas de correspondance a 100%.
             if (nbNonCorrect > 0) {
                 reconstruirePlat(p);
-            } else {
-                System.out.println("100% de correspondance!");
             }
         }
 
@@ -1931,7 +1929,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void reconstruirePlat(Plateau p) {
-        System.out.println("Replateau");
         //supprimer les pions du plateau:
         for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
             PionPlateau2 value = entry.getValue();
