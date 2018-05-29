@@ -599,7 +599,7 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
      * @param cases hashmap à cloner
      * @return un clone de @cases
      */
-    public static HashMap<HexaPoint, Case> cloneMap(Map<HexaPoint, Case> cases) {
+    public HashMap<HexaPoint, Case> cloneMap(Map<HexaPoint, Case> cases) {
         HashMap<HexaPoint, Case> clone = new HashMap<>(cases.size());
         for (Map.Entry<HexaPoint, Case> element : cases.entrySet()) {
             clone.put(element.getKey().clone(), new Case(element.getValue().getCoordonnees()));
