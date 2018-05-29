@@ -1274,6 +1274,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         // bRedo.setStyle("-fx-background-color: Transparent;\n");
         bSug.setGraphic(new ImageView(new Image("icons/small-light-bulb.png")));
         bSug.setMinSize(32, 32);
+        bSug.setDisable(true);
 
         brules.setGraphic(new ImageView(new Image("icons/book_rules.png")));
         brules.setMinSize(32, 32);
