@@ -69,6 +69,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private boolean mainDrag = false;
     private boolean undoRedoMove = false;
     private BorderPane loaderImg = null;
+    private boolean invertDir = false;
 
     VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs, boolean solo, boolean load) {
         boolean fs = primaryStage.isFullScreen();
@@ -121,6 +122,20 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 }
             }
         });
+
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("rsc/config.properties");
+            prop.load(input);
+            input.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+
+        this.invertDir = (Boolean.valueOf(prop.getProperty("invert")));
 
         primaryStage.setScene(s);
         primaryStage.setFullScreen(fs);
@@ -320,20 +335,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void moveDeltaBoard(double x, double y) {
-        Properties prop = new Properties();
-        InputStream input = null;
-        try {
-            input = new FileInputStream("rsc/config.properties");
-            prop.load(input);
-            input.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.getMessage();
-        }
-
-        boolean invertDir = (Boolean.valueOf(prop.getProperty("invert")));
-        if (invertDir) {
+        if (this.invertDir) {
             x = -x;
             y = -y;
         }
@@ -404,20 +406,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x;
             double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y;
 
-            Properties prop = new Properties();
-            InputStream input = null;
-            try {
-                input = new FileInputStream("rsc/config.properties");
-                prop.load(input);
-                input.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.getMessage();
-            }
-
-            boolean invertDir = (Boolean.valueOf(prop.getProperty("invert")));
-            if (invertDir) {
+            if (this.invertDir) {
                 applyBoardMove(-deltaX, -deltaY);
             } else {
                 applyBoardMove(deltaX, deltaY);
@@ -433,21 +422,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void resetView() {
-        Properties prop = new Properties();
-        InputStream input = null;
-        try {
-            input = new FileInputStream("rsc/config.properties");
-            prop.load(input);
-            input.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.getMessage();
-        }
-
-        boolean invertDir = (Boolean.valueOf(prop.getProperty("invert")));
         double centrePlateau[] = getCentreDuPlateau();
-        if (invertDir) {
+        if (this.invertDir) {
             moveDeltaBoard(centrePlateau[0], centrePlateau[1]);
         } else {
             moveDeltaBoard(-centrePlateau[0], -centrePlateau[1]);
@@ -1472,6 +1448,18 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         menu.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
 
         bResume.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            Properties prop = new Properties();
+            InputStream input = null;
+            try {
+                input = new FileInputStream("rsc/config.properties");
+                prop.load(input);
+                input.close();
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            } catch (IOException ex) {
+                ex.getMessage();
+            }
+            this.invertDir = (Boolean.valueOf(prop.getProperty("invert")));
             root.getChildren().removeAll(menu);
         });
 

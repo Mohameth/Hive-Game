@@ -72,6 +72,7 @@ public class VueMulti extends Vue {
 
         Button bplay = new Button(getLangStr("jouer"));
         bplay.setMinSize(200.0, 50.0);
+        bplay.setAlignment(Pos.CENTER);
 
         Label tc = new Label(getLangStr("pname"));
         tc.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
@@ -91,10 +92,10 @@ public class VueMulti extends Vue {
         });
 
         bplay.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            prop.setProperty("joueurNoir",ta1.getText());
-            prop.setProperty("joueurBlanc",ta.getText());
+            prop.setProperty("joueurNoir", ta1.getText());
+            prop.setProperty("joueurBlanc", ta.getText());
             try {
-                prop.store(new FileWriter("rsc/config.properties"),"");
+                prop.store(new FileWriter("rsc/config.properties"), "");
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
