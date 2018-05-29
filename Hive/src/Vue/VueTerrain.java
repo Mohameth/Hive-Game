@@ -1495,6 +1495,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bRestart.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             //root.getChildren().removeAll(menu);
             menu.setVisible(false);
+            iaCanPlay = -1;
+            hideLoader();
             this.recommencerPartie();
         });
 
@@ -2356,7 +2358,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
             n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
                 root.getChildren().removeAll(v);
+                iaCanPlay = -1;
+                hideLoader();
                 this.recommencerPartie();
+
             });
             root.getChildren().add(v);
         }
