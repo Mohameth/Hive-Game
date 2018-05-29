@@ -124,7 +124,7 @@ public class Case implements Serializable{
         hash = 71 * hash + Objects.hashCode(this.coordonnees);
         return hash;
     }*/
-    
+
     public boolean estVoisinHaut(Case c) {
     	return this.getCoordonnees().voisinHaut().equals(c.getCoordonnees());
     }

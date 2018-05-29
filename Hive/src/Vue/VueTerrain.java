@@ -69,6 +69,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private boolean mainDrag = false;
     private boolean undoRedoMove = false;
     private BorderPane loaderImg = null;
+    private boolean invertDir = false;
     private VBox menu;
 
     VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs, boolean solo, boolean load) {
@@ -128,14 +129,43 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                     } else {
                         menu.setVisible(true);
                         menu.toFront();
+
+                        Properties prop = new Properties();
+                        InputStream input = null;
+                        try {
+                            input = new FileInputStream("rsc/config.properties");
+                            prop.load(input);
+                            input.close();
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.getMessage();
+                        }
+
+                        invertDir = (Boolean.valueOf(prop.getProperty("invert")));
+
                     }
 
                 }
             }
         });
 
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("rsc/config.properties");
+            prop.load(input);
+            input.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+
+        this.invertDir = (Boolean.valueOf(prop.getProperty("invert")));
+
         primaryStage.setScene(s);
-        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER,KeyCombination.ALT_DOWN));
+        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER, KeyCombination.ALT_DOWN));
         primaryStage.setFullScreenExitHint("");
         primaryStage.setFullScreen(fs);
         primaryStage.getIcons().add(new Image("logo.png"));
@@ -334,20 +364,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void moveDeltaBoard(double x, double y) {
-        Properties prop = new Properties();
-        InputStream input = null;
-        try {
-            input = new FileInputStream("rsc/config.properties");
-            prop.load(input);
-            input.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.getMessage();
-        }
-
-        boolean invertDir = (Boolean.valueOf(prop.getProperty("invert")));
-        if (invertDir) {
+        if (this.invertDir) {
             x = -x;
             y = -y;
         }
@@ -418,20 +435,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x;
             double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y;
 
-            Properties prop = new Properties();
-            InputStream input = null;
-            try {
-                input = new FileInputStream("rsc/config.properties");
-                prop.load(input);
-                input.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.getMessage();
-            }
-
-            boolean invertDir = (Boolean.valueOf(prop.getProperty("invert")));
-            if (invertDir) {
+            if (this.invertDir) {
                 applyBoardMove(-deltaX, -deltaY);
             } else {
                 applyBoardMove(deltaX, deltaY);
@@ -447,21 +451,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void resetView() {
-        Properties prop = new Properties();
-        InputStream input = null;
-        try {
-            input = new FileInputStream("rsc/config.properties");
-            prop.load(input);
-            input.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.getMessage();
-        }
-
-        boolean invertDir = (Boolean.valueOf(prop.getProperty("invert")));
         double centrePlateau[] = getCentreDuPlateau();
-        if (invertDir) {
+        if (this.invertDir) {
             moveDeltaBoard(centrePlateau[0], centrePlateau[1]);
         } else {
             moveDeltaBoard(-centrePlateau[0], -centrePlateau[1]);
@@ -1285,6 +1276,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         // bRedo.setStyle("-fx-background-color: Transparent;\n");
         bSug.setGraphic(new ImageView(new Image("icons/small-light-bulb.png")));
         bSug.setMinSize(32, 32);
+        bSug.setDisable(true);
 
         brules.setGraphic(new ImageView(new Image("icons/book_rules.png")));
         brules.setMinSize(32, 32);
@@ -1486,6 +1478,18 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         bResume.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             menu.setVisible(false);
+            Properties prop = new Properties();
+            InputStream input = null;
+            try {
+                input = new FileInputStream("rsc/config.properties");
+                prop.load(input);
+                input.close();
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            } catch (IOException ex) {
+                ex.getMessage();
+            }
+            this.invertDir = (Boolean.valueOf(prop.getProperty("invert")));
         });
 
         bRestart.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
@@ -1644,6 +1648,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             this.bUndo.setDisable(true);
         } else { //l'humain a joué puis directe après l'ia va jouer
             this.iaCanPlay = -1;
+            if (tempsRestant == -2) {
+                showLoader(); //L'IA est en train de calculer
+            }
         }
 
     }

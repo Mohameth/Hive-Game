@@ -47,9 +47,12 @@ public abstract class AbstractCoup implements Runnable,Serializable {
         this.tempsDebut = System.nanoTime();
         if (this.coup()) {
             this.tempsFin = System.nanoTime();
+            
+            joueur.joueCoup(null, null);
         }
         this.joueur.setTempsRestant((2000000000 - (tempsFin - tempsDebut))+ System.nanoTime());
         this.resetTemps();
+        this.plateau.notifieVue(joueur.getTempsRestant());
     }
     
 
@@ -120,5 +123,5 @@ public abstract class AbstractCoup implements Runnable,Serializable {
         }
         return false;
     }
-
+    
 }

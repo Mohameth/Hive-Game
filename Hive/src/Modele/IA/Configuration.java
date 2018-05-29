@@ -13,14 +13,11 @@ import javafx.util.Pair;
  */
 public class Configuration {
     Plateau plateau;
-    Plateau plateauOrigine;
     Joueur joueurCourant;
-    Joueur joueurCourantOrigine;
     Joueur adversaire;
     Configuration parent;
-    private ArrayList<Configuration> fils = null;
     boolean dejaEvalue = false;
-    private Integer evaluation = null;
+    private int evaluation;
     private Coup coupJoue;
     private boolean tourAdversaire = false;
     
@@ -52,9 +49,7 @@ public class Configuration {
      */
     public Configuration(Plateau plateau, Joueur joueurCourant, Joueur adversaire) {
         this.plateau = plateau;
-        this.plateauOrigine = plateau;
         this.joueurCourant = joueurCourant;
-        this.joueurCourantOrigine = joueurCourant;
         this.adversaire = adversaire;
     }
     
@@ -63,7 +58,7 @@ public class Configuration {
      * @return L'évaluation de la config., utilise IAEvaluation
      */
     public int getEvaluation() {
-        if (!dejaEvalue) {        
+        if (!dejaEvalue) {
             evaluation = new IAEvaluation(plateau, joueurCourant, adversaire).getEvaluation();
             dejaEvalue = true;
         }
@@ -77,7 +72,7 @@ public class Configuration {
      * @return true si la configuration est finale
      */
     public boolean estFeuille() {
-        return joueurCourant.reineBloquee() || adversaire.reineBloquee() || (dejaEvalue && fils.size() == 0);
+        return joueurCourant.reineBloquee() || adversaire.reineBloquee();// || (dejaEvalue && fils.size() == 0);
     }
     
     /**
@@ -88,22 +83,21 @@ public class Configuration {
      */
     public ArrayList<Configuration> getAllCoupsPossibles(boolean tourAdversaire) {
         this.tourAdversaire = tourAdversaire;
-        if (fils == null) {
-            fils = new ArrayList<>();
-            Joueur j = tourAdversaire ? adversaire : joueurCourant;
-            
-            for (Insecte i : j.getPions()) {
-                if (i.getEmplacement() == null) {
-                    for (HexaPoint p : plateau.casesVidePlacement(j)) {
-                        addFils(true, i, p);
-                    }
-                } else {
-                    for (Case c : i.deplacementPossible(plateau)) {
-                        addFils(false, i, c.getCoordonnees());
-                    }
+        ArrayList<Configuration> fils = new ArrayList<>();
+        Joueur j = tourAdversaire ? adversaire : joueurCourant;
+
+        for (Insecte i : j.getPions()) {
+            if (i.getEmplacement() == null) {
+                for (HexaPoint p : plateau.casesVidePlacement(j)) {
+                    addFils(fils, true, i, p);
+                }
+            } else {
+                for (Case c : i.deplacementPossible(plateau)) {
+                    addFils(fils, false, i, c.getCoordonnees());
                 }
             }
         }
+        
         
         return fils;
     }
@@ -139,13 +133,17 @@ public class Configuration {
      * @param i insecte à déplcer
      * @param p cible du déplacement
      */
-    private void addFils(boolean modePlacement, Insecte i, HexaPoint p) {
+    private void addFils(ArrayList<Configuration> fils, boolean modePlacement, Insecte i, HexaPoint p) {
         //Création d'un clone du plateau avec le même nombre de cases sans insectes
         Plateau newPlateau = (Plateau) plateau.clone();
         
         //Clone des joueurs et des insectes qu'ils contiennent
         Joueur newCourant = joueurCourant.clone();
         Joueur newAdversaire = adversaire.clone();
+        
+        //Increment du tour en fonction de qui joue
+        if (tourAdversaire) newCourant.incrementeTour();
+        else newAdversaire.incrementeTour();
         
         newCourant.setPlateau(newPlateau);
         newAdversaire.setPlateau(newPlateau);
