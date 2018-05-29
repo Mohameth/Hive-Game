@@ -26,15 +26,15 @@ public class Case implements Serializable{
         this.insectes = new ArrayList<>();
     }
 	
-	public Case clone(HexaPoint p,ArrayList<Insecte> EnjeuIA,ArrayList<Insecte> EnjeuAdverse,Joueur IA){
+	public Case clone(HexaPoint p,ArrayList<Insecte> EnjeuIA,ArrayList<Insecte> EnjeuAdverse){
     	Case c=new Case(p);
     	
-    	for(int i=0;i<insectes.size();i++) {
+    	for(int i=0;i<this.getNbInsectes();i++) {
     		Insecte in=this.insectes.get(i).clone();
     		c.insectes.add(in);
     		in.setEmplacement(c);
     		
-    		if(IA==in.getJoueur()) {
+    		if((in.getJoueur()) instanceof JoueurIA) {
         			EnjeuIA.add(in);
     		}else {
         			EnjeuAdverse.add(in);

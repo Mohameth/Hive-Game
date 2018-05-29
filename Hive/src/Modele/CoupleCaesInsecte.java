@@ -27,7 +27,10 @@ public class CoupleCaesInsecte {
 	}
 	
 	public boolean equals(CoupleCaesInsecte e) {
-		return insecte.equals(e.insecte) && c.equals(e.c);
+		if(c2==null) {
+			return e.c2==null && insecte.equals(e.insecte) && insecte.getJoueur()==e.getInsecte().getJoueur() && c.equals(e.c);
+		}
+		return c2.equals(e.c2) && insecte.equals(e.insecte) && insecte.getJoueur()==e.getInsecte().getJoueur() && c.equals(e.c);
 	}
 	
 }

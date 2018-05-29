@@ -28,7 +28,7 @@ public class Noeud {
 	public Noeud(int nbTour,int nbTourAdverse,Plateau plateau,ArrayList<Insecte>mainIA,ArrayList<Insecte>mainAdverse
 			,ArrayList<Insecte>PlateauIA,ArrayList<Insecte>PlateauAdverse) {
 		this.ni=1;
-		this.ti=1;
+		this.ti=1.0;
 		this.nbFils=0;
 		this.nbFilsMax=false;
 		this.profondeur=0;
