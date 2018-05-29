@@ -306,4 +306,8 @@ public abstract class Joueur implements Cloneable, Serializable {
             this.tourJoueur++;
         }
     }
+
+    public void addJoueurAdverse(Joueur joueur2) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

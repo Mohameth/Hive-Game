@@ -97,7 +97,7 @@ public class Vue extends Application {
         if (!load) {
             this.controleur.resetPartie();
         }
-        new VueTerrain(primaryStage, controleur, casJoueur, solo, load);
+        new VueTerrain(primaryStage, controleur, 8, true, false);
     }
 
     protected void SceneRegle(Stage primaryStage){ new  VueRegle(primaryStage);}

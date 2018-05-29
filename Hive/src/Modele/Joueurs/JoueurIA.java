@@ -40,12 +40,13 @@ public class JoueurIA extends Joueur {
     public JoueurIA(Plateau p, int difficulte, NumJoueur numJoueur, boolean extensions) {
         super(p, extensions, numJoueur);
         this.difficulte = difficulte;
-        this.setThreadCoup();
         this.adverse = null;
     }
 
+    @Override
     public void addJoueurAdverse(Joueur j) {
         this.adverse = j;
+        this.setThreadCoup();
     }
 
     public Joueur getAdverse() {
@@ -71,12 +72,12 @@ public class JoueurIA extends Joueur {
             //t.join();
         } catch (Exception ex) {
             System.err.print("Erreur Thread IA : " + ex);
-            
+
         }
 
         return false;
     }
-    
+
     public boolean joueCoup(Insecte insecte, HexaPoint cible) {
         if (this.coupChoisiExistant()) {
             if (this.placement) {
@@ -85,7 +86,9 @@ public class JoueurIA extends Joueur {
                 this.plateau.ajoutInsecte(this.insecteChoisi, this.caseChoisie);
             } else {
                 this.dernierDeplacement = new Deplacement(this.insecteChoisi, this.insecteChoisi.getEmplacement().getCoordonnees(), this.caseChoisie);
-                if (!(this.threadCoup instanceof CoupDifficile)) this.plateau.deleteInsecte(insecteChoisi, this.insecteChoisi.getEmplacement().getCoordonnees());
+                if (!(this.threadCoup instanceof CoupDifficile)) {
+                    this.plateau.deleteInsecte(insecteChoisi, this.insecteChoisi.getEmplacement().getCoordonnees());
+                }
                 this.plateau.deplaceInsecte(this.insecteChoisi, this.caseChoisie);
             }
             this.resetCoupChoisi();

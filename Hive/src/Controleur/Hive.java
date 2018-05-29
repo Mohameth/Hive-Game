@@ -49,7 +49,7 @@ public class Hive implements Serializable {
     }
 
     public void setJoueurs(int cas, boolean extension) { //Création des joueurs selon le type de partie
-        if (cas > 0 && cas < 8) {
+        if (cas > 0 && cas < 9) {
             switch (cas) {
                 case 1: //Joueur contre Joueur
                     this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
@@ -79,6 +79,11 @@ public class Hive implements Serializable {
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
                     this.joueur1 = new JoueurIA(this.plateau, 3, extension, NumJoueur.IADIFFICILE1, joueur2);  //hard
 
+                    break;
+                case 8:
+                    this.joueur1 = new JoueurIA(this.plateau, 2, NumJoueur.IAMOYEN1, extension);
+                    this.joueur2 = new JoueurIA(this.plateau, 1, extension, NumJoueur.IAFACILE2, joueur1);
+                    this.joueur1.addJoueurAdverse(this.joueur2);
                     break;
             }
         } else {
@@ -350,7 +355,7 @@ public class Hive implements Serializable {
     }
 
     public boolean UndoPossible() {
-        if (Undo) {
+        /*if (Undo) {
             if (this.joueur2 instanceof JoueurIA) {
                 return this.joueur1.UndoPossible();
             } else if (this.joueurCourant.equals(this.joueur1)) {
@@ -360,7 +365,8 @@ public class Hive implements Serializable {
             }
         } else {
             return false;
-        }
+        }*/
+        return false;
     }
 
     public Deplacement Undo() {
@@ -388,13 +394,14 @@ public class Hive implements Serializable {
     }
 
     public boolean RedoPossible() {
-        if (this.joueur2 instanceof JoueurIA) {
+        /*if (this.joueur2 instanceof JoueurIA) {
             return this.joueur1.RedoPossible();
         } else if (this.joueurCourant.equals(this.joueur1)) {
             return this.joueur1.RedoPossible();
         } else {
             return this.joueur2.RedoPossible();
-        }
+        }*/
+        return false;
     }
 
     public Deplacement Redo() {
