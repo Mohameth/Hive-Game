@@ -203,9 +203,11 @@ public class VueSettings extends Vue {
             if (chb.isSelected()) {
                 primaryStage.setFullScreen(true);
             } else {
+                primaryStage.hide();
                 primaryStage.setFullScreen(false);
                 primaryStage.setWidth(cb.getValue().x);
                 primaryStage.setHeight(cb.getValue().y);
+                System.out.println(primaryStage.getWidth() + "  " + primaryStage.getHeight());
             }
             if (cb1.getValue().equals(getLangStr("fr"))) {
                 language = "fr";
@@ -216,10 +218,12 @@ public class VueSettings extends Vue {
             }
             this.currentLocale = new Locale(this.language, this.country);
             this.messages = ResourceBundle.getBundle("MessagesBundle", currentLocale);
-            if(!inGame)
+            if(!inGame) {
+                primaryStage.show();
                 SceneMain(primaryStage);
-            else {
+            }else {
                 root.getChildren().remove(g);
+                primaryStage.show();
             }
         });
 
@@ -241,6 +245,8 @@ public class VueSettings extends Vue {
             this.currentLocale = new Locale(this.language, this.country);
             this.messages = ResourceBundle.getBundle("MessagesBundle", currentLocale);
             root.getChildren().remove(g);
+            primaryStage.hide();
+            primaryStage.show();
         });
 
         HBox hb5 = new HBox();
@@ -277,10 +283,12 @@ public class VueSettings extends Vue {
         Label t3 = new Label(getLangStr("white"));
         t3.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         t3.setTextFill(Color.WHITE);
+        t3.setMinWidth(50);
         nomJ1 = new TextField();
         Label t4 = new Label(getLangStr("black"));
         t4.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         t4.setTextFill(Color.WHITE);
+        t4.setMinWidth(50);
         nomJ2 = new TextField();
 
         HBox hb = new HBox();
@@ -289,7 +297,7 @@ public class VueSettings extends Vue {
 
         HBox hb1 = new HBox();
         hb1.getChildren().addAll(t4, nomJ2);
-        hb1.setSpacing(17);
+        hb1.setSpacing(10);
         hb1.setPadding(new Insets(0, 0, 30, 0));
 
         VBox v = new VBox();
