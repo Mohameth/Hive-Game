@@ -66,6 +66,15 @@ public class VueMulti extends Vue {
 
         HBox hb1 = new HBox();
         Label tp1 = new Label(getLangStr("black"));
+
+        double widthtp = tp.getWidth();
+        double widthtp1 = tp1.getWidth();
+        if (widthtp > widthtp1) {
+            tp1.setMinWidth(widthtp);
+        } else {
+            tp.setMinWidth(widthtp1);
+        }
+
         tp1.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         tp1.setTextFill(Color.WHITE);
         TextField ta1 = new TextField(prop.getProperty("joueurNoir"));
@@ -129,7 +138,7 @@ public class VueMulti extends Vue {
         root.prefWidthProperty().bind(s.widthProperty());
         root.setStyle("-fx-background-image: url(backPions2.jpg); -fx-background-size: cover;");
         primaryStage.setScene(s);
-        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER,KeyCombination.ALT_DOWN));
+        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER, KeyCombination.ALT_DOWN));
         primaryStage.setFullScreenExitHint("");
         primaryStage.setFullScreen(fs);
         primaryStage.show();
