@@ -121,12 +121,27 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         s.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
                 if (ke.getCode() == KeyCode.ESCAPE) {
-                    if(!isPause) {
+                    if (!isPause) {
                         root.getChildren().add(menu);
                         isPause = true;
                     } else {
                         root.getChildren().remove(menu);
                         isPause = false;
+
+                        Properties prop = new Properties();
+                        InputStream input = null;
+                        try {
+                            input = new FileInputStream("rsc/config.properties");
+                            prop.load(input);
+                            input.close();
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.getMessage();
+                        }
+
+                        invertDir = (Boolean.valueOf(prop.getProperty("invert")));
+
                     }
 
                 }
@@ -148,7 +163,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         this.invertDir = (Boolean.valueOf(prop.getProperty("invert")));
 
         primaryStage.setScene(s);
-        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER,KeyCombination.ALT_DOWN));
+        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER, KeyCombination.ALT_DOWN));
         primaryStage.setFullScreenExitHint("");
         primaryStage.setFullScreen(fs);
         primaryStage.getIcons().add(new Image("logo.png"));
@@ -1295,8 +1310,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         pDroite.getStylesheets().add("Vue/button.css");
 
         bPause.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-           root.getChildren().add(menu);
-           isPause = true;
+            root.getChildren().add(menu);
+            isPause = true;
         });
 
         if (!this.controleur.UndoPossible()) {
@@ -1627,7 +1642,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             this.bUndo.setDisable(true);
         } else { //l'humain a joué puis directe après l'ia va jouer
             this.iaCanPlay = -1;
-            if (tempsRestant == -2) showLoader(); //L'IA est en train de calculer
+            if (tempsRestant == -2) {
+                showLoader(); //L'IA est en train de calculer
+            }
         }
 
     }
@@ -2221,8 +2238,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         retour.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            if (pause)
+            if (pause) {
                 root.getChildren().add(menu);
+            }
         });
 
         root.getChildren().add(v);
