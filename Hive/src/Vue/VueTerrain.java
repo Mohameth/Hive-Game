@@ -1726,7 +1726,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 //System.out.println("L'ia est noir");
                 this.currentMainSelected = this.pionMainPlayer2.get(iaMove.getI().getType());
             }
-            updateMousePressedZoneLibre(getZoneLibreEgal(iaMove.getCible()));
+            //updateMousePressedZoneLibre(getZoneLibreEgal(iaMove.getCible()));
         } else { //deplace un pion de plateau -> plateau
             this.currentSelected = this.listPionsPlateau.get(iaMove.getOrig());
             updateMousePressedZoneLibre(getZoneLibreEgal(iaMove.getCible()));
