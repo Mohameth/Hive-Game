@@ -20,8 +20,8 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 public class Vue extends Application {
+
     protected double width = 1280.0;
     protected double heigth = 720.0;
     protected static Hive controleur;
@@ -31,7 +31,7 @@ public class Vue extends Application {
     public static ResourceBundle messages;
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws Exception {
         Properties prop = new Properties();
         String path;
         path = "rsc";
@@ -40,18 +40,20 @@ public class Vue extends Application {
             rep.mkdir();
             System.out.println("generation rsc");
         }
+
         path = "rsc/config.properties";
-        InputStream in = new FileInputStream(path);
         File config = new File(path);
         if (!config.exists()) {
             try {
-                Files.copy(in , config.toPath() , StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(getClass().getClassLoader().getResourceAsStream("config.properties"), config.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException ex) {
                 Logger.getLogger(HiveMain.class.getName()).log(Level.SEVERE, null, ex);
             }
             System.out.println("generation rsc/config.properties");
         }
 
+        
+        InputStream in = new FileInputStream(path);
         prop.load(in);
         String dim = prop.getProperty("tailleFenetre");
         String s[] = dim.split("x");
@@ -71,7 +73,7 @@ public class Vue extends Application {
         primaryStage.setMinHeight(heigth);
         primaryStage.setWidth(width);
         primaryStage.setHeight(heigth);
-        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER,KeyCombination.ALT_DOWN));
+        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER, KeyCombination.ALT_DOWN));
         primaryStage.setFullScreenExitHint("");
         primaryStage.setFullScreen(Boolean.valueOf(prop.getProperty("fullscreen")));
         SceneMain(primaryStage);
@@ -79,13 +81,13 @@ public class Vue extends Application {
 
     protected String getLangStr(String name) {
         String result = messages.getString(name);
-        if(result != null){
+        if (result != null) {
             return result;
         }
         return name;
     }
 
-    protected void SceneMain(Stage primaryStage){
+    protected void SceneMain(Stage primaryStage) {
         new VueMenuPrincipal(primaryStage);
     }
 
@@ -93,22 +95,28 @@ public class Vue extends Application {
         new VueSolo(primaryStage);
     }
 
-    protected void SceneTerrain(Stage primaryStage, int casJoueur, boolean solo, boolean load){
+    protected void SceneTerrain(Stage primaryStage, int casJoueur, boolean solo, boolean load) {
         if (!load) {
             this.controleur.resetPartie();
         }
         new VueTerrain(primaryStage, controleur, casJoueur, solo, load);
     }
 
-    protected void SceneRegle(Stage primaryStage){ new  VueRegle(primaryStage);}
+    protected void SceneRegle(Stage primaryStage) {
+        new VueRegle(primaryStage);
+    }
 
-    protected void SceneSettings(Stage primaryStage){
+    protected void SceneSettings(Stage primaryStage) {
         new VueSettings(primaryStage);
     }
 
-    protected void SceneLoad(Stage primaryStage){ new VueLoad(primaryStage);}
+    protected void SceneLoad(Stage primaryStage) {
+        new VueLoad(primaryStage);
+    }
 
-    protected void SceneMulti(Stage primaryStage){ new VueMulti(primaryStage);}
+    protected void SceneMulti(Stage primaryStage) {
+        new VueMulti(primaryStage);
+    }
 
     public static void initFenetre(String[] args, Hive c) {
         controleur = c;
