@@ -115,7 +115,6 @@ public class VueMenuPrincipal extends Vue {
         g.setStyle("-fx-background-image: url(background.jpg); -fx-background-size: cover;");
 
         root.getChildren().addAll(g);
-        System.out.println(primaryStage.getWidth() + "  " + primaryStage.getHeight());
         primaryStage.setScene(scene);
         primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER,KeyCombination.ALT_DOWN));
         primaryStage.setFullScreenExitHint("");

@@ -86,7 +86,7 @@ public class VueMulti extends Vue {
         ta1.setPromptText(getLangStr("blackPlayer"));
         ta1.setMaxSize(300.0, 5.0);
         hb1.getChildren().addAll(tp1, ta1);
-        hb1.setSpacing(10);
+        hb1.setSpacing(12);
         hb1.setAlignment(Pos.CENTER);
 
         Button bplay = new Button(getLangStr("jouer"));
