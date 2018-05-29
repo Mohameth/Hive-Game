@@ -109,7 +109,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         Scene s = new Scene(root, primaryStage.getWidth(), primaryStage.getHeight());
 
-
         //creation du plateau
         Rectangle rect = new Rectangle(0, 0);
         Image img = new Image("background.jpg");
@@ -124,7 +123,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         s.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
                 if (ke.getCode() == KeyCode.ESCAPE) {
-                    if(menu.isVisible()) {
+                    if (menu.isVisible()) {
                         menu.setVisible(false);
                     } else {
                         menu.setVisible(true);
@@ -2245,8 +2244,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         retour.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            if (pause)
+            if (pause) {
                 menu.setVisible(true);
+            }
         });
 
         root.getChildren().add(v);
@@ -2259,7 +2259,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         } else if (!next && numeroPageTuto > 0) {
             numeroPageTuto--;
         }
-        if (numeroPageTuto + 1 < 14) {
+        if (numeroPageTuto + 1 < 10) {
             l.setText(" " + (numeroPageTuto + 1) + "/15");
         } else {
             l.setText((numeroPageTuto + 1) + "/15");
