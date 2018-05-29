@@ -205,6 +205,8 @@ public class VueSettings extends Vue {
             } else {
                 primaryStage.hide();
                 primaryStage.setFullScreen(false);
+                primaryStage.setMinWidth(cb.getValue().x);
+                primaryStage.setMinHeight(cb.getValue().y);
                 primaryStage.setWidth(cb.getValue().x);
                 primaryStage.setHeight(cb.getValue().y);
             }
