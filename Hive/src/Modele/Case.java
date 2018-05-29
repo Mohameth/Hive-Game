@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import Modele.Joueurs.JoueurIA;
 
 public class Case implements Serializable{
 
