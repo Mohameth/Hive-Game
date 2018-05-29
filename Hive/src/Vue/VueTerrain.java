@@ -65,6 +65,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     ArrayList<HexaPoint> zoneLibresCollision;
     private Button bUndo;
     private Button bRedo;
+    private Button bSave;
+    private Button bLoad;
     private long iaCanPlay = -1;
     private boolean mainDrag = false;
     private boolean undoRedoMove = false;
@@ -1248,8 +1250,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bPause.setMinSize(100, 100);
         // bPause.setStyle("-fx-background-color: Transparent;\n");
 
-        Button bSave = new Button();
-        Button bLoad = new Button();
+        bSave = new Button();
+        bLoad = new Button();
 
         bSave.setGraphic(new ImageView(new Image("icons/diskette.png")));
         bSave.setMinSize(32, 32);
@@ -1382,7 +1384,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             });
 
             load.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
-                this.controleur.load(lv.getSelectionModel().getSelectedItem());
+                /* this.controleur.load(lv.getSelectionModel().getSelectedItem());
                 root.getChildren().removeAll(vLoad);
                 this.reconstructionPlateau(pModel);
                 if (!this.controleur.joueur2.getNumJoueur().estHumain()) {
@@ -1390,7 +1392,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 } else if (!this.controleur.joueur1.getNumJoueur().estHumain()) {
                     ((ComboBox) nomJoueur.get(0)).getSelectionModel().select(this.controleur.joueur2.getNumJoueur().getDifficulte() - 1);
                 }
-                this.updateMainJoueur();
+                this.updateMainJoueur();*/
+                this.controleur.load(lv.getSelectionModel().getSelectedItem());
+                this.SceneTerrain(primaryStage, this.controleur.getCasCourantJoueurs(), this.controleur.getCasCourantJoueurs() > 1, true);
             });
 
             root.getChildren().addAll(vLoad);
@@ -1648,10 +1652,16 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             this.iaCanPlay = tempsRestant;
             this.bRedo.setDisable(true);
             this.bUndo.setDisable(true);
+            this.bLoad.setDisable(true);
+            this.bSave.setDisable(true);
         } else { //l'humain a joué puis directe après l'ia va jouer
             this.iaCanPlay = -1;
             if (tempsRestant == -2) {
                 showLoader(); //L'IA est en train de calculer
+                this.bRedo.setDisable(true);
+                this.bUndo.setDisable(true);
+                this.bLoad.setDisable(true);
+                this.bSave.setDisable(true);
             }
         }
 
@@ -1736,6 +1746,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         this.controleur.joueurSuivant();
         updateUndoRedoBtn();
         updateMainJoueur();
+        this.bLoad.setDisable(false);
+        this.bSave.setDisable(false);
         reconstructionPlateau(this.pModel);
     }
 
@@ -1762,7 +1774,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             }
         } else //deplace le deplacement courant
         //si origine = null = depose pion de la main vers le plateau donc il faut le supprimer du plateau
-         if (depl.getOrig() == null) {
+        {
+            if (depl.getOrig() == null) {
                 //deplace le pion n'importe ou et le supprime
                 this.currentSelected = this.listPionsPlateau.get(depl.getCible());
                 this.currentSelected.setPionPosition(new HexaPoint(-47, -47, -47), -999, -999);
@@ -1774,6 +1787,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 updateMousePressedZoneLibre(getZoneLibreEgal(depl.getOrig()));
                 undoRedoMove = false;
             }
+        }
         removeSelectedPion();
         updateMainJoueur();
         updateUndoRedoBtn();
