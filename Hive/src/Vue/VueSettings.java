@@ -51,19 +51,19 @@ public class VueSettings extends Vue {
         getConfig();
         s.getStylesheets().add("Vue/button1.css");
         primaryStage.setScene(s);
-        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER,KeyCombination.ALT_DOWN));
+        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER, KeyCombination.ALT_DOWN));
         primaryStage.setFullScreenExitHint("");
         primaryStage.setFullScreen(fs);
         primaryStage.show();
     }
 
-    VueSettings(Stage primaryStage, boolean inGame, Group root){
+    VueSettings(Stage primaryStage, boolean inGame, Group root) {
         this.inGame = inGame;
         this.root = root;
         this.primaryStage = primaryStage;
     }
 
-    public GridPane getSetting(boolean solo){
+    public GridPane getSetting(boolean solo) {
         g = new GridPane();
 
         for (int column = 0; column < NB_COL; column++) {
@@ -75,7 +75,7 @@ public class VueSettings extends Vue {
         }
 
         g.getRowConstraints().get(1).setMinHeight((primaryStage.getHeight() / NB_LIGNE) / 2);
-        if(solo){
+        if (solo) {
             VBox soloH = getSolo();
             g.add(soloH, 2, 0, 3, 1);
         } else {
@@ -174,12 +174,12 @@ public class VueSettings extends Vue {
 
         chb = new CheckBox(getLangStr("fullscreen"));
         chb.setTextFill(Color.WHITE);
-        chb.setFont(Font.font("",FontWeight.BOLD,18));
+        chb.setFont(Font.font("", FontWeight.BOLD, 18));
         chb.setAlignment(Pos.TOP_CENTER);
 
         chb1 = new CheckBox(getLangStr("chgDir"));
         chb1.setTextFill(Color.WHITE);
-        chb1.setFont(Font.font("",FontWeight.BOLD,18));
+        chb1.setFont(Font.font("", FontWeight.BOLD, 18));
         chb1.setAlignment(Pos.TOP_CENTER);
 
         HBox hb3 = new HBox();
@@ -191,9 +191,9 @@ public class VueSettings extends Vue {
         Button bSave = new Button(getLangStr("saveGame"));
 
         bCancel.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            if(!inGame)
+            if (!inGame) {
                 SceneMain(primaryStage);
-            else {
+            } else {
                 root.getChildren().remove(g);
             }
         });
@@ -216,9 +216,9 @@ public class VueSettings extends Vue {
             }
             this.currentLocale = new Locale(this.language, this.country);
             this.messages = ResourceBundle.getBundle("MessagesBundle", currentLocale);
-            if(!inGame)
+            if (!inGame) {
                 SceneMain(primaryStage);
-            else {
+            } else {
                 root.getChildren().remove(g);
             }
         });
@@ -277,11 +277,14 @@ public class VueSettings extends Vue {
         Label t3 = new Label(getLangStr("white"));
         t3.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         t3.setTextFill(Color.WHITE);
+
         nomJ1 = new TextField();
+        nomJ1.setPromptText(getLangStr("whitePlayer"));
         Label t4 = new Label(getLangStr("black"));
         t4.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         t4.setTextFill(Color.WHITE);
         nomJ2 = new TextField();
+        nomJ2.setPromptText(getLangStr("blackPlayer"));
 
         HBox hb = new HBox();
         hb.getChildren().addAll(t3, nomJ1);
@@ -344,24 +347,27 @@ public class VueSettings extends Vue {
     private void setConfig() {
         Properties prop = new Properties();
         String propFileName = "rsc/config.properties";
-        if(group.getSelectedToggle() != null)
-            prop.setProperty("difficulteIA",group.getSelectedToggle().getUserData().toString());
-        if(nomJ2 != null && nomJ1 != null){
-            prop.setProperty("joueurBlanc",nomJ1.getText());
-            prop.setProperty("joueurNoir",nomJ2.getText());
+        if (group.getSelectedToggle() != null) {
+            prop.setProperty("difficulteIA", group.getSelectedToggle().getUserData().toString());
         }
-        prop.setProperty("langue",cb1.getValue());
-        prop.setProperty("tailleFenetre",cb.getValue().x + "x" + cb.getValue().y);
-        if(chb.isSelected())
-            prop.setProperty("fullscreen","true");
-        else
-            prop.setProperty("fullscreen","false");
-        if(chb1.isSelected())
-            prop.setProperty("invert","true");
-        else
-            prop.setProperty("invert","false");
+        if (nomJ2 != null && nomJ1 != null) {
+            prop.setProperty("joueurBlanc", nomJ1.getText());
+            prop.setProperty("joueurNoir", nomJ2.getText());
+        }
+        prop.setProperty("langue", cb1.getValue());
+        prop.setProperty("tailleFenetre", cb.getValue().x + "x" + cb.getValue().y);
+        if (chb.isSelected()) {
+            prop.setProperty("fullscreen", "true");
+        } else {
+            prop.setProperty("fullscreen", "false");
+        }
+        if (chb1.isSelected()) {
+            prop.setProperty("invert", "true");
+        } else {
+            prop.setProperty("invert", "false");
+        }
         try {
-            prop.store(new FileWriter(propFileName),"");
+            prop.store(new FileWriter(propFileName), "");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -379,28 +385,31 @@ public class VueSettings extends Vue {
         } catch (IOException e) {
             e.getMessage();
         }
-        if(!group.getToggles().isEmpty()) {
+        if (!group.getToggles().isEmpty()) {
             for (Toggle t : group.getToggles()) {
-                if (t.getUserData().equals(prop.getProperty("difficulteIA")))
+                if (t.getUserData().equals(prop.getProperty("difficulteIA"))) {
                     group.selectToggle(t);
+                }
             }
         }
         chb.setSelected(Boolean.valueOf(prop.getProperty("fullscreen")));
         chb1.setSelected(Boolean.valueOf(prop.getProperty("invert")));
-        if(nomJ1 != null && nomJ2 != null){
-            nomJ1.setText(prop.getProperty("joueurBlanc",nomJ1.getText()));
-            nomJ2.setText(prop.getProperty("joueurNoir",nomJ2.getText()));
+        if (nomJ1 != null && nomJ2 != null) {
+            nomJ1.setText(prop.getProperty("joueurBlanc", nomJ1.getText()));
+            nomJ2.setText(prop.getProperty("joueurNoir", nomJ2.getText()));
         }
 
-        for (String s : cb1.getItems()){
-            if(s.equals(prop.getProperty("langue")))
+        for (String s : cb1.getItems()) {
+            if (s.equals(prop.getProperty("langue"))) {
                 cb1.getSelectionModel().select(s);
+            }
         }
 
-        for(Point p : cb.getItems()){
+        for (Point p : cb.getItems()) {
             String s = p.x + "x" + p.y;
-            if(s.equals(prop.getProperty("tailleFenetre")))
+            if (s.equals(prop.getProperty("tailleFenetre"))) {
                 cb.getSelectionModel().select(p);
+            }
         }
     }
 }
