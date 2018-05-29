@@ -74,6 +74,10 @@ public class VueMenuPrincipal extends Vue {
         tuto.setText(getLangStr("rule"));
         tuto.setMaxWidth(200.0);
 
+        tuto.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            SceneRegle(primaryStage);
+        });
+
         Button setting = new Button();
         setting.setText(getLangStr("setting"));
         setting.setMaxWidth(200.0);
@@ -111,6 +115,7 @@ public class VueMenuPrincipal extends Vue {
         g.setStyle("-fx-background-image: url(background.jpg); -fx-background-size: cover;");
 
         root.getChildren().addAll(g);
+        System.out.println(primaryStage.getWidth() + "  " + primaryStage.getHeight());
         primaryStage.setScene(scene);
         primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER,KeyCombination.ALT_DOWN));
         primaryStage.setFullScreenExitHint("");

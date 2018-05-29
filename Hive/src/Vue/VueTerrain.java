@@ -80,6 +80,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         this.isPause = false;
         root = new Group();
         getPause();
+        menu.minHeightProperty().bind(primaryStage.heightProperty());
+        menu.minWidthProperty().bind(primaryStage.widthProperty());
 
         this.controleur = controleur;
         //this.controleur.resetPartie();
@@ -107,6 +109,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         Scene s = new Scene(root, primaryStage.getWidth(), primaryStage.getHeight());
 
+
         //creation du plateau
         Rectangle rect = new Rectangle(0, 0);
         Image img = new Image("background.jpg");
@@ -121,12 +124,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         s.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
                 if (ke.getCode() == KeyCode.ESCAPE) {
-                    if (!isPause) {
-                        root.getChildren().add(menu);
-                        isPause = true;
+                    if(menu.isVisible()) {
+                        menu.setVisible(false);
                     } else {
-                        root.getChildren().remove(menu);
-                        isPause = false;
+                        menu.setVisible(true);
+                        menu.toFront();
 
                         Properties prop = new Properties();
                         InputStream input = null;
@@ -456,7 +458,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             moveDeltaBoard(-centrePlateau[0], -centrePlateau[1]);
         }
 
-        zoomImage(0.5);
+        zoomImage(0.3);
         removeSelectedPion();
         this.updateUndoRedoBtn();
         //AddplacePion();
@@ -1274,6 +1276,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         // bRedo.setStyle("-fx-background-color: Transparent;\n");
         bSug.setGraphic(new ImageView(new Image("icons/small-light-bulb.png")));
         bSug.setMinSize(32, 32);
+        bSug.setDisable(true);
 
         brules.setGraphic(new ImageView(new Image("icons/book_rules.png")));
         brules.setMinSize(32, 32);
@@ -1310,8 +1313,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         pDroite.getStylesheets().add("Vue/button.css");
 
         bPause.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            root.getChildren().add(menu);
-            isPause = true;
+            menu.setVisible(true);
+            menu.toFront();
         });
 
         if (!this.controleur.UndoPossible()) {
@@ -1467,15 +1470,14 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         menu = new VBox();
         menu.getChildren().addAll(t, bResume, bRules, bRestart, bSettings, bMain, bQuit);
-        menu.setMinSize(width, heigth);
-        menu.prefHeightProperty().bind(primaryStage.getScene().heightProperty());
-        menu.prefWidthProperty().bind(primaryStage.getScene().widthProperty());
+        menu.setMinSize(primaryStage.getWidth(), primaryStage.getHeight());
         menu.setAlignment(Pos.CENTER);
         menu.setSpacing(10);
         menu.getStylesheets().add("Vue/button.css");
         menu.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
 
         bResume.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            menu.setVisible(false);
             Properties prop = new Properties();
             InputStream input = null;
             try {
@@ -1488,28 +1490,29 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 ex.getMessage();
             }
             this.invertDir = (Boolean.valueOf(prop.getProperty("invert")));
-            root.getChildren().removeAll(menu);
-            isPause = false;
         });
 
         bRestart.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            root.getChildren().removeAll(menu);
-            isPause = false;
+            //root.getChildren().removeAll(menu);
+            menu.setVisible(false);
             this.recommencerPartie();
         });
 
         bMain.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            root.getChildren().removeAll(menu);
+            //root.getChildren().removeAll(menu);
+            menu.setVisible(false);
             getPupBackMain();
         });
 
         bQuit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            root.getChildren().removeAll(menu);
+            //root.getChildren().removeAll(menu);
+            menu.setVisible(false);
             getPupExit();
         });
 
         bRules.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            root.getChildren().removeAll(menu);
+            //root.getChildren().removeAll(menu);
+            menu.setVisible(false);
             getRule(true);
         });
 
@@ -1517,6 +1520,9 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             VueSettings v = new VueSettings(primaryStage, true, root);
             root.getChildren().add(v.getSetting(solo));
         });
+
+        root.getChildren().add(menu);
+        menu.setVisible(false);
     }
 
     private BorderPane getHudGauche() {
@@ -1686,7 +1692,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         updateMainJoueur();
         hudToFront();
-        this.resetView();
+        //this.resetView();
+        this.totZoom = 0.5;
     }
 
     public void joueurJoue() {
@@ -2150,7 +2157,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            root.getChildren().add(menu);
+            menu.setVisible(true);
         });
         root.getChildren().add(v);
     }
@@ -2185,7 +2192,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            root.getChildren().add(menu);
+            menu.setVisible(true);
         });
         root.getChildren().add(v);
         v.toFront();
@@ -2196,14 +2203,14 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         String[] urlImg = new String[20];
         l.setStyle("-fx-font-weight: bold;\n-fx-font-size: 100px;\n-fx-text-fill: white;");
 
-        for (int x = 1; x < 14; x++) {
+        for (int x = 1; x < 16; x++) {
             urlImg[x - 1] = "rules/rule" + x + ".png";
         }
 
         ImageView img = new ImageView(new Image(urlImg[numeroPageTuto]));
         Button back = new Button(getLangStr("previous"));
         back.setPrefWidth(150);
-        Label nbPage = new Label(" " + (numeroPageTuto + 1) + "/13");
+        Label nbPage = new Label(" " + (numeroPageTuto + 1) + "/15");
         nbPage.setStyle("-fx-font-weight: bold;\n-fx-font-size: 1.1em;\n-fx-text-fill: white;");
         Button next = new Button(getLangStr("next"));
         next.setPrefWidth(150);
@@ -2231,16 +2238,15 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         next.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             back.setDisable(false);
             img.setImage(changeImg(urlImg, true, nbPage));
-            if (numeroPageTuto == 12) {
+            if (numeroPageTuto == 14) {
                 next.setDisable(true);
             }
         });
 
         retour.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            if (pause) {
-                root.getChildren().add(menu);
-            }
+            if (pause)
+                menu.setVisible(true);
         });
 
         root.getChildren().add(v);
@@ -2248,15 +2254,15 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private Image changeImg(String[] url, boolean next, Label l) {
-        if (next && numeroPageTuto < 12) {
+        if (next && numeroPageTuto < 14) {
             numeroPageTuto++;
         } else if (!next && numeroPageTuto > 0) {
             numeroPageTuto--;
         }
-        if (numeroPageTuto + 1 < 10) {
-            l.setText(" " + (numeroPageTuto + 1) + "/13");
+        if (numeroPageTuto + 1 < 14) {
+            l.setText(" " + (numeroPageTuto + 1) + "/15");
         } else {
-            l.setText((numeroPageTuto + 1) + "/13");
+            l.setText((numeroPageTuto + 1) + "/15");
         }
         return new Image(url[numeroPageTuto]);
 

@@ -100,6 +100,8 @@ public class Vue extends Application {
         new VueTerrain(primaryStage, controleur, casJoueur, solo, load);
     }
 
+    protected void SceneRegle(Stage primaryStage){ new  VueRegle(primaryStage);}
+
     protected void SceneSettings(Stage primaryStage){
         new VueSettings(primaryStage);
     }

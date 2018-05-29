@@ -59,10 +59,14 @@ public class VueMulti extends Vue {
         Label tp = new Label(getLangStr("white"));
         tp.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         tp.setTextFill(Color.WHITE);
+        tp.setMinWidth(50);
         TextField ta = new TextField(prop.getProperty("joueurBlanc"));
+        ta.setPromptText(getLangStr("whitePlayer"));
         ta.setMaxSize(200.0, 5.0);
         HBox hb = new HBox(tp, ta);
         hb.setSpacing(10);
+        hb.setAlignment(Pos.CENTER);
+        hb.setPadding(new Insets(10,0,0,0));
 
         HBox hb1 = new HBox();
         Label tp1 = new Label(getLangStr("black"));
@@ -77,10 +81,13 @@ public class VueMulti extends Vue {
 
         tp1.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         tp1.setTextFill(Color.WHITE);
+        tp1.setMinWidth(50);
         TextField ta1 = new TextField(prop.getProperty("joueurNoir"));
+        ta1.setPromptText(getLangStr("blackPlayer"));
         ta1.setMaxSize(300.0, 5.0);
         hb1.getChildren().addAll(tp1, ta1);
-        hb1.setSpacing(14);
+        hb1.setSpacing(10);
+        hb1.setAlignment(Pos.CENTER);
 
         Button bplay = new Button(getLangStr("jouer"));
         bplay.setMinSize(200.0, 50.0);

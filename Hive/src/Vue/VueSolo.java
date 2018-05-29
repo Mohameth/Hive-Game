@@ -60,6 +60,7 @@ public class VueSolo extends Vue {
         tp.setStyle("-fx-font-weight: bold;-fx-font-size: 24px;");
         tp.setTextFill(Color.WHITE);
         TextField ta = new TextField(prop.getProperty("joueurBlanc"));
+        ta.setPromptText(getLangStr("whitePlayer"));
 
         ta.setMaxSize(300.0, 5.0);
         hb.getChildren().addAll(tp, ta);
@@ -85,10 +86,11 @@ public class VueSolo extends Vue {
         rEasy.setToggleGroup(group);
         rMedium.setToggleGroup(group);
         rHard.setToggleGroup(group);
-        if(!group.getToggles().isEmpty()) {
+        if (!group.getToggles().isEmpty()) {
             for (Toggle toggle : group.getToggles()) {
-                if (toggle.getUserData().equals(prop.getProperty("difficulteIA")))
+                if (toggle.getUserData().equals(prop.getProperty("difficulteIA"))) {
                     group.selectToggle(toggle);
+                }
             }
         }
 
@@ -141,14 +143,14 @@ public class VueSolo extends Vue {
                     switch (group2.getSelectedToggle().getUserData().toString()) {
                         case "black":
                             difficulte = difficulte + 3;
-                            prop.setProperty("joueurNoir",ta.getText());
+                            prop.setProperty("joueurNoir", ta.getText());
                             break;
                         case "white":
-                            prop.setProperty("joueurBlanc",ta.getText());
+                            prop.setProperty("joueurBlanc", ta.getText());
                             break;
                     }
                     try {
-                        prop.store(new FileWriter("rsc/config.properties"),"");
+                        prop.store(new FileWriter("rsc/config.properties"), "");
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
