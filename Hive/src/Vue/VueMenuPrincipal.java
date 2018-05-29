@@ -116,7 +116,7 @@ public class VueMenuPrincipal extends Vue {
 
         root.getChildren().addAll(g);
         primaryStage.setScene(scene);
-        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER,KeyCombination.ALT_DOWN));
+        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER, KeyCombination.ALT_DOWN));
         primaryStage.setFullScreenExitHint("");
         primaryStage.setFullScreen(fs);
         primaryStage.getIcons().add(new Image("logo.png"));
