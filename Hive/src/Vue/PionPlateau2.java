@@ -78,10 +78,10 @@ public class PionPlateau2 implements ObservableVue {
         this.imagePion.updateImageDessous(true);
         //mettre l'image au meme coordonnée que le pion en dessous pour les aligners perfectement
         this.imagePion.setImgPosXY(pionEnDessous.getImgViewPion().getImgPosX(), pionEnDessous.getImgViewPion().getImgPosY());
-        this.imagePion.setPrevImgPosXY(pionEnDessous.getImgViewPion().getPrevImgPosX(), pionEnDessous.getImgViewPion().getPrevImgPosY());
+        // this.imagePion.setPrevImgPosXY(pionEnDessous.getImgViewPion().getPrevImgPosX(), pionEnDessous.getImgViewPion().getPrevImgPosY());
         this.imagePion.setCurrentZoom(pionEnDessous.getZoom());
 
-        //this.validCurrentPosXY();
+        this.validCurrentPosXY();
         notifyPionPlateauAddEnDessous(this);
     }
 
