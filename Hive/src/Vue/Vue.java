@@ -57,7 +57,7 @@ public class Vue extends Application {
         String s[] = dim.split("x");
         width = Integer.parseInt(s[0]);
         heigth = Integer.parseInt(s[1]);
-        if(prop.get("langue").equals("Français") || prop.get("langue").equals("French")) {
+        if(prop.get("langue").equals("Francais")) {
             this.language = "fr";
             this.country = "FR";
         } else {
