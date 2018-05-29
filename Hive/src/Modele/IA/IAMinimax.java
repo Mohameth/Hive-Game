@@ -51,7 +51,8 @@ public class IAMinimax extends Joueur {
             //this.placementInsecte(i, coup.getCible());
             i.setEmplacement(this.plateau.getCase(coup.getCible()));
             this.plateau.ajoutInsecte(i, coup.getCible());
-            //System.out.println(i.getClass().getCanonicalName() + " en " + coup.getCible() + " (placement)");
+            
+            this.incrementeTour();
             return true;
         }
         
@@ -62,7 +63,7 @@ public class IAMinimax extends Joueur {
         //System.out.println(i.getClass().getCanonicalName() + " en " + coup.getCible());
         lastCoup = coup;
               
-        this.tourJoueur++;
+        this.incrementeTour();
         return true;
     }
     

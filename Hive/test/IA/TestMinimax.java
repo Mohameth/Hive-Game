@@ -42,12 +42,14 @@ public class TestMinimax {
                 if ((joueur1.reineBloquee() || joueur2.reineBloquee())) {
                     fini = true;
                 } else if (!fini) {
-                    fini = !joueur2.coup(null, null);
+                    joueur2.coup(null, null);
                     //System.out.println("J2 à joué");
                     if ((joueur1.reineBloquee() || joueur2.reineBloquee())) {
                         fini = true;
                     }
                 }
+                
+                System.out.println(coup);
                 coup++;
             }
 
@@ -62,12 +64,6 @@ public class TestMinimax {
             } else {
                 nbDraw++;
             }
-            
-            /*x++;
-            if (x == 10) {
-                x = 0;
-                System.out.println(" --> "+j);
-            }*/
             System.out.println(" --> "+j);
             System.out.println("Victoires J1: "+nbWinJ1);
             System.out.println("Victoires J2: "+nbWinJ2);

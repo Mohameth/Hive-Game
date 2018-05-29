@@ -56,9 +56,11 @@ public class IAFacile extends Joueur {
 
         if (!this.tousPionsPosables()) {
             this.jouerReine();
+            this.incrementeTour();
             return true;
         }else if(coupGagnant()) {
-        	return true;
+            this.incrementeTour();
+            return true;
         }
         do {
             insecte = this.getPions().get(r.nextInt(this.getPions().size()));
@@ -74,7 +76,7 @@ public class IAFacile extends Joueur {
                     insecte.setEmplacement(this.plateau.getCase(p));
                     this.plateau.ajoutInsecte(insecte, p);
                     
-                    //System.out.println(insecte.getClass() + " en " + p);
+                    this.incrementeTour();
                     return true;
                 }
             } else if (this.reinePosee()) {
@@ -88,7 +90,7 @@ public class IAFacile extends Joueur {
         this.plateau.deleteInsecte(insecte, insecte.getEmplacement().getCoordonnees());
         this.plateau.deplaceInsecte(insecte, p);
         
-        //System.out.println(insecte.getClass() + " en " + p);
+        this.incrementeTour();
         return true;    
     }
     
@@ -97,7 +99,10 @@ public class IAFacile extends Joueur {
         Random ra = new Random();
         ArrayList<Case> cases = plateau.pointVersCase(plateau.casesVidePlacement(this));
         HexaPoint c = cases.get(ra.nextInt(cases.size())).getCoordonnees();
-
+        
+        r.setEmplacement(this.plateau.getCase(c));
+        this.plateau.ajoutInsecte(r, c);
+        
         this.setDernierDeplacement(new Deplacement(r, null, c));
     }
     
@@ -117,10 +122,13 @@ public class IAFacile extends Joueur {
                 if (!in.get(i).getEmplacement().estVoisin(c) || in.get(i).getEmplacement().getNbInsectes() > 1) {
                     this.setDernierDeplacement(new Deplacement(in.get(i), in.get(i).getEmplacement().getCoordonnees(), c.getCoordonnees()));
                     in.get(i).deplacement(plateau, c.getCoordonnees());
+                    this.incrementeTour();
                     return true;
                 }
             }
         }
+        
+        this.incrementeTour();
         return false;
     }
     
