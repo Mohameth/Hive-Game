@@ -49,17 +49,17 @@ public class VueMulti extends Vue {
         GridPane root = new GridPane();
 
         for (int column = 0; column < NB_COL; column++) {
-            root.getColumnConstraints().add(new ColumnConstraints(primaryStage.getWidth() / NB_COL, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, HPos.LEFT, true));
+            root.getColumnConstraints().add(new ColumnConstraints(primaryStage.getWidth() / NB_COL, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, HPos.CENTER, true));
         }
 
         for (int row = 0; row < 1; row++) {
-            root.getRowConstraints().add(new RowConstraints(primaryStage.getHeight(), Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, VPos.TOP, true));
+            root.getRowConstraints().add(new RowConstraints(primaryStage.getHeight(), Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, VPos.CENTER, true));
         }
 
         Label tp = new Label(getLangStr("white"));
         tp.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         tp.setTextFill(Color.WHITE);
-        tp.setMinWidth(50);
+        tp.setPrefWidth(70);
         TextField ta = new TextField(prop.getProperty("joueurBlanc"));
         ta.setPromptText(getLangStr("whitePlayer"));
         ta.setMaxSize(200.0, 5.0);
@@ -71,22 +71,22 @@ public class VueMulti extends Vue {
         HBox hb1 = new HBox();
         Label tp1 = new Label(getLangStr("black"));
 
-        double widthtp = tp.getWidth();
+        /*double widthtp = tp.getWidth();
         double widthtp1 = tp1.getWidth();
         if (widthtp > widthtp1) {
-            tp1.setMinWidth(widthtp);
+            tp1.setPrefWidth(widthtp);
         } else {
-            tp.setMinWidth(widthtp1);
-        }
+            tp.setPrefWidth(widthtp1);
+        }*/
 
         tp1.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         tp1.setTextFill(Color.WHITE);
-        tp1.setMinWidth(50);
+        tp1.setPrefWidth(70);
         TextField ta1 = new TextField(prop.getProperty("joueurNoir"));
         ta1.setPromptText(getLangStr("blackPlayer"));
         ta1.setMaxSize(300.0, 5.0);
         hb1.getChildren().addAll(tp1, ta1);
-        hb1.setSpacing(12);
+        hb1.setSpacing(10);
         hb1.setAlignment(Pos.CENTER);
 
         Button bplay = new Button(getLangStr("jouer"));
