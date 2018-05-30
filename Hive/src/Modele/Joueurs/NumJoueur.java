@@ -29,4 +29,25 @@ public enum NumJoueur {
     public boolean estHumain() {
         return this.contenu < 3;
     }
+    
+    public int getDifficulte(){
+        switch (contenu) {
+            case 3:
+            case 4:
+                return 1;
+            case 5:
+            case 6:
+                return 2;
+            case 7:
+            case 8:
+                return 3;
+            default:
+                try {
+                    throw new Exception("Ce joueur n'est pas une IA");
+                } catch (Exception e){
+                    System.err.println("ERREUR Clone plateau : " + e);
+                }
+        }
+        return 0;
+    }
 }

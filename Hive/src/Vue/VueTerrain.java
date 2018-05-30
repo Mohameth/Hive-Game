@@ -1,12 +1,16 @@
 package Vue;
 
+import Controleur.Hive;
+import Modele.Case;
+import Modele.Deplacement;
+import Modele.HexaPoint;
+import Modele.Insectes.Insecte;
 import Modele.Insectes.TypeInsecte;
+import Modele.Joueurs.Joueur;
 import Modele.Joueurs.JoueurIA;
 import Modele.Joueurs.NumJoueur;
-import Controleur.Hive;
-import Modele.*;
-import Modele.Insectes.Insecte;
-import Modele.Joueurs.Joueur;
+import Modele.Plateau;
+import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -21,9 +25,7 @@ import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -40,14 +42,6 @@ import javafx.util.Duration;
 import java.io.*;
 import java.util.*;
 
-import static com.sun.javafx.PlatformUtil.isWindows;
-import java.awt.event.ActionListener;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.Timer;
-import javafx.animation.AnimationTimer;
-
 public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     private ArrayList<ZoneLibre> listZoneLibres;
@@ -57,7 +51,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private boolean selectionValidee; //l'utilisateur a fait un mouse release sur le pion
     private ZoneLibre currentSelectionIsSnapped; //l'utilisateur a fait un mouse release sur le pion
     private PionMain currentMainSelected;
-    private int sceneWidth, sceneHeight; //taille de la scene
+    private double sceneWidth, sceneHeight; //taille de la scene
     private double totZoom;  //zoom actuel du plateau
     private ArrayList<BorderPane> hudElems;
     private HashMap<TypeInsecte, PionMain> pionMainPlayer1, pionMainPlayer2;
@@ -67,24 +61,38 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     private ArrayList<Node> nomJoueur;
     private VBox listPionEnDessousHover;
     private Plateau pModel;
-    private boolean solo;
+    private boolean solo, isPause;
     ArrayList<HexaPoint> zoneLibresCollision;
     private Button bUndo;
     private Button bRedo;
+    private Button bSave;
+    private Button bLoad;
     private long iaCanPlay = -1;
     private boolean mainDrag = false;
+    private boolean undoRedoMove = false;
+    private BorderPane loaderImg = null;
+    private boolean invertDir = false;
+    private VBox menu;
 
-    VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs, boolean solo) {
+    VueTerrain(Stage primaryStage, Hive controleur, int casJoueurs, boolean solo, boolean load) {
         boolean fs = primaryStage.isFullScreen();
         this.primaryStage = primaryStage;
         this.nomJoueur = new ArrayList<>();
         this.solo = solo;
+        this.isPause = false;
         root = new Group();
+        getPause();
+        menu.minHeightProperty().bind(primaryStage.heightProperty());
+        menu.minWidthProperty().bind(primaryStage.widthProperty());
 
         this.controleur = controleur;
-        this.controleur.reset();
-        this.controleur.setJoueurs(casJoueurs, true);
+        //this.controleur.resetPartie();
+        if (!load) {
+            this.controleur.setJoueurs(casJoueurs, true);
+        }
+
         this.controleur.addObserverPlateau(this);
+
         this.pModel = null;
 
         pionMainPlayer1 = new HashMap<>();
@@ -95,8 +103,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         hudElems = new ArrayList<>();
         this.currentSelected = null; //aucune piece selectionnée
         this.currentMainSelected = null; //aucune piece selectionnée
-        this.sceneWidth = 1280; //taille de base
-        this.sceneHeight = 720;
+        this.sceneWidth = primaryStage.getWidth();
+        this.sceneHeight = primaryStage.getHeight();
         this.totZoom = 0.5;
         this.selectionValidee = false;
         this.currentSelectionIsSnapped = null;
@@ -115,8 +123,52 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         rect.widthProperty().bind(s.widthProperty());
         rect.heightProperty().bind(s.heightProperty());
         makeSceneResizeEvent(s);//Window resize event
+        s.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent ke) {
+                if (ke.getCode() == KeyCode.ESCAPE) {
+                    if (menu.isVisible()) {
+                        menu.setVisible(false);
+                    } else {
+                        menu.setVisible(true);
+                        menu.toFront();
+
+                        Properties prop = new Properties();
+                        InputStream input = null;
+                        try {
+                            input = new FileInputStream("rsc/config.properties");
+                            prop.load(input);
+                            input.close();
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.getMessage();
+                        }
+
+                        invertDir = (Boolean.valueOf(prop.getProperty("invert")));
+
+                    }
+
+                }
+            }
+        });
+
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("rsc/config.properties");
+            prop.load(input);
+            input.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+
+        this.invertDir = (Boolean.valueOf(prop.getProperty("invert")));
 
         primaryStage.setScene(s);
+        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER, KeyCombination.ALT_DOWN));
+        primaryStage.setFullScreenExitHint("");
         primaryStage.setFullScreen(fs);
         primaryStage.getIcons().add(new Image("logo.png"));
         primaryStage.show();
@@ -136,6 +188,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         ArrayList<Insecte> initInsectes = new ArrayList<>();
 
         initInsectes = this.controleur.mainsInit();
+        if (load) {
+            initInsectes = this.controleur.getPlaceHolder();
+        }
+
         BorderPane playerOne = getHudPlayer(getnbInsect(initInsectes), 1, !this.controleur.getJoueur1().getNumJoueur().estHumain()); //initialisation tout les pions possable
         BorderPane playerTwo = getHudPlayer(getnbInsect(initInsectes), 2, !this.controleur.getJoueur2().getNumJoueur().estHumain());
 
@@ -147,11 +203,20 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         playerTwo.setLayoutY(-110);
         playerTwo.translateYProperty().bind(s.heightProperty());
 
-        root.getChildren().addAll(p, ctrlView, playerOne, playerTwo);
+        loaderImg = createLoader();
+        hideLoader();
+        root.getChildren().addAll(p, ctrlView, playerOne, playerTwo, loaderImg);
+
+        loaderImg.setLayoutX(-118);
+        loaderImg.setLayoutY(-300);
+        loaderImg.translateXProperty().bind(s.widthProperty());
+        loaderImg.translateYProperty().bind(s.heightProperty());
+
         this.hudElems.add(ctrlView);
         this.hudElems.add(playerOne);
         this.hudElems.add(playerTwo);
         this.hudElems.add(p);
+        this.hudElems.add(loaderImg);
         //faire au clic passer devant HUD
         hudToFront();
 
@@ -162,12 +227,23 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             }
         };
         anim.start();
-
+        if (load) {
+            this.pModel = this.controleur.getPlateau();
+            this.reconstructionPlateau(pModel);
+        }
         coupJoue();
         if (this.controleur.getJoueur1().getTourJoueur() == 1 && !currentPlayerHumain()) {
             //je suis une ia qui commence
             this.controleur.coupInit();
         }
+    }
+
+    private void hideLoader() {
+        this.loaderImg.setVisible(false);
+    }
+
+    private void showLoader() {
+        this.loaderImg.setVisible(true);
     }
 
     public void displayZoneLibre() {
@@ -213,6 +289,22 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             }
         }
         hudToFront();
+    }
+
+    private BorderPane createLoader() {
+        //loading image
+        BorderPane loader = new BorderPane();
+        Image imgIaLoad = new Image("icons/iaload.gif");
+        ImageView imgvLoad = new ImageView();
+        imgvLoad.setCursor(Cursor.WAIT);
+        imgvLoad.setImage(imgIaLoad);
+
+        imgvLoad.setFitWidth(imgIaLoad.getWidth());
+        imgvLoad.setFitHeight(imgIaLoad.getHeight());
+        //centrage du point dans l'image
+
+        loader.setCenter(imgvLoad);
+        return loader;
     }
 
     private boolean containsSamePoint(ArrayList<HexaPoint> aZL, ZoneLibre zone) {
@@ -278,6 +370,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void moveDeltaBoard(double x, double y) {
+        if (this.invertDir) {
+            x = -x;
+            y = -y;
+        }
+
         for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
             entry.getValue().moveDeltaBoard(x, y);
         }
@@ -299,12 +396,12 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void updateWindowWidth(Number w) {
-        this.sceneWidth = w.intValue();
+        this.sceneWidth = w.doubleValue();
         updateTranslationPiece();
     }
 
     private void updateWindowHeight(Number h) {
-        this.sceneHeight = h.intValue();
+        this.sceneHeight = h.doubleValue();
         updateTranslationPiece();
     }
 
@@ -343,7 +440,13 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 final MouseEvent mouseEvent) -> {
             double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x;
             double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y;
-            applyBoardMove(deltaX, deltaY);
+
+            if (this.invertDir) {
+                applyBoardMove(-deltaX, -deltaY);
+            } else {
+                applyBoardMove(deltaX, deltaY);
+            }
+
             lastMouseLocation.x = mouseEvent.getSceneX();
             lastMouseLocation.y = mouseEvent.getSceneY();
         });
@@ -354,21 +457,65 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private void resetView() {
+        //reconstruirePlat(this.pModel);
         double centrePlateau[] = getCentreDuPlateau();
-        moveDeltaBoard(-centrePlateau[0], -centrePlateau[1]);
+        if (this.invertDir) {
+            moveDeltaBoard(centrePlateau[0], centrePlateau[1]);
+        } else {
+            moveDeltaBoard(-centrePlateau[0], -centrePlateau[1]);
+        }
+
         zoomImage(0.3);
         removeSelectedPion();
+        this.updateUndoRedoBtn();
+        //AddplacePion();
     }
 
-    private double[] getCentreDuPlateau() {
+    //adapte l'affichage pour que les pions et les positions possible soient accessible
+    private void AddplacePion() {
+        /*double res[] = getMinMaxPionPlateau();
+        double marge = 250;
+        double minX = res[1];
+        double maxX = res[3];
+        double minY = res[2];
+        double maxY = res[4];
+        double minXScreen = (-getWidth() / 2);
+        double maxXScreen = (getWidth() / 2) - marge;
+        System.out.println("marge: " + marge);
+        double minYScreen = (-getHeight() / 2) + marge;
+        double maxYScreen = (getHeight() / 2) - marge;
+
+        Circle c = new Circle(minX, minY, 20, Color.RED);
+        c.setTranslateX(getWidth() / 2);
+        c.setTranslateY(getHeight() / 2);
+        getRoot().getChildren().add(c);
+
+        double curZomm = this.totZoom;
+        if (res[0] == 1) {
+            while ((minX < minXScreen) || (maxX > maxXScreen) || (minY < minYScreen) || (maxY > maxYScreen)) {
+                System.out.println("reset zoom");
+                curZomm = this.totZoom;
+                zoomImage(curZomm - 0.10);
+                res = getMinMaxPionPlateau();
+                minX = res[1];
+                maxX = res[3];
+                minY = res[2];
+                maxY = res[4];
+            }
+            System.out.println("MinxScenne: " + minXScreen + "MaxScene: " + maxXScreen + "MinYSceen: " + minYScreen + " MaxYSceen: " + maxYScreen);
+            System.out.println("Minx: " + minX + "MaxX: " + maxX + "MinY: " + minY + " MaxY: " + maxY);
+        }*/
+    }
+
+    private double[] getMinMaxPionPlateau() {
         double minX = Double.MAX_VALUE;
         double minY = Double.MAX_VALUE;
         double maxX = -Double.MAX_VALUE;
         double maxY = -Double.MAX_VALUE;
         double tmpx = 0, tmpy = 0;
-        boolean asPion = false;
+        double asPion = 0;
         for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
-            asPion = true;
+            asPion = 1;
             PionPlateau2 pp2 = entry.getValue();
             tmpx = pp2.getImgViewPion().getImgPosX();
             tmpy = pp2.getImgViewPion().getImgPosY();
@@ -385,11 +532,16 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 maxY = tmpy;
             }
         }
+        return new double[]{asPion, minX, minY, maxX, maxY};
+    }
 
-        if (!asPion) {
+    private double[] getCentreDuPlateau() {
+        double res[] = getMinMaxPionPlateau();
+
+        if (res[0] == 0) {
             return new double[]{0, 0};
         } else {
-            return new double[]{(minX + maxX) / 2, (minY + maxY) / 2};
+            return new double[]{(res[1] + res[3]) / 2, (res[2] + res[4]) / 2};
         }
     }
 
@@ -572,7 +724,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         if (p.equals(this.currentSelected) && this.selectionValidee == false) {
             //onclique sur le pion release
             this.selectionValidee = true;
-            System.out.println("Clic Selection");
+            //clic selection
         } else if (p.equals(this.currentSelected) && this.selectionValidee == true && p.isDragging()) {
             //si snap = ok valide le coup
             //si snap = false on remet a la position d'origine et removeselection
@@ -605,7 +757,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
             //mise a jour du tableau avec les points et zones libres
             //System.out.println("Jouer coup plateau -> plateau");
-            if (currentPlayerHumain()) { //lorsque l'ia joue elle a deja validé le deplacement ne pas le refaire
+            if (currentPlayerHumain() && undoRedoMove == false) { //lorsque l'ia joue elle a deja validé le deplacement ne pas le refaire
                 this.controleur.deplacementInsecte(currentSelected.getCoordPion(), zLibre.getCoordZoneLibre());
             }
             this.currentSelected.setPionPosition(zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY());
@@ -619,7 +771,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             //currentMainSelected.affiche();
             //zLibre.affiche();
             //mise a jour du tableau avec les points et zones libres
-            if (currentPlayerHumain()) { //lorsque l'ia joue elle a deja validé le deplacement ne pas le refaire
+            if (currentPlayerHumain() && undoRedoMove == false) { //lorsque l'ia joue elle a deja validé le deplacement ne pas le refaire
                 this.controleur.joueurPlaceInsecte(currentMainSelected.getPionsType(), zLibre.getCoordZoneLibre());
             }
             PionPlateau2 pp2 = new PionPlateau2(this, currentMainSelected.getPionsType(), currentMainSelected.isWhite(), zLibre.getCoordZoneLibre(), zLibre.getImgPosX(), zLibre.getImgPosY(), this.getZoom(), this.getWidth(), this.getHeight());
@@ -631,7 +783,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         }
         //todo
         //if (!currentPlayerHumain() || this.controleur.getJoueur1().getNumJoueur().estHumain() && this.controleur.getJoueur2().getNumJoueur().estHumain()) {
-        if (currentPlayerHumain()) {
+        if (currentPlayerHumain() && undoRedoMove == false) {
             joueurJoue();
         }
         //joueurJoue();
@@ -810,6 +962,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     public void updateMainJoueur() { //liste d'insect en param
+        removeSelectedPion();
         if (currentPlayerHumain()) {
             //System.out.println("Tour de l'humain");
             updateMainJoueurColor(true);
@@ -819,10 +972,16 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         } else {
             //System.out.println("Tour de l'IA");
-            updateMainJoueurColor(true);
-            updateMainJoueurColor(false);
+            if (currentPlayerIsWhite()) {
+                updateMainJoueurColor(false);
+            } else {
+                updateMainJoueurColor(true);
+            }
+
             lockTousLespions();
             highlightPlayeName();
+            this.bRedo.setDisable(true);
+            this.bUndo.setDisable(true);
         }
     }
 
@@ -941,20 +1100,16 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     private BorderPane getHudPlayer(HashMap<TypeInsecte, Integer> m, int numplayer, boolean ia) {
         Properties prop = new Properties();
-        String propFileName = System.getProperty("user.dir").concat("/rsc/config.properties");
+        String propFileName = "rsc/config.properties";
         InputStream input = null;
         try {
             input = new FileInputStream(propFileName);
             prop.load(input);
+            input.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.getMessage();
-        }
-        try {
-            input.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         Button bEdit = new Button();
@@ -962,10 +1117,11 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bEdit.setStyle("-fx-background-color: Transparent;\n");
         HBox hName = new HBox();
         hName.setAlignment(Pos.CENTER_LEFT);
-        bEdit.setTooltip(new Tooltip("Changer de nom"));
+        bEdit.setTooltip(new Tooltip(getLangStr("ChangeName")));
         String joueur = "joueur " + numplayer;
         if (numplayer == 1) {
             joueur = prop.getProperty("joueurBlanc");
+            System.out.println(joueur);
         } else {
             joueur = prop.getProperty("joueurNoir");
         }
@@ -1036,7 +1192,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         pointJ1.setAlignment(Pos.CENTER);
         pointJ1.setPadding(new Insets(5, 0, 5, 0));
 
-        String style = "-fx-background-color: rgba(255, 255, 255, 0.2);";
+        //String style = "-fx-background-color: rgba(255, 255, 255, 0.2);";
+        String style = "-fx-background-color: rgba(123,67,36, 0.4);";
 
         hName.setStyle(style);
 
@@ -1098,8 +1255,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bPause.setMinSize(100, 100);
         // bPause.setStyle("-fx-background-color: Transparent;\n");
 
-        Button bSave = new Button();
-        Button bLoad = new Button();
+        bSave = new Button();
+        bLoad = new Button();
 
         bSave.setGraphic(new ImageView(new Image("icons/diskette.png")));
         bSave.setMinSize(32, 32);
@@ -1126,6 +1283,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         // bRedo.setStyle("-fx-background-color: Transparent;\n");
         bSug.setGraphic(new ImageView(new Image("icons/small-light-bulb.png")));
         bSug.setMinSize(32, 32);
+        bSug.setDisable(true);
 
         brules.setGraphic(new ImageView(new Image("icons/book_rules.png")));
         brules.setMinSize(32, 32);
@@ -1144,7 +1302,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         VBox vb1 = new VBox();
         vb1.getChildren().addAll(hb1, hb2);
         vb1.setSpacing(10);
-        //vb1.setStyle("-fx-border-color:black;\n" + "-fx-border-width: 3 0 0 0;\n");
         vb1.setAlignment(Pos.BOTTOM_CENTER);
 
         VBox vb = new VBox();
@@ -1156,13 +1313,15 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         pDroite.setPadding(new Insets(15, 10, 15, 10));
         pDroite.setTop(vb);
         pDroite.setBottom(vb1);
-        String style = "-fx-background-color: rgba(255, 255, 255, 0.2);";
+        //String style = "-fx-background-color: rgba(255, 255, 255, 0.2);";
+        String style = "-fx-background-color: rgba(123,67,36, 0.4);";
         pDroite.setStyle(style);
 
         pDroite.getStylesheets().add("Vue/button.css");
 
         bPause.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            getPause();
+            menu.setVisible(true);
+            menu.toFront();
         });
 
         if (!this.controleur.UndoPossible()) {
@@ -1172,30 +1331,33 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             bRedo.setDisable(true);
         }
 
-        bUndo.setTooltip(new Tooltip("Anuler le dernier coup"));
+        bUndo.setTooltip(new Tooltip(getLangStr("Undo")));
         bUndo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            this.controleur.Undo();
+            applyUndo(this.controleur.Undo());
             this.reconstructionPlateau(pModel);
-            this.updateMainJoueur();
         });
 
-        bRedo.setTooltip(new Tooltip("Rejouer le dernier coup"));
+        bRedo.setTooltip(new Tooltip(getLangStr("Redo")));
         bRedo.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            this.controleur.Redo();
+            if (currentPlayerIsWhite()) {
+                applyRedo(this.controleur.Redo(), true);
+            } else {
+                applyRedo(this.controleur.Redo(), false);
+            }
             this.reconstructionPlateau(pModel);
-            this.updateMainJoueur();
         });
 
-        brules.setTooltip(new Tooltip("Règles du jeu"));
+        brules.setTooltip(new Tooltip(getLangStr("Rules")));
         brules.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             getRule(false);
         });
 
-        bPause.setTooltip(new Tooltip("Afficher le menu"));
-        bLoad.setTooltip(new Tooltip("Charger une partie"));
+        bPause.setTooltip(new Tooltip(getLangStr("ShowMenu")));
+        bLoad.setTooltip(new Tooltip(getLangStr("LoadGame")));
         bLoad.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             ListView<String> lv = getSaveFile();
             Button load = new Button(getLangStr("load"));
+            load.setDisable(true);
             Button cancel = new Button(getLangStr("cancel"));
 
             HBox hbutton = new HBox();
@@ -1210,7 +1372,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             vLoad.prefHeightProperty().bind(primaryStage.heightProperty());
             vLoad.setAlignment(Pos.CENTER);
             vLoad.setSpacing(10);
-            vLoad.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
+            vLoad.setStyle("-fx-background-color : rgba(0, 0, 0, .8);");
             lv.setMaxWidth((primaryStage.getWidth() * 33) / 100);
             lv.getStylesheets().add("Vue/button.css");
 
@@ -1218,26 +1380,45 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
                 root.getChildren().removeAll(vLoad);
             });
 
+            lv.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+                @Override
+                public void handle(MouseEvent event) {
+                    load.setDisable(false);
+                }
+            });
+
             load.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
-                this.controleur.load(lv.getSelectionModel().getSelectedItem());
+                /* this.controleur.load(lv.getSelectionModel().getSelectedItem());
                 root.getChildren().removeAll(vLoad);
                 this.reconstructionPlateau(pModel);
-                this.updateMainJoueur();
+                if (!this.controleur.joueur2.getNumJoueur().estHumain()) {
+                    ((ComboBox) nomJoueur.get(1)).getSelectionModel().select(this.controleur.joueur2.getNumJoueur().getDifficulte() - 1);
+                } else if (!this.controleur.joueur1.getNumJoueur().estHumain()) {
+                    ((ComboBox) nomJoueur.get(0)).getSelectionModel().select(this.controleur.joueur2.getNumJoueur().getDifficulte() - 1);
+                }
+                this.updateMainJoueur();*/
+                this.controleur.load(lv.getSelectionModel().getSelectedItem());
+                this.SceneTerrain(primaryStage, this.controleur.getCasCourantJoueurs(), this.controleur.getCasCourantJoueurs() > 1, true);
             });
 
             root.getChildren().addAll(vLoad);
         });
 
-        bSave.setTooltip(new Tooltip("Sauvegarder la partie"));
+        bSave.setTooltip(new Tooltip(getLangStr("SaveGame")));
 
         bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            Label fileName = new Label(getLangStr("FileName"));
+            fileName.setTextFill(Color.WHITE);
+            fileName.setAlignment(Pos.TOP_CENTER);
+            fileName.setStyle("-fx-font-weight: bold;-fx-font-size: 26px; -fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);-fx-vertical-align: text-top;");
             TextField tnom = new TextField("file");
-            tnom.setStyle("-fx-font-weight: bold;-fx-font-size: 24px; -fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);-fx-border-color: white; -fx-border-width: 0 0 1 0;");
+            tnom.setStyle("-fx-font-weight: bold;-fx-font-size: 26px; -fx-background-color: transparent;-fx-text-fill : rgb(255,255,255);-fx-border-color: white; -fx-border-width: 0 0 0 0;");
             ListView<String> lv = getSaveFile();
             Button save = new Button(getLangStr("save"));
             Button cancel = new Button(getLangStr("cancel"));
 
-            HBox htextin = new HBox(tnom);
+            HBox htextin = new HBox(fileName, tnom);
             htextin.setAlignment(Pos.CENTER);
 
             HBox hbutton = new HBox();
@@ -1252,7 +1433,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             vLoad.prefHeightProperty().bind(primaryStage.heightProperty());
             vLoad.setAlignment(Pos.CENTER);
             vLoad.setSpacing(10);
-            vLoad.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
+            vLoad.setStyle("-fx-background-color : rgba(0, 0, 0, .8);");
             lv.setMaxWidth((primaryStage.getWidth() * 33) / 100);
             tnom.setMaxWidth((primaryStage.getWidth() * 33) / 100);
             lv.getStylesheets().add("Vue/button.css");
@@ -1296,32 +1477,53 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         Button bQuit = new Button(getLangStr("quitter"));
         bQuit.setMaxWidth(200);
 
-        VBox menu = new VBox();
+        menu = new VBox();
         menu.getChildren().addAll(t, bResume, bRules, bRestart, bSettings, bMain, bQuit);
-        menu.setMinSize(width, heigth);
-        menu.prefHeightProperty().bind(primaryStage.getScene().heightProperty());
-        menu.prefWidthProperty().bind(primaryStage.getScene().widthProperty());
+        menu.setMinSize(primaryStage.getWidth(), primaryStage.getHeight());
         menu.setAlignment(Pos.CENTER);
         menu.setSpacing(10);
         menu.getStylesheets().add("Vue/button.css");
         menu.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
 
         bResume.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            root.getChildren().removeAll(menu);
+            menu.setVisible(false);
+            Properties prop = new Properties();
+            InputStream input = null;
+            try {
+                input = new FileInputStream("rsc/config.properties");
+                prop.load(input);
+                input.close();
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            } catch (IOException ex) {
+                ex.getMessage();
+            }
+            this.invertDir = (Boolean.valueOf(prop.getProperty("invert")));
+        });
+
+        bRestart.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            //root.getChildren().removeAll(menu);
+            menu.setVisible(false);
+            iaCanPlay = -1;
+            hideLoader();
+            this.recommencerPartie();
         });
 
         bMain.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            root.getChildren().removeAll(menu);
+            //root.getChildren().removeAll(menu);
+            menu.setVisible(false);
             getPupBackMain();
         });
 
         bQuit.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            root.getChildren().removeAll(menu);
+            //root.getChildren().removeAll(menu);
+            menu.setVisible(false);
             getPupExit();
         });
 
         bRules.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            root.getChildren().removeAll(menu);
+            //root.getChildren().removeAll(menu);
+            menu.setVisible(false);
             getRule(true);
         });
 
@@ -1330,7 +1532,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             root.getChildren().add(v.getSetting(solo));
         });
 
-        root.getChildren().addAll(menu);
+        root.getChildren().add(menu);
+        menu.setVisible(false);
     }
 
     private BorderPane getHudGauche() {
@@ -1394,6 +1597,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         bgauche.setPadding(new Insets(0, 0, 15, 15));
 
         double moveRangeXY = 40;
+
         double ZoomRangePM = 1; //equivaut a 3 zoom
 
         breset.addEventHandler(MouseEvent.MOUSE_CLICKED,
@@ -1446,15 +1650,24 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         Plateau p = (Plateau) o;
         this.pModel = p;
         long tempsRestant = (long) arg;
-
         //si >0 alors c'est une ia
         if (tempsRestant > 0) {
             System.out.println("IA IS THINKING");
+            showLoader();
             this.iaCanPlay = tempsRestant;
+            this.bRedo.setDisable(true);
+            this.bUndo.setDisable(true);
+            this.bLoad.setDisable(true);
+            this.bSave.setDisable(true);
         } else { //l'humain a joué puis directe après l'ia va jouer
             this.iaCanPlay = -1;
-            // updateMainJoueur();
-            reconstructionPlateau(this.pModel);
+            if (tempsRestant == -2) {
+                showLoader(); //L'IA est en train de calculer
+                this.bRedo.setDisable(true);
+                this.bUndo.setDisable(true);
+                this.bLoad.setDisable(true);
+                this.bSave.setDisable(true);
+            }
         }
 
     }
@@ -1466,20 +1679,55 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         }
     }
 
+    private void recommencerPartie() {
+        this.controleur.recommencerPartie();
+        this.controleur.addObserverPlateau(this);
+
+        //supprimer les pions du plateau:
+        for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+            PionPlateau2 value = entry.getValue();
+            this.getRoot().getChildren().remove(value.getImage());
+
+            if (value.getPionEnDessous() != null) {
+                ArrayList<PionPlateau2> listPiondessous = new ArrayList<>();
+                listPiondessous = value.getDessousList(listPiondessous);
+                for (PionPlateau2 piondessous : listPiondessous) {
+                    this.getRoot().getChildren().remove(piondessous.getImage());
+                }
+            } else {
+                this.getRoot().getChildren().remove(value.getImage());
+            }
+        }
+        //supprime les zones libres du plateau;
+
+        for (ZoneLibre zLibre : listZoneLibres) {
+            this.getRoot().getChildren().remove(zLibre.getImage());
+        }
+        this.listPionsPlateau.clear();
+        this.listZoneLibres.clear();
+        removeSelectedPion();
+
+        updateMainJoueur();
+        hudToFront();
+        //this.resetView();
+        this.totZoom = 0.5;
+    }
+
     public void joueurJoue() {
         //System.out.println("Joueur place pion");
         removeSelectedPion();
         hideZoneLibre();
         this.controleur.setUndo(true);
-        updateUndoRedoBtn();
         hudToFront();
-        //updateMainJoueur();
+        CheckGagnant();
         this.controleur.joueurSuivant();
+        updateUndoRedoBtn();
         updateMainJoueur();
-
     }
 
     public void ordinateurJoue() {
+        hideLoader();
+        CheckGagnant();
         //reconstructionPlateau(this.pModel);
         //System.out.println("Ordinateur joue");
         removeSelectedPion();
@@ -1498,17 +1746,98 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             this.currentSelected = this.listPionsPlateau.get(iaMove.getOrig());
             updateMousePressedZoneLibre(getZoneLibreEgal(iaMove.getCible()));
         }
+        hudToFront();
+        CheckGagnant();
+        this.controleur.joueurSuivant();
+        updateUndoRedoBtn();
+        updateMainJoueur();
+        this.bLoad.setDisable(false);
+        this.bSave.setDisable(false);
+        reconstructionPlateau(this.pModel);
+    }
+
+    public void applyUndo(Deplacement depl) {
+
+        removeSelectedPion();
+        //supprimer le pion du plateau si le dernier coup était d'un placement de pion main -> plateau
+        //si origine = null
+        //deplacer le pion a la position d'origine si deplacement plateau -> plateau
+        //si depl==null annuler ia + joueur
+        //deplace les deux moves
+        if (depl == null) {
+            if (this.controleur.getJoueurCourant().getNumJoueur().estBlanc()) { //joueur1
+                //en premier undo joueur 2 puis joueur 1
+                //le joueur est blanc est l'ia est noir
+                //c'est au tour du joueur il annule le coup de l'ia plus sont propre coup
+                applyUndo(this.controleur.getJoueur2().getDernierDeplacement());
+                applyUndo(this.controleur.getJoueur1().getDernierDeplacement());
+            } else {
+                //en premier undo joueur 1 puis joueur 2
+                //c'est au tour du joueur noir humain (l'ia est en blanc) annule le coup 1 de l'ia puis le coup 2 de l'humain
+                applyUndo(this.controleur.getJoueur1().getDernierDeplacement());
+                applyUndo(this.controleur.getJoueur2().getDernierDeplacement());
+            }
+        } else //deplace le deplacement courant
+        //si origine = null = depose pion de la main vers le plateau donc il faut le supprimer du plateau
+        {
+            if (depl.getOrig() == null) {
+                //deplace le pion n'importe ou et le supprime
+                this.currentSelected = this.listPionsPlateau.get(depl.getCible());
+                this.currentSelected.setPionPosition(new HexaPoint(-47, -47, -47), -999, -999);
+                this.currentSelected.validCurrentPosXY();
+                removePionMainDrag(this.currentSelected);
+            } else { //deplace un pion de plateau -> plateau
+                this.currentSelected = this.listPionsPlateau.get(depl.getCible());
+                undoRedoMove = true;
+                updateMousePressedZoneLibre(getZoneLibreEgal(depl.getOrig()));
+                undoRedoMove = false;
+            }
+        }
+        removeSelectedPion();
+        updateMainJoueur();
         updateUndoRedoBtn();
         hudToFront();
-        this.controleur.joueurSuivant();
-        updateMainJoueur();
-        reconstructionPlateau(this.pModel);
+    }
 
+    public void applyRedo(Deplacement depl, boolean isWhite) {
+        removeSelectedPion();
+        if (depl == null) {
+            if (currentPlayerIsWhite()) { //joueur1
+                //redo on refait jouer le joueur courant + l'ia
+                applyRedo(this.controleur.getJoueur1().getDernierDeplacement(), true);
+                applyRedo(this.controleur.getJoueur2().getDernierDeplacement(), false);
+            } else {
+                applyRedo(this.controleur.getJoueur2().getDernierDeplacement(), false);
+                applyRedo(this.controleur.getJoueur1().getDernierDeplacement(), true);
+            }
+        } else if (depl.getOrig() == null) {
+            if (isWhite) {
+                this.currentMainSelected = this.pionMainPlayer1.get(depl.getI().getType());
+            } else {
+                this.currentMainSelected = this.pionMainPlayer2.get(depl.getI().getType());
+            }
+            undoRedoMove = true;
+            updateMousePressedZoneLibre(getZoneLibreEgal(depl.getCible()));
+            undoRedoMove = false;
+        } else { //deplace un pion de plateau -> plateau
+            this.currentSelected = this.listPionsPlateau.get(depl.getOrig());
+            undoRedoMove = true;
+            updateMousePressedZoneLibre(getZoneLibreEgal(depl.getCible()));
+            undoRedoMove = false;
+        }
+        removeSelectedPion();
+        updateMainJoueur();
+        updateUndoRedoBtn();
+        hudToFront();
     }
 
     private ZoneLibre getZoneLibreEgal(HexaPoint pt) {
         if (this.controleur.getJoueur1().getTourJoueur() == 2 && !currentPlayerHumain() && this.listZoneLibres.isEmpty()) {
             //si l'ia commence ajouter la premiere zone libre le tour = 2 car le model est déja a jour
+            addPremierZoneLibre();
+        }
+
+        if (this.listZoneLibres.isEmpty() && this.undoRedoMove == true) {
             addPremierZoneLibre();
         }
 
@@ -1611,148 +1940,147 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
             //regenère le plateau si pas de correspondance a 100%.
             if (nbNonCorrect > 0) {
-                //if (true) {
-                //supprimer les pions du plateau:
-                for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
-                    PionPlateau2 value = entry.getValue();
-                    this.getRoot().getChildren().remove(value.getImage());
-
-                    if (value.getPionEnDessous() != null) {
-                        ArrayList<PionPlateau2> listPiondessous = new ArrayList<>();
-                        listPiondessous = value.getDessousList(listPiondessous);
-                        for (PionPlateau2 piondessous : listPiondessous) {
-                            this.getRoot().getChildren().remove(piondessous.getImage());
-                        }
-                    } else {
-                        this.getRoot().getChildren().remove(value.getImage());
-                    }
-                }
-                //supprime les zones libres du plateau;
-
-                for (ZoneLibre zLibre : listZoneLibres) {
-                    this.getRoot().getChildren().remove(zLibre.getImage());
-                }
-
-                this.listPionsPlateau.clear();
-                this.listZoneLibres.clear();
-                removeSelectedPion();
-
-                int nbPionsPose = 0;
-
-                //copy here
-                Case casenonVide2 = null;
-                for (Map.Entry<HexaPoint, Case> entry : p.getCases().entrySet()) {
-                    Case casenonVide = entry.getValue();
-                    if (!casenonVide.estVide()) {
-                        casenonVide2 = casenonVide;
-                        break;
-                    }
-                }
-
-                //le plateau n'est vide
-                if (casenonVide2 != null) {
-
-                    //Algorithme de parcours en largeur
-                    ArrayList<Case> listCaseProcheEnProche = new ArrayList<>();
-                    ArrayList<Case> vu = new ArrayList<>();
-                    LinkedList<Case> f = new LinkedList<>();
-                    f.push(casenonVide2);
-                    vu.add(casenonVide2);
-                    while (!f.isEmpty()) {
-                        Case tmp = f.pollFirst();
-                        listCaseProcheEnProche.add(tmp);
-                        for (Case caseVoisine : p.getCasesVoisinesOccupees(tmp)) {
-                            if (!vu.contains(caseVoisine)) {
-                                f.push(caseVoisine);
-                                vu.add(caseVoisine);
-                            }
-                        }
-                    }
-
-                    for (Case casenonVide : listCaseProcheEnProche) {
-                        HexaPoint caseCoordonnee = casenonVide.getCoordonnees();
-//                    Case casenonVide = entry.getValue();
-
-                        if (!casenonVide.estVide()) {
-
-                            if (!listPionsPlateau.containsKey(caseCoordonnee)) {
-                                //Nouveau point
-                                if (casenonVide.getNbInsectes() == 1) {
-                                    //Un seul insecte
-                                    Insecte ins = casenonVide.getInsectes().get(0);
-                                    boolean isWhite = true;
-                                    if (!ins.getJoueur().getNumJoueur().estBlanc()) {
-                                        isWhite = false;
-                                    }
-                                    //place le tous premier pion a la position 0 0 du plateau qui va permettre de generer les autres pions.
-                                    PionPlateau2 pp2;
-                                    if (nbPionsPose == 0) {
-                                        //point unique System.out.println("Point unique" + caseCoordonnee + " Type: " + ins.getType());
-                                        pp2 = new PionPlateau2(this, ins.getType(), isWhite, caseCoordonnee, 0, 0, this.getZoom(), this.getWidth(), this.getHeight());
-                                    } else {
-                                        //System.out.println("Point unique a une pos:" + caseCoordonnee + "Type: " + ins.getType());
-                                        double resImgXY[] = getImgZoneLibreEgal(caseCoordonnee);
-                                        pp2 = new PionPlateau2(this, ins.getType(), isWhite, caseCoordonnee, resImgXY[0], resImgXY[1], this.getZoom(), this.getWidth(), this.getHeight());
-                                    }
-                                    pp2.validCurrentPosXY();
-                                    nbPionsPose++;
-                                } else if (casenonVide.getNbInsectes() > 1) {
-                                    //ajoute le premier de la pile directement
-                                    Insecte ins = casenonVide.getInsectes().get(0);
-                                    boolean isWhite = true;
-                                    if (!ins.getJoueur().getNumJoueur().estBlanc()) {
-                                        isWhite = false;
-                                    }
-
-                                    PionPlateau2 pp2;
-                                    if (nbPionsPose == 0) {
-                                        //System.out.println("Point multiple " + caseCoordonnee + " Type: " + ins.getType());
-                                        //place le tous premier pion a la position 0 0 du plateau qui va permettre de generer les autres pions.
-                                        pp2 = new PionPlateau2(this, ins.getType(), isWhite, caseCoordonnee, 0, 0, this.getZoom(), this.getWidth(), this.getHeight());
-                                    } else {
-                                        //System.out.println("Point multiple: " + caseCoordonnee + "Type: " + ins.getType());
-                                        double resImgXY[] = getImgZoneLibreEgal(caseCoordonnee);
-                                        pp2 = new PionPlateau2(this, ins.getType(), isWhite, caseCoordonnee, resImgXY[0], resImgXY[1], this.getZoom(), this.getWidth(), this.getHeight());
-                                    }
-                                    pp2.validCurrentPosXY();
-                                    nbPionsPose++;
-                                    //traite les autres pions au dessus
-                                    for (Insecte insecte : casenonVide.getInsectes()) {
-                                        if (insecte != ins) { //traiter les autres
-                                            boolean isWhite2 = true;
-                                            if (!insecte.getJoueur().getNumJoueur().estBlanc()) {
-                                                isWhite2 = false;
-                                            }
-                                            //place le pion random.
-                                            PionPlateau2 ppTemp2 = new PionPlateau2(this, insecte.getType(), isWhite2, new HexaPoint(-47, -47, -47), -999, -999, this.getZoom(), this.getWidth(), this.getHeight());
-                                            pp2.validCurrentPosXY();
-                                            //le deplace sur la bonne position (empilement)
-                                            //System.out.println("add pion sur: " + caseCoordonnee + "Type: " + insecte.getType());
-                                            double resImgXY[] = getImgZoneLibreEgal(caseCoordonnee);
-                                            currentSelected = ppTemp2;
-                                            ppTemp2.setPionPosition(caseCoordonnee, resImgXY[0], resImgXY[1]);
-                                            ppTemp2.validCurrentPosXY();
-                                            nbPionsPose++;
-                                        }
-                                    }
-                                }
-                            } else {
-                                //System.out.println("Cette case a déja été traité: " + casenonVide);
-                            }
-                            //nbPionsPose++; //ne correspond pas exactement au nombre de pions posé le mettre dans la boucle for
-                        }
-                    }
-
-                    ///*********** END BOUCLE
-                    resetView();
-                }
-                hudToFront();
-            } else {
-                System.out.println("100% de correspondance!");
+                reconstruirePlat(p);
             }
         }
 
         this.updateUndoRedoBtn();
+    }
+
+    private void reconstruirePlat(Plateau p) {
+        //supprimer les pions du plateau:
+        for (Map.Entry<HexaPoint, PionPlateau2> entry : listPionsPlateau.entrySet()) {
+            PionPlateau2 value = entry.getValue();
+            this.getRoot().getChildren().remove(value.getImage());
+
+            if (value.getPionEnDessous() != null) {
+                ArrayList<PionPlateau2> listPiondessous = new ArrayList<>();
+                listPiondessous = value.getDessousList(listPiondessous);
+                for (PionPlateau2 piondessous : listPiondessous) {
+                    this.getRoot().getChildren().remove(piondessous.getImage());
+                }
+            } else {
+                this.getRoot().getChildren().remove(value.getImage());
+            }
+        }
+        //supprime les zones libres du plateau;
+
+        for (ZoneLibre zLibre : listZoneLibres) {
+            this.getRoot().getChildren().remove(zLibre.getImage());
+        }
+
+        this.listPionsPlateau.clear();
+        this.listZoneLibres.clear();
+        removeSelectedPion();
+
+        int nbPionsPose = 0;
+
+        Case casenonVide2 = null;
+        for (Map.Entry<HexaPoint, Case> entry : p.getCases().entrySet()) {
+            Case casenonVide = entry.getValue();
+            if (!casenonVide.estVide()) {
+                casenonVide2 = casenonVide;
+                break;
+            }
+        }
+
+        //le plateau n'est vide
+        if (casenonVide2 != null) {
+
+            //Algorithme de parcours en largeur
+            ArrayList<Case> listCaseProcheEnProche = new ArrayList<>();
+            ArrayList<Case> vu = new ArrayList<>();
+            LinkedList<Case> f = new LinkedList<>();
+            f.push(casenonVide2);
+            vu.add(casenonVide2);
+            while (!f.isEmpty()) {
+                Case tmp = f.pollFirst();
+                listCaseProcheEnProche.add(tmp);
+                for (Case caseVoisine : p.getCasesVoisinesOccupees(tmp)) {
+                    if (!vu.contains(caseVoisine)) {
+                        f.push(caseVoisine);
+                        vu.add(caseVoisine);
+                    }
+                }
+            }
+
+            for (Case casenonVide : listCaseProcheEnProche) {
+                HexaPoint caseCoordonnee = casenonVide.getCoordonnees();
+//                    Case casenonVide = entry.getValue();
+
+                if (!casenonVide.estVide()) {
+
+                    if (!listPionsPlateau.containsKey(caseCoordonnee)) {
+                        //Nouveau point
+                        if (casenonVide.getNbInsectes() == 1) {
+                            //Un seul insecte
+                            Insecte ins = casenonVide.getInsectes().get(0);
+                            boolean isWhite = true;
+                            if (!ins.getJoueur().getNumJoueur().estBlanc()) {
+                                isWhite = false;
+                            }
+                            //place le tous premier pion a la position 0 0 du plateau qui va permettre de generer les autres pions.
+                            PionPlateau2 pp2;
+                            if (nbPionsPose == 0) {
+                                //point unique System.out.println("Point unique" + caseCoordonnee + " Type: " + ins.getType());
+                                pp2 = new PionPlateau2(this, ins.getType(), isWhite, caseCoordonnee, 0, 0, this.getZoom(), this.getWidth(), this.getHeight());
+                            } else {
+                                //System.out.println("Point unique a une pos:" + caseCoordonnee + "Type: " + ins.getType());
+                                double resImgXY[] = getImgZoneLibreEgal(caseCoordonnee);
+                                pp2 = new PionPlateau2(this, ins.getType(), isWhite, caseCoordonnee, resImgXY[0], resImgXY[1], this.getZoom(), this.getWidth(), this.getHeight());
+                            }
+                            pp2.validCurrentPosXY();
+                            nbPionsPose++;
+                        } else if (casenonVide.getNbInsectes() > 1) {
+                            //ajoute le premier de la pile directement
+                            Insecte ins = casenonVide.getInsectes().get(0);
+                            boolean isWhite = true;
+                            if (!ins.getJoueur().getNumJoueur().estBlanc()) {
+                                isWhite = false;
+                            }
+
+                            PionPlateau2 pp2;
+                            if (nbPionsPose == 0) {
+                                //System.out.println("Point multiple " + caseCoordonnee + " Type: " + ins.getType());
+                                //place le tous premier pion a la position 0 0 du plateau qui va permettre de generer les autres pions.
+                                pp2 = new PionPlateau2(this, ins.getType(), isWhite, caseCoordonnee, 0, 0, this.getZoom(), this.getWidth(), this.getHeight());
+                            } else {
+                                //System.out.println("Point multiple: " + caseCoordonnee + "Type: " + ins.getType());
+                                double resImgXY[] = getImgZoneLibreEgal(caseCoordonnee);
+                                pp2 = new PionPlateau2(this, ins.getType(), isWhite, caseCoordonnee, resImgXY[0], resImgXY[1], this.getZoom(), this.getWidth(), this.getHeight());
+                            }
+                            pp2.validCurrentPosXY();
+                            nbPionsPose++;
+                            //traite les autres pions au dessus
+                            for (Insecte insecte : casenonVide.getInsectes()) {
+                                if (insecte != ins) { //traiter les autres
+                                    boolean isWhite2 = true;
+                                    if (!insecte.getJoueur().getNumJoueur().estBlanc()) {
+                                        isWhite2 = false;
+                                    }
+                                    //place le pion random.
+                                    PionPlateau2 ppTemp2 = new PionPlateau2(this, insecte.getType(), isWhite2, new HexaPoint(-47, -47, -47), -999, -999, this.getZoom(), this.getWidth(), this.getHeight());
+                                    pp2.validCurrentPosXY();
+                                    //le deplace sur la bonne position (empilement)
+                                    //System.out.println("add pion sur: " + caseCoordonnee + "Type: " + insecte.getType());
+                                    double resImgXY[] = getImgZoneLibreEgal(caseCoordonnee);
+                                    currentSelected = ppTemp2;
+                                    ppTemp2.setPionPosition(caseCoordonnee, resImgXY[0], resImgXY[1]);
+                                    ppTemp2.validCurrentPosXY();
+                                    nbPionsPose++;
+                                }
+                            }
+                        }
+                    } else {
+                        //System.out.println("Cette case a déja été traité: " + casenonVide);
+                    }
+                    //nbPionsPose++; //ne correspond pas exactement au nombre de pions posé le mettre dans la boucle for
+                }
+            }
+
+            ///*********** END BOUCLE
+        }
+        hudToFront();
     }
 
     private void updateUndoRedoBtn() {
@@ -1802,11 +2130,8 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
     public ListView<String> getSaveFile() {
         String path;
-        if (isWindows()) {
-            path = System.getProperty("user.dir").concat("\\rsc\\SAVE");
-        } else {
-            path = System.getProperty("user.dir").concat("/rsc/SAVE/");
-        }
+        path = "rsc/SAVE/";
+
         System.out.println(path);
         File rep = new File(path);
         if (!rep.exists()) {
@@ -1851,7 +2176,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            getPause();
+            menu.setVisible(true);
         });
         root.getChildren().add(v);
     }
@@ -1886,7 +2211,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
 
         n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
-            getPause();
+            menu.setVisible(true);
         });
         root.getChildren().add(v);
         v.toFront();
@@ -1897,18 +2222,19 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         String[] urlImg = new String[20];
         l.setStyle("-fx-font-weight: bold;\n-fx-font-size: 100px;\n-fx-text-fill: white;");
 
-        for (int x = 1; x < 12; x++) {
+        for (int x = 1; x < 16; x++) {
             urlImg[x - 1] = "rules/rule" + x + ".png";
         }
 
         ImageView img = new ImageView(new Image(urlImg[numeroPageTuto]));
         Button back = new Button(getLangStr("previous"));
         back.setPrefWidth(150);
-        Label nbPage = new Label((numeroPageTuto + 1) + "/11");
+        Label nbPage = new Label(" " + (numeroPageTuto + 1) + "/15");
         nbPage.setStyle("-fx-font-weight: bold;\n-fx-font-size: 1.1em;\n-fx-text-fill: white;");
         Button next = new Button(getLangStr("next"));
         next.setPrefWidth(150);
         Button retour = new Button(getLangStr("back"));
+        back.setDisable(true);
 
         HBox h = new HBox(back, nbPage, next);
         h.setAlignment(Pos.CENTER);
@@ -1921,17 +2247,25 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         v.setAlignment(Pos.CENTER);
         v.setSpacing(15);
         back.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            next.setDisable(false);
             img.setImage(changeImg(urlImg, false, nbPage));
+            if (numeroPageTuto == 0) {
+                back.setDisable(true);
+            }
         });
 
         next.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            back.setDisable(false);
             img.setImage(changeImg(urlImg, true, nbPage));
+            if (numeroPageTuto == 14) {
+                next.setDisable(true);
+            }
         });
 
         retour.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
             root.getChildren().remove(v);
             if (pause) {
-                getPause();
+                menu.setVisible(true);
             }
         });
 
@@ -1940,12 +2274,16 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
     }
 
     private Image changeImg(String[] url, boolean next, Label l) {
-        if (next && numeroPageTuto < 10) {
+        if (next && numeroPageTuto < 14) {
             numeroPageTuto++;
         } else if (!next && numeroPageTuto > 0) {
             numeroPageTuto--;
         }
-        l.setText((numeroPageTuto + 1) + "/11");
+        if (numeroPageTuto + 1 < 10) {
+            l.setText(" " + (numeroPageTuto + 1) + "/15");
+        } else {
+            l.setText((numeroPageTuto + 1) + "/15");
+        }
         return new Image(url[numeroPageTuto]);
 
     }
@@ -1997,4 +2335,56 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         return v1;
     }
 
+    public void CheckGagnant() {
+        int jGagnant = this.controleur.JoueurGagnant();
+        if (jGagnant != 0) {
+            String nomG = null;
+            if (jGagnant == 3) {
+                nomG = getLangStr("draw");
+            } else if (this.controleur.getJoueur(jGagnant).getNumJoueur().estHumain()) {
+                nomG = ((TextField) nomJoueur.get(jGagnant - 1)).getText();
+                nomG = nomG + " " + getLangStr("winMess");
+            } else {
+                nomG = (String) ((ComboBox) nomJoueur.get(jGagnant - 1)).getValue();
+                nomG = nomG + " " + getLangStr("winMess");
+            }
+            System.out.println(nomG);
+            Label l = new Label(nomG);
+            l.setTextFill(Color.WHITE);
+            l.prefWidthProperty().bind(primaryStage.widthProperty());
+            l.setAlignment(Pos.CENTER);
+            l.setPadding(new Insets(10, 0, 0, 0));
+            l.setStyle("-fx-background-color : rgba(0, 0, 0, .5);-fx-font-weight: bold;\n-fx-font-size: 2.1em;\n-fx-text-fill: white;");
+            Button y = new Button(getLangStr("backmenu"));
+            y.setPrefWidth(150);
+            Button n = new Button(getLangStr("restart"));
+            n.setPrefWidth(150);
+
+            HBox h = new HBox(y, n);
+            h.getStylesheets().add("Vue/button.css");
+            h.setSpacing(30);
+            h.setAlignment(Pos.CENTER);
+            h.setStyle("-fx-background-color : rgba(0, 0, 0, .5);");
+            h.setPadding(new Insets(20, 0, 10, 0));
+            VBox v = new VBox(l, h);
+            //v.setSpacing(20);
+            v.prefWidthProperty().bind(this.primaryStage.widthProperty());
+            v.prefHeightProperty().bind(this.primaryStage.heightProperty());
+            v.setAlignment(Pos.CENTER);
+
+            y.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+                root.getChildren().removeAll(v);
+                SceneMain(this.primaryStage);
+            });
+
+            n.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+                root.getChildren().removeAll(v);
+                iaCanPlay = -1;
+                hideLoader();
+                this.recommencerPartie();
+
+            });
+            root.getChildren().add(v);
+        }
+    }
 }

@@ -39,8 +39,10 @@ public class Fourmi extends Insecte {
                 if (!result.contains(c)) {
                     ArrayList<Case> casec = (ArrayList<Case>) plateau.getCasesVoisinesOccupees(c);
                     if (!((casec.contains(this.getEmplacement())) && casec.size()==1)) {
-                        result.add(c);
-                        toCheck.add(c);
+                        if (!plateau.rucheBrisee(this.getEmplacement(), c)) {
+                            result.add(c);
+                            toCheck.add(c);
+                        }
                     }
                 }
             }

@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import Modele.Joueurs.JoueurIA;
 
 public class Case implements Serializable{
 
@@ -26,15 +27,15 @@ public class Case implements Serializable{
         this.insectes = new ArrayList<>();
     }
 	
-	public Case clone(HexaPoint p,ArrayList<Insecte> EnjeuIA,ArrayList<Insecte> EnjeuAdverse,Joueur IA){
+	public Case clone(HexaPoint p,ArrayList<Insecte> EnjeuIA,ArrayList<Insecte> EnjeuAdverse){
     	Case c=new Case(p);
     	
-    	for(int i=0;i<insectes.size();i++) {
+    	for(int i=0;i<this.getNbInsectes();i++) {
     		Insecte in=this.insectes.get(i).clone();
     		c.insectes.add(in);
     		in.setEmplacement(c);
     		
-    		if(IA==in.getJoueur()) {
+    		if((in.getJoueur()) instanceof JoueurIA) {
         			EnjeuIA.add(in);
     		}else {
         			EnjeuAdverse.add(in);
@@ -79,7 +80,7 @@ public class Case implements Serializable{
         if (!this.insectes.contains(insecte))
             throw new Exception("Cet insecte n'est pas sur cette case");
         
-        if(this.insectes.contains(insecte) && !this.getInsecteOnTop().equals(insecte))
+        if(this.insectes.contains(insecte) && this.getInsecteOnTop() != insecte)
             return true;
         
         return false;
@@ -124,7 +125,7 @@ public class Case implements Serializable{
         hash = 71 * hash + Objects.hashCode(this.coordonnees);
         return hash;
     }*/
-    
+
     public boolean estVoisinHaut(Case c) {
     	return this.getCoordonnees().voisinHaut().equals(c.getCoordonnees());
     }

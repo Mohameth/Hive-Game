@@ -6,20 +6,17 @@ import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
-import javafx.scene.text.Font;
-import javafx.stage.Stage;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
+
+import java.io.*;
+import java.util.Properties;
 
 public class VueSolo extends Vue {
 
@@ -27,11 +24,12 @@ public class VueSolo extends Vue {
 
     VueSolo(Stage primaryStage) {
         Properties prop = new Properties();
-        String propFileName = System.getProperty("user.dir").concat("/rsc/config.properties");
+        String propFileName = "rsc/config.properties";
         InputStream input = null;
         try {
             input = new FileInputStream(propFileName);
             prop.load(input);
+            input.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -61,6 +59,7 @@ public class VueSolo extends Vue {
         tp.setStyle("-fx-font-weight: bold;-fx-font-size: 24px;");
         tp.setTextFill(Color.WHITE);
         TextField ta = new TextField(prop.getProperty("joueurBlanc"));
+        ta.setPromptText(getLangStr("whitePlayer"));
 
         ta.setMaxSize(300.0, 5.0);
         hb.getChildren().addAll(tp, ta);
@@ -86,10 +85,11 @@ public class VueSolo extends Vue {
         rEasy.setToggleGroup(group);
         rMedium.setToggleGroup(group);
         rHard.setToggleGroup(group);
-        if(!group.getToggles().isEmpty()) {
+        if (!group.getToggles().isEmpty()) {
             for (Toggle toggle : group.getToggles()) {
-                if (toggle.getUserData().equals(prop.getProperty("difficulteIA")))
+                if (toggle.getUserData().equals(prop.getProperty("difficulteIA"))) {
                     group.selectToggle(toggle);
+                }
             }
         }
 
@@ -142,10 +142,19 @@ public class VueSolo extends Vue {
                     switch (group2.getSelectedToggle().getUserData().toString()) {
                         case "black":
                             difficulte = difficulte + 3;
+                            prop.setProperty("joueurNoir", ta.getText());
+                            break;
+                        case "white":
+                            prop.setProperty("joueurBlanc", ta.getText());
                             break;
                     }
+                    try {
+                        prop.store(new FileWriter("rsc/config.properties"), "");
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
                 }
-                SceneTerrain(primaryStage, difficulte, true);
+                SceneTerrain(primaryStage, difficulte, true, false);
             }
         });
 
@@ -179,19 +188,13 @@ public class VueSolo extends Vue {
 
         Scene s = new Scene(root, primaryStage.getScene().getWidth(), primaryStage.getScene().getHeight());
         s.getStylesheets().add("Vue/button.css");
-        root.prefHeightProperty().bind(s.heightProperty());
-        root.prefWidthProperty().bind(s.widthProperty());
+        root.minHeightProperty().bind(s.heightProperty());
+        root.minWidthProperty().bind(s.widthProperty());
+
         root.setStyle("-fx-background-image: url(backPions2.jpg); -fx-background-size: cover;");
         primaryStage.setScene(s);
         primaryStage.setFullScreen(fs);
         primaryStage.show();
 
-        try {
-            if (input != null) {
-                input.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

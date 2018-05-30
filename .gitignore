@@ -102,3 +102,5 @@ Conception
 
 Hive/rsc/SAVE/file.txt
 Hive/rsc/SAVE/*
+/bin/
+Hive/rsc/config.properties

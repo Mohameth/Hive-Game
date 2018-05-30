@@ -7,12 +7,13 @@ package Modele.IA;
 
 import Modele.Insectes.Insecte;
 import Modele.HexaPoint;
+import java.io.Serializable;
 
 /**
  *
  * @author moham
  */
-public class Coup {
+public class Coup implements Serializable {
     private boolean modePlacement;
     private int numDansMain;
     private HexaPoint origine;

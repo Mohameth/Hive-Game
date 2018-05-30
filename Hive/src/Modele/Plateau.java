@@ -82,19 +82,26 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
     }
 
     
-    public Plateau clone(ArrayList<Insecte> EnjeuIA,ArrayList<Insecte> EnjeuAdverse,Joueur j) {
+    public Plateau clone(ArrayList<Insecte> EnjeuIA,ArrayList<Insecte> EnjeuAdverse) {
         Plateau plateau = new Plateau();
-        plateau.cases = cloneCases(EnjeuIA,EnjeuAdverse,j);
+        plateau.cases.clear();
+        plateau.cases = cloneCases(EnjeuIA,EnjeuAdverse);
         plateau.nbPionsEnJeu = this.nbPionsEnJeu;
+        plateau.nbCaseOccupe=this.nbCaseOccupe;
+        if(this.dernierCoupOrigine!=null)
+            plateau.dernierCoupOrigine=new HexaPoint(this.dernierCoupOrigine.getX(),this.dernierCoupOrigine.getY(),this.dernierCoupOrigine.getZ());
+        if(this.dernierCoupCible!=null)
+            plateau.dernierCoupCible=new HexaPoint(this.dernierCoupCible.getX(),this.dernierCoupCible.getY(),this.dernierCoupCible.getZ());
+        if(this.typePlacement!=null)
+        plateau.typePlacement=this.typePlacement;
         return plateau;
     }
 
-    public Map<HexaPoint, Case> cloneCases(ArrayList<Insecte> Enjeu,ArrayList<Insecte> EnjeuAdverse,Joueur j) {
-        HashMap<HexaPoint, Case> cases2 = new HashMap<>();
+    public HashMap<HexaPoint, Case> cloneCases(ArrayList<Insecte> Enjeu,ArrayList<Insecte> EnjeuAdverse) {
+    	HashMap<HexaPoint, Case> cases2 = new HashMap<>();
 
-        for (Map.Entry<HexaPoint, Case> e : cases.entrySet()) {
-            HexaPoint p = e.getKey().clone();
-            cases2.put(p, e.getValue().clone(p,Enjeu,EnjeuAdverse,j));
+        for (Map.Entry<HexaPoint, Case> e : this.cases.entrySet()) {
+            cases2.put(e.getKey(),e.getValue().clone(e.getKey(),Enjeu,EnjeuAdverse));
         }
         return cases2;
     }
@@ -285,7 +292,7 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
                 joueurAdverse = false;
                 Iterator<Case> itv = voisins.iterator();
                 while (!joueurAdverse && itv.hasNext()) {
-                    if (!itv.next().getInsecteOnTop().getJoueur().equals(j)) {
+                    if (!(itv.next().getInsecteOnTop().getJoueur().getNumJoueur() == j.getNumJoueur())) {
                         joueurAdverse = true;
                     }
                 }
@@ -599,7 +606,7 @@ public class Plateau extends Observable implements Cloneable, Serializable  {
      * @param cases hashmap à cloner
      * @return un clone de @cases
      */
-    public static HashMap<HexaPoint, Case> cloneMap(Map<HexaPoint, Case> cases) {
+    public HashMap<HexaPoint, Case> cloneMap(Map<HexaPoint, Case> cases) {
         HashMap<HexaPoint, Case> clone = new HashMap<>(cases.size());
         for (Map.Entry<HexaPoint, Case> element : cases.entrySet()) {
             clone.put(element.getKey().clone(), new Case(element.getValue().getCoordonnees()));

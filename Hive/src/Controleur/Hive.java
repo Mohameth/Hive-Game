@@ -1,30 +1,20 @@
 package Controleur;
 
-import Modele.Insectes.*;
 import Modele.Case;
+import Modele.Deplacement;
+import Modele.HexaPoint;
+import Modele.Insectes.*;
+import Modele.Insectes.TypeInsecte;
 import Modele.Joueurs.Joueur;
 import Modele.Joueurs.JoueurHumain;
 import Modele.Joueurs.JoueurIA;
-import Modele.Plateau;
-import Modele.HexaPoint;
-import Modele.IA.IAMinimax;
 import Modele.Joueurs.NumJoueur;
-import Modele.Insectes.TypeInsecte;
+import Modele.Plateau;
 import Vue.Vue;
-import static com.sun.javafx.PlatformUtil.isWindows;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+
+import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Observer;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Hive implements Serializable {
 
@@ -32,22 +22,40 @@ public class Hive implements Serializable {
     public Joueur joueur1;
     public Joueur joueur2;
     Joueur joueurCourant;
-    boolean Undo = true;
+    boolean Undo;
     transient Observer o;
+
+    private int casCourantJoueurs;
+    private boolean extensions;
 
     public Hive(String[] args) {
         this.plateau = new Plateau();
         Vue.initFenetre(args, this);
+        this.Undo = true;
+    }
+
+    public Joueur getJoueur(int i) {
+        if (i == 1) {
+            return joueur1;
+        } else if (i == 2) {
+            return joueur2;
+        } else {
+            return null;
+        }
+    }
+
+    public Plateau getPlateau() {
+        return plateau;
     }
 
     public void setJoueurs(int cas, boolean extension) { //Création des joueurs selon le type de partie
-        if (cas > 0 && cas < 5) {
+        if (cas > 0 && cas < 8) {
             switch (cas) {
-                case 1:
+                case 1: //Joueur contre Joueur
                     this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
                     break;
-                case 2:
+                case 2: //Joueur contre IA
                     this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
                     this.joueur2 = new JoueurIA(this.plateau, 1, extension, NumJoueur.IAFACILE2, joueur1); //Easy
                     break;
@@ -59,20 +67,17 @@ public class Hive implements Serializable {
                     this.joueur1 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR1);
                     this.joueur2 = new JoueurIA(this.plateau, 3, extension, NumJoueur.IADIFFICILE2, joueur1); //hard
                     break;
-            }
-        } else if (cas < 8) {
-            switch (cas) {
-                case 5:
+                case 5: //IA contre Joueur
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
-                    this.joueur1 = new JoueurIA(this.plateau, 1, extension, NumJoueur.IAFACILE1, joueur2);
+                    this.joueur1 = new JoueurIA(this.plateau, 1, extension, NumJoueur.IAFACILE1, joueur2); //Easy
                     break;
                 case 6:
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
-                    this.joueur1 = new JoueurIA(this.plateau, 2, extension, NumJoueur.IAMOYEN1, joueur2); //Easy
+                    this.joueur1 = new JoueurIA(this.plateau, 2, extension, NumJoueur.IAMOYEN1, joueur2); //Medium
                     break;
                 case 7:
                     this.joueur2 = new JoueurHumain(this.plateau, extension, NumJoueur.JOUEUR2);
-                    this.joueur1 = new JoueurIA(this.plateau, 3, extension, NumJoueur.IADIFFICILE1, joueur2); //Medium
+                    this.joueur1 = new JoueurIA(this.plateau, 3, extension, NumJoueur.IADIFFICILE1, joueur2);  //hard
 
                     break;
             }
@@ -80,9 +85,11 @@ public class Hive implements Serializable {
             try {
                 throw new Exception("Mauvaise difficulte");
             } catch (Exception ex) {
-                System.err.println("ERREUR setJoueurs : " + ex);
+                System.err.println("ERREUR setJoueurs : " + cas + " - " + ex);
             }
         }
+        this.casCourantJoueurs = cas;
+        this.extensions = extension;
         this.joueurCourant = this.joueur1;
     }
 
@@ -91,14 +98,32 @@ public class Hive implements Serializable {
     }
 
     public void coupInit() {
-        if (this.joueurCourant.equals(this.joueur1) && !this.joueur1.getNumJoueur().estHumain())
+        if (this.joueurCourant.equals(this.joueur1) && !this.joueur1.getNumJoueur().estHumain()) {
+            //this.plateau.notifieVue(-2);
             ((JoueurIA) this.joueurCourant).coup(null, null);
+        }
     }
-    
+
     public Joueur getJoueur2() {
         return joueur2;
     }
 
+    public int getCasCourantJoueurs() {
+        return casCourantJoueurs;
+    }
+
+    public void setCasCourantJoueurs(int casCourantJoueurs) {
+        this.casCourantJoueurs = casCourantJoueurs;
+    }
+
+    public void calculCasCourantJoueur() {
+        if (this.casCourantJoueurs > 1 && this.casCourantJoueurs < 5) {
+            this.casCourantJoueurs = 1 + this.joueur2.getNumJoueur().getDifficulte();
+        } else if (this.casCourantJoueurs > 4 && this.casCourantJoueurs < 8) {
+            this.casCourantJoueurs = 4 + this.joueur1.getNumJoueur().getDifficulte();
+        }
+    }
+    
     public boolean insecteAppartientJCourant(HexaPoint caseCible) { //permet de savoir si l'insecte le plus haut d'une case appartient au joueur dont c'est le tour
         Case c = plateau.getCase(caseCible);
         try {
@@ -188,11 +213,22 @@ public class Hive implements Serializable {
         return this.joueur1.pionsEnMain();
     }
 
-    public void reset() { // Quand on veut rejouer on réinitialise entièrement le jeu
+    public void resetPartie() {
         this.plateau = new Plateau();
         this.joueur1 = null;
         this.joueur2 = null;
         this.joueurCourant = null;
+        this.Undo = true;
+    }
+
+    public void recommencerPartie() { // Quand on veut rejouer on réinitialise entièrement le jeu
+        this.calculCasCourantJoueur();
+        this.plateau = new Plateau();
+        this.joueur1 = null;
+        this.joueur2 = null;
+        this.joueurCourant = null;
+        this.setJoueurs(casCourantJoueurs, extensions);
+        this.Undo = true;
     }
 
     public boolean tourJoueurBlanc() { //Permet à la vue de savoir à quel joueur peut jouer
@@ -214,15 +250,24 @@ public class Hive implements Serializable {
             this.joueurCourant = this.joueur1;
         }
         if (!this.joueurCourant.getNumJoueur().estHumain()) {
+            this.plateau.notifieVue(-2);
             ((JoueurIA) this.joueurCourant).coup(null, null);
         }
     }
 
     public int JoueurGagnant() {
         if (this.joueur1.reineBloquee()) {
-            return 2;
+            if (this.joueur2.reineBloquee()) {
+                return 3;
+            } else {
+                return 2;
+            }
         } else if (this.joueur2.reineBloquee()) {
-            return 1;
+            if (this.joueur1.reineBloquee()) {
+                return 3;
+            } else {
+                return 1;
+            }
         } else {
             return 0;
         }
@@ -254,11 +299,8 @@ public class Hive implements Serializable {
 
     public boolean save(String name) {
         String path;
-        if (isWindows()) {
-            path = System.getProperty("user.dir").concat("\\rsc\\SAVE\\");
-        } else {
-            path = System.getProperty("user.dir").concat("/rsc/SAVE/");
-        }
+        path = "rsc/SAVE/";
+
         File f = new File(path + name);
         if (!f.exists()) {
             try {
@@ -279,11 +321,8 @@ public class Hive implements Serializable {
 
     public boolean load(String name) {
         String path;
-        if (isWindows()) {
-            path = System.getProperty("user.dir").concat("\\rsc\\SAVE\\");
-        } else {
-            path = System.getProperty("user.dir").concat("/rsc/SAVE/");
-        }
+        path = "rsc/SAVE/";
+
         File f = new File(path + name);
         if (f.exists()) {
             try {
@@ -291,14 +330,18 @@ public class Hive implements Serializable {
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
                 Hive h = (Hive) ois.readObject();
                 ois.close();
-                this.reset();
+                this.resetPartie();
+                this.casCourantJoueurs = h.casCourantJoueurs;
+                this.extensions = h.extensions;
                 this.joueur1 = h.joueur1;
                 this.joueur2 = h.joueur2;
                 this.joueurCourant = h.joueurCourant;
                 this.plateau = h.plateau;
                 //this.plateau.setCases(h.plateau.getCases());
                 //this.plateau.setNbPionsEnJeu(h.plateau.getNbPionsEnJeu());
-                this.addObserverPlateau(o);
+                if (o != null) {
+                    this.addObserverPlateau(o);
+                }
                 this.joueur1.setPlateau(plateau);
                 this.joueur2.setPlateau(plateau);
                 this.joueurCourant.setPlateau(plateau);
@@ -329,7 +372,8 @@ public class Hive implements Serializable {
         }
     }
 
-    public void Undo() {
+    public Deplacement Undo() {
+        Deplacement d = null;
         if (UndoPossible()) {
             if (this.joueur2 instanceof JoueurIA) {
                 this.joueur2.Undo();
@@ -340,13 +384,16 @@ public class Hive implements Serializable {
             } else if (this.joueurCourant.equals(this.joueur1)) {
                 this.joueur2.Undo();
                 this.joueurCourant = this.joueur2;
+                d = this.joueur2.getDernierDeplacement();
             } else {
                 this.joueur1.Undo();
                 this.joueurCourant = this.joueur1;
+                d = this.joueur1.getDernierDeplacement();
             }
             this.Undo = false;
             this.plateau.notifieVue(-1);
         }
+        return d;
     }
 
     public boolean RedoPossible() {
@@ -359,7 +406,8 @@ public class Hive implements Serializable {
         }
     }
 
-    public void Redo() {
+    public Deplacement Redo() {
+        Deplacement d = null;
         if (RedoPossible()) {
             if (this.joueur2 instanceof JoueurIA) {
                 this.joueur1.Redo();
@@ -370,13 +418,16 @@ public class Hive implements Serializable {
             } else if (this.joueurCourant.equals(this.joueur1)) {
                 this.joueur1.Redo();
                 this.joueurCourant = this.joueur2;
+                d = this.joueur1.getDernierDeplacement();
             } else {
                 this.joueur2.Redo();
                 this.joueurCourant = this.joueur1;
+                d = this.joueur2.getDernierDeplacement();
             }
             this.Undo = true;
             this.plateau.notifieVue(-1);
         }
+        return d;
     }
 
     public void addObserverPlateau(Observer o) {
@@ -386,5 +437,24 @@ public class Hive implements Serializable {
 
     public void setUndo(boolean Undo) {
         this.Undo = Undo;
+    }
+    
+    public ArrayList<Insecte> getPlaceHolder() {
+        ArrayList<Insecte> pions = new ArrayList<>();
+        
+        pions.add(new Reine(null));
+        for (int i = 0; i < 2; i++) {
+            pions.add(new Scarabee(null));
+            pions.add(new Araignee(null));
+        }
+        for (int i = 0; i < 3; i++) {
+            pions.add(new Fourmi(null));
+            pions.add(new Sauterelle(null));
+        }
+        if (extensions) {
+            pions.add(new Moustique(null));
+            pions.add(new Coccinelle(null));
+        }
+        return pions;
     }
 }

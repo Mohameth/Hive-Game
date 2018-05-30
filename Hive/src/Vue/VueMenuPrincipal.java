@@ -4,7 +4,6 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
-import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -12,10 +11,12 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class VueMenuPrincipal extends Vue {
@@ -33,13 +34,6 @@ public class VueMenuPrincipal extends Vue {
         Scene scene = new Scene(root, primaryStage.getWidth(), primaryStage.getHeight());
         scene.getStylesheets().add("Vue/button.css");
 
-//        Font f = Font.loadFont(getClass().getClassLoader().getResource("FunSized.ttf").toExternalForm(), 150);
-//
-//        Label t = new Label("Hive");
-//        if (f != null) {
-//            t.setFont(f);
-//        }
-//        t.setTextFill(Color.WHITE);
         Image img = new Image("hivelogo.png");
         ImageView imgv = new ImageView(img);
 
@@ -72,9 +66,17 @@ public class VueMenuPrincipal extends Vue {
         Button loadGame = new Button(getLangStr("ldgame"));
         loadGame.setMaxWidth(200.0);
 
+        loadGame.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            SceneLoad(primaryStage);
+        });
+
         Button tuto = new Button();
-        tuto.setText(getLangStr("tuto"));
+        tuto.setText(getLangStr("rule"));
         tuto.setMaxWidth(200.0);
+
+        tuto.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            SceneRegle(primaryStage);
+        });
 
         Button setting = new Button();
         setting.setText(getLangStr("setting"));
@@ -114,6 +116,8 @@ public class VueMenuPrincipal extends Vue {
 
         root.getChildren().addAll(g);
         primaryStage.setScene(scene);
+        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER, KeyCombination.ALT_DOWN));
+        primaryStage.setFullScreenExitHint("");
         primaryStage.setFullScreen(fs);
         primaryStage.getIcons().add(new Image("logo.png"));
         primaryStage.show();

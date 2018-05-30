@@ -1,16 +1,17 @@
 package Vue;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -18,26 +19,25 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+import java.io.*;
+import java.util.Properties;
+
 public class VueMulti extends Vue {
 
     private static int NB_COL = 7;
 
     VueMulti(Stage primaryStage) {
         Properties prop = new Properties();
-        String propFileName = System.getProperty("user.dir").concat("/rsc/config.properties");
+        String propFileName = "rsc/config.properties";
         InputStream input = null;
         try {
             input = new FileInputStream(propFileName);
             prop.load(input);
+            input.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.getMessage();
-        }
-        try {
-            input.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         boolean fs = primaryStage.isFullScreen();
@@ -59,22 +59,39 @@ public class VueMulti extends Vue {
         Label tp = new Label(getLangStr("white"));
         tp.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         tp.setTextFill(Color.WHITE);
+        tp.setMinWidth(50);
         TextField ta = new TextField(prop.getProperty("joueurBlanc"));
+        ta.setPromptText(getLangStr("whitePlayer"));
         ta.setMaxSize(200.0, 5.0);
         HBox hb = new HBox(tp, ta);
-        hb.setSpacing(5);
+        hb.setSpacing(10);
+        hb.setAlignment(Pos.CENTER);
+        hb.setPadding(new Insets(10,0,0,0));
 
         HBox hb1 = new HBox();
         Label tp1 = new Label(getLangStr("black"));
+
+        double widthtp = tp.getWidth();
+        double widthtp1 = tp1.getWidth();
+        if (widthtp > widthtp1) {
+            tp1.setMinWidth(widthtp);
+        } else {
+            tp.setMinWidth(widthtp1);
+        }
+
         tp1.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         tp1.setTextFill(Color.WHITE);
+        tp1.setMinWidth(50);
         TextField ta1 = new TextField(prop.getProperty("joueurNoir"));
+        ta1.setPromptText(getLangStr("blackPlayer"));
         ta1.setMaxSize(300.0, 5.0);
         hb1.getChildren().addAll(tp1, ta1);
-        hb1.setSpacing(12.0);
+        hb1.setSpacing(12);
+        hb1.setAlignment(Pos.CENTER);
 
         Button bplay = new Button(getLangStr("jouer"));
         bplay.setMinSize(200.0, 50.0);
+        bplay.setAlignment(Pos.CENTER);
 
         Label tc = new Label(getLangStr("pname"));
         tc.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
@@ -94,7 +111,15 @@ public class VueMulti extends Vue {
         });
 
         bplay.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            SceneTerrain(primaryStage, 1, false);
+            prop.setProperty("joueurNoir", ta1.getText());
+            prop.setProperty("joueurBlanc", ta.getText());
+            try {
+                prop.store(new FileWriter("rsc/config.properties"), "");
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
+            SceneTerrain(primaryStage, 1, false, false);
         });
 
         GridPane g = new GridPane();
@@ -120,6 +145,8 @@ public class VueMulti extends Vue {
         root.prefWidthProperty().bind(s.widthProperty());
         root.setStyle("-fx-background-image: url(backPions2.jpg); -fx-background-size: cover;");
         primaryStage.setScene(s);
+        primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER, KeyCombination.ALT_DOWN));
+        primaryStage.setFullScreenExitHint("");
         primaryStage.setFullScreen(fs);
         primaryStage.show();
     }

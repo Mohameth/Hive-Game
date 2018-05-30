@@ -47,9 +47,12 @@ public abstract class AbstractCoup implements Runnable,Serializable {
         this.tempsDebut = System.nanoTime();
         if (this.coup()) {
             this.tempsFin = System.nanoTime();
+            
+            joueur.joueCoup(null, null);
         }
         this.joueur.setTempsRestant((2000000000 - (tempsFin - tempsDebut))+ System.nanoTime());
         this.resetTemps();
+        this.plateau.notifieVue(joueur.getTempsRestant());
     }
     
 
@@ -68,14 +71,13 @@ public abstract class AbstractCoup implements Runnable,Serializable {
         this.joueur.coupChoisi(r, c, true);
     }
 
-    protected CoupleCaesInsecte getCouple(Noeud pere, Noeud fils, Insecte in, Case c, Case c2) {
+    protected CoupleCaesInsecte getCouple(Plateau plateau,ArrayList<Insecte>insecte,Insecte in, Case c, Case c2) {
 
         if (c2 == null) {
-            return new CoupleCaesInsecte(getInsecte2(pere.getMainIA(), in), getCase2(pere.getPlateau(), c), null);
+            return new CoupleCaesInsecte(getInsecte2(insecte, in), getCase2(plateau, c), null);
         }
-
-        return new CoupleCaesInsecte(getCase2(pere.getPlateau(), c2).getInsecteOnTop(),
-                getCase2(pere.getPlateau(), c), null);
+        
+        return new CoupleCaesInsecte(getCase2(plateau, c2).getInsecteOnTop(),getCase2(plateau,c),null);
 
     }
 
@@ -120,5 +122,5 @@ public abstract class AbstractCoup implements Runnable,Serializable {
         }
         return false;
     }
-
+    
 }

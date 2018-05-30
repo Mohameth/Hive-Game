@@ -5,11 +5,13 @@
  */
 package IA;
 
+import Modele.IA.IAFacile;
 import Modele.Insectes.Insecte;
 import Modele.Joueurs.JoueurHumain;
 import Modele.Joueurs.JoueurIA;
 import Modele.Joueurs.NumJoueur;
 import Modele.Plateau;
+import java.util.HashMap;
 
 /**
  *
@@ -21,15 +23,25 @@ public class TestIA {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        HashMap<Integer, Integer> coupParPartie = new HashMap<>();
+        int nbWinJ1 = 0;
+        int nbWinJ2 = 0;
+        int nbDraw = 0;
+        int nbRealDraw = 0;
+        
+        int x = 0;
+        
         for (int j = 0; j < 1000; j++) {
             Plateau plateau = new Plateau();
-            JoueurIA joueur1 = new JoueurIA(plateau, 1, NumJoueur.JOUEUR1, false);
-            JoueurIA joueur2 = new JoueurIA(plateau, 1, NumJoueur.JOUEUR2, false);
-            joueur1.addJoueurAdverse(joueur2);
-            joueur2.addJoueurAdverse(joueur1);
+            IAFacile joueur1 = new IAFacile(plateau, true, NumJoueur.JOUEUR1, null);
+            IAFacile joueur2 = new IAFacile(plateau, true, NumJoueur.JOUEUR2, null);
+            joueur1.setAdversaire(joueur2);
+            joueur2.setAdversaire(joueur1);
 
             boolean fini = false;
             int coup = 0;
+            
+            
             while (!fini && coup <= 500) {
                 joueur1.coup(null, null);
                 //System.out.println("J1 à joué ");
@@ -45,29 +57,29 @@ public class TestIA {
                 coup++;
             }
 
-            System.out.println("partie fini en " + coup);
-            if (joueur1.reineBloquee()) {
-                System.out.println("J2 à gagné");
+            coupParPartie.put(j, coup);
+            if (joueur1.reineBloquee() && joueur2.reineBloquee()) {
+                nbRealDraw++;
+            }
+            else if (joueur1.reineBloquee()) {
+                nbWinJ2++;
             } else if (joueur2.reineBloquee()) {
-                System.out.println("J1 à gagné");
+                nbWinJ1++;
             } else {
-                System.out.println("match NULL");
+                nbDraw++;
             }
-
-            System.out.println("Pions du J1 :");
-            for (Insecte i : joueur1.getPions()) {
-                if (i.getEmplacement() != null) {
-                    System.out.println(i.getEmplacement());
-                }
+            
+            x++;
+            if (x == 10) {
+                x = 0;
+                System.out.println(" --> "+j);
             }
-
-            System.out.println("Pions de J2 :");
-            for (Insecte i : joueur2.getPions()) {
-                if (i.getEmplacement() != null) {
-                    System.out.println(i.getEmplacement());
-                }
-            }
-
         }
+        
+        System.out.println(coupParPartie);
+        System.out.println("Victoires J1: "+nbWinJ1);
+        System.out.println("Victoires J2: "+nbWinJ2);
+        System.out.println("Draw (+500) : " + nbDraw);
+        System.out.println("Draw        : " + nbRealDraw);
     }
 }

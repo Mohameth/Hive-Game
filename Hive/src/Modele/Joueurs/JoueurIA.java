@@ -57,6 +57,31 @@ public class JoueurIA extends Joueur {
     }
 
     public void setDifficulte(int dif) {
+        if (this.getNumJoueur().estBlanc()) {
+            switch (dif) {
+                case 1:
+                    this.numJoueur = NumJoueur.IAFACILE1;
+                break;
+                case 2:
+                    this.numJoueur = NumJoueur.IAMOYEN1;
+                break;
+                case 3:
+                    this.numJoueur = NumJoueur.IADIFFICILE1;
+                break;
+            }
+        } else {
+            switch (dif) {
+                case 1:
+                    this.numJoueur = NumJoueur.IAFACILE2;
+                break;
+                case 2:
+                    this.numJoueur = NumJoueur.IAMOYEN2;
+                break;
+                case 3:
+                    this.numJoueur = NumJoueur.IADIFFICILE2;
+                break;
+            }
+        }
         this.difficulte = dif;
         this.setThreadCoup();
     }
@@ -65,13 +90,19 @@ public class JoueurIA extends Joueur {
     public boolean coup(Insecte insecte, HexaPoint cible) {
         try {
             Thread t = new Thread(this.threadCoup);
+            t.setDaemon(true);
             t.start();
 
-            t.join();
-        } catch (InterruptedException ex) {
+            //t.join();
+        } catch (Exception ex) {
             System.err.print("Erreur Thread IA : " + ex);
+            
         }
 
+        return false;
+    }
+    
+    public boolean joueCoup(Insecte insecte, HexaPoint cible) {
         if (this.coupChoisiExistant()) {
             if (this.placement) {
                 this.dernierDeplacement = new Deplacement(this.insecteChoisi, null, this.caseChoisie);
@@ -79,12 +110,11 @@ public class JoueurIA extends Joueur {
                 this.plateau.ajoutInsecte(this.insecteChoisi, this.caseChoisie);
             } else {
                 this.dernierDeplacement = new Deplacement(this.insecteChoisi, this.insecteChoisi.getEmplacement().getCoordonnees(), this.caseChoisie);
-                this.plateau.deleteInsecte(insecte, this.insecteChoisi.getEmplacement().getCoordonnees());
+                if (!(this.threadCoup instanceof CoupDifficile)) this.plateau.deleteInsecte(insecteChoisi, this.insecteChoisi.getEmplacement().getCoordonnees());
                 this.plateau.deplaceInsecte(this.insecteChoisi, this.caseChoisie);
             }
             this.resetCoupChoisi();
             this.incrementeTour();
-            this.plateau.notifieVue(tempsRestant);
             return true;
         }
 

@@ -77,7 +77,10 @@ public class PionPlateau2 implements ObservableVue {
         this.pionEnDessous.setLock();
         this.imagePion.updateImageDessous(true);
         //mettre l'image au meme coordonnée que le pion en dessous pour les aligners perfectement
-        this.getImgViewPion().setImgPosXY(pionEnDessous.getImgViewPion().getImgPosX(), pionEnDessous.getImgViewPion().getImgPosY());
+        this.imagePion.setImgPosXY(pionEnDessous.getImgViewPion().getImgPosX(), pionEnDessous.getImgViewPion().getImgPosY());
+        // this.imagePion.setPrevImgPosXY(pionEnDessous.getImgViewPion().getPrevImgPosX(), pionEnDessous.getImgViewPion().getPrevImgPosY());
+        this.imagePion.setCurrentZoom(pionEnDessous.getZoom());
+
         this.validCurrentPosXY();
         notifyPionPlateauAddEnDessous(this);
     }
@@ -128,7 +131,9 @@ public class PionPlateau2 implements ObservableVue {
         //notifier l'observateur avant d'appliquer les changements
         notifyUpdatePionPosition(this.getCoordPion(), newCoord, this);
         this.coordPion = newCoord;
-        this.imagePion.setImgPosXY(imgX, imgY);
+        if (this.pionEnDessous == null) {
+            this.imagePion.setImgPosXY(imgX, imgY);
+        }
         updateZoneLibreVoisin();
     }
 
@@ -137,10 +142,6 @@ public class PionPlateau2 implements ObservableVue {
         for (ZoneLibre zoneLibre : zonesLibresListe) {
             double result[] = getCenterOfHitbox(i, this.totZoom);
             HexaPoint newCoord = getHitboxCoord(i);
-            //notifier la vueterrain avant de changer les coordonnées uniquement si la position change
-//            if (!newCoord.equals(zoneLibre.getCoordZoneLibre())) {
-//            }
-            //notifyUpdateZonLibPosition(zoneLibre.getCoordZoneLibre(), newCoord, zoneLibre);
             zoneLibre.updatePosition(newCoord, result[0], result[1]);
 
             i++;

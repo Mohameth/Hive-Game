@@ -22,8 +22,8 @@ public class IAEvaluation {
     Joueur joueur;
     Joueur adversaire;
     Integer evaluationPlateau;
-    HashMap<Insecte, Integer> myPiecesValues;
-    HashMap<Insecte, Integer> opponentPiecesValues;
+    HashMap<Insecte, Float> myPiecesValues;
+    HashMap<Insecte, Float> opponentPiecesValues;
 
     //Stockage des reines pour récup. rapide de leurs positions
     private Insecte maReine;
@@ -50,20 +50,30 @@ public class IAEvaluation {
      * @return l'évaluation courante de la position
      */
     public int getEvaluation() {
+        /*if (aGagne() && aPerdu()) {
+            return 0;
+        }*/
+        //else {
         if (aGagne()) {
             return Integer.MAX_VALUE;
         }
         if (aPerdu()) {
             return Integer.MIN_VALUE;
         }
+        //}
 
+        initMapInsectes();
         initPiecesValues(myPiecesValues, false);
         initPiecesValues(opponentPiecesValues, true);
         updatePositionValues(myPiecesValues);
         updatePositionValues(opponentPiecesValues);
-
-        return getSumEvaluation(myPiecesValues)
-                - getSumEvaluation(opponentPiecesValues);
+        
+        int me = getSumEvaluation(myPiecesValues);
+        int him = getSumEvaluation(opponentPiecesValues);
+        
+        return me - him;
+        /*return getSumEvaluation(myPiecesValues)
+                - getSumEvaluation(opponentPiecesValues);*/
     }
     
     /**
@@ -82,43 +92,40 @@ public class IAEvaluation {
      * @param piecesValues liste des pieces d'un joueur
      * @param opponent true si on considère le joueur adverse
      */
-    private void initPiecesValues(HashMap<Insecte, Integer> piecesValues, Boolean opponent) {
-        for (Insecte i : getTousInsecte()) {
-            if (insecteBelongsToOpponent(i).equals(opponent)) {//si opponent, nos pieces ne serons pas initialisés
-                switch (i.getType()) {
-                    case REINE:
-                        piecesValues.put(i, 50);
-                        if (opponent) {
-                            reineAdverse = i;
-                        } else {
-                            maReine = i;
-                        }
-                        break;
-                    case SCARABEE:
-                        piecesValues.put(i, 20);
-                        break;
-                    case SAUTERELLE:
-                        piecesValues.put(i, 20);
-                        break;
-                    case ARAIGNEE:
-                        piecesValues.put(i, 20);
-                        break;
-                    case FOURMI:
-                        piecesValues.put(i, 30);
-                        break;
+    private void initPiecesValues(HashMap<Insecte, Float> piecesValues, Boolean opponent) {
+        for (Insecte i : piecesValues.keySet()) {
+            switch (i.getType()) {
+                case REINE:
+                    piecesValues.put(i, 50f);
+                    if (opponent) {
+                        reineAdverse = i;
+                    } else {
+                        maReine = i;
+                    }
+                    break;
+                case SCARABEE:
+                    piecesValues.put(i, 20f);
+                    break;
+                case SAUTERELLE:
+                    piecesValues.put(i, 20f);
+                    break;
+                case ARAIGNEE:
+                    piecesValues.put(i, 20f);
+                    break;
+                case FOURMI:
+                    piecesValues.put(i, 30f);
+                    break;
 
-                    case MOUSTIQUE:
-                        piecesValues.put(i, 20);//Dépend de l'insecte qu'il copie
-                        break;
-                    case CLOPORTE:
-                        piecesValues.put(i, 15);
-                        break;
-                    case COCCINELLE:
-                        piecesValues.put(i, 15);
-                        break;
-                }
+                case MOUSTIQUE:
+                    piecesValues.put(i, 20f);//Dépend de l'insecte qu'il copie
+                    break;
+                case CLOPORTE:
+                    piecesValues.put(i, 15f);
+                    break;
+                case COCCINELLE:
+                    piecesValues.put(i, 15f);
+                    break;
             }
-
         }
     }
     
@@ -127,7 +134,7 @@ public class IAEvaluation {
      * 
      * @return une liste de tous les insectes
      */
-    private Collection<Insecte> getTousInsecte() {
+    /*private Collection<Insecte> getTousInsecte() {
         Collection<Insecte> res = new ArrayList<>();
         //Ajout des insectes du joueur
         for (Insecte i : joueur.getPions()) {
@@ -139,7 +146,17 @@ public class IAEvaluation {
         }
 
         return res;
-    }
+    }*/
+    
+    private void initMapInsectes() {
+        for (Insecte i : joueur.getPions()) {
+            myPiecesValues.put(i, 0f);
+        }
+        
+        for (Insecte i : adversaire.getPions()) {
+            opponentPiecesValues.put(i, 0f);
+        }
+    } 
     
     /**
      * Indique si l'insecte i est recouvert (en dessous d'un autre insecte)
@@ -151,7 +168,7 @@ public class IAEvaluation {
         return !i.getEmplacement().getInsecteOnTop().equals(i);
     }
 
-    private boolean estImmobilise(Insecte i) {
+    private boolean estImmobilise(Insecte i) {//Couteux
         return i.deplacementPossible(jeu).isEmpty();
     }
 
@@ -167,25 +184,17 @@ public class IAEvaluation {
     private boolean entoureReineAdverse(Insecte i) {
         Insecte reine = insecteBelongsToOpponent(i) ? maReine : reineAdverse;
         
-        if (reine == null || reine.getEmplacement() == null) {
-            return false;
-        }
-        
-        return jeu.estVoisin(reine, i);
-    }
-
-    private boolean maReineEstEntoure(Insecte i) {
-        Insecte reine = insecteBelongsToOpponent(i) ? reineAdverse : maReine;
-
-        if (reine == null || reine.getEmplacement() == null) {
-            return false;
-        }
+        if (reine == null || reine.getEmplacement() == null) return false;
         
         return jeu.estVoisin(reine, i);
     }
     
-    private boolean peutEntourerReineAdverse(Insecte i) {
-        return false;
+    private boolean entoureMaReine(Insecte i) {
+        Insecte reine = insecteBelongsToOpponent(i) ? reineAdverse : maReine;
+        
+        if (reine == null || reine.getEmplacement() == null) return false;
+        
+        return jeu.estVoisin(reine, i);
     }
     
     /**
@@ -216,26 +225,53 @@ public class IAEvaluation {
         return joueur.reineBloquee();
     }
     
+    private boolean recouvreReineAdverse(Insecte i) {
+        Insecte reine = insecteBelongsToOpponent(i) ? maReine : reineAdverse;
+        
+        if (reine == null || reine.getEmplacement() == null) return false;
+        
+        return i.getNiveau() > 1 && reine.getEmplacement().equals(i.getEmplacement());
+    }
+    
+    private boolean reineAdverseImmobilise(Insecte i) {
+        Insecte reine = insecteBelongsToOpponent(i) ? maReine : reineAdverse;
+        
+        if (reine == null || reine.getEmplacement() == null) return false;
+        
+        return reine.deplacementPossible(jeu).isEmpty();
+    }
+    
     /**
      * Met à jour les valeurs des pièces selon leurs positions (par rapport aux autres pièces)
      * 
      * @param piecesValues liste des pieces + valeurs d'un joueur
      */
-    private void updatePositionValues(HashMap<Insecte, Integer> piecesValues) {
-        HashMap<Insecte, Integer> piecesAjout = new HashMap<>();
+    private void updatePositionValues(HashMap<Insecte, Float> piecesValues) {
+        HashMap<Insecte, Float> piecesAjout = new HashMap<>();
         Iterator<Insecte> it = piecesValues.keySet().iterator();
         while (it.hasNext()) {
             Insecte i = it.next();
-            Integer value = piecesValues.get(i);
+            Float value = piecesValues.get(i);
             
             if (estDansLaMain(i)) {
-                value -= value*2;
+                value /= 3;
             } else {
-                if (estRecouvert(i))    value /= 5;
-                else                                        value += mobilite(i)*2;
-                //if (entoureReineAdverse(i))                 value += 10000;
-                //else if (peutEntourerReineAdverse(i))       value += 50;
-                //if (maReineEstEntoure(i))                   value -= 100;
+                /*if (i.getType() == TypeInsecte.SAUTERELLE) {
+                    System.out.println("kmdjlgksv;v,");
+                }*/
+                //if (i.getType() == TypeInsecte.MOUSTIQUE) value = getMoustiqueValue();
+                if (estRecouvert(i)) value /= 5;
+                else {
+                    //value += mobilite(i)*2;
+                    if (recouvreReineAdverse(i)) {
+                        if (!reineAdverseImmobilise(i)) value *= 5;
+                        else value *= 3;
+                    }
+                }
+                if (entoureReineAdverse(i)) {
+                    value *= 4;
+                    //if (!entoureMaReine(i) && estImmobilise(i)) value *= 2;// --> Demande trop de ressources (fonction deplacementPossible)
+                }
             }
             
             piecesAjout.put(i, value);
@@ -249,12 +285,12 @@ public class IAEvaluation {
      * @param piecesValues liste des pieces + valeurs d'un joueur
      * @return la somme des valeurs des pièces
      */
-    private int getSumEvaluation(HashMap<Insecte, Integer> piecesValues) {
-        int sum = 0;
-        for (int v : piecesValues.values()) {
+    private int getSumEvaluation(HashMap<Insecte, Float> piecesValues) {
+        float sum = 0;
+        for (float v : piecesValues.values()) {
             sum += v;
         }
 
-        return sum;
+        return Math.round(sum);
     }
 }
