@@ -333,6 +333,7 @@ public class VueSettings extends Vue {
         rEasy.setToggleGroup(group);
         rMedium.setToggleGroup(group);
         rHard.setToggleGroup(group);
+        rHard.setDisable(true);
         rMedium.setSelected(true);
 
         VBox vb = new VBox();
