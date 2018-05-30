@@ -1389,15 +1389,6 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             });
 
             load.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e1) -> {
-                /* this.controleur.load(lv.getSelectionModel().getSelectedItem());
-                root.getChildren().removeAll(vLoad);
-                this.reconstructionPlateau(pModel);
-                if (!this.controleur.joueur2.getNumJoueur().estHumain()) {
-                    ((ComboBox) nomJoueur.get(1)).getSelectionModel().select(this.controleur.joueur2.getNumJoueur().getDifficulte() - 1);
-                } else if (!this.controleur.joueur1.getNumJoueur().estHumain()) {
-                    ((ComboBox) nomJoueur.get(0)).getSelectionModel().select(this.controleur.joueur2.getNumJoueur().getDifficulte() - 1);
-                }
-                this.updateMainJoueur();*/
                 this.controleur.load(lv.getSelectionModel().getSelectedItem());
                 this.SceneTerrain(primaryStage, this.controleur.getCasCourantJoueurs(), this.controleur.getCasCourantJoueurs() > 1, true);
             });

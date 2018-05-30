@@ -227,27 +227,6 @@ public class VueSettings extends Vue {
             }
         });
 
-        /*bSave.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
-            if (chb.isSelected()) {
-                primaryStage.setFullScreen(true);
-            } else {
-                primaryStage.setFullScreen(false);
-                primaryStage.setWidth(cb.getValue().x);
-                primaryStage.setHeight(cb.getValue().y);
-            }
-            if (cb1.getValue().equals(getLangStr("fr"))) {
-                language = "fr";
-                country = "FR";
-            } else if (cb1.getValue().equals(getLangStr("en"))) {
-                language = "en";
-                country = "US";
-            }
-            this.currentLocale = new Locale(this.language, this.country);
-            this.messages = ResourceBundle.getBundle("MessagesBundle", currentLocale);
-            root.getChildren().remove(g);
-            primaryStage.hide();
-            primaryStage.show();
-        });*/
 
         HBox hb5 = new HBox();
         /*if (this.inGame) {
