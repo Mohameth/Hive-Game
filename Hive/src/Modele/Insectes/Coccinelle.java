@@ -20,7 +20,7 @@ public class Coccinelle extends Insecte {
     }
 	
 	public boolean equals(Insecte insecte) {
-		return (insecte instanceof Coccinelle);
+		return (insecte.getType() == TypeInsecte.COCCINELLE);
 	}
 
     @Override

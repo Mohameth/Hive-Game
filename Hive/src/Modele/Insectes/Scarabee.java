@@ -19,7 +19,7 @@ public class Scarabee extends Insecte {
     }
 	
 	public boolean equals(Insecte insecte) {
-		return (insecte instanceof Scarabee);
+		return (insecte.getType() == TypeInsecte.SCARABEE);
 	}
     
     @Override

@@ -1150,7 +1150,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
             });
         } else {
             ComboBox<String> cb = new ComboBox<>();
-            cb.getItems().addAll(getLangStr("easy"), getLangStr("medi"), getLangStr("hard"));
+            cb.getItems().addAll(getLangStr("easy"), getLangStr("medi"));//, getLangStr("hard"));
             if (!this.controleur.getJoueur2().getNumJoueur().estHumain()) {
                 cb.getSelectionModel().select(((JoueurIA) this.controleur.getJoueur2()).getDifficulte() - 1);
             } else {
