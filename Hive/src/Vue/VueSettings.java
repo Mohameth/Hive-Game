@@ -44,16 +44,15 @@ public class VueSettings extends Vue {
 
     VueSettings(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        this.inGame = false;
-
         boolean fs = primaryStage.isFullScreen();
+        this.inGame = false;
         Scene s = new Scene(getAllSetting(), primaryStage.getWidth(), primaryStage.getHeight());
         getConfig();
         s.getStylesheets().add("Vue/button1.css");
         primaryStage.setScene(s);
+        primaryStage.setFullScreen(fs);
         primaryStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.ENTER, KeyCombination.ALT_DOWN));
         primaryStage.setFullScreenExitHint("");
-        primaryStage.setFullScreen(fs);
         primaryStage.show();
     }
 
@@ -284,13 +283,13 @@ public class VueSettings extends Vue {
         Label t3 = new Label(getLangStr("white"));
         t3.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         t3.setTextFill(Color.WHITE);
-        t3.setMinWidth(50);
+        t3.setPrefWidth(70);
         nomJ1 = new TextField();
         nomJ1.setPromptText(getLangStr("whitePlayer"));
         Label t4 = new Label(getLangStr("black"));
         t4.setStyle("-fx-font-weight: bold;-fx-font-size: 18px;");
         t4.setTextFill(Color.WHITE);
-        t4.setMinWidth(50);
+        t4.setMinWidth(70);
         nomJ2 = new TextField();
         nomJ2.setPromptText(getLangStr("blackPlayer"));
 
