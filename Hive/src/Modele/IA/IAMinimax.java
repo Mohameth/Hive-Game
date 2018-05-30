@@ -5,10 +5,13 @@
  */
 package Modele.IA;
 
+import Modele.Case;
+import Modele.Deplacement;
 import Modele.Insectes.Insecte;
 import Modele.Joueurs.Joueur;
 import Modele.Plateau;
 import Modele.HexaPoint;
+import Modele.Insectes.Reine;
 import Modele.Joueurs.JoueurIA;
 import Modele.Joueurs.NumJoueur;
 import java.util.ArrayList;
@@ -37,6 +40,8 @@ public class IAMinimax extends Joueur {
     
     @Override
     public boolean coup(Insecte insecte, HexaPoint cible) {
+        if (coupGagnant()) return true;
+        
         Coup coup = minimax();
         if (coup == null) {
             /*JoueurIA iaf = new JoueurIA(this.plateau,1,false,NumJoueur.JOUEUR2,this.adversaire);
@@ -132,4 +137,29 @@ public class IAMinimax extends Joueur {
         return valeur;
     }
     
+    protected boolean coupGagnant() {
+        if (!adversaire.reinePresqueBloquee()) {
+            return false;
+        }
+        Reine reine=adversaire.getReine(adversaire.pionsEnJeu());
+        if(reine==null) {
+        	return false;
+        }
+        ArrayList<Case> c1=(ArrayList<Case>) plateau.getCasesVoisines(reine.getEmplacement(), true);
+        Case c = c1.get(0);
+        ArrayList<Insecte> in = this.pionsEnJeu();
+        for (int i = 0; i < in.size(); i++) {
+            if (in.get(i).deplacementPossible(plateau).contains(c)) {
+                if (!in.get(i).getEmplacement().estVoisin(c) || in.get(i).getEmplacement().getNbInsectes() > 1) {
+                    this.setDernierDeplacement(new Deplacement(in.get(i), in.get(i).getEmplacement().getCoordonnees(), c.getCoordonnees()));
+                    in.get(i).deplacement(plateau, c.getCoordonnees());
+                    this.incrementeTour();
+                    return true;
+                }
+            }
+        }
+        
+        this.incrementeTour();
+        return false;
+    }
 }
