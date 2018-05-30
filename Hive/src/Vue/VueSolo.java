@@ -80,6 +80,7 @@ public class VueSolo extends Vue {
         rMedium.setUserData("medium");
         rMedium.setTextFill(Color.WHITE);
         RadioButton rHard = new RadioButton(getLangStr("hard"));
+        rHard.setDisable(true);
         rHard.setUserData("hard");
         rHard.setTextFill(Color.WHITE);
         rEasy.setToggleGroup(group);
