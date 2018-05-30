@@ -172,6 +172,8 @@ public class VueSolo extends Vue {
         vb.setAlignment(Pos.CENTER);
         vb.setSpacing(100.0);
         vb.setPrefHeight(primaryStage.getHeight());
+        vb.prefHeightProperty().bind(primaryStage.heightProperty());
+        vb.prefWidthProperty().bind(primaryStage.widthProperty());
         vb.setStyle("-fx-background-color : rgba(123,67,36, 0.2);  -fx-border-width: 0 0 0 0;"); //-fx-border-color: black;
 
         DropShadow dropShadow = new DropShadow();

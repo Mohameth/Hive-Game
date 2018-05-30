@@ -90,6 +90,7 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         if (!load) {
             this.controleur.setJoueurs(casJoueurs, true);
         }
+
         this.controleur.addObserverPlateau(this);
 
         this.pModel = null;
@@ -187,6 +188,10 @@ public class VueTerrain extends Vue implements ObservateurVue, Observer {
         ArrayList<Insecte> initInsectes = new ArrayList<>();
 
         initInsectes = this.controleur.mainsInit();
+        if (load) {
+            initInsectes = this.controleur.getPlaceHolder();
+        }
+
         BorderPane playerOne = getHudPlayer(getnbInsect(initInsectes), 1, !this.controleur.getJoueur1().getNumJoueur().estHumain()); //initialisation tout les pions possable
         BorderPane playerTwo = getHudPlayer(getnbInsect(initInsectes), 2, !this.controleur.getJoueur2().getNumJoueur().estHumain());
 

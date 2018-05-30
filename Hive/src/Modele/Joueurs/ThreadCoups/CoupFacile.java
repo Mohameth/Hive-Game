@@ -31,6 +31,7 @@ public class CoupFacile extends AbstractCoup {
    
     @Override
     protected boolean coup() {
+        System.out.println("IA FACILE");
         if (this.joueur.reineBloquee()) {
             return false;
         }

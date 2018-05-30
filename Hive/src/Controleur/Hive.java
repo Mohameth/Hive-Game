@@ -3,7 +3,7 @@ package Controleur;
 import Modele.Case;
 import Modele.Deplacement;
 import Modele.HexaPoint;
-import Modele.Insectes.Insecte;
+import Modele.Insectes.*;
 import Modele.Insectes.TypeInsecte;
 import Modele.Joueurs.Joueur;
 import Modele.Joueurs.JoueurHumain;
@@ -116,6 +116,14 @@ public class Hive implements Serializable {
         this.casCourantJoueurs = casCourantJoueurs;
     }
 
+    public void calculCasCourantJoueur() {
+        if (this.casCourantJoueurs > 1 && this.casCourantJoueurs < 5) {
+            this.casCourantJoueurs = 1 + this.joueur2.getNumJoueur().getDifficulte();
+        } else if (this.casCourantJoueurs > 4 && this.casCourantJoueurs < 8) {
+            this.casCourantJoueurs = 4 + this.joueur1.getNumJoueur().getDifficulte();
+        }
+    }
+    
     public boolean insecteAppartientJCourant(HexaPoint caseCible) { //permet de savoir si l'insecte le plus haut d'une case appartient au joueur dont c'est le tour
         Case c = plateau.getCase(caseCible);
         try {
@@ -214,6 +222,7 @@ public class Hive implements Serializable {
     }
 
     public void recommencerPartie() { // Quand on veut rejouer on réinitialise entièrement le jeu
+        this.calculCasCourantJoueur();
         this.plateau = new Plateau();
         this.joueur1 = null;
         this.joueur2 = null;
@@ -428,5 +437,24 @@ public class Hive implements Serializable {
 
     public void setUndo(boolean Undo) {
         this.Undo = Undo;
+    }
+    
+    public ArrayList<Insecte> getPlaceHolder() {
+        ArrayList<Insecte> pions = new ArrayList<>();
+        
+        pions.add(new Reine(null));
+        for (int i = 0; i < 2; i++) {
+            pions.add(new Scarabee(null));
+            pions.add(new Araignee(null));
+        }
+        for (int i = 0; i < 3; i++) {
+            pions.add(new Fourmi(null));
+            pions.add(new Sauterelle(null));
+        }
+        if (extensions) {
+            pions.add(new Moustique(null));
+            pions.add(new Coccinelle(null));
+        }
+        return pions;
     }
 }
