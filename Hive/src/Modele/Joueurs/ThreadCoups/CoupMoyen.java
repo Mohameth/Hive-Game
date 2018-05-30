@@ -49,6 +49,8 @@ public class CoupMoyen extends AbstractCoup{
     @Override
     protected boolean coup() {
         System.out.println("IA MOYEN");
+        if (coupGagnant()) return true;
+        
         Coup coup = minimax();
         if (coup == null) {//Si tous les coups sont perdant, on joue au hasard
             CoupFacile cf = new CoupFacile(plateau, joueur, adverse);
