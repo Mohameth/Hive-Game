@@ -8,14 +8,8 @@ package Vue;
 import Modele.HexaPoint;
 import Modele.Insectes.TypeInsecte;
 import java.util.ArrayList;
-import javafx.scene.Cursor;
-import javafx.scene.ImageCursor;
-import javafx.scene.control.Button;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.Circle;
 
 /**
  *

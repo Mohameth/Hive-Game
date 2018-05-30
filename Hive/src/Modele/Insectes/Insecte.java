@@ -7,8 +7,6 @@ import Modele.HexaPoint;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public abstract class Insecte implements Cloneable, Serializable {
 

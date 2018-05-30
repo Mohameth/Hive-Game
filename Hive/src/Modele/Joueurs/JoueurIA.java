@@ -1,24 +1,11 @@
 package Modele.Joueurs;
 
-import Modele.Case;
-import Modele.CoupleCaesInsecte;
 import Modele.Deplacement;
 import Modele.HexaPoint;
-import Modele.Joueurs.Joueur;
 import Modele.Joueurs.ThreadCoups.*;
 import Modele.Insectes.Insecte;
-import Modele.Insectes.Reine;
 import Modele.Plateau;
-import java.util.ArrayList;
-import java.util.Random;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class JoueurIA extends Joueur {
 

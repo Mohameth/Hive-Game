@@ -1,14 +1,9 @@
 
 package Modele.IA;
 
-import Modele.Case;
-import Modele.Insectes.Fourmi;
 import Modele.Insectes.Insecte;
 import Modele.Joueurs.Joueur;
 import Modele.Plateau;
-import Modele.Insectes.TypeInsecte;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 

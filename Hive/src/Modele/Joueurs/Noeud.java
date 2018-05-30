@@ -1,7 +1,6 @@
 package Modele.Joueurs;
 
 import Modele.CoupleCaesInsecte;
-import Modele.IA.IAEvaluation;
 import java.util.ArrayList;
 
 import Modele.Insectes.Insecte;

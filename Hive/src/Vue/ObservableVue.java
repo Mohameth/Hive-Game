@@ -10,7 +10,6 @@
 package Vue;
 
 import Modele.HexaPoint;
-import javafx.geometry.Point3D;
 import javafx.scene.input.MouseEvent;
 
 public interface ObservableVue {

@@ -1,14 +1,9 @@
 package Modele;
 
 import Modele.Insectes.TypeInsecte;
-import Modele.Joueurs.Joueur;
 import Modele.Insectes.Insecte;
-import Modele.Insectes.Scarabee;
-import java.awt.Point;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
 import Modele.Joueurs.JoueurIA;
 
 public class Case implements Serializable{

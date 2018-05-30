@@ -1,6 +1,5 @@
 package Modele.Joueurs;
 
-import Controleur.Hive;
 import Modele.Deplacement;
 import Modele.HexaPoint;
 import Modele.Insectes.*;

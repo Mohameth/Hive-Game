@@ -3,7 +3,6 @@ package Modele.Joueurs;
 import Modele.Case;
 import Modele.CoupleCaesInsecte;
 import Modele.HexaPoint;
-import Modele.Joueurs.JoueurIA;
 import java.util.ArrayList;
 import java.util.Random;
 

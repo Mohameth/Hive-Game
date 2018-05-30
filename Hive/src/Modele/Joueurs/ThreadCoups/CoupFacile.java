@@ -6,10 +6,8 @@
 package Modele.Joueurs.ThreadCoups;
 
 import Modele.Case;
-import Modele.Deplacement;
 import Modele.HexaPoint;
 import Modele.Insectes.Insecte;
-import Modele.Insectes.Reine;
 import Modele.Joueurs.Joueur;
 import Modele.Joueurs.JoueurIA;
 import Modele.Plateau;

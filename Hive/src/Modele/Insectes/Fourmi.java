@@ -3,11 +3,8 @@ package Modele.Insectes;
 import Modele.Case;
 import Modele.Joueurs.Joueur;
 import Modele.Plateau;
-import Modele.HexaPoint;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Fourmi extends Insecte {
